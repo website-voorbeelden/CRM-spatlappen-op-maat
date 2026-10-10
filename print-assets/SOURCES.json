@@ -1,0 +1,284 @@
+[
+  {
+    "file": "jspdf.umd.min.js",
+    "source": "https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js",
+    "sha256": "98ccf17aa10c20bb1301762618fcc9b6ab3a4e7f26b6071d64d0b41154df3875"
+  },
+  {
+    "file": "svg2pdf.umd.min.js",
+    "source": "https://cdn.jsdelivr.net/npm/svg2pdf.js@2.7.0/dist/svg2pdf.umd.min.js",
+    "sha256": "7c91b939405364524ccda0eafac0b42b456594504acfa7de0eac83d1b6347723"
+  },
+  {
+    "file": "opentype.min.js",
+    "source": "https://cdn.jsdelivr.net/npm/opentype.js@1.3.4/dist/opentype.min.js",
+    "sha256": "c0f9c7ca85e18075a8819e5fe2dee6e1d535f9a2269f5314f36cce94a183adba"
+  },
+  {
+    "file": "jspdf-LICENSE.txt",
+    "source": "https://cdn.jsdelivr.net/npm/jspdf@2.5.1/LICENSE",
+    "sha256": "2d26bfab8a36d2250602c7a7597237e180c5cd3517acc108126e3cb399f483c8"
+  },
+  {
+    "file": "svg2pdf.js-LICENSE.txt",
+    "source": "https://cdn.jsdelivr.net/npm/svg2pdf.js@2.7.0/LICENSE",
+    "sha256": "c56fccd1f9b617c44b9e83477cabcbbbceef1d4adea859cfcd34442a8e3b91bd"
+  },
+  {
+    "file": "opentype.js-LICENSE.txt",
+    "source": "https://cdn.jsdelivr.net/npm/opentype.js@1.3.4/LICENSE",
+    "sha256": "a5b87c9bc191e7f9c06b07bd7cbbed3ed846dfdb50e859484b2c245aa1ab2e61"
+  },
+  {
+    "file": "fonts/arimo-400.ttf",
+    "source": "https://raw.githubusercontent.com/google/fonts/main/ofl/arimo/Arimo%5Bwght%5D.ttf",
+    "source_sha256": "e43898b143ec826ac8cb4034816458a7047fbe0836558de2a1f8c6223ae3e0ca",
+    "sha256": "020d82771c6020f0ad4b5a70a23fbcfc29491bc441e564e5b9c20255935d5607",
+    "requested_weight": 400,
+    "static_instance": true
+  },
+  {
+    "file": "fonts/arimo-700.ttf",
+    "source": "https://raw.githubusercontent.com/google/fonts/main/ofl/arimo/Arimo%5Bwght%5D.ttf",
+    "source_sha256": "e43898b143ec826ac8cb4034816458a7047fbe0836558de2a1f8c6223ae3e0ca",
+    "sha256": "8f953aaab30222ca4ccb3392f1afea7967e36ed8eef21f11000f32d7c8d04436",
+    "requested_weight": 700,
+    "static_instance": true
+  },
+  {
+    "file": "fonts/arimo-OFL.txt",
+    "source": "https://raw.githubusercontent.com/google/fonts/main/ofl/arimo/OFL.txt",
+    "sha256": "11cce536cd2f3864d767003af5dcd739e2e15818cf2279b6175edeadd3960992"
+  },
+  {
+    "file": "fonts/anton-400.ttf",
+    "source": "https://raw.githubusercontent.com/google/fonts/main/ofl/anton/Anton-Regular.ttf",
+    "source_sha256": "a4ba3a92350ebb031da0cb47630ac49eb265082ca1bc0450442f4a83ab947cab",
+    "sha256": "c296c8e4565caec42c7197bf83a73ef21913ff9c42f767d55d6d965e314a33ad",
+    "requested_weight": 400,
+    "static_instance": true
+  },
+  {
+    "file": "fonts/anton-700.ttf",
+    "source": "https://raw.githubusercontent.com/google/fonts/main/ofl/anton/Anton-Regular.ttf",
+    "source_sha256": "a4ba3a92350ebb031da0cb47630ac49eb265082ca1bc0450442f4a83ab947cab",
+    "sha256": "c296c8e4565caec42c7197bf83a73ef21913ff9c42f767d55d6d965e314a33ad",
+    "requested_weight": 700,
+    "static_instance": true
+  },
+  {
+    "file": "fonts/anton-OFL.txt",
+    "source": "https://raw.githubusercontent.com/google/fonts/main/ofl/anton/OFL.txt",
+    "sha256": "ee67e6ee22790b7929f1a3769ca2801d565c64b5a9096942c1adf5596de9c9e4"
+  },
+  {
+    "file": "fonts/bebasneue-400.ttf",
+    "source": "https://raw.githubusercontent.com/google/fonts/main/ofl/bebasneue/BebasNeue-Regular.ttf",
+    "source_sha256": "08e4623805102d819f58601e46e345648846075e363b2ceb23313c2d1c83ec73",
+    "sha256": "bfb87c3eed0134fde45c4cc986f9a480c6e9737c1bb850829247296152fd7906",
+    "requested_weight": 400,
+    "static_instance": true
+  },
+  {
+    "file": "fonts/bebasneue-700.ttf",
+    "source": "https://raw.githubusercontent.com/google/fonts/main/ofl/bebasneue/BebasNeue-Regular.ttf",
+    "source_sha256": "08e4623805102d819f58601e46e345648846075e363b2ceb23313c2d1c83ec73",
+    "sha256": "bfb87c3eed0134fde45c4cc986f9a480c6e9737c1bb850829247296152fd7906",
+    "requested_weight": 700,
+    "static_instance": true
+  },
+  {
+    "file": "fonts/bebasneue-OFL.txt",
+    "source": "https://raw.githubusercontent.com/google/fonts/main/ofl/bebasneue/OFL.txt",
+    "sha256": "72082f6cb4d04be2ecf7cc7d9e1e7d73787f0af8a5a278a47cade70c16b78341"
+  },
+  {
+    "file": "fonts/blackopsone-400.ttf",
+    "source": "https://raw.githubusercontent.com/google/fonts/main/ofl/blackopsone/BlackOpsOne-Regular.ttf",
+    "source_sha256": "282a825b5f294377387e3969f765408157dbea8da0f5d0aae68c6bc704b145b3",
+    "sha256": "0bb5e029da89939f7bd153c65620d88b5ce9b4ab16ff9f8c327201046bd96fe5",
+    "requested_weight": 400,
+    "static_instance": true
+  },
+  {
+    "file": "fonts/blackopsone-700.ttf",
+    "source": "https://raw.githubusercontent.com/google/fonts/main/ofl/blackopsone/BlackOpsOne-Regular.ttf",
+    "source_sha256": "282a825b5f294377387e3969f765408157dbea8da0f5d0aae68c6bc704b145b3",
+    "sha256": "0bb5e029da89939f7bd153c65620d88b5ce9b4ab16ff9f8c327201046bd96fe5",
+    "requested_weight": 700,
+    "static_instance": true
+  },
+  {
+    "file": "fonts/blackopsone-OFL.txt",
+    "source": "https://raw.githubusercontent.com/google/fonts/main/ofl/blackopsone/OFL.txt",
+    "sha256": "f67ca4a200424868ee8fcd5464d7b35ac1cbf7723f6bfdbd19a8524689fab9a8"
+  },
+  {
+    "file": "fonts/grenzegotisch-400.ttf",
+    "source": "https://raw.githubusercontent.com/google/fonts/main/ofl/grenzegotisch/GrenzeGotisch%5Bwght%5D.ttf",
+    "source_sha256": "701b299d8dc002a2b4bea2ff0f1272c0e4081a2835914354804565c410d0c637",
+    "sha256": "d9df5d5786c50ddc57d6890af33369d90880629b1bb7a0f7cb4da479f3bb0152",
+    "requested_weight": 400,
+    "static_instance": true
+  },
+  {
+    "file": "fonts/grenzegotisch-700.ttf",
+    "source": "https://raw.githubusercontent.com/google/fonts/main/ofl/grenzegotisch/GrenzeGotisch%5Bwght%5D.ttf",
+    "source_sha256": "701b299d8dc002a2b4bea2ff0f1272c0e4081a2835914354804565c410d0c637",
+    "sha256": "46456218c93830bb5e1a8bba6bdb28f764f0c8bd1fa1cd140a2cf39744be5f5f",
+    "requested_weight": 700,
+    "static_instance": true
+  },
+  {
+    "file": "fonts/grenzegotisch-OFL.txt",
+    "source": "https://raw.githubusercontent.com/google/fonts/main/ofl/grenzegotisch/OFL.txt",
+    "sha256": "bca29af2c3c9e142d11f523f414902ab8fb9ab8ffa3c34c63b6b72aa4e7d6acc"
+  },
+  {
+    "file": "fonts/newrocker-400.ttf",
+    "source": "https://raw.githubusercontent.com/google/fonts/main/ofl/newrocker/NewRocker-Regular.ttf",
+    "source_sha256": "28a499ce5b8bcf0652f8b2e25135183eaddf0c3c8c3e251259b075c71d1ef14c",
+    "sha256": "5ca17956f1215eaed7232d591a0098310b52a80a6e23ccc6a7666cf2cec6cc91",
+    "requested_weight": 400,
+    "static_instance": true
+  },
+  {
+    "file": "fonts/newrocker-700.ttf",
+    "source": "https://raw.githubusercontent.com/google/fonts/main/ofl/newrocker/NewRocker-Regular.ttf",
+    "source_sha256": "28a499ce5b8bcf0652f8b2e25135183eaddf0c3c8c3e251259b075c71d1ef14c",
+    "sha256": "5ca17956f1215eaed7232d591a0098310b52a80a6e23ccc6a7666cf2cec6cc91",
+    "requested_weight": 700,
+    "static_instance": true
+  },
+  {
+    "file": "fonts/newrocker-OFL.txt",
+    "source": "https://raw.githubusercontent.com/google/fonts/main/ofl/newrocker/OFL.txt",
+    "sha256": "942d51cf079299e83e9dd7a9a37eb92260524e8d1d576b2f0b3f7ca207c53f8e"
+  },
+  {
+    "file": "fonts/oswald-400.ttf",
+    "source": "https://raw.githubusercontent.com/google/fonts/main/ofl/oswald/Oswald%5Bwght%5D.ttf",
+    "source_sha256": "5b38c246e255a12f5712d640d56bcced0472466fc68983d2d0410ec0457c2817",
+    "sha256": "2e410ace2c1b2a061bbbc0662965204431375cd1f81884e13d04564fa3010b4b",
+    "requested_weight": 400,
+    "static_instance": true
+  },
+  {
+    "file": "fonts/oswald-700.ttf",
+    "source": "https://raw.githubusercontent.com/google/fonts/main/ofl/oswald/Oswald%5Bwght%5D.ttf",
+    "source_sha256": "5b38c246e255a12f5712d640d56bcced0472466fc68983d2d0410ec0457c2817",
+    "sha256": "d9e203cb6953b5f50713ce2d1c6af74555e870b48ab6c4b2c74ac758148d5787",
+    "requested_weight": 700,
+    "static_instance": true
+  },
+  {
+    "file": "fonts/oswald-OFL.txt",
+    "source": "https://raw.githubusercontent.com/google/fonts/main/ofl/oswald/OFL.txt",
+    "sha256": "0fd731a904b729a4e02eaf5e8ebd06783edd9abe400e8882760160230675b652"
+  },
+  {
+    "file": "fonts/pirataone-400.ttf",
+    "source": "https://raw.githubusercontent.com/google/fonts/main/ofl/pirataone/PirataOne-Regular.ttf",
+    "source_sha256": "5347a2e155589ecf667d4b766613c8ee003edde9f83717fd24c09599a4b1ecc0",
+    "sha256": "1b8e0bc8b20ef8b93ee9799d33937f2ea14996ad824562ccad6a32f6c140d257",
+    "requested_weight": 400,
+    "static_instance": true
+  },
+  {
+    "file": "fonts/pirataone-700.ttf",
+    "source": "https://raw.githubusercontent.com/google/fonts/main/ofl/pirataone/PirataOne-Regular.ttf",
+    "source_sha256": "5347a2e155589ecf667d4b766613c8ee003edde9f83717fd24c09599a4b1ecc0",
+    "sha256": "1b8e0bc8b20ef8b93ee9799d33937f2ea14996ad824562ccad6a32f6c140d257",
+    "requested_weight": 700,
+    "static_instance": true
+  },
+  {
+    "file": "fonts/pirataone-OFL.txt",
+    "source": "https://raw.githubusercontent.com/google/fonts/main/ofl/pirataone/OFL.txt",
+    "sha256": "e8ad3f3de5baeff6bac6e711d8c406e0a6b8a61d2944741532d8965d893a2681"
+  },
+  {
+    "file": "fonts/rajdhani-400.ttf",
+    "source": "https://raw.githubusercontent.com/google/fonts/main/ofl/rajdhani/Rajdhani-Regular.ttf",
+    "source_sha256": "6e1fc228a8318251a6e569502ec57bac1e4656c582f92f59ccecc4688e039b98",
+    "sha256": "0a87856af0e53f59ed8e85fec7b628d6762e6cf22c6be39bbc669ead57b39d71",
+    "requested_weight": 400,
+    "static_instance": true
+  },
+  {
+    "file": "fonts/rajdhani-700.ttf",
+    "source": "https://raw.githubusercontent.com/google/fonts/main/ofl/rajdhani/Rajdhani-Bold.ttf",
+    "source_sha256": "691470dd3286a14e9677940d0bf75796179841ba5215cbda1a2c8910a3226afd",
+    "sha256": "29fcba0be7654ffa4ea77a6c57d507910e1b2496ac4ddf68a791824716bd4893",
+    "requested_weight": 700,
+    "static_instance": true
+  },
+  {
+    "file": "fonts/rajdhani-OFL.txt",
+    "source": "https://raw.githubusercontent.com/google/fonts/main/ofl/rajdhani/OFL.txt",
+    "sha256": "f62ef357d3a1c3d27edd35a6e1ba350e8a8d13499797964eeadefbf0b3b15d1f"
+  },
+  {
+    "file": "fonts/russoone-400.ttf",
+    "source": "https://raw.githubusercontent.com/google/fonts/main/ofl/russoone/RussoOne-Regular.ttf",
+    "source_sha256": "bc0abcc660bd8b7ad3000ecb2898a27c58a29a50f7ec81652fa12e75148d09df",
+    "sha256": "7f5441a5e9bd82ad7d3b6abc0d42a3af381028323d10a4a6843a696d5cd05328",
+    "requested_weight": 400,
+    "static_instance": true
+  },
+  {
+    "file": "fonts/russoone-700.ttf",
+    "source": "https://raw.githubusercontent.com/google/fonts/main/ofl/russoone/RussoOne-Regular.ttf",
+    "source_sha256": "bc0abcc660bd8b7ad3000ecb2898a27c58a29a50f7ec81652fa12e75148d09df",
+    "sha256": "7f5441a5e9bd82ad7d3b6abc0d42a3af381028323d10a4a6843a696d5cd05328",
+    "requested_weight": 700,
+    "static_instance": true
+  },
+  {
+    "file": "fonts/russoone-OFL.txt",
+    "source": "https://raw.githubusercontent.com/google/fonts/main/ofl/russoone/OFL.txt",
+    "sha256": "3ac1301549523d9861fedca12871f24e575fbd26d520632fc00ba849b471d275"
+  },
+  {
+    "file": "fonts/teko-400.ttf",
+    "source": "https://raw.githubusercontent.com/google/fonts/main/ofl/teko/Teko%5Bwght%5D.ttf",
+    "source_sha256": "d1321889f262bbbff632e7976349853399cd097b6f382d4b19790c915c13c1ae",
+    "sha256": "131f5f2aaaaadf31e2e552822cd6f9d1faf5c5fbc6f9f6b560d0f29e353cfda5",
+    "requested_weight": 400,
+    "static_instance": true
+  },
+  {
+    "file": "fonts/teko-700.ttf",
+    "source": "https://raw.githubusercontent.com/google/fonts/main/ofl/teko/Teko%5Bwght%5D.ttf",
+    "source_sha256": "d1321889f262bbbff632e7976349853399cd097b6f382d4b19790c915c13c1ae",
+    "sha256": "e05914b113ffe4f9250992cee093e0e666fdde114124a3c0b60ebfec706eda93",
+    "requested_weight": 700,
+    "static_instance": true
+  },
+  {
+    "file": "fonts/teko-OFL.txt",
+    "source": "https://raw.githubusercontent.com/google/fonts/main/ofl/teko/OFL.txt",
+    "sha256": "4a193c54e911c1e8194d4db657423f2527f54a1239f24cb67ecb09128dc9f065"
+  },
+  {
+    "file": "fonts/unifrakturmaguntia-400.ttf",
+    "source": "https://raw.githubusercontent.com/google/fonts/main/ofl/unifrakturmaguntia/UnifrakturMaguntia-Book.ttf",
+    "source_sha256": "d64afc0547059dd2e4a78da48bda0aba0a9901be58c7f8c201a8b2b6b4492cc8",
+    "sha256": "21e2d35e2f5dc160162899677be1c41a7558209683cdc52b0202e6815dfabaed",
+    "requested_weight": 400,
+    "static_instance": true
+  },
+  {
+    "file": "fonts/unifrakturmaguntia-700.ttf",
+    "source": "https://raw.githubusercontent.com/google/fonts/main/ofl/unifrakturmaguntia/UnifrakturMaguntia-Book.ttf",
+    "source_sha256": "d64afc0547059dd2e4a78da48bda0aba0a9901be58c7f8c201a8b2b6b4492cc8",
+    "sha256": "21e2d35e2f5dc160162899677be1c41a7558209683cdc52b0202e6815dfabaed",
+    "requested_weight": 700,
+    "static_instance": true
+  },
+  {
+    "file": "fonts/unifrakturmaguntia-OFL.txt",
+    "source": "https://raw.githubusercontent.com/google/fonts/main/ofl/unifrakturmaguntia/OFL.txt",
+    "sha256": "96199bf9ff12dd471a66911dee95440737b437e7f5a6fd30e9e950c16d66e8df"
+  }
+]

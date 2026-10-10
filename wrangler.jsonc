@@ -1,0 +1,22 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "spatlappen-crm",
+  "account_id": "be1bab04ac31a5988d22055cb0c5c555",
+  "pages_build_output_dir": "./dist",
+  "compatibility_date": "2026-10-09",
+  "d1_databases": [{
+    "binding": "DB",
+    "database_name": "spatlappen-crm",
+    "database_id": "883aa7f6-d9fa-4e6e-ae16-63e383edf901",
+    "migrations_dir": "migrations"
+  }],
+  "r2_buckets": [{
+    "binding": "CRM_FILES",
+    "bucket_name": "spatlappen-crm-files",
+    "jurisdiction": "eu"
+  }],
+  "vars": {
+    "CRM_ALLOWED_EMAIL": "Tiesjipzakelijk@gmail.com",
+    "CRM_PUBLIC_URL": "https://crm.spatlappenopmaat.nl"
+  }
+}

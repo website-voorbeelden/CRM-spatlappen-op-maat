@@ -1,0 +1,50 @@
+{
+  "Arimo": {
+    "400": "fonts/arimo-400.ttf",
+    "700": "fonts/arimo-700.ttf"
+  },
+  "Anton": {
+    "400": "fonts/anton-400.ttf",
+    "700": "fonts/anton-700.ttf"
+  },
+  "Bebas Neue": {
+    "400": "fonts/bebasneue-400.ttf",
+    "700": "fonts/bebasneue-700.ttf"
+  },
+  "Black Ops One": {
+    "400": "fonts/blackopsone-400.ttf",
+    "700": "fonts/blackopsone-700.ttf"
+  },
+  "Grenze Gotisch": {
+    "400": "fonts/grenzegotisch-400.ttf",
+    "700": "fonts/grenzegotisch-700.ttf"
+  },
+  "New Rocker": {
+    "400": "fonts/newrocker-400.ttf",
+    "700": "fonts/newrocker-700.ttf"
+  },
+  "Oswald": {
+    "400": "fonts/oswald-400.ttf",
+    "700": "fonts/oswald-700.ttf"
+  },
+  "Pirata One": {
+    "400": "fonts/pirataone-400.ttf",
+    "700": "fonts/pirataone-700.ttf"
+  },
+  "Rajdhani": {
+    "400": "fonts/rajdhani-400.ttf",
+    "700": "fonts/rajdhani-700.ttf"
+  },
+  "Russo One": {
+    "400": "fonts/russoone-400.ttf",
+    "700": "fonts/russoone-700.ttf"
+  },
+  "Teko": {
+    "400": "fonts/teko-400.ttf",
+    "700": "fonts/teko-700.ttf"
+  },
+  "UnifrakturMaguntia": {
+    "400": "fonts/unifrakturmaguntia-400.ttf",
+    "700": "fonts/unifrakturmaguntia-700.ttf"
+  }
+}

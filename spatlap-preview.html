@@ -4,9 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Spatlap Preview Tool</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Anton&family=Bebas+Neue&family=Black+Ops+One&family=Grenze+Gotisch:wght@400;700&family=New+Rocker&family=Oswald:wght@400;600;700&family=Pirata+One&family=Rajdhani:wght@500;600;700&family=Russo+One&family=Teko:wght@500;600;700&family=UnifrakturMaguntia&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="print-assets/fonts.css">
 
 <style>
 :root{
@@ -26,12 +24,16 @@ html,body{margin:0;max-width:100%;overflow-x:hidden}body{font-family:Inter,Arial
 .download-menu[open]>summary{background:#29313c}
 .download-popover{position:absolute;right:0;top:calc(100% + 8px);width:min(270px,calc(100vw - 24px));max-height:calc(100vh - 70px);overflow:auto;padding:10px;background:#171d26;border:1px solid #3a4656;border-radius:10px;box-shadow:0 16px 35px rgba(0,0,0,.35);display:flex;flex-direction:column;gap:7px;z-index:110}
 .download-popover button{text-align:left}
+#vectorExportIssues{display:grid;gap:10px;max-height:55vh;overflow:auto}
+.export-issue{padding:10px;border:1px solid #3a4656;border-radius:8px;font-size:13px;line-height:1.5}
+.export-issue button{margin-top:8px}
 .sidebar{grid-column:1;grid-row:2;padding:16px;border-right:1px solid var(--line);background:#11141a;overflow:auto;min-height:0}
 .main{grid-column:2;grid-row:2;padding:16px;display:flex;flex-direction:column;gap:14px;min-width:0;max-width:100%;min-height:0;overflow:auto}
 .iconbtn{width:38px;height:38px;padding:0;border-radius:9px;font-size:20px}
 .section{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:11px}
 .section h2{font-size:14px;margin:0 0 11px}
 label{display:block;font-size:12px;color:#cbd2db;margin-bottom:5px}
+label,summary,.field-help,.hint,.tiny,.status,.shortcut-hint,.vector-status-badge{-webkit-user-select:text;user-select:text}
 input[type=number],input[type=text],input[type=color],select,textarea{
   width:100%;background:var(--input);border:1px solid #343b46;color:white;
   border-radius:8px;padding:9px 10px;outline:none
@@ -65,6 +67,13 @@ button:disabled{opacity:.45;cursor:not-allowed}
 .zoom-controls button{width:32px;height:32px;padding:0;font-size:20px;line-height:1}
 .zoom-controls output{min-width:50px;text-align:center;font-size:12px;font-weight:700;color:#fff}
 #zoomReset{width:auto;min-width:44px;padding:0 5px;font-size:12px}
+.vector-status-badge{display:flex;align-items:center;gap:6px;padding:3px 8px;margin-right:3px;border-radius:6px;font-size:12px;font-weight:750;line-height:1.15;white-space:nowrap;background:#472329;color:#ffb3b9}
+.vector-status-badge::before{content:"";width:8px;height:8px;flex:0 0 auto;border-radius:50%;background:currentColor}
+.vector-status-copy{display:flex;flex-direction:column;gap:2px}
+.vector-status-scope{font-size:10px;font-weight:500;opacity:.85}
+.vector-status-badge[data-level=vector]{background:#173b2b;color:#87e7af}
+.vector-status-badge[data-level=mixed]{background:#483416;color:#ffd184}
+@media print{.zoom-controls{display:none}}
 .preview-wrap.white-flap-bg{background:#3a4049}
 .preview-wrap.space-pan,.preview-wrap.space-pan *{cursor:grab!important}
 .preview-wrap.space-panning,.preview-wrap.space-panning *{cursor:grabbing!important;user-select:none!important}
@@ -82,7 +91,11 @@ button:disabled{opacity:.45;cursor:not-allowed}
 }
 .item{position:absolute;z-index:5;transform:translate(-50%,-50%);cursor:move;user-select:none;touch-action:none}
 .logo-item{max-width:none;pointer-events:auto}
-.text-item{white-space:nowrap;font-weight:700;line-height:1;pointer-events:auto;text-shadow:0 1px 1px rgba(0,0,0,.18)}
+.vector-piece-controls{margin:12px 0;padding:12px;border:1px solid #3b536e;border-radius:8px;background:#152131}
+.vector-piece-controls input[type=color]{width:100%;height:34px;margin-bottom:8px}
+.vector-editing{overflow:visible;z-index:6}
+.vector-piece-controls select{font-size:12px}
+.text-item{white-space:nowrap;font-weight:700;line-height:1;pointer-events:auto}
 .selected{outline:2px dashed #61a6ff;outline-offset:4px}
 .hole{position:absolute;z-index:3;background:#e9edf2;border:1px solid #aeb7c2;transform:translate(-50%,-50%);pointer-events:none}
 .zone-overlay{position:absolute;inset:0;pointer-events:none;z-index:1}
@@ -109,6 +122,9 @@ button:disabled{opacity:.45;cursor:not-allowed}
 .list-item{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px 9px;background:#11151b;border:1px solid #303640;border-radius:8px;font-size:12px}
 .list-item.active{border-color:var(--blue)}
 .list-item button{padding:4px 7px;font-size:11px}
+#logoList .list-item{flex-direction:column;align-items:stretch;min-width:0}
+#logoList .list-item>span{min-width:0;overflow-wrap:anywhere;line-height:1.45}
+#logoList .list-actions{display:flex;flex-wrap:wrap;gap:6px}
 .status{font-size:11px;color:#b9c4d0;margin-top:8px;min-height:14px}
 
 details.section{
@@ -124,7 +140,7 @@ details.section > summary{
   padding:14px;
   font-size:14px;
   font-weight:750;
-  user-select:none;
+  -webkit-user-select:text;user-select:text;
 }
 details.section > summary::-webkit-details-marker{display:none}
 details.section > summary::after{
@@ -442,6 +458,7 @@ details.section[open] > summary{border-bottom:1px solid var(--line)}
   .download-menu>summary::after{content:"↓";font-size:18px}
 }
 </style>
+<script src="number-inputs.js?v=save-status-20261010" defer></script>
 </head>
 <body>
 <div class="app">
@@ -452,13 +469,15 @@ details.section[open] > summary{border-bottom:1px solid var(--line)}
       <button id="redo" class="iconbtn" title="Opnieuw uitvoeren" aria-label="Opnieuw uitvoeren" disabled>↷</button>
       <button id="headerSave" class="primary" type="button">Bewaar</button>
       <details class="download-menu" id="downloadMenu"><summary>Download ▾</summary><div class="download-popover">
-        <button id="viewBlackPdf" class="primary" type="button">Bekijk PDF met zwarte achtergrond</button>
-        <button id="downloadBlackPdf" type="button">Download PDF met zwarte achtergrond</button>
-        <button id="copyBlackArtwork" type="button">Kopieer afbeelding met zwarte achtergrond</button>
-        <div class="field-help">De zwarte PDF is bedoeld om te bekijken en delen. Gebruik de Vector-PDF voor vector-artwork.</div>
-        <button id="downloadArtworkPdf" type="button">Artwork PDF zonder achtergrond</button>
-        <button id="downloadVectorPdf" type="button">Vector-PDF + kleuren</button>
-        <button id="download" class="primary" type="button" title="Downloadt de preview en probeert hem ook naar het klembord te kopiëren">Preview PNG</button>
+        <button id="downloadArtworkPdf" class="primary" type="button">Drukbestand · vector-PDF</button>
+        <div class="field-help">Eén pagina, zonder achtergrond, op ware grootte. Logo’s als vector; tekst als contouren.</div>
+        <button id="downloadVectorPdf" type="button">Vector-PDF + kleurinformatie</button>
+        <button id="downloadArtworkSvg" type="button">Drukbestand · SVG</button>
+        <button id="viewBlackPdf" type="button">Bekijk vector-PDF met zwart</button>
+        <button id="downloadBlackPdf" type="button">Vector-PDF met zwarte achtergrond</button>
+        <button id="copyBlackArtwork" type="button">Kopieer artwork met zwart</button>
+        <button id="download" type="button" title="Afbeelding voor klantpreview; geen vector-drukbestand">Klantpreview · PNG</button>
+        <div id="exportReadiness" class="field-help" role="status"></div>
         <a id="pdfViewLink" href="#" target="_blank" rel="noopener" style="display:none;font-size:12px;font-weight:700;color:#8fc0ff;text-decoration:none">PDF klaar — klik om te bekijken</a>
         <a id="pdfDownloadLink" href="#" download style="display:none;font-size:12px;font-weight:700;color:#8fc0ff;text-decoration:none">PDF klaar — klik hier om te downloaden</a>
         <a id="imageFallbackLink" href="#" download style="display:none;font-size:12px;font-weight:700;color:#8fc0ff;text-decoration:none">Kopiëren niet beschikbaar — download de afbeelding</a>
@@ -475,8 +494,8 @@ details.section[open] > summary{border-bottom:1px solid var(--line)}
       <summary><span class="section-num">1</span> Spatlap instellen</summary>
       <div class="section-body">
         <div class="row">
-          <div><label>Breedte (cm)</label><input id="w" type="number" value="190" min="10" step="1"></div>
-          <div><label>Hoogte (cm)</label><input id="h" type="number" value="25" min="5" step="1"></div>
+          <div><label>Breedte (cm)</label><input id="w" type="number" value="190" min="10" step="0.1"></div>
+          <div><label>Hoogte (cm)</label><input id="h" type="number" value="25" min="5" step="0.1"></div>
         </div>
         <div class="row">
           <div><label>Kleur</label>
@@ -485,7 +504,7 @@ details.section[open] > summary{border-bottom:1px solid var(--line)}
               <option value="#f3f3f3">Wit</option>
             </select>
           </div>
-          <div><label>Quantity</label><input id="qty" type="number" placeholder="Bijv. 12" min="1"></div>
+          <div><label>Aantal</label><input id="qty" type="number" placeholder="Bijv. 12" min="1" step="1"></div>
         </div>
 
         <details class="subdetails">
@@ -564,17 +583,53 @@ details.section[open] > summary{border-bottom:1px solid var(--line)}
         <label>Logo toevoegen</label>
         <input id="file" type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml,application/pdf,.pdf" multiple>
         <div class="mini-actions" style="margin-top:9px"><button id="pasteLogo" type="button">Afbeelding plakken</button></div>
-        <div id="pasteLogoStatus" class="field-help">PNG, JPG, WebP, SVG en PDF zijn mogelijk. Bij een PDF kies je de pagina; die wordt als afbeelding toegevoegd. SVG blijft vector. Je kunt ook een afbeelding plakken met Ctrl/⌘+V.</div>
+        <div id="pasteLogoStatus" class="field-help">PNG, JPG, WebP, SVG en PDF zijn mogelijk. Bij een PDF kies je de pagina; die wordt als afbeelding toegevoegd. Gebruik voor het drukbestand bij voorkeur een SVG met tekst als contouren. PNG/JPG en geïmporteerde PDF-pagina’s moeten vóór PDF-export naar vector worden omgezet. Je kunt ook een afbeelding plakken met Ctrl/⌘+V.</div>
         <div id="logoList" class="list"></div>
 
         <details id="logoControls" class="subdetails" open style="display:none">
           <summary>Geselecteerd logo aanpassen</summary>
           <div class="subdetails-body">
             <div class="selected-note">Je kunt het logo ook direct in de preview verslepen.</div>
+            <div class="mini-actions" style="margin-top:9px"><button id="replaceLogo" type="button">Bestand vervangen</button></div>
+            <input id="replacementLogoFile" type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml,application/pdf,.pdf" hidden>
+            <div class="field-help">Het nieuwe bestand krijgt precies dezelfde breedte, hoogte en positie.</div>
+            <div id="replaceLogoStatus" class="field-help" role="status"></div>
             <label style="display:flex;align-items:center;gap:8px;margin:9px 0"><input id="selectedLogoVectorCheck" type="checkbox" disabled style="width:auto"><span id="selectedLogoVectorLabel">Vectorbestand</span></label>
             <div class="field-help">Dit vinkje wordt automatisch gezet voor een SVG of na omzetting. Het is geen handmatige instelling.</div>
+            <div id="vectorPieceControls" class="vector-piece-controls" style="display:none">
+              <label for="wholeLogoColor">Kleur van het hele logo</label>
+              <div class="color-row">
+                <input id="wholeLogoColor" class="color-native" type="color" value="#ffffff" title="Nieuwe kleur voor het hele logo">
+                <input id="wholeLogoColorHex" type="text" value="#FFFFFF" maxlength="7" spellcheck="false" aria-label="Nieuwe kleur hele logo als HEX">
+              </div>
+              <div class="mini-actions" style="margin-top:8px"><button id="applyWholeLogoColor" class="primary" type="button">Toepassen op hele logo</button></div>
+              <div class="field-help">Alle vormen en lijnen krijgen deze kleur. Transparante delen blijven transparant.</div>
+              <div id="wholeLogoColorStatus" class="field-help" role="status"></div>
+              <div class="mini-actions" style="margin-top:12px"><button id="toggleVectorParts" type="button">Losse vectoronderdelen bewerken</button></div>
+              <div id="vectorPieceEditPanel" style="display:none">
+                <p id="vectorPieceCount" class="field-help"></p>
+                <label for="vectorPartSelect">Geselecteerd onderdeel</label>
+                <select id="vectorPartSelect" size="5"></select>
+                <div id="vectorPieceForm" style="display:none">
+                  <label class="check"><input id="vectorPartFillOn" type="checkbox"> Vulling</label>
+                  <input id="vectorPartFill" type="color" value="#ffffff" aria-label="Vulkleur vectoronderdeel">
+                  <div id="vectorPartStrokeRow"><label for="vectorPartStroke">Lijnkleur</label><input id="vectorPartStroke" type="color" value="#ffffff"></div>
+                  <div id="vectorPartPaintNote" class="field-help"></div>
+                  <div class="grid2" style="margin-top:10px">
+                    <div><label for="vectorPartX">Verschuiving X (cm)</label><input id="vectorPartX" type="number" step="0.1"></div>
+                    <div><label for="vectorPartY">Verschuiving Y (cm)</label><input id="vectorPartY" type="number" step="0.1"></div>
+                  </div>
+                  <div class="field-help">Sleep dit onderdeel in de preview. Pijltjes: 1 mm; Shift + pijltjes: 1 cm.</div>
+                  <div class="mini-actions"><button id="resetVectorPartPosition" type="button">Positie herstellen</button><button id="duplicateVectorPart" type="button">Dupliceren</button><button id="deleteVectorPart" class="danger" type="button">Onderdeel verwijderen</button></div>
+                </div>
+                <div class="field-help">Eén SVG-pad blijft één onderdeel, ook als daarin meerdere letters of vormen staan. Gaten in een vorm blijven behouden.</div>
+              </div>
+              <div class="mini-actions"><button id="restoreVectorOriginal" type="button" disabled>Oorspronkelijk vectorlogo herstellen</button></div>
+              <div id="vectorPieceStatus" class="field-help" role="status"></div>
+            </div>
+
             <details class="subdetails" open>
-              <summary>Formaat</summary>
+              <summary>Formaat van het hele logo</summary>
               <div class="subdetails-body">
                 <div class="row">
                   <div><label>Breedte (cm)</label><input id="logoW" type="number" min="0.1" step="0.5"></div>
@@ -588,16 +643,16 @@ details.section[open] > summary{border-bottom:1px solid var(--line)}
             </details>
 
             <details class="subdetails" open>
-              <summary>Positie</summary>
+              <summary>Positie van het hele logo</summary>
               <div class="subdetails-body">
                 <div class="row">
                   <div>
                     <label>Afstand tot links (cm)</label>
-                    <input id="logoLeft" type="number" min="0" step="0.5">
+                    <input id="logoLeft" type="number" step="0.5">
                   </div>
                   <div>
                     <label>Afstand tot boven (cm)</label>
-                    <input id="logoTop" type="number" min="0" step="0.5">
+                    <input id="logoTop" type="number" step="0.5">
                   </div>
                 </div>
 
@@ -645,9 +700,10 @@ details.section[open] > summary{border-bottom:1px solid var(--line)}
         <div style="margin-bottom:9px">
           <label>Lettertype</label>
           <select id="textFont">
-            <option value="Arial, sans-serif">Arial</option>
-            <option value="'Arial Black', Arial, sans-serif">Arial Black</option>
-            <option value="Impact, sans-serif">Impact</option>
+            <option value="Arimo, sans-serif" selected>Arimo · vector</option>
+            <option value="Arial, sans-serif">Arial · alleen preview</option>
+            <option value="'Arial Black', Arial, sans-serif">Arial Black · alleen preview</option>
+            <option value="Impact, sans-serif">Impact · alleen preview</option>
             <optgroup label="Truck / Motorsport">
               <option value="'Bebas Neue', Impact, sans-serif">Bebas Neue</option>
               <option value="Anton, Impact, sans-serif">Anton</option>
@@ -663,23 +719,23 @@ details.section[open] > summary{border-bottom:1px solid var(--line)}
               <option value="'Grenze Gotisch', Georgia, serif">Grenze Gotisch</option>
               <option value="'New Rocker', Georgia, serif">New Rocker</option>
             </optgroup>
-            <option value="'Arial Narrow', Arial, sans-serif">Arial Narrow</option>
-            <option value="'Franklin Gothic Medium', Arial, sans-serif">Franklin Gothic</option>
-            <option value="Rockwell, 'Rockwell Extra Bold', serif">Rockwell</option>
-            <option value="Copperplate, 'Copperplate Gothic Light', serif">Copperplate</option>
-            <option value="Futura, 'Trebuchet MS', sans-serif">Futura</option>
-            <option value="'DIN Condensed', 'Arial Narrow', sans-serif">DIN Condensed</option>
-            <option value="'Avenir Next Condensed', 'Arial Narrow', sans-serif">Avenir Condensed</option>
-            <option value="'Gill Sans', 'Trebuchet MS', sans-serif">Gill Sans</option>
-            <option value="Verdana, sans-serif">Verdana</option>
-            <option value="'Trebuchet MS', sans-serif">Trebuchet</option>
-            <option value="Tahoma, sans-serif">Tahoma</option>
-            <option value="Georgia, serif">Georgia</option>
-            <option value="'Times New Roman', serif">Times New Roman</option>
-            <option value="'Courier New', monospace">Courier New</option>
+            <option value="'Arial Narrow', Arial, sans-serif">Arial Narrow · alleen preview</option>
+            <option value="'Franklin Gothic Medium', Arial, sans-serif">Franklin Gothic · alleen preview</option>
+            <option value="Rockwell, 'Rockwell Extra Bold', serif">Rockwell · alleen preview</option>
+            <option value="Copperplate, 'Copperplate Gothic Light', serif">Copperplate · alleen preview</option>
+            <option value="Futura, 'Trebuchet MS', sans-serif">Futura · alleen preview</option>
+            <option value="'DIN Condensed', 'Arial Narrow', sans-serif">DIN Condensed · alleen preview</option>
+            <option value="'Avenir Next Condensed', 'Arial Narrow', sans-serif">Avenir Condensed · alleen preview</option>
+            <option value="'Gill Sans', 'Trebuchet MS', sans-serif">Gill Sans · alleen preview</option>
+            <option value="Verdana, sans-serif">Verdana · alleen preview</option>
+            <option value="'Trebuchet MS', sans-serif">Trebuchet · alleen preview</option>
+            <option value="Tahoma, sans-serif">Tahoma · alleen preview</option>
+            <option value="Georgia, serif">Georgia · alleen preview</option>
+            <option value="'Times New Roman', serif">Times New Roman · alleen preview</option>
+            <option value="'Courier New', monospace">Courier New · alleen preview</option>
           </select>
           <div id="textFontPreview" class="font-preview">Voorbeeld</div>
-          <div class="field-help">Het eerste woord wordt hierboven direct in het gekozen lettertype getoond. Online lettertypes vallen zonder internet terug op een systeemfont.</div>
+          <div class="field-help">Arimo en de Truck / Motorsport- en Gothic / Tattoo-lettertypen worden als contouren geëxporteerd. Lettertypen met “alleen preview” moeten vóór PDF-export worden vervangen of als SVG-contouren worden toegevoegd.</div>
         </div>
         <div class="row">
           <div><label for="textTracking">Letterafstand / tracking (cm)</label><input id="textTracking" type="number" value="0" min="-0.5" max="2" step="0.05"></div>
@@ -716,9 +772,10 @@ details.section[open] > summary{border-bottom:1px solid var(--line)}
             <div style="margin-bottom:9px">
               <label>Lettertype</label>
               <select id="editTextFont">
-            <option value="Arial, sans-serif">Arial</option>
-            <option value="'Arial Black', Arial, sans-serif">Arial Black</option>
-            <option value="Impact, sans-serif">Impact</option>
+            <option value="Arimo, sans-serif" selected>Arimo · vector</option>
+            <option value="Arial, sans-serif">Arial · alleen preview</option>
+            <option value="'Arial Black', Arial, sans-serif">Arial Black · alleen preview</option>
+            <option value="Impact, sans-serif">Impact · alleen preview</option>
             <optgroup label="Truck / Motorsport">
               <option value="'Bebas Neue', Impact, sans-serif">Bebas Neue</option>
               <option value="Anton, Impact, sans-serif">Anton</option>
@@ -734,20 +791,20 @@ details.section[open] > summary{border-bottom:1px solid var(--line)}
               <option value="'Grenze Gotisch', Georgia, serif">Grenze Gotisch</option>
               <option value="'New Rocker', Georgia, serif">New Rocker</option>
             </optgroup>
-            <option value="'Arial Narrow', Arial, sans-serif">Arial Narrow</option>
-            <option value="'Franklin Gothic Medium', Arial, sans-serif">Franklin Gothic</option>
-            <option value="Rockwell, 'Rockwell Extra Bold', serif">Rockwell</option>
-            <option value="Copperplate, 'Copperplate Gothic Light', serif">Copperplate</option>
-            <option value="Futura, 'Trebuchet MS', sans-serif">Futura</option>
-            <option value="'DIN Condensed', 'Arial Narrow', sans-serif">DIN Condensed</option>
-            <option value="'Avenir Next Condensed', 'Arial Narrow', sans-serif">Avenir Condensed</option>
-            <option value="'Gill Sans', 'Trebuchet MS', sans-serif">Gill Sans</option>
-            <option value="Verdana, sans-serif">Verdana</option>
-            <option value="'Trebuchet MS', sans-serif">Trebuchet</option>
-            <option value="Tahoma, sans-serif">Tahoma</option>
-            <option value="Georgia, serif">Georgia</option>
-            <option value="'Times New Roman', serif">Times New Roman</option>
-            <option value="'Courier New', monospace">Courier New</option>
+            <option value="'Arial Narrow', Arial, sans-serif">Arial Narrow · alleen preview</option>
+            <option value="'Franklin Gothic Medium', Arial, sans-serif">Franklin Gothic · alleen preview</option>
+            <option value="Rockwell, 'Rockwell Extra Bold', serif">Rockwell · alleen preview</option>
+            <option value="Copperplate, 'Copperplate Gothic Light', serif">Copperplate · alleen preview</option>
+            <option value="Futura, 'Trebuchet MS', sans-serif">Futura · alleen preview</option>
+            <option value="'DIN Condensed', 'Arial Narrow', sans-serif">DIN Condensed · alleen preview</option>
+            <option value="'Avenir Next Condensed', 'Arial Narrow', sans-serif">Avenir Condensed · alleen preview</option>
+            <option value="'Gill Sans', 'Trebuchet MS', sans-serif">Gill Sans · alleen preview</option>
+            <option value="Verdana, sans-serif">Verdana · alleen preview</option>
+            <option value="'Trebuchet MS', sans-serif">Trebuchet · alleen preview</option>
+            <option value="Tahoma, sans-serif">Tahoma · alleen preview</option>
+            <option value="Georgia, serif">Georgia · alleen preview</option>
+            <option value="'Times New Roman', serif">Times New Roman · alleen preview</option>
+            <option value="'Courier New', monospace">Courier New · alleen preview</option>
               </select>
               <div id="editTextFontPreview" class="font-preview">Voorbeeld</div>
             </div>
@@ -814,6 +871,19 @@ details.section[open] > summary{border-bottom:1px solid var(--line)}
       </div>
     </details>
 
+    <details class="section">
+      <summary><span class="section-num">6</span> Binnencontour</summary>
+      <div class="section-body">
+        <label class="check"><input id="contourOn" type="checkbox"> Witte contourlijn inschakelen</label>
+        <div class="grid2">
+          <div><label for="contourGap">Afstand tot rand (cm)</label><input id="contourGap" type="number" value="1" min="0" step="0.1"></div>
+          <div><label for="contourWidth">Lijndikte (mm)</label><input id="contourWidth" type="number" value="2" min="0.1" step="0.1"></div>
+        </div>
+        <label class="check"><input id="contourUnderHoles" type="checkbox" checked> Bovenafstand vanaf het hart van de gaten</label>
+        <div class="field-help">Afstand tot de buitenkant van de witte lijn. Bij gaten meten we vanaf het hart van het gat. De lijn volgt de vorm en afgeronde hoeken.</div>
+        <div id="contourStatus" class="status"></div>
+      </div>
+    </details>
   </aside>
 
   <main class="main">
@@ -834,7 +904,8 @@ details.section[open] > summary{border-bottom:1px solid var(--line)}
             <div id="flap"></div>
           </div>
         </div>
-        <div class="zoom-controls" aria-label="Voorvertoning inzoomen">
+        <div class="zoom-controls" aria-label="Vectorstatus en zoom van de voorvertoning">
+          <span id="vectorStatusBadge" class="vector-status-badge" data-level="raster" role="status" aria-live="polite" aria-atomic="true"><span class="vector-status-copy"><span id="vectorStatusScope" class="vector-status-scope">Ontwerp</span><span id="vectorStatusLabel">Geen artwork</span></span></span>
           <button id="zoomOut" type="button" aria-label="Uitzoomen" title="Uitzoomen (Ctrl/⌘ −)">−</button>
           <output id="zoomLevel">100%</output>
           <button id="zoomIn" type="button" aria-label="Inzoomen" title="Inzoomen (Ctrl/⌘ +)">+</button>
@@ -846,6 +917,7 @@ details.section[open] > summary{border-bottom:1px solid var(--line)}
         <span id="selectionLabel" class="selection-label">1 onderdeel geselecteerd</span>
         <button id="copySelected">Kopiëren</button>
         <button id="duplicateSelected">Dupliceren</button>
+        <button id="duplicateOtherSideSelected" type="button">Dupliceren naar andere zijde</button>
         <button id="deleteSelected" class="danger">Verwijderen</button>
       </div>
 
@@ -936,7 +1008,7 @@ details.section[open] > summary{border-bottom:1px solid var(--line)}
 <div id="pdfViewer" class="modal-backdrop" role="dialog" aria-modal="true" aria-label="PDF met zwarte achtergrond bekijken">
   <div class="pdf-viewer-card">
     <div class="pdf-viewer-head">
-      <strong>PDF met zwarte achtergrond</strong>
+      <strong>Vector-PDF met zwarte achtergrond</strong>
       <div class="pdf-viewer-actions">
         <a id="pdfViewerOpenTab" href="#" target="_blank" rel="noopener">Nieuw tabblad</a>
         <a id="pdfViewerDownload" href="#" download>Download PDF</a>
@@ -946,6 +1018,15 @@ details.section[open] > summary{border-bottom:1px solid var(--line)}
       </div>
     </div>
     <iframe id="pdfViewerFrame" title="PDF met zwarte achtergrond"></iframe>
+  </div>
+</div>
+
+<div id="vectorExportDialog" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="vectorExportTitle">
+  <div class="modal-card">
+    <h3 id="vectorExportTitle">Nog niet klaar voor vector-export</h3>
+    <p>Pas onderstaande onderdelen aan. Daarna kun je de PDF opnieuw downloaden.</p>
+    <div id="vectorExportIssues"></div>
+    <div class="modal-actions"><button id="vectorExportClose" type="button">Sluiten</button></div>
   </div>
 </div>
 
@@ -966,8 +1047,12 @@ details.section[open] > summary{border-bottom:1px solid var(--line)}
 </div>
 
 <script src="spatlap-preview-imagetracer.js"></script>
+<script src="spatlap-preview-vector-export.js"></script>
+<!-- Bump this version when the editor API changes so saved tabs load matching code. -->
+<script src="spatlap-preview-vector-editor.js?v=20261009-whole-logo-colour-1"></script>
 <script>
 const $=id=>document.getElementById(id);
+const printFontFamily=value=>SpatlapVectorExport.cssFont(value);
 const controls=['w','h','qty','shape','radius','shoulderInset','shoulderTopH','flapColor','holesOn','holeCount','holeShape','topGap','sideGap','holeH','holeW'];
 const holesToggleWrap=$('holesOn')?.closest('.summary-toggle');
 if(holesToggleWrap){
@@ -982,6 +1067,148 @@ let state={
   holes:{on:true,count:6,shape:'round',top:3,side:10,h:1.2,w:2.2},
   ui:{wideMode:false,zones:true,zoneCenter:50,topGuideOn:false,showColorCount:false,manualColorCount:''}
 };
+let vectorEditingLogoId=null,selectedVectorPieceId=null,vectorPieceApi=null;
+let pendingLogoReplacement=null,logoReplacementBusy=false;
+function clearVectorEditing(){vectorEditingLogoId=null;selectedVectorPieceId=null;vectorPieceApi=null;}
+function discardVectorEditBackup(logo){
+  delete logo.originalVectorMarkup;delete logo.originalVectorFrame;delete logo.originalVectorPrintColors;
+  if(vectorEditingLogoId===logo.id)clearVectorEditing();
+}
+function rememberVectorOriginal(logo){
+  if(logo.originalVectorMarkup)return;
+  logo.originalVectorMarkup=logo.svgMarkup;
+  logo.originalVectorPrintColors=logo.printColors?logo.printColors.slice():null;
+  logo.originalVectorFrame={x:logo.x,y:logo.y,w:logo.w,h:logo.h,ratio:logo.ratio,vectorCrop:logo.vectorCrop?{...logo.vectorCrop}:null};
+}
+function updateVectorSource(logo,markup){logo.svgMarkup=markup;logo.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(markup);logo.vector=true;}
+function applyVectorRoot(logo,root,reframe=false){
+  const old=SpatlapVectorEditor.viewBox(root),next=reframe?SpatlapVectorEditor.expandedBox(root):old;
+  const [left,top,width,height]=next;
+  if(!next.every(Number.isFinite)||width<=0||height<=0)throw new Error('Het vectoronderdeel heeft ongeldige afmetingen.');
+  if(reframe){
+    // Expand the image viewport without shifting any of its other shapes.
+    const oldW=logo.w,oldH=logo.h,oldLeft=logo.x*state.flap.w-oldW/2,oldTop=logo.y*state.flap.h-oldH/2;
+    logo.w=oldW*width/old[2];logo.h=oldH*height/old[3];logo.ratio=logo.w/logo.h;
+    logo.x=(oldLeft+(left-old[0])*oldW/old[2]+logo.w/2)/state.flap.w;
+    logo.y=(oldTop+(top-old[1])*oldH/old[3]+logo.h/2)/state.flap.h;
+    if(logo.vectorCrop){const c=logo.vectorCrop;logo.vectorCrop={x:c.x+c.w*(left-old[0])/old[2],y:c.y+c.h*(top-old[1])/old[3],w:c.w*width/old[2],h:c.h*height/old[3]};}
+  }
+  root.setAttribute('viewBox',next.join(' '));root.setAttribute('width',String(width));root.setAttribute('height',String(height));
+  updateVectorSource(logo,SpatlapVectorEditor.serialize(root));
+  const colors=SpatlapVectorEditor.printColours(root);
+  if(colors)logo.printColors=colors;else delete logo.printColors;
+}
+function syncVectorPieceControls(){
+  const logo=state.selectedType==='logo'?itemById(state.selected,'logo'):null;
+  if(!logo?.svgMarkup||logo.id!==vectorEditingLogoId||!logo.svgMarkup.includes('data-sp-piece')){if(vectorEditingLogoId)clearVectorEditing();}
+  $('vectorPieceControls').style.display=logo?.svgMarkup?'block':'none';
+  if($('wholeLogoColorStatus').dataset.logoId!==logo?.id)$('wholeLogoColorStatus').textContent='';
+  const editing=logo?.id===vectorEditingLogoId;
+  $('toggleVectorParts').textContent=editing?'Klaar met onderdelen bewerken':'Losse vectoronderdelen bewerken';
+  $('restoreVectorOriginal').disabled=!logo?.originalVectorMarkup;
+  $('vectorPieceEditPanel').style.display=editing?'block':'none';
+  $('vectorPieceForm').style.display=editing&&vectorPieceApi?.selected()?'block':'none';
+  if(!editing||!vectorPieceApi)return;
+  const list=$('vectorPartSelect'),parts=vectorPieceApi.parts();list.replaceChildren();
+  for(const part of parts){const option=document.createElement('option');option.value=part.id;option.textContent=part.label;list.append(option);}
+  list.value=selectedVectorPieceId||'';
+  $('vectorPieceCount').textContent=`${parts.length} losse SVG-onderdelen. Klik op een vorm in de preview of kies hieronder.`;
+  const el=vectorPieceApi.selected();if(!el)return;
+  const fill=el.getAttribute('fill')||'#000000',stroke=el.getAttribute('stroke')||'none';
+  $('vectorPartFillOn').checked=fill!=='none';$('vectorPartFill').disabled=fill==='none';
+  $('vectorPartFill').value=SpatlapVectorEditor.colour(fill)||'#FFFFFF';
+  $('vectorPartStrokeRow').style.display=stroke==='none'?'none':'block';
+  $('vectorPartStroke').value=SpatlapVectorEditor.colour(stroke)||'#FFFFFF';
+  $('vectorPartPaintNote').textContent=fill.includes('url(')||stroke.includes('url(')?'Dit onderdeel gebruikt een kleurverloop. Een gekozen kleur vervangt dat verloop op dit onderdeel.':'';
+  syncVectorPiecePosition();
+}
+function syncVectorPiecePosition(){
+  if(!vectorPieceApi)return;const p=vectorPieceApi.position();
+  if(document.activeElement!==$('vectorPartX'))$('vectorPartX').value=Math.round(p.x*100)/100;
+  if(document.activeElement!==$('vectorPartY'))$('vectorPartY').value=Math.round(p.y*100)/100;
+}
+function mountVectorPieceEditor(host,logo){
+  vectorPieceApi=SpatlapVectorEditor.mount(host,logo,{
+    partId:selectedVectorPieceId,
+    onSelect(id){if(itemById(logo.id,'logo')!==logo)return;selectedVectorPieceId=id;syncVectorPieceControls();},
+    onPreview(){syncVectorPiecePosition();},
+    onCommit(root,reframe){
+      if(itemById(logo.id,'logo')!==logo)return;
+      suppressClickAfterDrag=true;setTimeout(()=>suppressClickAfterDrag=false,120);
+      try{pushHistory();applyVectorRoot(logo,root,reframe);syncSelectionControls();render();}
+      catch(error){render();toast(error.message||'Verplaatsen lukte niet.');}
+    }
+  });
+}
+$('toggleVectorParts').onclick=()=>{
+  const logo=itemById(state.selected,'logo');if(!logo?.svgMarkup)return;
+  $('vectorPieceStatus').textContent='';
+  if(vectorEditingLogoId===logo.id){clearVectorEditing();syncSelectionControls();render();return;}
+  try{
+    const prepared=SpatlapVectorEditor.prepare(logo.svgMarkup);pushHistory();
+    rememberVectorOriginal(logo);
+    updateVectorSource(logo,prepared.markup);vectorEditingLogoId=logo.id;selectedVectorPieceId=prepared.first;
+    render();syncSelectionControls();
+  }catch(error){$('vectorPieceStatus').textContent=error.message||'Dit vectorlogo kon niet worden geopend.';}
+};
+$('wholeLogoColor').addEventListener('input',()=>{$('wholeLogoColorHex').value=normalizeHex($('wholeLogoColor').value);});
+$('wholeLogoColorHex').addEventListener('change',()=>{
+  if(/^#?(?:[0-9a-f]{3}|[0-9a-f]{6})$/i.test($('wholeLogoColorHex').value.trim())){
+    const hex=normalizeHex($('wholeLogoColorHex').value);$('wholeLogoColor').value=hex;$('wholeLogoColorHex').value=hex;
+  }
+});
+$('applyWholeLogoColor').onclick=()=>{
+  const logo=state.selectedType==='logo'?itemById(state.selected,'logo'):null;if(!logo?.svgMarkup)return;
+  const status=$('wholeLogoColorStatus');status.dataset.logoId=logo.id;
+  try{
+    if(typeof window.SpatlapVectorEditor?.recolour!=='function')throw new Error('De vectorcode is nog niet bijgewerkt. Bewaar je ontwerp en ververs de pagina.');
+    const value=$('wholeLogoColorHex').value.trim();
+    if(!/^#?(?:[0-9a-f]{3}|[0-9a-f]{6})$/i.test(value))throw new Error('Vul een geldige HEX-kleur in, bijvoorbeeld #FFFFFF.');
+    const hex=normalizeHex(value),root=SpatlapVectorEditor.recolour(logo.svgMarkup,hex);
+    pushHistory();rememberVectorOriginal(logo);clearVectorEditing();applyVectorRoot(logo,root);
+    logo.printColors=SpatlapVectorEditor.printColours(root)??[hex];
+    $('wholeLogoColor').value=hex;$('wholeLogoColorHex').value=hex;
+    syncSelectionControls();render();status.textContent=`Het hele logo heeft nu kleur ${hex}.`;
+    toast('Kleur van hele logo aangepast');
+  }catch(error){status.textContent=error.message||'Kleur aanpassen lukte niet.';}
+};
+$('restoreVectorOriginal').onclick=()=>{
+  const logo=itemById(state.selected,'logo');if(!logo?.originalVectorMarkup)return;
+  pushHistory();updateVectorSource(logo,logo.originalVectorMarkup);
+  const frame=logo.originalVectorFrame;
+  if(frame){for(const key of ['x','y','w','h','ratio'])logo[key]=frame[key];if(frame.vectorCrop)logo.vectorCrop={...frame.vectorCrop};else delete logo.vectorCrop;}
+  if(logo.originalVectorPrintColors)logo.printColors=logo.originalVectorPrintColors.slice();else delete logo.printColors;
+  discardVectorEditBackup(logo);syncSelectionControls();render();toast('Oorspronkelijk vectorlogo hersteld');
+};
+$('vectorPartSelect').addEventListener('change',()=>vectorPieceApi?.select($('vectorPartSelect').value));
+function mutateVectorPiece(change,reframe=false){
+  const logo=itemById(vectorEditingLogoId,'logo');if(!logo||!vectorPieceApi?.selected())return;
+  try{pushHistory();change(vectorPieceApi);selectedVectorPieceId=vectorPieceApi.selectedId();applyVectorRoot(logo,vectorPieceApi.root,reframe);render();syncSelectionControls();}
+  catch(error){render();toast(error.message||'Vectoronderdeel aanpassen lukte niet.');}
+}
+$('vectorPartFill').addEventListener('change',()=>mutateVectorPiece(api=>api.paint('fill',$('vectorPartFill').value)));
+$('vectorPartFillOn').addEventListener('change',()=>mutateVectorPiece(api=>api.paint('fill',$('vectorPartFillOn').checked?$('vectorPartFill').value:'none')));
+$('vectorPartStroke').addEventListener('change',()=>mutateVectorPiece(api=>api.paint('stroke',$('vectorPartStroke').value)));
+for(const id of ['vectorPartX','vectorPartY'])$(id).addEventListener('change',()=>{
+  const x=Number($('vectorPartX').value),y=Number($('vectorPartY').value);
+  if(!Number.isFinite(x)||!Number.isFinite(y)){syncVectorPiecePosition();return;}
+  mutateVectorPiece(api=>api.moveTo(x,y),true);
+});
+$('resetVectorPartPosition').onclick=()=>mutateVectorPiece(api=>api.moveTo(0,0),true);
+$('duplicateVectorPart').onclick=()=>mutateVectorPiece(api=>api.duplicate(),true);
+$('deleteVectorPart').onclick=()=>mutateVectorPiece(api=>api.remove(),true);
+function vectorPieceKeydown(e,typing){
+  if(typing||!vectorPieceApi||!vectorEditingLogoId)return false;
+  if(e.key==='Escape'){e.preventDefault();clearVectorEditing();syncSelectionControls();render();return true;}
+  if(['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(e.key)){
+    e.preventDefault();const step=e.shiftKey?1:.1,p=vectorPieceApi.position();
+    mutateVectorPiece(api=>api.moveTo(p.x+(e.key==='ArrowLeft'?-step:e.key==='ArrowRight'?step:0),p.y+(e.key==='ArrowUp'?-step:e.key==='ArrowDown'?step:0)),true);return true;
+  }
+  if(e.key==='Delete'||e.key==='Backspace'){e.preventDefault();$('deleteVectorPart').click();return true;}
+  if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='d'){e.preventDefault();$('duplicateVectorPart').click();return true;}
+  return false;
+}
+
 let history=[];
 let redoHistory=[];
 let suppressHistory=false;
@@ -1121,7 +1348,7 @@ function isTypingForPan(target){
 window.addEventListener('keydown',event=>{
   if(event.code!=='Space'&&event.key!==' '&&event.key!=='Spacebar')return;
   if(event.ctrlKey||event.metaKey||event.altKey||isTypingForPan(event.target))return;
-  if($('pdfViewer').classList.contains('open'))return;
+  if($('pdfViewer').classList.contains('open')||$('vectorExportDialog').classList.contains('open'))return;
   event.preventDefault();
   setSpacePanHeld(true);
 },true);
@@ -1173,6 +1400,7 @@ function syncUIFromState(){
   $('topGuideOn').checked=state.ui.topGuideOn===true;
   $('showColorCount').checked=state.ui.showColorCount===true;
   $('manualColorCount').value=state.ui.manualColorCount||'';
+  syncContourControls();
   syncSelectionControls();
 }
 
@@ -1228,12 +1456,53 @@ function updateSelectionActionBar(){
   if(!bar)return;
   bar.classList.toggle('visible',refs.length>0);
   if(refs.length){
-    $('selectionLabel').textContent=refs.length===1?'1 onderdeel geselecteerd':`${refs.length} onderdelen geselecteerd`;
+    $('selectionLabel').textContent=vectorEditingLogoId?'Hele logo':refs.length===1?'1 onderdeel geselecteerd':`${refs.length} onderdelen geselecteerd`;
+    $('copySelected').textContent=vectorEditingLogoId?'Logo kopiëren':'Kopiëren';
+    $('duplicateSelected').textContent=vectorEditingLogoId?'Logo dupliceren':'Dupliceren';
+    $('duplicateOtherSideSelected').textContent=vectorEditingLogoId?'Logo dupliceren naar andere zijde':'Dupliceren naar andere zijde';
+    $('duplicateOtherSideSelected').disabled=refs.length!==1;
+    $('duplicateOtherSideSelected').title=refs.length===1?'Maak een kopie op dezelfde afstand van de andere zijkant.':'Selecteer één onderdeel om het naar de andere zijde te dupliceren.';
+    $('deleteSelected').textContent=vectorEditingLogoId?'Logo verwijderen':'Verwijderen';
   }
 }
 
 function itemById(id,type){
   return (type==='logo'?state.logos:state.texts).find(x=>x.id===id);
+}
+
+const vectorStatusCache=new WeakMap();
+function isVectorLogo(logo){
+  if(!logo.svgMarkup)return false;
+  const cached=vectorStatusCache.get(logo);
+  if(cached?.markup===logo.svgMarkup)return cached.vector;
+  const doc=new DOMParser().parseFromString(logo.svgMarkup,'image/svg+xml');
+  // An SVG extension alone is not proof: SVGs can also contain bitmap images.
+  doc.querySelectorAll('metadata').forEach(el=>el.remove());
+  const vector=doc.documentElement.localName==='svg'&&!doc.querySelector('parsererror')&&
+    ![...doc.documentElement.querySelectorAll('*')].some(el=>['image','foreignObject','filter','feImage'].includes(el.localName));
+  vectorStatusCache.set(logo,{markup:logo.svgMarkup,vector});
+  return vector;
+}
+function updateVectorStatusBadge(){
+  const badge=$('vectorStatusBadge');
+  const refs=allSelectedRefs().filter(ref=>itemById(ref.id,ref.type));
+  const selected=refs.length>0;
+  const entries=selected?refs.map(ref=>ref.type==='text'||isVectorLogo(itemById(ref.id,ref.type))):[
+    ...state.logos.map(isVectorLogo),
+    ...state.texts.filter(text=>String(text.text||'').trim()).map(()=>true),
+    ...(contourPath()?[true]:[])
+  ];
+  const total=entries.length,vectors=entries.filter(Boolean).length;
+  const level=total&&vectors===total?'vector':vectors?'mixed':'raster';
+  const scope=selected?'Selectie':'Ontwerp';
+  const label=!total?'Geen artwork':level==='vector'?'Vector':level==='mixed'?'Deels vector':'Geen vector';
+  badge.dataset.level=level;
+  if($('vectorStatusScope').textContent!==scope)$('vectorStatusScope').textContent=scope;
+  if($('vectorStatusLabel').textContent!==label)$('vectorStatusLabel').textContent=label;
+  const detail=!total?'Voeg een logo, tekst of contourlijn toe.':
+    selected&&total===1?(vectors?'Dit onderdeel is vector.':'Dit onderdeel is geen zuivere vector; het bevat pixels of rastereffecten.'):
+    `${vectors} van ${total} onderdelen zijn volledig vector. Tekst en de contourlijn tellen mee; de spatlapachtergrond en gaten niet.`;
+  badge.title=detail+' Alleen in de interface; wordt niet gedownload. De PDF-export controleert ook lettertypen en ondersteunde SVG-onderdelen.';
 }
 
 function setSelected(id,type,additive=false){
@@ -1249,6 +1518,9 @@ function setSelected(id,type,additive=false){
 function syncSelectionControls(){
   const logo=state.selectedType==='logo'?itemById(state.selected,'logo'):null;
   $('logoControls').style.display=logo?'block':'none';
+  $('replaceLogo').disabled=!logo||logoReplacementBusy;
+  $('replaceLogo').textContent=logoReplacementBusy?'Bestand laden...':'Bestand vervangen';
+  if($('replaceLogoStatus').dataset.logoId!==logo?.id)$('replaceLogoStatus').textContent='';
   const canTrace=!!logo&&(!logo.svgMarkup||!!logo.originalRasterSrc);
   $('vectorizeLogo').disabled=!canTrace;
   $('whitePngVector').disabled=!canTrace||!/\.png$/i.test(logo.name||'');
@@ -1265,8 +1537,8 @@ function syncSelectionControls(){
 
     const left=logo.x*state.flap.w-logo.w/2;
     const top=logo.y*state.flap.h-logo.h/2;
-    $('logoLeft').value=Math.round(Math.max(0,left)*100)/100;
-    $('logoTop').value=Math.round(Math.max(0,top)*100)/100;
+    $('logoLeft').value=Math.round(left*100)/100;
+    $('logoTop').value=Math.round(top*100)/100;
   }
 
   const txt=state.selectedType==='text'?itemById(state.selected,'text'):null;
@@ -1284,6 +1556,8 @@ function syncSelectionControls(){
   }
   updateSelectionActionBar();
   scheduleVectorPreview();
+  syncVectorPieceControls();
+  updateVectorStatusBadge();
 }
 
 
@@ -1322,6 +1596,7 @@ function makeCompressedDataUrl(file){
 function safeSvgMarkup(source){
   const doc=new DOMParser().parseFromString(source,'image/svg+xml');
   const root=doc.documentElement;
+  SpatlapVectorExport.parseLogo(source);
   if(root.localName!=='svg'||doc.querySelector('parsererror'))throw new Error('Ongeldige SVG');
   const blocked=new Set(['script','foreignObject','iframe','object','embed','image','use','animate','animateTransform','set']);
   const walker=doc.createTreeWalker(root,NodeFilter.SHOW_ELEMENT);
@@ -1429,13 +1704,50 @@ async function pdfLogoData(file){
   }finally{await task.destroy();}
 }
 
+async function readLogoFile(file){
+  if(file.type==='application/pdf'||/\.pdf$/i.test(file.name))return pdfLogoData(file);
+  if(file.type==='image/svg+xml'||/\.svg$/i.test(file.name))return svgLogoData(file);
+  return makeCompressedDataUrl(file);
+}
+
+$('replaceLogo').onclick=()=>{
+  if(logoReplacementBusy||state.selectedType!=='logo')return;
+  pendingLogoReplacement=itemById(state.selected,'logo');
+  if(!pendingLogoReplacement)return;
+  $('replaceLogoStatus').textContent='';
+  $('replacementLogoFile').value='';
+  $('replacementLogoFile').click();
+};
+$('replacementLogoFile').addEventListener('cancel',()=>{pendingLogoReplacement=null;});
+$('replacementLogoFile').addEventListener('change',async event=>{
+  const file=event.target.files[0],target=pendingLogoReplacement;
+  pendingLogoReplacement=null;event.target.value='';
+  if(!file||!target||logoReplacementBusy)return;
+  const status=$('replaceLogoStatus');status.dataset.logoId=target.id;
+  logoReplacementBusy=true;syncSelectionControls();status.textContent='Nieuw bestand laden...';
+  try{
+    const data=await readLogoFile(file);
+    if(!data){status.textContent='Vervangen geannuleerd.';return;}
+    if(itemById(target.id,'logo')!==target)throw new Error('Dit logo is intussen gewijzigd. Selecteer het opnieuw om het bestand te vervangen.');
+    // Preserve the physical frame, including its aspect ratio. Drop backups from the old file.
+    const replacement={id:target.id,name:data.name,src:data.src,svgMarkup:data.svgMarkup||null,vector:!!data.vector,
+      w:target.w,h:target.h,ratio:target.w/target.h,x:target.x,y:target.y};
+    pushHistory();state.logos[state.logos.indexOf(target)]=replacement;
+    clearVectorEditing();clearMultiSelection();state.selected=replacement.id;state.selectedType='logo';
+    $('vectorStatus').textContent='';$('vectorPieceStatus').textContent='';
+    syncSelectionControls();render();
+    status.textContent=`Vervangen door ${data.name}. Formaat en positie behouden.`;
+    toast('Logo vervangen');
+  }catch(error){status.textContent=`Vervangen lukte niet: ${error.message||'gebruik PNG, JPG, WebP, SVG of PDF'}`;toast('Logo vervangen lukte niet');}
+  finally{logoReplacementBusy=false;syncSelectionControls();}
+});
+
 async function addLogoFiles(files){
   let added=0;
   const errors=[];
   for(const f of files){
     try{
-      const d=(f.type==='application/pdf'||/\.pdf$/i.test(f.name))?await pdfLogoData(f)
-        :(f.type==='image/svg+xml'||/\.svg$/i.test(f.name))?await svgLogoData(f):await makeCompressedDataUrl(f);
+      const d=await readLogoFile(f);
       if(!d)continue;
       const lw=d.pdfPage?Math.min(state.flap.w*.35,70,state.flap.h*.8*d.ratio):Math.min(state.flap.w*.35,70),lh=lw/(d.ratio||4);
       const obj={id:'l'+Date.now()+Math.random(),name:d.name,src:d.src,svgMarkup:d.svgMarkup||null,vector:!!d.vector,w:lw,h:lh,ratio:(d.ratio||lw/lh||1),x:.5,y:.5};
@@ -1744,6 +2056,7 @@ $('vectorizeLogo').onclick=async(options={})=>{
     logo.x=(newLeft+newW/2)/state.flap.w;logo.y=(newTop+newH/2)/state.flap.h;
     logo.vectorCrop=next;
     logo.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(result.markup);
+    discardVectorEditBackup(logo);
     logo.svgMarkup=result.markup;logo.vector=true;logo.printColors=result.colors;
     $('vectorStatus').textContent=`Vectorlogo gemaakt met ${result.colors.length} kleuren: ${result.colors.join(', ')}. Controleer de preview.`;
     syncSelectionControls();
@@ -1763,6 +2076,7 @@ $('restoreRasterLogo').onclick=()=>{
   logo.x=(left+fullW/2)/state.flap.w;logo.y=(top+fullH/2)/state.flap.h;
   logo.src=logo.originalRasterSrc;
   delete logo.originalRasterSrc;delete logo.vectorCrop;
+  discardVectorEditBackup(logo);
   logo.svgMarkup=null;logo.vector=false;delete logo.printColors;
   $('vectorStatus').textContent='Originele afbeelding hersteld. Je kunt opnieuw fijn afstellen en omzetten.';
   syncSelectionControls();render();
@@ -1790,16 +2104,14 @@ $('logoH').addEventListener('change',()=>{
 $('logoLeft').addEventListener('change',()=>{
   const x=itemById(state.selected,'logo');if(!x)return;
   pushHistory();
-  const maxLeft=Math.max(0,state.flap.w-x.w);
-  const left=Math.max(0,Math.min(maxLeft,Number($('logoLeft').value)||0));
+  const left=Number($('logoLeft').value)||0;
   x.x=(left+x.w/2)/state.flap.w;
   syncSelectionControls();render();
 });
 $('logoTop').addEventListener('change',()=>{
   const x=itemById(state.selected,'logo');if(!x)return;
   pushHistory();
-  const maxTop=Math.max(0,state.flap.h-x.h);
-  const top=Math.max(0,Math.min(maxTop,Number($('logoTop').value)||0));
+  const top=Number($('logoTop').value)||0;
   x.y=(top+x.h/2)/state.flap.h;
   syncSelectionControls();render();
 });
@@ -1876,14 +2188,14 @@ function updateFontPreviews(){
     const p=$('textFontPreview');
     if(p){
       p.textContent=firstWord($('textValue')?.value);
-      p.style.fontFamily=$('textFont')?.value||'Arial, sans-serif';
+      p.style.fontFamily=printFontFamily($('textFont')?.value);
       p.style.fontWeight=String(textWeight($('textWeight').value));
       p.style.letterSpacing=(textTracking($('textTracking').value)*26/Math.max(.5,Number($('textSize').value)||5))+'px';
     }
     const ep=$('editTextFontPreview');
     if(ep){
       ep.textContent=firstWord($('editText')?.value);
-      ep.style.fontFamily=$('editTextFont')?.value||'Arial, sans-serif';
+      ep.style.fontFamily=printFontFamily($('editTextFont')?.value);
       ep.style.fontWeight=String(textWeight($('editTextWeight').value));
       ep.style.letterSpacing=(textTracking($('editTextTracking').value)*26/Math.max(.5,Number($('editTextSize').value)||5))+'px';
     }
@@ -1904,7 +2216,7 @@ updateFontPreviews();
 $('addText').onclick=()=>{
   const v=$('textValue').value.trim();if(!v)return;pushHistory();
   const size=Math.max(.5,Number($('textSize').value)||5);
-  const obj={id:'t'+Date.now()+Math.random(),text:v,size,color:normalizeHex($('textColorHex').value),font:$('textFont').value||'Arial, sans-serif',tracking:textTracking($('textTracking').value),weight:textWeight($('textWeight').value),x:.5,y:verticalPlacement(size,'middle'),align:'center'};
+  const obj={id:'t'+Date.now()+Math.random(),text:v,size,color:normalizeHex($('textColorHex').value),font:$('textFont').value||'Arimo, sans-serif',tracking:textTracking($('textTracking').value),weight:textWeight($('textWeight').value),x:.5,y:verticalPlacement(size,'middle'),align:'center'};
   state.texts.push(obj);state.selected=obj.id;state.selectedType='text';$('textValue').value='';
   syncSelectionControls();render();
 };
@@ -1965,8 +2277,8 @@ function pasteInternalClipboard(offsetCm=.8){
     if(entry.type==='logo'){
       d.id='l'+Date.now()+Math.random();
       d.name=(d.name||'Logo').replace(/\s*\(kopie\)$/,'')+' (kopie)';
-      d.x=Math.min(1,Math.max(0,d.x+offsetCm/state.flap.w));
-      d.y=Math.min(1,Math.max(0,d.y+offsetCm/state.flap.h));
+      d.x+=offsetCm/state.flap.w;
+      d.y+=offsetCm/state.flap.h;
       state.logos.push(d);
     }else{
       d.id='t'+Date.now()+Math.random();
@@ -1999,8 +2311,15 @@ function cutSelectedObjects(){
 $('copySelected').onclick=copySelectedObjects;
 $('duplicateSelected').onclick=duplicateSelectedObjects;
 
+// Selecting a heading or checkbox label should not toggle its setting on mouseup.
+document.addEventListener('click',event=>{
+  if(!event.detail||event.target.closest('input,button,select,textarea,a'))return;
+  const label=event.target.closest('summary,label'),selection=window.getSelection();
+  if(label&&selection?.toString()&&(label.contains(selection.anchorNode)||label.contains(selection.focusNode)))event.preventDefault();
+},true);
 
 document.addEventListener('keydown',e=>{
+  if($('vectorExportDialog').classList.contains('open')){if(e.key==='Escape')closeVectorExportDialog();return;}
   if($('pdfViewer').classList.contains('open')){
     if(e.key==='Escape'){e.preventDefault();closePdfViewer();}
     return;
@@ -2010,6 +2329,9 @@ document.addEventListener('keydown',e=>{
   const typing=tag==='input' || tag==='textarea' || tag==='select' || editable;
   const mod=e.ctrlKey || e.metaKey;
   const key=e.key.toLowerCase();
+  // Native text selection/copy takes precedence over artwork shortcuts.
+  if(!typing&&window.getSelection()?.toString())return;
+  if(vectorPieceKeydown(e,typing))return;
 
   if(!typing&&mod&&['+','=','add','-','_','subtract','0'].includes(key)){
     e.preventDefault();
@@ -2059,8 +2381,8 @@ document.addEventListener('keydown',e=>{
       if(!obj)return;
       const halfX=r.type==='logo'?Math.min(.5,obj.w/(2*state.flap.w)):0;
       const halfY=Math.min(.5,(r.type==='logo'?obj.h:obj.size)/(2*state.flap.h));
-      obj.x=Math.max(halfX,Math.min(1-halfX,obj.x+dx/state.flap.w));
-      obj.y=Math.max(halfY,Math.min(1-halfY,obj.y+dy/state.flap.h));
+      obj.x=r.type==='logo'?obj.x+dx/state.flap.w:Math.max(halfX,Math.min(1-halfX,obj.x+dx/state.flap.w));
+      obj.y=r.type==='logo'?obj.y+dy/state.flap.h:Math.max(halfY,Math.min(1-halfY,obj.y+dy/state.flap.h));
     });
     syncSelectionControls();render();
     return;
@@ -2151,6 +2473,7 @@ function copyObjectToOtherSide(){
   toast(copy.x<.5?'Gedupliceerd aan linkerkant':'Gedupliceerd aan rechterkant');
 }
 $('mirrorCreate').onclick=copyObjectToOtherSide;
+$('duplicateOtherSideSelected').onclick=copyObjectToOtherSide;
 
 function sideCandidates(type){
   const arr=(type==='logo'?state.logos:state.texts).filter(x=>x.x<.45 || x.x>.55);
@@ -2253,15 +2576,16 @@ function colorCountInfo(){
     return {label:`${manual} drukkleur${manual===1?'':'en'}`,status:'Handmatig ingevuld; controleer dit vóór je de preview verstuurt.'};
   }
   const colors=new Set();
+  if(contourPath())colors.add('#FFFFFF');
   let unknown=false;
   state.texts.forEach(t=>{if(String(t.text||'').trim())colors.add(normalizeHex(t.color));});
   state.logos.forEach(logo=>{
-    if(Array.isArray(logo.printColors)&&logo.printColors.length)logo.printColors.forEach(c=>colors.add(normalizeHex(c)));
+    if(Array.isArray(logo.printColors))logo.printColors.forEach(c=>colors.add(normalizeHex(c)));
     else unknown=true;
   });
   if(unknown)return {label:'Kleuren: ?',status:'Van minstens één logo is het aantal drukkleuren onbekend. Vul het aantal zelf in voor een klantpreview.'};
   if(!colors.size)return {label:'Geen bedrukking',status:'Voeg eerst een logo of tekst toe.'};
-  return {label:`${colors.size} drukkleur${colors.size===1?'':'en'}`,status:'Automatisch geteld uit omgezette logo’s en tekst. De spatlapkleur telt niet mee.'};
+  return {label:`${colors.size} drukkleur${colors.size===1?'':'en'}`,status:'Automatisch geteld uit vectorlogo’s en tekst. De spatlapkleur telt niet mee.'};
 }
 
 function topGuideOverlapCount(){
@@ -2270,6 +2594,45 @@ function topGuideOverlapCount(){
   return state.logos.filter(x=>x.y*state.flap.h-x.h/2<top).length+
     state.texts.filter(t=>t.y*state.flap.h-t.size/2<top).length;
 }
+
+function contourSettings(){return {on:false,gap:1,width:2,underHoles:true,...state.ui?.contour};}
+function contourPath(){
+  const c=contourSettings();if(!c.on)return '';
+  const w=state.flap.w,h=state.flap.h,inset=c.gap+c.width/20;
+  const top=c.underHoles&&state.holes.on?Math.max(inset,state.holes.top+inset):inset;
+  if(w<=2*inset||h-inset<=top)return '';
+  const commands=[],sink={beginPath(){commands.length=0;},moveTo(x,y){commands.push(`M${x},${y}`);},lineTo(x,y){commands.push(`L${x},${y}`);},quadraticCurveTo(x,y,a,b){commands.push(`Q${x},${y} ${a},${b}`);},arc(x,y,r,start,end){commands.push(`A${r},${r} 0 0 1 ${x+r*Math.cos(end)},${y+r*Math.sin(end)}`);},closePath(){commands.push('Z');}};
+  if(state.flap.shape!=='shoulder'){
+    const outerRadius=Math.min(state.flap.radius,w/2,state.flap.shape==='all'?h/2:h);
+    const radius=Math.max(0,outerRadius-inset);
+    const upper=state.flap.shape==='all'?radius:0,lower=state.flap.shape==='square'?0:radius;
+    roundRectPath(sink,inset,top,w-2*inset,h-inset-top,upper,upper,lower,lower);
+    return commands.join(' ');
+  }
+  // Sample the existing shoulder curves and offset their inward normals.
+  const points=[];let current;
+  const add=(x,y)=>{if(!current||Math.hypot(x-current[0],y-current[1])>1e-7){current=[x,y];points.push(current);}};
+  const recorder={beginPath(){},moveTo:add,lineTo:add,closePath(){},quadraticCurveTo(x,y,a,b){const start=current;for(let i=1;i<=24;i++){const t=i/24,u=1-t;add(u*u*start[0]+2*u*t*x+t*t*a,u*u*start[1]+2*u*t*y+t*t*b);}},bezierCurveTo(x,y,a,b,e,f){const start=current;for(let i=1;i<=40;i++){const t=i/40,u=1-t;add(u*u*u*start[0]+3*u*u*t*x+3*u*t*t*a+t*t*t*e,u*u*u*start[1]+3*u*u*t*y+3*u*t*t*b+t*t*t*f);}}};
+  shoulderRoundedPath(recorder,w,h,state.flap.shoulderInset??5,state.flap.shoulderTopH??5,state.flap.radius);
+  if(Math.hypot(points[0][0]-current[0],points[0][1]-current[1])<1e-7)points.pop();
+  let polygon=points.map((p,i)=>{
+    const a=points[(i+points.length-1)%points.length],b=points[(i+1)%points.length];
+    const l1=Math.hypot(p[0]-a[0],p[1]-a[1]),l2=Math.hypot(b[0]-p[0],b[1]-p[1]);
+    const n1=[-(p[1]-a[1])/l1,(p[0]-a[0])/l1],n2=[-(b[1]-p[1])/l2,(b[0]-p[0])/l2],den=1+n1[0]*n2[0]+n1[1]*n2[1];
+    return [p[0]+inset*(n1[0]+n2[0])/Math.max(.01,den),p[1]+inset*(n1[1]+n2[1])/Math.max(.01,den)];
+  });
+  // Measure the upper clearance from the centre of the holes.
+  const clipped=[];for(let i=0;i<polygon.length;i++){const a=polygon[i],b=polygon[(i+1)%polygon.length],insideA=a[1]>=top,insideB=b[1]>=top;if(insideA)clipped.push(a);if(insideA!==insideB){const t=(top-a[1])/(b[1]-a[1]);clipped.push([a[0]+t*(b[0]-a[0]),top]);}}
+  polygon=clipped;if(polygon.length<3)return '';
+  return polygon.map(([x,y],i)=>`${i?'L':'M'}${x.toFixed(5)},${y.toFixed(5)}`).join(' ')+' Z';
+}
+function contourSvg(){const d=contourPath();return d?`<path d="${d}" fill="none" stroke="#ffffff" stroke-width="${contourSettings().width/10}" stroke-linejoin="round"/>`:'';}
+function drawContour(ctx,x,y,scaleX,scaleY=scaleX){const d=contourPath();if(!d)return;ctx.save();ctx.translate(x,y);ctx.scale(scaleX,scaleY);ctx.strokeStyle='#ffffff';ctx.lineWidth=contourSettings().width/10;ctx.lineJoin='round';ctx.stroke(new Path2D(d));ctx.restore();}
+function syncContourControls(){const c=contourSettings();$('contourOn').checked=c.on;$('contourGap').value=c.gap;$('contourWidth').value=c.width;$('contourUnderHoles').checked=c.underHoles;}
+['contourOn','contourGap','contourWidth','contourUnderHoles'].forEach(id=>$(id).addEventListener('change',()=>{
+  pushHistory();state.ui??={};const gap=Number($('contourGap').value),width=Number($('contourWidth').value);
+  state.ui.contour={on:$('contourOn').checked,gap:Number.isFinite(gap)?Math.max(0,gap):1,width:Number.isFinite(width)?Math.max(.1,width):2,underHoles:$('contourUnderHoles').checked};syncContourControls();render();
+}));
 
 function printableTopCm(){return state.ui?.topGuideOn?Math.min(3,state.flap.h):0;}
 
@@ -2283,7 +2646,34 @@ function verticalPlacement(itemHeightCm,position){
   return (min+max)/(2*h);
 }
 
+const vectorLogoPreviewCache=new WeakMap();
+let vectorLogoPreviewSequence=0;
+function mountVectorLogoPreview(host,logo){
+  let cached=vectorLogoPreviewCache.get(logo);
+  if(cached?.markup!==logo.svgMarkup){
+    // Use the PDF's resolved vector geometry, rather than enlarging an SVG image surface.
+    try{cached={markup:logo.svgMarkup,root:SpatlapVectorExport.normalizeLogo(logo.svgMarkup,`sp-preview-${++vectorLogoPreviewSequence}-`)};}
+    catch(error){cached={markup:logo.svgMarkup,error:error.message};}
+    vectorLogoPreviewCache.set(logo,cached);
+  }
+  if(!cached.root){
+    // Keep older, unsupported SVGs visible; PDF preflight still explains what needs fixing.
+    const image=document.createElement('img');image.src=logo.src;image.draggable=false;
+    image.style.cssText='display:block;width:100%;height:100%;pointer-events:none';host.append(image);
+    host.title=`Vectorvoorvertoning niet beschikbaar: ${cached.error}`;
+    return;
+  }
+  const root=cached.root.cloneNode(true),shadow=host.attachShadow({mode:'closed'});
+  root.setAttribute('x','0');root.setAttribute('y','0');
+  root.setAttribute('width','100%');root.setAttribute('height','100%');root.setAttribute('preserveAspectRatio','none');
+  root.setAttribute('aria-hidden','true');
+  root.style.cssText='display:block;width:100%;height:100%;overflow:hidden;pointer-events:none;shape-rendering:geometricPrecision';
+  shadow.append(root);
+}
+
 function render(){
+  if(state.selectedType!=='logo'||state.selected!==vectorEditingLogoId||!itemById(vectorEditingLogoId,'logo')?.svgMarkup?.includes('data-sp-piece'))clearVectorEditing();
+  vectorPieceApi=null;
   const w=state.flap.w,h=state.flap.h,s=scaleFactor(),flap=$('flap');
   const isWhite=state.flap.color.toLowerCase()==='#f3f3f3' || state.flap.color.toLowerCase()==='#ffffff';
   const workspaceBg=isWhite?'#3a4049':'#e9edf2';
@@ -2347,23 +2737,32 @@ function render(){
   }
 
   state.logos.forEach(x=>{
-    const img=document.createElement('img');img.src=x.src;img.draggable=false;
-    img.className='item logo-item'+(state.selected===x.id&&state.selectedType==='logo'?' selected':'')+(multiSelection.some(r=>r.id===x.id&&r.type==='logo')?' multi-selected':'');
-    img.style.left=(x.x*100)+'%';img.style.top=(x.y*100)+'%';
-    img.style.width=(x.w*s)+'px';img.style.height=(x.h*s)+'px';
-    bindDrag(img,x,'logo');img.onclick=e=>{e.stopPropagation();if(!suppressClickAfterDrag)setSelected(x.id,'logo',e.shiftKey)};flap.appendChild(img);
+    const editing=vectorEditingLogoId===x.id;
+    const el=document.createElement(editing||x.svgMarkup?'div':'img');
+    if(editing){el.tabIndex=0;el.setAttribute('aria-label','Vectoronderdelen van '+(x.name||'logo')+' bewerken');}
+    else if(!x.svgMarkup){el.src=x.src;el.draggable=false;}
+    else{el.setAttribute('role','img');el.setAttribute('aria-label',x.name||'Vectorlogo');}
+    el.className='item logo-item'+(editing?' vector-editing':'')+(state.selected===x.id&&state.selectedType==='logo'?' selected':'')+(multiSelection.some(r=>r.id===x.id&&r.type==='logo')?' multi-selected':'');
+    el.style.left=(x.x*100)+'%';el.style.top=(x.y*100)+'%';
+    el.style.width=(x.w*s)+'px';el.style.height=(x.h*s)+'px';
+    bindDrag(el,x,'logo');el.onclick=e=>{e.stopPropagation();if(!suppressClickAfterDrag)setSelected(x.id,'logo',e.shiftKey)};flap.appendChild(el);
+    if(editing){mountVectorPieceEditor(el,x);vectorPieceApi.highlight();selectedVectorPieceId=vectorPieceApi.selectedId();}
+    else if(x.svgMarkup)mountVectorLogoPreview(el,x);
   });
   state.texts.forEach(t=>{
     const d=document.createElement('div');d.textContent=t.text;
     d.className='item text-item'+(state.selected===t.id&&state.selectedType==='text'?' selected':'')+(multiSelection.some(r=>r.id===t.id&&r.type==='text')?' multi-selected':'');
     d.style.left=(t.x*100)+'%';d.style.top=(t.y*100)+'%';d.style.fontSize=(t.size*s)+'px';d.style.color=t.color;
-    d.style.fontFamily=t.font||'Arial, sans-serif';
+    d.style.fontFamily=printFontFamily(t.font);
     d.style.fontWeight=String(textWeight(t.weight));
     d.style.letterSpacing=(textTracking(t.tracking)*s)+'px';
     d.style.fontKerning=textTracking(t.tracking)?'none':'auto';
     d.style.textAlign=t.align||'center';
     bindDrag(d,t,'text');d.onclick=e=>{e.stopPropagation();if(!suppressClickAfterDrag)setSelected(t.id,'text',e.shiftKey)};flap.appendChild(d);
   });
+  const contour=contourSvg();
+  if(contour){const overlay=document.createElementNS('http://www.w3.org/2000/svg','svg');overlay.setAttribute('viewBox',`0 0 ${w} ${h}`);overlay.style.cssText='position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:7';overlay.innerHTML=contour;flap.appendChild(overlay);}
+  $('contourStatus').textContent=contourSettings().on&&!contour?'Deze afstand of lijndikte past niet binnen de spatlap. Kies een kleinere waarde.':'';
   if(state.ui?.topGuideOn){
     const guide=document.createElement('div');guide.className='top-guide';
     guide.style.height=(printableTopCm()/h*100)+'%';
@@ -2374,6 +2773,9 @@ function render(){
   renderLists();
   updateWideToolButtons();
   updateSelectionActionBar();
+  updateExportReadiness();
+  syncVectorPieceControls();
+  updateVectorStatusBadge();
 }
 
 function bindDrag(el,obj,type){
@@ -2394,8 +2796,10 @@ function bindDrag(el,obj,type){
       el.classList.add('selected');syncSelectionControls();renderLists();updateSelectionActionBar();
     }
     const rect=$('flap').getBoundingClientRect();
-    obj.x=Math.max(drag.halfX,Math.min(1-drag.halfX,(e.clientX-drag.dx-rect.left)/rect.width));
-    obj.y=Math.max(drag.halfY,Math.min(1-drag.halfY,(e.clientY-drag.dy-rect.top)/rect.height));
+    const nextX=(e.clientX-drag.dx-rect.left)/rect.width;
+    obj.x=type==='logo'?nextX:Math.max(drag.halfX,Math.min(1-drag.halfX,nextX));
+    const nextY=(e.clientY-drag.dy-rect.top)/rect.height;
+    obj.y=type==='logo'?nextY:Math.max(drag.halfY,Math.min(1-drag.halfY,nextY));
     el.style.left=(obj.x*100)+'%';el.style.top=(obj.y*100)+'%';
     syncSelectionControls();
   });
@@ -2415,10 +2819,19 @@ function bindDrag(el,obj,type){
 $('flap').addEventListener('click',()=>{if(suppressClickAfterDrag)return;state.selected=null;state.selectedType=null;clearMultiSelection();syncSelectionControls();render();});
 
 function roundRectPath(ctx,x,y,w,h,rTL,rTR,rBR,rBL){
-  const max=Math.min(w/2,h/2);rTL=Math.min(rTL,max);rTR=Math.min(rTR,max);rBR=Math.min(rBR,max);rBL=Math.min(rBL,max);
-  ctx.beginPath();ctx.moveTo(x+rTL,y);ctx.lineTo(x+w-rTR,y);ctx.quadraticCurveTo(x+w,y,x+w,y+rTR);
-  ctx.lineTo(x+w,y+h-rBR);ctx.quadraticCurveTo(x+w,y+h,x+w-rBR,y+h);
-  ctx.lineTo(x+rBL,y+h);ctx.quadraticCurveTo(x,y+h,x,y+h-rBL);ctx.lineTo(x,y+rTL);ctx.quadraticCurveTo(x,y,x+rTL,y);ctx.closePath();
+  // Circular arcs match CSS border-radius, including its shared radius scaling.
+  const ratio=(length,sum)=>sum>0?length/sum:1;
+  const factor=Math.min(1,ratio(w,rTL+rTR),ratio(w,rBL+rBR),ratio(h,rTL+rBL),ratio(h,rTR+rBR));
+  rTL*=factor;rTR*=factor;rBR*=factor;rBL*=factor;
+  ctx.beginPath();ctx.moveTo(x+rTL,y);ctx.lineTo(x+w-rTR,y);
+  if(rTR>0)ctx.arc(x+w-rTR,y+rTR,rTR,-Math.PI/2,0);
+  ctx.lineTo(x+w,y+h-rBR);
+  if(rBR>0)ctx.arc(x+w-rBR,y+h-rBR,rBR,0,Math.PI/2);
+  ctx.lineTo(x+rBL,y+h);
+  if(rBL>0)ctx.arc(x+rBL,y+h-rBL,rBL,Math.PI/2,Math.PI);
+  ctx.lineTo(x,y+rTL);
+  if(rTL>0)ctx.arc(x+rTL,y+rTL,rTL,Math.PI,Math.PI*1.5);
+  ctx.closePath();
 }
 function shoulderRoundedPath(ctx,w,h,inset,topH,r){
   inset=Math.min(Math.max(0,inset),w*.42);
@@ -2466,7 +2879,7 @@ function shoulderRoundedPath(ctx,w,h,inset,topH,r){
 
 function drawDesignText(ctx,t,centerX,y,pxPerCm){
   const value=String(t.text||'');
-  ctx.font=`${textWeight(t.weight)} ${t.size*pxPerCm}px ${t.font||'Arial, sans-serif'}`;
+  ctx.font=`${textWeight(t.weight)} ${t.size*pxPerCm}px ${printFontFamily(t.font)}`;
   ctx.fillStyle=t.color;
   ctx.textBaseline='middle';
   const spacing=textTracking(t.tracking)*pxPerCm;
@@ -2601,6 +3014,7 @@ async function createPreviewPngBlob(){
 
   // Text.
   state.texts.forEach(t=>drawDesignText(ctx,t,ox+t.x*fw,oy+t.y*fh,pxPerCmY));
+  drawContour(ctx,ox,oy,pxPerCmX,pxPerCmY);
 
   if(state.ui?.topGuideOn){
     const guideH=Math.min(3,state.flap.h)*pxPerCmY;
@@ -2691,6 +3105,7 @@ async function buildArtworkCanvas(scale=14,background=null){
   }
 
   state.texts.forEach(t=>drawDesignText(ctx,t,t.x*W,t.y*H,scale));
+  drawContour(ctx,0,0,scale);
   return c;
 }
 
@@ -2726,125 +3141,95 @@ $('copyBlackArtwork').onclick=async()=>{
   }
 };
 
-function escapeXml(v){
-  return String(v).replace(/[&<>"']/g,ch=>({
-    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&apos;'
-  }[ch]));
+function flapSvgPath(design){
+  const f=design.flap,w=f.w,h=f.h,commands=[];
+  const sink={beginPath(){commands.length=0;},moveTo(x,y){commands.push(`M${x},${y}`);},lineTo(x,y){commands.push(`L${x},${y}`);},quadraticCurveTo(x,y,a,b){commands.push(`Q${x},${y} ${a},${b}`);},bezierCurveTo(x,y,a,b,e,f){commands.push(`C${x},${y} ${a},${b} ${e},${f}`);},arc(x,y,r,start,end){commands.push(`A${r},${r} 0 0 1 ${x+r*Math.cos(end)},${y+r*Math.sin(end)}`);},closePath(){commands.push('Z');}};
+  if(f.shape==='shoulder')shoulderRoundedPath(sink,w,h,f.shoulderInset??5,f.shoulderTopH??5,f.radius);
+  else{const upper=f.shape==='all'?f.radius:0,lower=f.shape==='all'||f.shape==='bottom'?f.radius:0;roundRectPath(sink,0,0,w,h,upper,upper,lower,lower);}
+  return commands.join(' ');
 }
-
-function artworkSvgMarkup(){
-  const w=state.flap.w,h=state.flap.h;
-  const parts=[`<svg xmlns="http://www.w3.org/2000/svg" width="${w}cm" height="${h}cm" viewBox="0 0 ${w} ${h}">`];
-
-  state.logos.forEach(x=>{
-    const left=x.x*w-x.w/2,top=x.y*h-x.h/2;
-    if(x.svgMarkup){
-      const doc=new DOMParser().parseFromString(x.svgMarkup,'image/svg+xml');
-      const root=doc.documentElement;
-      const viewBox=root.getAttribute('viewBox')||`0 0 ${parseFloat(root.getAttribute('width'))||1} ${parseFloat(root.getAttribute('height'))||1}`;
-      parts.push(`<svg x="${left}" y="${top}" width="${x.w}" height="${x.h}" viewBox="${escapeXml(viewBox)}" preserveAspectRatio="none">${root.innerHTML}</svg>`);
-    }else{
-      parts.push(`<image href="${x.src}" x="${left}" y="${top}" width="${x.w}" height="${x.h}" preserveAspectRatio="none"/>`);
+function vectorExportOptions(design,background=null){
+  const hs=design.holes,holes=[];
+  if(hs.on){
+    const xs=hs.count===1?[design.flap.w/2]:Array.from({length:hs.count},(_,i)=>hs.side+(design.flap.w-2*hs.side)*i/(hs.count-1));
+    const width=hs.shape==='pill'?Math.max(hs.h,hs.w):hs.h;
+    for(const x of xs)holes.push({x:x-width/2,y:hs.top-hs.h/2,w:width,h:hs.h});
+  }
+  return {background,contour:contourSvg(),flapPath:flapSvgPath(design),holes};
+}
+function updateExportReadiness(){
+  const issues=SpatlapVectorExport.issuesFor(state,contourSvg());
+  $('exportReadiness').textContent=issues.length?`${issues.length} onderdeel${issues.length===1?'':'en'} aanpassen vóór vector-export. Klik op PDF voor de uitleg.`:'Vector-export beschikbaar · tekst wordt als contouren meegenomen.';
+}
+function closeVectorExportDialog(){$('vectorExportDialog').classList.remove('open');}
+$('vectorExportClose').onclick=closeVectorExportDialog;
+$('vectorExportDialog').addEventListener('click',e=>{if(e.target===$('vectorExportDialog'))closeVectorExportDialog();});
+function showVectorExportError(error){
+  clearPdfLinks();
+  const modal=$('vectorExportDialog'),list=$('vectorExportIssues');list.replaceChildren();
+  $('vectorExportTitle').textContent=error.issues?.length?'Nog niet klaar voor vector-export':'Vector-export gestopt';
+  const issues=error.issues?.length?error.issues:[{message:error.message||'Het vectorbestand kon niet worden gemaakt. Probeer opnieuw.'}];
+  for(const issue of issues){
+    const row=document.createElement('div');row.className='export-issue';
+    const message=document.createElement('div');message.textContent=issue.message;row.append(message);
+    if(issue.id){
+      const button=document.createElement('button');button.type='button';button.textContent=issue.type==='logo'?'Logo aanpassen':'Lettertype aanpassen';
+      button.onclick=()=>{
+        closeVectorExportDialog();setSelected(issue.id,issue.type);render();
+        if(issue.type==='logo'){$('colorTools').open=true;$('colorTools').scrollIntoView({behavior:'smooth',block:'start'});}
+        else{const controls=$('textControls');controls.closest('details').open=true;controls.scrollIntoView({behavior:'smooth',block:'center'});$('editTextFont').focus();}
+      };
+      row.append(button);
     }
-  });
-
-  state.texts.forEach(t=>{
-    const anchor=t.align==='left'?'start':t.align==='right'?'end':'middle';
-    parts.push(`<text x="${t.x*w}" y="${t.y*h}" fill="${escapeXml(t.color)}" font-family="${escapeXml(t.font||'Arial, sans-serif')}" font-size="${t.size}" font-weight="${textWeight(t.weight)}" letter-spacing="${textTracking(t.tracking)}" text-anchor="${anchor}" dominant-baseline="middle">${escapeXml(t.text)}</text>`);
-  });
-
-  parts.push('</svg>');
-  return parts.join('');
+    list.append(row);
+  }
+  $('downloadMenu').open=false;modal.classList.add('open');$('vectorExportClose').focus();
 }
-
-let jsPdfLoadPromise=null;
-function loadJsPdf(){
-  if(window.jspdf?.jsPDF)return Promise.resolve(window.jspdf.jsPDF);
-  if(jsPdfLoadPromise)return jsPdfLoadPromise;
-  jsPdfLoadPromise=new Promise((resolve,reject)=>{
-    const existing=document.querySelector('script[data-jspdf-loader]');
-    const script=existing||document.createElement('script');
-    let done=false;
-    const timer=setTimeout(()=>finish(new Error('PDF-bibliotheek laden duurde te lang')),20000);
-    function finish(error){
-      if(done)return;done=true;clearTimeout(timer);
-      if(error)reject(error);else resolve(window.jspdf.jsPDF);
-    }
-    script.addEventListener('load',()=>window.jspdf?.jsPDF?finish():finish(new Error('PDF-bibliotheek niet beschikbaar')),{once:true});
-    script.addEventListener('error',()=>finish(new Error('PDF-bibliotheek laden mislukt')),{once:true});
-    if(!existing){
-      script.src='https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
-      script.async=true;script.dataset.jspdfLoader='1';
-      document.head.appendChild(script);
-    }
-  }).catch(err=>{
-    jsPdfLoadPromise=null;
-    document.querySelector('script[data-jspdf-loader]')?.remove();
-    throw err;
-  });
-  return jsPdfLoadPromise;
+function clearPdfLinks(){
+  for(const id of ['pdfViewLink','pdfDownloadLink']){const link=$(id);link.style.display='none';link.removeAttribute('href');}
 }
-
-function loadSvgToPdf(){
-  if(window.jspdf?.jsPDF?.API?.svg)return Promise.resolve();
-  return new Promise((resolve,reject)=>{
-    const script=document.createElement('script');
-    script.src='https://cdn.jsdelivr.net/npm/svg2pdf.js@2.7.0/dist/svg2pdf.umd.min.js';
-    script.onload=()=>window.jspdf?.jsPDF?.API?.svg?resolve():reject(new Error('SVG-PDF bibliotheek niet beschikbaar'));
-    script.onerror=()=>reject(new Error('SVG-PDF bibliotheek laden mislukt'));
-    document.head.appendChild(script);
-  });
+function addPdfColourInfo(pdf,design){
+  pdf.addPage('a4','portrait');pdf.setFont('helvetica','normal');
+  pdf.setFontSize(18);pdf.text('Artwork en kleuren',20,25);pdf.setFontSize(11);
+  let y=39;
+  const line=value=>{
+    const rows=pdf.splitTextToSize(value,170);
+    for(const row of rows){if(y>258){pdf.addPage('a4','portrait');y=25;}pdf.text(row,20,y);y+=6;}
+    y+=3;
+  };
+  line(`Pagina 1: vector-artwork, ${design.flap.w} x ${design.flap.h} cm, schaal 1:1.`);
+  line('Zonder achtergrond. Tekst is omgezet naar contouren.');
+  for(const logo of design.logos)line(logo.printColors?`${logo.name}: ${logo.printColors.join(', ')}`:`${logo.name}: kleuren volgens het SVG-logo; geen automatische kleurmeting.`);
+  for(const t of design.texts)line(`Tekst: ${t.color||'#FFFFFF'}`);
+  if(design.ui?.contour?.on)line('Contourlijn: #FFFFFF');
+  pdf.setFontSize(9);line('Kleuren zijn RGB / HEX. Er zijn geen Pantone- of steunkleuren ingesteld. Deze informatiepagina hoort niet bij het te printen artwork.');
 }
-
+const pdfBlobUrls=[];
+async function makeArtworkPdfBlob(background=null,withInfo=false){
+  const design=cloneState(),options=vectorExportOptions(design,background);
+  if(withInfo)options.addInfo=addPdfColourInfo;
+  return SpatlapVectorExport.createPdf(design,options);
+}
 $('downloadVectorPdf').onclick=async()=>{
   const btn=$('downloadVectorPdf'),oldLabel=btn.textContent;
-  btn.disabled=true;btn.textContent='Vector-PDF maken...';
+  clearPdfLinks();btn.disabled=true;btn.textContent='Vector-PDF maken...';
   try{
-    if(state.logos.some(logo=>!logo.svgMarkup))throw new Error('Zet alle PNG/JPG-logo’s eerst om naar vector');
-    const jsPDF=await loadJsPdf();await loadSvgToPdf();
-    const widthMm=Number(state.flap.w)*10,heightMm=Number(state.flap.h)*10;
-    const pdf=new jsPDF({orientation:widthMm>=heightMm?'landscape':'portrait',unit:'mm',format:[widthMm,heightMm],compress:true});
-    const doc=new DOMParser().parseFromString(artworkSvgMarkup(),'image/svg+xml');
-    if(doc.querySelector('parsererror'))throw new Error('Artwork SVG ongeldig');
-    await pdf.svg(doc.documentElement,{x:0,y:0,width:widthMm,height:heightMm});
-    pdf.addPage('a4','portrait');
-    pdf.setFontSize(18);pdf.text('Artwork en kleuren',20,25);
-    pdf.setFontSize(11);
-    pdf.text(`Formaat: ${state.flap.w} x ${state.flap.h} cm`,20,39);
-    const colorLabel=colorCountInfo().label;
-    pdf.text(colorLabel.startsWith('Kleuren:')?colorLabel:`Kleuren: ${colorLabel}`,20,47);
-    let y=59;
-    for(const logo of state.logos){
-      const colors=logo.printColors;
-      const label=colors?`${logo.name}: ${colors.length} kleuren (${colors.join(', ')})`:`${logo.name}: kleuren niet automatisch vastgesteld`;
-      const rows=pdf.splitTextToSize(label,170);pdf.text(rows,20,y);y+=rows.length*6+3;
-      if(y>255){pdf.addPage('a4','portrait');y=20;}
-    }
-    for(const t of state.texts){
-      const rows=pdf.splitTextToSize(`Tekst: ${t.color||'#FFFFFF'}`,170);pdf.text(rows,20,y);y+=rows.length*6+3;
-      if(y>255){pdf.addPage('a4','portrait');y=20;}
-    }
-    pdf.setFontSize(9);pdf.text('Controleer lettertypen en drukgeschiktheid voordat je dit bestand voor productie gebruikt.',20,280);
-    pdf.save(`artwork-vector-${state.flap.w}x${state.flap.h}cm.pdf`);
-    toast('Vector-PDF gemaakt');
-  }catch(err){console.error(err);toast(err.message||'Vector-PDF maken lukte niet');}
+    const filename=`drukbestand-vector-kleurinfo-${state.flap.w}x${state.flap.h}cm.pdf`;
+    const blob=await makeArtworkPdfBlob(null,true);
+    const url=showPdfLinks(blob,filename);triggerPdfDownload(url,filename);toast('Vector-PDF met kleurinformatie gedownload');
+  }catch(error){console.error(error);showVectorExportError(error);}
   finally{btn.disabled=false;btn.textContent=oldLabel;}
 };
-
-const pdfBlobUrls=[];
-
-async function makeArtworkPdfBlob(background=null){
-  const jsPDF=await loadJsPdf();
-  if(!jsPDF)throw new Error('PDF-bibliotheek niet geladen');
-  const canvas=await buildArtworkCanvas(14,background);
-  const widthMm=Number(state.flap.w)*10,heightMm=Number(state.flap.h)*10;
-  const pdf=new jsPDF({
-    orientation:widthMm>=heightMm?'landscape':'portrait',
-    unit:'mm',format:[widthMm,heightMm],compress:true,putOnlyUsedFonts:true
-  });
-  pdf.addImage(canvas.toDataURL('image/png'),'PNG',0,0,widthMm,heightMm,undefined,'FAST');
-  return pdf.output('blob');
-}
+$('downloadArtworkSvg').onclick=async()=>{
+  const btn=$('downloadArtworkSvg'),oldLabel=btn.textContent;btn.disabled=true;btn.textContent='SVG maken...';
+  try{
+    const design=cloneState(),root=await SpatlapVectorExport.artwork(design,vectorExportOptions(design));
+    const blob=new Blob([new XMLSerializer().serializeToString(root)],{type:'image/svg+xml;charset=utf-8'});
+    const url=URL.createObjectURL(blob);triggerPdfDownload(url,`drukbestand-vector-${design.flap.w}x${design.flap.h}cm.svg`);
+    setTimeout(()=>URL.revokeObjectURL(url),60000);toast('Vector-SVG gedownload');
+  }catch(error){console.error(error);showVectorExportError(error);}
+  finally{btn.disabled=false;btn.textContent=oldLabel;}
+};
 
 function showPdfLinks(blob,filename){
   const url=URL.createObjectURL(blob);
@@ -2883,21 +3268,21 @@ function triggerPdfDownload(url,filename){
 async function blackPdfAction(mode){
   const btn=$(mode==='view'?'viewBlackPdf':'downloadBlackPdf');
   const oldLabel=btn.textContent;
-  $('pdfViewLink').style.display='none';$('pdfDownloadLink').style.display='none';
+  clearPdfLinks();
   btn.disabled=true;btn.textContent='PDF maken...';
   try{
+    const filename=`vector-zwarte-achtergrond-${state.flap.w}x${state.flap.h}cm.pdf`;
     const blob=await makeArtworkPdfBlob('#080808');
-    const filename=`artwork-zwarte-achtergrond-${state.flap.w}x${state.flap.h}cm.pdf`;
     const url=showPdfLinks(blob,filename);
     if(mode==='view'){
       showPdfViewer(url,filename);
     }else{
-      try{triggerPdfDownload(url,filename);toast('PDF met zwarte achtergrond gedownload');}
+      try{triggerPdfDownload(url,filename);toast('Vector-PDF met zwarte achtergrond gedownload');}
       catch(e){$('downloadMenu').open=true;toast('PDF klaar — klik op de downloadlink in Download');}
     }
   }catch(err){
     console.error(err);
-    toast('PDF met zwarte achtergrond maken lukte niet');
+    showVectorExportError(err);
   }finally{btn.disabled=false;btn.textContent=oldLabel;}
 }
 $('viewBlackPdf').onclick=()=>blackPdfAction('view');
@@ -2906,15 +3291,15 @@ $('quickBlackPdf').onclick=()=>$('viewBlackPdf').click();
 
 $('downloadArtworkPdf').onclick=async()=>{
   const btn=$('downloadArtworkPdf'),oldLabel=btn.textContent;
-  $('pdfViewLink').style.display='none';$('pdfDownloadLink').style.display='none';
+  clearPdfLinks();
   btn.disabled=true;btn.textContent='PDF maken...';
   try{
+    const filename=`drukbestand-vector-${state.flap.w}x${state.flap.h}cm.pdf`;
     const blob=await makeArtworkPdfBlob();
-    const filename=`artwork-zonder-achtergrond-${state.flap.w}x${state.flap.h}cm.pdf`;
     const url=showPdfLinks(blob,filename);
-    try{triggerPdfDownload(url,filename);toast('Artwork PDF gedownload');}
+    try{triggerPdfDownload(url,filename);toast('Vector-drukbestand gedownload');}
     catch(e){$('downloadMenu').open=true;toast('PDF klaar — klik op de downloadlink in Download');}
-  }catch(err){console.error(err);toast('Artwork PDF maken lukte niet');}
+  }catch(err){console.error(err);showVectorExportError(err);}
   finally{btn.disabled=false;btn.textContent=oldLabel;}
 };
 
@@ -2925,6 +3310,7 @@ function encodeShareState(){
     const copy={...logo};
     if(copy.svgMarkup){
       delete copy.src;delete copy.originalRasterSrc;delete copy.vectorCrop;
+      delete copy.originalVectorMarkup;delete copy.originalVectorFrame;delete copy.originalVectorPrintColors;
     }
     return copy;
   });
@@ -3007,17 +3393,12 @@ function currentShareUrl(){
 let currentLocalDesignId=null;
 let localDbPromise=null;
 const localStoragePrefix='spatlap-preview-design-';
+let designStorageModule;
+async function storageModule(){return designStorageModule??=await import('./admin/cloud-storage.js');}
 function openLocalDb(){
-  if(!localDbPromise)localDbPromise=new Promise((resolve,reject)=>{
-    if(!window.indexedDB){reject(new Error('Browseropslag niet beschikbaar'));return;}
-    const request=indexedDB.open('spatlap-preview-designs',1);
-    request.onupgradeneeded=()=>request.result.createObjectStore('designs',{keyPath:'id'});
-    request.onsuccess=()=>resolve(request.result);
-    request.onerror=()=>reject(request.error||new Error('Browseropslag niet beschikbaar'));
-    request.onblocked=()=>reject(new Error('Browseropslag is geblokkeerd'));
-  });
-  return localDbPromise;
+  return localDbPromise??=(async()=>{const storage=await storageModule();return storage.openDesignDatabase();})();
 }
+async function usesCloudDesigns(){return (await (await storageModule()).storageRuntime()).mode==='cloud';}
 async function writeLocalDesign(record){
   try{
     const db=await openLocalDb();
@@ -3028,6 +3409,7 @@ async function writeLocalDesign(record){
       tx.onabort=()=>reject(tx.error);
     });
   }catch(dbError){
+    if(await usesCloudDesigns())throw dbError;
     try{localStorage.setItem(localStoragePrefix+record.id,JSON.stringify(record));}
     catch(storageError){throw new Error('Browseropslag niet beschikbaar of vol');}
   }
@@ -3039,10 +3421,11 @@ async function readLocalDesign(id){
       const tx=db.transaction('designs','readonly');
       const request=tx.objectStore('designs').get(id);
       request.onsuccess=()=>resolve(request.result);
-      request.onerror=()=>reject(request.error);
+      request.onerror=()=>reject(request.error);tx.onerror=()=>reject(tx.error);
     });
     if(record)return record;
-  }catch(e){}
+  }catch(e){if(await usesCloudDesigns())throw e;}
+  if(await usesCloudDesigns())return null;
   try{return JSON.parse(localStorage.getItem(localStoragePrefix+id)||'null');}catch(e){return null;}
 }
 async function allLocalDesigns(){
@@ -3053,10 +3436,11 @@ async function allLocalDesigns(){
       const tx=db.transaction('designs','readonly');
       const request=tx.objectStore('designs').getAll();
       request.onsuccess=()=>resolve(request.result);
-      request.onerror=()=>reject(request.error);
+      request.onerror=()=>reject(request.error);tx.onerror=()=>reject(tx.error);
     });
     for(const record of list)records.set(record.id,record);
-  }catch(e){}
+  }catch(e){if(await usesCloudDesigns())throw e;}
+  if(await usesCloudDesigns())return [...records.values()].sort((a,b)=>b.updatedAt-a.updatedAt);
   try{
     for(let i=0;i<localStorage.length;i++){
       const key=localStorage.key(i);
@@ -3067,7 +3451,7 @@ async function allLocalDesigns(){
   }catch(e){}
   return [...records.values()].sort((a,b)=>b.updatedAt-a.updatedAt);
 }
-function localDesignUrl(id){return location.href.split(/[?#]/)[0]+'#local='+encodeURIComponent(id);}
+function localDesignUrl(id){const url=new URL(location.href);url.hash='local='+encodeURIComponent(id);if(!crmBinding){const mode=url.searchParams.get('storage');url.search='';if(mode==='cloud')url.searchParams.set('storage','cloud');}return url.href;}
 function showLocalLink(id,message){
   const status=$('shareStatus');status.replaceChildren();
   status.append(document.createTextNode(message+' '));
@@ -3077,11 +3461,13 @@ function showLocalLink(id,message){
 function compactDesignState(){return {f:state.flap,h:state.holes,l:state.logos,t:state.texts,u:state.ui};}
 const designFormat='spatlap-preview-design';
 const designFormatVersion=1;
-let integrationContext={customerId:null,orderId:null,designId:null};
+let integrationContext={customerId:null,orderId:null,itemId:null,designId:null};
+let crmBinding=null,crmBindingError=null,productDesignModule=null,activeDesignSave=null;
+async function productModule(){return productDesignModule??=await import('./admin/product-designs.js');}
 let centralStorageAdapter=null;
 function normalizeIntegrationContext(value={}){
   const result={};
-  for(const key of ['customerId','orderId','designId']){
+  for(const key of ['customerId','orderId','itemId','designId']){
     const id=value?.[key];
     result[key]=id==null||id===''?null:String(id);
   }
@@ -3124,22 +3510,54 @@ function importDesignDocument(documentData){
   $('localDesignName').value='';
   return true;
 }
+async function loadFromDesignFileQuery(){
+  const path=new URLSearchParams(location.search).get('ontwerp');
+  if(!path)return false;
+  const url=new URL(path,location.href);
+  if(url.origin!==location.origin)throw new Error('Het ontwerpbestand moet op dezelfde server staan als de tool.');
+  const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),15000);
+  try{
+    $('shareStatus').textContent='Ontwerpbestand laden...';
+    const response=await fetch(url,{signal:controller.signal,cache:'no-store'});
+    if(!response.ok)throw new Error('Het ontwerpbestand kon niet worden gevonden.');
+    const documentData=await response.json();
+    importDesignDocument(documentData);
+    $('localDesignName').value=String(documentData.name||'');
+    $('shareStatus').textContent='Ontwerpbestand geopend. Klik op Bewaar om je wijzigingen lokaal op te slaan.';
+    return true;
+  }finally{clearTimeout(timer);}
+}
 function setCentralStorageAdapter(adapter){
   if(!adapter||typeof adapter.save!=='function'||typeof adapter.load!=='function'){
     throw new TypeError('Opslagadapter moet save en load functies hebben');
   }
   centralStorageAdapter=adapter;
 }
-async function saveCurrentLocally(){
-  const id=currentLocalDesignId||(crypto.randomUUID?.()||('d'+Date.now().toString(36)+Math.random().toString(36).slice(2)));
-  const name=$('localDesignName').value.trim()||`Ontwerp ${new Date().toLocaleString('nl-NL')}`;
-  const record={id,name,updatedAt:Date.now(),payload:JSON.parse(JSON.stringify(compactDesignState())),context:{...integrationContext}};
-  await writeLocalDesign(record);
-  currentLocalDesignId=id;
-  $('localDesignName').value=name;
-  location.hash='local='+encodeURIComponent(id);
-  await renderSavedDesigns();
-  return id;
+function saveCurrentLocally(){
+  if(activeDesignSave)return activeDesignSave;
+  activeDesignSave=performDesignSave().finally(()=>activeDesignSave=null);return activeDesignSave;
+}
+async function performDesignSave(){
+  await previewReady;
+  if(crmBindingError)throw crmBindingError;
+  const inert=document.body.inert;document.body.inert=true;
+  $('shareStatus').textContent=crmBinding?'Ontwerp en voorbeeld bewaren bij het product…':'Ontwerp bewaren…';
+  try{
+    if(crmBinding){
+      const measurements=(await productModule()).designMeasurements(state.flap);
+      state.flap.w=measurements.width/10;state.flap.h=measurements.height/10;state.flap.qty=String(measurements.quantity);syncUIFromState();render();
+    }
+    const id=crmBinding?.designId||currentLocalDesignId||(crypto.randomUUID?.()||('d'+Date.now().toString(36)+Math.random().toString(36).slice(2)));
+    const name=$('localDesignName').value.trim()||(crmBinding?crmBinding.description:`Ontwerp ${new Date().toLocaleString('nl-NL')}`);
+    assertDurableLogoSources(state.logos);
+    const record={id,name,updatedAt:Date.now(),payload:JSON.parse(JSON.stringify(compactDesignState())),context:{...integrationContext}};
+    if(crmBinding)await (await productModule()).saveProductDesign(crmBinding,record,await createPreviewPngBlob());
+    else await writeLocalDesign(record);
+    currentLocalDesignId=id;$('localDesignName').value=name;
+    location.hash='local='+encodeURIComponent(id);
+    if(!crmBinding)await renderSavedDesigns();
+    return id;
+  }finally{document.body.inert=inert;}
 }
 async function renderSavedDesigns(){
   const box=$('savedDesigns');box.replaceChildren();
@@ -3159,14 +3577,15 @@ async function openSavedDesign(id){
     $('shareStatus').textContent='Dit ontwerp is niet meer aanwezig in deze browser.';return false;
   }
   currentLocalDesignId=id;
-  integrationContext=normalizeIntegrationContext(record.context);
+  integrationContext=normalizeIntegrationContext(crmBinding||record.context);
+  if(crmBinding){state.flap.w=crmBinding.width?crmBinding.width/10:state.flap.w;state.flap.h=crmBinding.height?crmBinding.height/10:state.flap.h;state.flap.qty=String(crmBinding.quantity);syncUIFromState();render();}
   $('localDesignName').value=record.name||'';
   location.hash='local='+encodeURIComponent(id);
-  $('shareStatus').textContent='Lokaal ontwerp geopend.';
+  $('shareStatus').textContent=await usesCloudDesigns()?'Ontwerp uit centrale opslag geopend.':'Lokaal ontwerp geopend.';
   return true;
 }
 $('saveLocal').onclick=async()=>{
-  try{const id=await saveCurrentLocally();showLocalLink(id,'Ontwerp bewaard in deze browser.');toast('Ontwerp bewaard');}
+  try{const id=await saveCurrentLocally();showLocalLink(id,crmBinding?'Ontwerp en voorbeeld bewaard bij dit product.':await usesCloudDesigns()?'Ontwerp bewaard in de centrale opslag.':'Ontwerp bewaard in deze browser.');toast(crmBinding?'Ontwerp, afbeelding en aantal bijgewerkt in CRM':'Ontwerp bewaard');}
   catch(err){$('shareStatus').textContent=err.message||'Bewaren lukte niet in deze browser.';}
 };
 $('headerSave').onclick=()=>$('saveLocal').click();
@@ -3181,7 +3600,7 @@ $('copyLocalUrl').onclick=async()=>{
   catch(err){$('shareStatus').textContent=err.message||'Bewaren lukte niet in deze browser.';return;}
   try{
     await navigator.clipboard.writeText(localDesignUrl(id));
-    $('shareStatus').textContent='Korte lokale link gekopieerd. Deze werkt alleen hier in deze browser.';
+    $('shareStatus').textContent=await usesCloudDesigns()?'Link naar centraal opgeslagen ontwerp gekopieerd.':'Korte lokale link gekopieerd. Deze werkt alleen hier in deze browser.';
     toast('Korte link gekopieerd');
   }catch(err){showLocalLink(id,'Ontwerp bewaard, maar kopiëren lukte niet.');}
 };
@@ -3238,8 +3657,9 @@ function loadFromQuery(){
   };
   const s=(k,def=null)=>q.has(k)?q.get(k):def;
 
-  if(q.has('w'))state.flap.w=Math.max(10,n('w',state.flap.w));
-  if(q.has('h'))state.flap.h=Math.max(5,n('h',state.flap.h));
+  const units=q.get('unit')==='mm'?0.1:1;
+  if(q.has('w'))state.flap.w=Math.max(10,n('w',state.flap.w)*units);
+  if(q.has('h'))state.flap.h=Math.max(5,n('h',state.flap.h)*units);
   if(q.has('qty'))state.flap.qty=s('qty','');
   if(q.has('color')){
     const c=String(s('color')).toLowerCase();
@@ -3272,7 +3692,7 @@ function loadFromQuery(){
       text:txt,
       size:Math.max(.5,n('textSize',5)),
       color:normalizeHex(s('textColor','#FFFFFF')),
-      font:s('textFont','Arial, sans-serif'),
+      font:s('textFont','Arimo, sans-serif'),
       tracking:textTracking(n('textTracking',0)),
       weight:textWeight(n('textWeight',700)),
       x:Math.max(0,Math.min(1,n('textX',.5))),
@@ -3287,6 +3707,7 @@ function loadFromQuery(){
 }
 
 function applyCompactState(x){
+  clearVectorEditing();
   if(!x||!x.f||!x.h||!Array.isArray(x.l||[])||!Array.isArray(x.t||[]))return false;
   state.flap=x.f;
   if(state.flap.shape==='tapered')state.flap.shape='shoulder';
@@ -3327,6 +3748,7 @@ $('confirmReset').onclick=()=>{
     flap:{w:190,h:25,qty:'',shape:'square',radius:5,shoulderInset:5,shoulderTopH:5,color:'#080808'},
     holes:{on:true,count:6,shape:'round',top:3,side:10,h:1.2,w:2.2},
     ui:{wideMode:false,zones:true,zoneCenter:50,topGuideOn:false,showColorCount:false,manualColorCount:''}};
+  if(crmBinding){if(crmBinding.width)state.flap.w=crmBinding.width/10;if(crmBinding.height)state.flap.h=crmBinding.height/10;state.flap.qty=String(crmBinding.quantity);}
   syncUIFromState();render();
   toast('Nieuw ontwerp gestart');
 };
@@ -3343,12 +3765,46 @@ window.addEventListener('resize',render);
 async function initDesign(){
   syncUIFromState();
   let loaded=false;
-  if(location.hash.startsWith('#local=')){
+  const query=new URLSearchParams(location.search),hasProduct=query.has('orderId')||query.has('itemId');
+  if(hasProduct){
+    try{
+      if(!query.get('orderId')||!query.get('itemId'))throw Error('De productkoppeling is onvolledig. Open de tool vanuit de productregel.');
+      crmBinding=await (await productModule()).loadProductDesign(query.get('orderId'),query.get('itemId'));
+      if(crmBinding.record){
+        if(!applyCompactState(crmBinding.record.payload))throw Error('Het opgeslagen ontwerp kan niet worden geopend.');
+        currentLocalDesignId=crmBinding.record.id;$('localDesignName').value=crmBinding.record.name;loaded=true;
+      }else loadFromQuery();
+      integrationContext=normalizeIntegrationContext(crmBinding);
+      if(crmBinding.width)state.flap.w=crmBinding.width/10;
+      if(crmBinding.height)state.flap.h=crmBinding.height/10;
+      state.flap.qty=String(crmBinding.quantity);syncUIFromState();render();loaded=true;
+      $('saveLocal').textContent='Bewaren bij product';$('copyLocalUrl').textContent='Korte productlink';
+      const info=document.createElement('div');info.className='field-help';info.style.marginBottom='12px';
+      info.textContent=`Order #${crmBinding.number} · ${crmBinding.company} · ${crmBinding.description}. Bewaren werkt dit product bij, inclusief afbeelding, afmetingen en aantal.`;
+      $('saveLocal').closest('.share-bar').before(info);
+      $('shareStatus').textContent=crmBinding.record?'Opgeslagen productontwerp geopend.':'Nieuw ontwerp gekoppeld aan dit product.';
+    }catch(error){crmBindingError=error;$('shareStatus').textContent=error.message;}
+  }
+  if(!hasProduct&&location.hash.startsWith('#local=')){
     try{loaded=await openSavedDesign(decodeURIComponent(location.hash.slice(7)));}
     catch(e){$('shareStatus').textContent='Lokaal ontwerp openen lukte niet.';}
-  }else loaded=loadFromHash();
-  if(!loaded&&!loadFromQuery())render();
-  await renderSavedDesigns();
+  }else if(!hasProduct&&location.hash.startsWith('#design='))loaded=loadFromHash();
+  else if(!hasProduct){
+    try{loaded=await loadFromDesignFileQuery();}
+    catch(error){$('shareStatus').textContent=error.name==='AbortError'?'Ontwerp laden duurde te lang. Open de link opnieuw.':error.message||'Ontwerpbestand openen lukte niet.';}
+  }
+  if(!hasProduct&&!loaded&&!loadFromQuery())render();
+  try {
+    await renderSavedDesigns();
+    if(!crmBinding&&await usesCloudDesigns()){
+      $('saveLocal').textContent='Bewaren in CRM';
+      $('copyLocalUrl').textContent='Korte CRM-link';
+      const savedSection=$('savedDesigns').closest('details');savedSection.querySelector('summary').textContent='Ontwerpen in CRM-opslag';
+      const help=savedSection.querySelector('.field-help');
+      if(help)help.textContent='Dit ontwerp wordt in de centrale CRM-opslag bewaard. De korte link opent het opgeslagen ontwerp; voor online toegang is straks je CRM-login nodig.';
+    }
+    if(crmBinding){const section=$('savedDesigns').closest('details');section.querySelector('summary').textContent='Een bestaand ontwerp als basis gebruiken';section.querySelector('.field-help').textContent='Je kunt een eerder los bewaard ontwerp openen. Bewaren koppelt de aangepaste kopie aan dit product; maten en aantal volgen de order.';}
+  } catch(error){$('shareStatus').textContent=error.message;}
   updateHistoryButtons();
 }
 const previewReady=initDesign();

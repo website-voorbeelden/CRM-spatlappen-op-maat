@@ -1,0 +1,20 @@
+{
+  "name": "crm-spatlappen-op-maat",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "python3 dev-server.py",
+    "start": "python3 dev-server.py",
+    "build": "node scripts/build-pages.mjs",
+    "prepare:render": "node scripts/prepare-render.mjs",
+    "prepare:github": "node scripts/prepare-github.mjs",
+    "test:backend": "node tests/cloud-backend.mjs",
+    "dev:cloud": "node scripts/cloud-dev.mjs",
+    "test:cloud": "node tests/cloud-integration.mjs"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.64.0",
+    "wrangler": "^4.149.0"
+  },
+  "type": "module"
+}

@@ -1,0 +1,3 @@
+# Only used by wrangler pages dev. Never copy this flag to Cloudflare settings.
+CRM_LOCAL_DEV=true
+CRM_LOCAL_SERVICES=http://127.0.0.1:3000
