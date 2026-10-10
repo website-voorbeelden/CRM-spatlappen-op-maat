@@ -1,0 +1,8 @@
+**
+!document-generator.py
+!document-service/
+!document-service/server.py
+!document-service/runtime.json
+!document-service/Dockerfile
+!document-service/templates/
+!document-service/templates/*.docx

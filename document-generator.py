@@ -1,0 +1,482 @@
+"""Fill the retained Word template; run with the configured document runtime."""
+import base64
+import copy
+import json
+import os
+import re
+import subprocess
+import sys
+import tempfile
+from decimal import Decimal, ROUND_HALF_UP
+from pathlib import Path
+from zipfile import ZipFile
+from lxml import etree
+
+ROOT = Path(__file__).resolve().parent
+W = 'http://schemas.openxmlformats.org/wordprocessingml/2006/main'
+NS = {'w': W}
+TAG = lambda name: '{' + W + '}' + name
+DOCUMENT_TYPES = {
+    'confirmation': {'title': 'Orderbevestiging', 'prefix': 'OB', 'label': 'OB-nummer', 'file': 'Orderbevestiging'},
+    'quote': {'title': 'Offerte', 'prefix': 'OF', 'label': 'Offertenummer', 'file': 'Offerte'},
+    'proforma': {'title': 'Proforma factuur', 'prefix': 'PF', 'label': 'Proformanummer', 'file': 'Proforma_factuur'},
+    'invoice': {'title': 'Factuur', 'prefix': 'F', 'label': 'Factuurnummer', 'file': 'Factuur'},
+}
+
+
+def money(value):
+    whole, fraction = f'{value / 100:,.2f}'.split('.')
+    return '€ ' + whole.replace(',', '.') + ',' + fraction
+
+
+def amount(value):
+    if isinstance(value, bool) or not isinstance(value, int) or not 0 <= value <= 100_000_000:
+        raise ValueError('Controleer de verkoopbedragen in de order.')
+    return value
+
+
+def text(value):
+    if not isinstance(value, str) or len(value) > 500 or any(ord(c) < 32 and c not in '\n\t' for c in value):
+        raise ValueError('Controleer de documenttekst; maximaal 500 tekens per veld.')
+    return value.strip()
+
+
+def paragraph_properties(paragraph):
+    properties = paragraph.find('w:pPr', NS)
+    if properties is None:
+        properties = etree.Element(TAG('pPr'))
+        paragraph.insert(0, properties)
+    return properties
+
+
+def grow_row(row):
+    height = row.find('w:trPr/w:trHeight', NS)
+    if height is not None:
+        height.set(TAG('hRule'), 'atLeast')
+    # Allow wrapping without the inherited spacing hidden by fixed-height rows.
+    for paragraph in row.findall('.//w:p', NS):
+        properties = paragraph_properties(paragraph)
+        spacing = properties.find('w:spacing', NS)
+        if spacing is None:
+            spacing = etree.SubElement(properties, TAG('spacing'))
+        for key, value in [('before', '0'), ('after', '0'), ('line', '200'), ('lineRule', 'exact')]:
+            spacing.set(TAG(key), value)
+
+
+def keep_row_with_next(row):
+    for paragraph in row.findall('.//w:p', NS):
+        properties = paragraph_properties(paragraph)
+        if properties.find('w:keepNext', NS) is None:
+            etree.SubElement(properties, TAG('keepNext'))
+
+
+def table_with_rows(original, rows):
+    table = copy.deepcopy(original)
+    for row in table.findall('w:tr', NS):
+        table.remove(row)
+    for row in rows:
+        table.append(copy.deepcopy(row))
+    return table
+
+
+def table_separator():
+    # Word merges adjacent tables without a separating paragraph.
+    paragraph = etree.Element(TAG('p'))
+    properties = etree.SubElement(paragraph, TAG('pPr'))
+    etree.SubElement(properties, TAG('spacing'), {TAG('before'): '0', TAG('after'): '0',
+                                                 TAG('line'): '1', TAG('lineRule'): 'exact'})
+    etree.SubElement(properties, TAG('keepNext'))
+    run = etree.SubElement(paragraph, TAG('r'))
+    style = etree.SubElement(run, TAG('rPr'))
+    etree.SubElement(style, TAG('sz'), {TAG('val'): '2'})
+    return paragraph
+
+
+def move_top_border(source, target):
+    separator = source.find('.//w:tcBorders/w:top', NS)
+    if separator is None:
+        return
+    for cell in target.findall('w:tc', NS):
+        properties = cell.find('w:tcPr', NS)
+        if properties is None:
+            properties = etree.Element(TAG('tcPr'))
+            cell.insert(0, properties)
+        borders = properties.find('w:tcBorders', NS)
+        if borders is None:
+            borders = etree.SubElement(properties, TAG('tcBorders'))
+        for border in borders.findall('w:top', NS):
+            borders.remove(border)
+        borders.insert(0, copy.deepcopy(separator))
+
+
+def fill_table(table, slots):
+    for control in table.findall('.//w:sdt', NS):
+        tag = control.find('w:sdtPr/w:tag', NS)
+        if tag is None:
+            continue
+        key = tag.get(TAG('val'))
+        if key not in slots:
+            raise ValueError('Onbekende templatevariabele: ' + key)
+        if key == 'page_number':
+            # Real page fields also stay correct if longer custom text flows
+            # onto an extra page. Preserve the template's original run style.
+            content = control.find('w:sdtContent', NS)
+            first_run = content.find('.//w:r', NS)
+            style = first_run.find('w:rPr', NS) if first_run is not None else None
+            for child in list(content):
+                content.remove(child)
+            for instruction, cached in [('PAGE', slots['_page']), (None, ' / '), ('NUMPAGES', slots['_pages'])]:
+                parent = content if instruction is None else etree.SubElement(content, TAG('fldSimple'), {TAG('instr'): instruction})
+                run = etree.SubElement(parent, TAG('r'))
+                if style is not None:
+                    run.append(copy.deepcopy(style))
+                etree.SubElement(run, TAG('t'), {'{http://www.w3.org/XML/1998/namespace}space': 'preserve'}).text = str(cached)
+            for marker in control.findall('.//w:showingPlcHdr', NS):
+                marker.getparent().remove(marker)
+            continue
+        nodes = control.findall('.//w:sdtContent//w:t', NS)
+        if not nodes:
+            raise ValueError('Lege templatevariabele: ' + key)
+        nodes[0].text = slots[key] or ('' if key in slots.get('_blank_slots', set()) else '-')
+        nodes[0].set('{http://www.w3.org/XML/1998/namespace}space', 'preserve')
+        for node in nodes[1:]:
+            node.text = ''
+        # Keep the existing control and its original run styling intact.
+        for marker in control.findall('.//w:showingPlcHdr', NS):
+            marker.getparent().remove(marker)
+    for node in table.findall('.//w:t', NS):
+        if node.text == 'BTW 21%':
+            node.text = 'BTW ' + slots['_vat_label'] + '%'
+
+
+def fill_invoice_text(element, slots):
+    # Word can split one placeholder across several styled runs. Replace only
+    # its text, keeping the source paragraph/run properties and package parts.
+    for paragraph in list(element.findall('.//w:p', NS)):
+        nodes = paragraph.findall('.//w:t', NS)
+        combined = ''.join(node.text or '' for node in nodes)
+        matches = list(re.finditer(r'\{\{(\w+)\}\}', combined))
+        ranges, offset = [], 0
+        for node in nodes:
+            end = offset + len(node.text or '')
+            ranges.append((node, offset, end))
+            offset = end
+        for match in reversed(matches):
+            key = match.group(1)
+            if key not in slots:
+                raise ValueError('Onbekende factuurvariabele: ' + key)
+            touched = [(node, start, end) for node, start, end in ranges
+                       if start < match.end() and end > match.start()]
+            for index, (node, start, end) in enumerate(touched):
+                prefix = (node.text or '')[:max(0, match.start() - start)] if index == 0 else ''
+                suffix = (node.text or '')[match.end() - start:] if index == len(touched) - 1 else ''
+                node.text = prefix + (str(slots[key]) if index == 0 else '') + suffix
+                node.set('{http://www.w3.org/XML/1998/namespace}space', 'preserve')
+        if matches and not ''.join(paragraph.xpath('.//w:t/text()', namespaces=NS)).strip():
+            parent = paragraph.getparent()
+            if parent.tag != TAG('tc') or len(parent.findall('w:p', NS)) > 1:
+                parent.remove(paragraph)
+                continue
+        for node in list(paragraph.findall('.//w:t', NS)):
+            if '\n' not in (node.text or ''):
+                continue
+            lines = node.text.split('\n')
+            node.text = lines[0]
+            parent, position = node.getparent(), node.getparent().index(node) + 1
+            for line in lines[1:]:
+                parent.insert(position, etree.Element(TAG('br')))
+                extra = etree.Element(TAG('t'), {'{http://www.w3.org/XML/1998/namespace}space': 'preserve'})
+                extra.text = line
+                parent.insert(position + 1, extra)
+                position += 2
+
+
+def build_invoice(payload, target, slots, items, package):
+    from datetime import date
+    fields = payload.get('fields', {})
+    for key in ['billing_attention', 'payment_method', 'date_label', 'transaction_date', 'invoice_note']:
+        slots[key] = text(fields.get(key, ''))
+    slots['customer_reference'] = slots['customer_reference'] or '-'
+    if slots['transaction_date']:
+        slots['transaction_date'] = date.fromisoformat(slots['transaction_date']).strftime('%d-%m-%Y')
+    else:
+        slots['date_label'] = ''
+    paid = amount(payload.get('paidAmount', 0))
+    total = slots['_grand_total']
+    slots.update(invoice_number=payload['number'], invoice_date=slots['document_date'],
+                 vat_rate=slots['vat_percentage'], payment_stamp='VOLDAAN' if total > 0 and paid >= total else '')
+    # Only an explicitly entered customer note is printed; accounting comments
+    # about receipts, shortfalls or overpayments belong in the CRM.
+    slots['payment_note'] = slots['invoice_note']
+    with ZipFile(ROOT / '.local/templates/invoice.docx') as source:
+        doc = etree.fromstring(source.read('word/document.xml'))
+        body = doc.find('w:body', NS)
+        tables = body.findall('w:tbl', NS)
+        if len(tables) != 5:
+            raise ValueError('De factuurtemplate heeft een onverwachte indeling.')
+        if not slots['payment_method']:
+            for paragraph in tables[1].findall('.//w:p', NS):
+                if '{{payment_method}}' in ''.join(paragraph.xpath('.//w:t/text()', namespaces=NS)):
+                    row = paragraph.xpath('ancestor::w:tr[1]', namespaces=NS)[0]
+                    row.getparent().remove(row)
+        articles = tables[2]
+        heading, prototype = articles.findall('w:tr', NS)
+        articles.remove(prototype)
+        properties = heading.find('w:trPr', NS)
+        if properties is None:
+            properties = etree.Element(TAG('trPr'))
+            heading.insert(0, properties)
+        etree.SubElement(properties, TAG('tblHeader'))
+        keep_row_with_next(heading)
+        # Leave breathing room between the retained top rule and column titles.
+        for cell in heading.findall('w:tc', NS):
+            margins = cell.find('w:tcPr/w:tcMar', NS)
+            top = margins.find('w:top', NS)
+            top.set(TAG('w'), '160')
+        for index, item in enumerate(items, 1):
+            row = copy.deepcopy(prototype)
+            row.find('w:tc', NS).find('.//w:t', NS).text = str(index)
+            details = item['details']
+            fill_invoice_text(row, dict(slots, item_description=item['description'],
+                                       item_details=details[0] if details else '',
+                                       item_notes='\n'.join(details[1:]), qty=str(item['quantity']),
+                                       item_total='Inbegrepen' if package is not None else money(item['price'] * item['quantity'])))
+            # The source row already grows naturally; retain its paragraph rhythm.
+            articles.append(row)
+        if not slots['payment_stamp']:
+            body.remove(tables[4])
+        fill_invoice_text(body, slots)
+        # Keep totals/payment together on the final page without repeating the
+        # company and billing blocks when the article table spans several pages.
+        closing = False
+        for child in body:
+            if child is tables[3]:
+                closing = True
+            if closing:
+                for paragraph in child.findall('.//w:p', NS) if child.tag != TAG('p') else [child]:
+                    properties = paragraph_properties(paragraph)
+                    if properties.find('w:keepNext', NS) is None:
+                        etree.SubElement(properties, TAG('keepNext'))
+        paragraphs = body.findall('w:p', NS)
+        if paragraphs:
+            last_keep = paragraphs[-1].find('w:pPr/w:keepNext', NS)
+            if last_keep is not None:
+                last_keep.getparent().remove(last_keep)
+        if '{{' in ''.join(doc.xpath('//w:t/text()', namespaces=NS)):
+            raise ValueError('Er staan nog onverwerkte factuurvariabelen in de template.')
+        settings = etree.fromstring(source.read('word/settings.xml'))
+        update = settings.find('w:updateFields', NS)
+        if update is None:
+            update = etree.SubElement(settings, TAG('updateFields'))
+        update.set(TAG('val'), 'true')
+        changed = {'word/document.xml': doc, 'word/settings.xml': settings}
+        with ZipFile(target, 'w') as output:
+            for info in source.infolist():
+                output.writestr(info, etree.tostring(changed[info.filename], xml_declaration=True, encoding='UTF-8', standalone=True)
+                                if info.filename in changed else source.read(info.filename))
+
+
+def build(payload, target):
+    spec = DOCUMENT_TYPES.get(payload.get('kind'))
+    if spec is None:
+        raise ValueError('Kies offerte, orderbevestiging, proforma of factuur.')
+    number = text(payload.get('number', ''))
+    if number != 'CONCEPT' and not re.fullmatch(spec['prefix'] + r'-\d{4}-\d{4,}', number):
+        raise ValueError('Ongeldig documentnummer.')
+    fields = payload.get('fields', {})
+    keys = ['billing_company', 'billing_street', 'billing_postal_city', 'billing_country',
+            'shipping_company', 'shipping_street', 'shipping_postal_city', 'shipping_country',
+            'customer_number', 'payment_terms', 'document_date', 'customer_reference',
+            'ordered_by', 'delivery_method', 'delivery_terms', 'handled_by', 'customer_phone',
+            'customer_email', 'printing_details', 'production_tolerance', 'expected_lead_time']
+    slots = {key: text(fields.get(key, '')) for key in keys}
+    for key, default in [('production_tolerance', '7%'), ('handled_by', 'Philippe'),
+                         ('delivery_method', 'Afhalen of verzenden'), ('expected_lead_time', '2 tot 8 weken')]:
+        slots[key] = slots[key] or default
+    slots['document_number'] = number
+    items = payload.get('items', [])
+    if not isinstance(items, list) or not 1 <= len(items) <= 40:
+        raise ValueError('Een document heeft 1 tot 40 productregels nodig.')
+    package = payload.get('packagePrice')
+    if package is not None:
+        package = amount(package)
+    subtotal = 0
+    for item in items:
+        item['description'] = text(item.get('description', ''))
+        details = item.get('details', [item.get('detail1', ''), item.get('detail2', '')])
+        if not isinstance(details, list) or len(details) > 100:
+            raise ValueError('Gebruik maximaal 100 extra tekstregels per artikel.')
+        item['details'] = [clean for value in details if (clean := text(value))]
+        if not item['description'] or len(item['description']) > 200:
+            raise ValueError('Gebruik een productomschrijving van maximaal 200 tekens.')
+        qty = item.get('quantity')
+        if isinstance(qty, bool) or not isinstance(qty, int) or not 1 <= qty <= 100_000:
+            raise ValueError('Controleer de productaantallen.')
+        if package is None:
+            subtotal += amount(item.get('price')) * qty
+    subtotal = package if package is not None else subtotal
+    shipping = amount(payload.get('shippingCharge', 0))
+    vat = Decimal(str(payload.get('vat')))
+    if not vat.is_finite() or not 0 <= vat <= 100:
+        raise ValueError('Controleer het btw-percentage.')
+    net = subtotal + shipping
+    tax = int((Decimal(net) * vat / 100).quantize(Decimal('1'), rounding=ROUND_HALF_UP))
+    slots['vat_percentage'] = str(vat).rstrip('0').rstrip('.') if '.' in str(vat) else str(vat)
+    slots.update(shipping_fee=money(shipping), small_order_fee=money(0), credit_surcharge=money(0),
+                 diesel_surcharge=money(0), subtotal=money(subtotal), total_surcharges=money(shipping),
+                 total_ex_vat=money(net), vat_amount=money(tax), grand_total=money(net + tax),
+                 _vat_label=str(vat).rstrip('0').rstrip('.') if '.' in str(vat) else str(vat))
+    if payload['kind'] == 'invoice':
+        slots['_grand_total'] = net + tax
+        return build_invoice(payload, target, slots, items, package)
+    template = ROOT / '.local/templates/order-confirmation.docx'
+    with ZipFile(template) as source:
+        doc = etree.fromstring(source.read('word/document.xml'))
+        body = doc.find('w:body', NS)
+        original = body.find('w:tbl', NS)
+        insertion = list(body).index(original)
+        rows = original.findall('w:tr', NS)
+        body.remove(original)
+        local = dict(slots, page_number='1 / 1', _page=1, _pages=1)
+
+        # Separate tables allow just the article column headings to repeat.
+        # The company/customer block appears once, at the start of the document.
+        header = table_with_rows(original, rows[:15])
+        title = header.find('w:tr', NS).findall('w:tc', NS)[-1].findall('.//w:t', NS)
+        title[0].text = spec['title']
+        for node in title[1:]:
+            node.text = ''
+        for node in header.findall('.//w:t', NS):
+            if node.text in ('Nummer', 'OB-nummer'):
+                node.text = spec['label']
+            elif node.text == 'Klantverwijzing':
+                node.text = 'Orderreferentie'
+        fill_table(header, local)
+        for row_index, row in enumerate(header.findall('w:tr', NS)):
+            if 2 <= row_index <= 13:
+                grow_row(row)
+            keep_row_with_next(row)
+
+        articles = table_with_rows(original, [rows[15]])
+        heading = articles.find('w:tr', NS)
+        etree.SubElement(heading.find('w:trPr', NS), TAG('tblHeader'))
+        grow_row(heading)
+        keep_row_with_next(heading)
+        for index, item in enumerate(items, 1):
+            main = copy.deepcopy(rows[17])
+            for control in main.findall('.//w:sdt', NS):
+                tag = control.find('w:sdtPr/w:tag', NS)
+                key = tag.get(TAG('val'))
+                tag.set(TAG('val'), key.replace('_1', f'_{index}'))
+            local.update({f'item_{index}_description': item['description'],
+                          f'qty_{index}': str(item['quantity']),
+                          f'unit_{index}': 'Inbegrepen' if package is not None else money(item['price']),
+                          f'line_total_{index}': 'Inbegrepen' if package is not None else money(item['price'] * item['quantity'])})
+            position = main.xpath('.//w:t[text()="1"]', namespaces=NS)
+            if position:
+                position[0].text = str(index)
+            grow_row(main)
+            if item['details']:
+                keep_row_with_next(main)
+            articles.append(main)
+            for detail, value in enumerate(item['details'], 1):
+                row = copy.deepcopy(rows[18])
+                control = row.find('.//w:sdt', NS)
+                key = f'item_{index}_detail_{detail}'
+                control.find('w:sdtPr/w:tag', NS).set(TAG('val'), key)
+                local[key] = value
+                grow_row(row)
+                articles.append(row)
+            if index < len(items):
+                articles.append(copy.deepcopy(rows[20]))
+        fill_table(articles, local)
+
+        # One closing block, kept together on the final page. Keep the source
+        # total cells contiguous: their left-hand conditions use vertical merges.
+        closing = table_with_rows(original, rows[24:])
+        closing_rows = closing.findall('w:tr', NS)
+        if not slots['printing_details']:
+            move_top_border(closing_rows[1], closing_rows[2])
+            closing.remove(closing_rows[1])
+        # Footer text and its two-line layout come directly from the template.
+        # Replace the fixed space of the original one-page form with a short gap.
+        closing_rows[9].find('w:trPr/w:trHeight', NS).set(TAG('val'), '200')
+        fill_table(closing, local)
+        final_rows = closing.findall('w:tr', NS)
+        for row in final_rows:
+            grow_row(row)
+        for row in final_rows[:-1]:
+            keep_row_with_next(row)
+
+        body.insert(insertion, header)
+        body.insert(insertion + 1, table_separator())
+        body.insert(insertion + 2, articles)
+        body.insert(insertion + 3, table_separator())
+        body.insert(insertion + 4, closing)
+        # Give naturally flowing content some space above the page edge.
+        margins = body.find('w:sectPr/w:pgMar', NS)
+        if margins is not None:
+            margins.set(TAG('bottom'), '600')
+        if '{{' in ''.join(doc.xpath('//w:t/text()', namespaces=NS)):
+            raise ValueError('Er staan nog onverwerkte variabelen in de template.')
+        settings = etree.fromstring(source.read('word/settings.xml'))
+        update_fields = settings.find('w:updateFields', NS)
+        if update_fields is None:
+            update_fields = etree.SubElement(settings, TAG('updateFields'))
+        update_fields.set(TAG('val'), 'true')
+        changed_parts = {'word/document.xml': doc, 'word/settings.xml': settings}
+        with ZipFile(target, 'w') as output:
+            for info in source.infolist():
+                output.writestr(info, etree.tostring(changed_parts[info.filename], xml_declaration=True, encoding='UTF-8', standalone=True)
+                                if info.filename in changed_parts else source.read(info.filename))
+
+
+def render(payload):
+    runtime_path = Path(os.environ.get('CRM_DOCUMENT_RUNTIME', str(ROOT / '.local/document-runtime.json')))
+    runtime = json.loads(runtime_path.read_text())
+    with tempfile.TemporaryDirectory(prefix='spatlappen-document-') as directory:
+        work = Path(directory)
+        docx = work / 'orderbevestiging.docx'
+        build(payload, docx)
+        profile = (work / 'office-profile').as_uri()
+        env = dict(os.environ)
+        if runtime.get('fontDirectories'):
+            font_config = etree.Element('fontconfig')
+            for directory in runtime['fontDirectories']:
+                etree.SubElement(font_config, 'dir').text = directory
+            etree.SubElement(font_config, 'cachedir').text = str(work / 'font-cache')
+            config_path = work / 'fonts.conf'
+            config_path.write_bytes(etree.tostring(font_config, xml_declaration=True, encoding='UTF-8'))
+            env['FONTCONFIG_FILE'] = str(config_path)
+        subprocess.run([runtime['soffice'], '-env:UserInstallation=' + profile, '--headless',
+                        '--convert-to', 'pdf', '--outdir', str(work), str(docx)],
+                       check=True, capture_output=True, timeout=45, env=env)
+        pdf = docx.with_suffix('.pdf')
+        if not pdf.exists():
+            raise ValueError('De Word-template kon niet naar PDF worden omgezet.')
+        info = subprocess.run([runtime['pdfinfo'], str(pdf)], capture_output=True, text=True, check=True).stdout
+        match = re.search(r'^Pages:\s+(\d+)', info, re.M)
+        if not match:
+            raise ValueError('Het aantal PDF-pagina’s kon niet worden bepaald.')
+        actual_pages = int(match.group(1))
+        previews = []
+        if payload.get('preview') or payload.get('number') == 'CONCEPT':
+            subprocess.run([str(Path(runtime['pdfinfo']).with_name('pdftoppm')), '-scale-to', '1400',
+                            '-png', str(pdf), str(work / 'page')],
+                           check=True, capture_output=True, timeout=30)
+            previews = [base64.b64encode(path.read_bytes()).decode()
+                        for path in sorted(work.glob('page-*.png'), key=lambda p: int(p.stem.split('-')[-1]))]
+        return {'pdf': base64.b64encode(pdf.read_bytes()).decode(),
+                'docx': base64.b64encode(docx.read_bytes()).decode(), 'pages': actual_pages, 'previews': previews,
+                'filename': DOCUMENT_TYPES[payload['kind']]['file'] + '_' + payload['number']}
+
+
+if __name__ == '__main__':
+    try:
+        print(json.dumps(render(json.load(sys.stdin))))
+    except (ValueError, KeyError) as error:
+        print(json.dumps({'error': str(error)}))
+        sys.exit(1)
+    except Exception:
+        print(json.dumps({'error': 'Document maken lukt niet. Controleer de lokale PDF-omzetter.'}))
+        sys.exit(1)

@@ -17,3 +17,7 @@ De toekomstige CRM-opslag, inloggen, Cloudflare D1/R2 en API-sleutels zitten **n
 De huidige URL op `website-voorbeelden.github.io/spatlappen-op-maat/` blijft uit de bestaande website-repository komen. Deze kopie uploaden naar een nieuwe repository verhuist die URL niet automatisch. Laat de bestaande bestanden daar staan totdat je een nieuwe hosting-URL hebt gekozen en oude links hebt opgevangen.
 
 Ontwerpen die alleen lokaal in je browser zijn bewaard, verhuizen niet automatisch naar een andere URL. Nieuwe wijzigingen aan de oude websitekopie worden ook niet automatisch naar deze nieuwe repository gekopieerd.
+
+## Documentservice deployen
+
+De stateless Word/PDF-service voor online hosting staat in `document-service/` en kan als Render Web Service worden uitgerold met `render.yaml`. Stel `CRM_DOCUMENT_SERVICE_TOKEN` daar als geheim in met een willekeurige waarde van minimaal 32 tekens. De service bevat geen CRM-database of API-sleutels; gegenereerde downloadbestanden blijven tijdelijk in het geheugen van de service.

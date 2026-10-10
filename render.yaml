@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: spatlappen-crm-documents
+    runtime: docker
+    plan: free
+    dockerfilePath: ./document-service/Dockerfile
+    dockerContext: .
+    healthCheckPath: /health
+    envVars:
+      - key: CRM_DOCUMENT_SERVICE_TOKEN
+        sync: false
