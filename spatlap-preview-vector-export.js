@@ -133,6 +133,10 @@
       return root;
     }finally{host.remove();}
   }
+  function orderedItems(design){
+    const entries=[...design.logos.map(obj=>({type:'logo',obj})),...design.texts.map(obj=>({type:'text',obj}))],order=new Map((design.ui?.layerOrder||[]).map((key,index)=>[key,index]));
+    return entries.map((entry,index)=>({...entry,rank:order.get(entry.type+':'+entry.obj.id)??order.size+index})).sort((a,b)=>a.rank-b.rank);
+  }
   async function outlineText(text,w,h){
     const family=firstFamily(text.font),weight=Number(text.weight)===400?400:700;
     const font=await loadFont(family,weight),value=String(text.text||'');
@@ -159,12 +163,12 @@
     clip.append(node('path',{d:flapPath||`M0 0H${w}V${h}H0Z`}));defs.append(clip);root.append(defs);
     const group=node('g',{'clip-path':'url(#spatlap-print-boundary)'});root.append(group);
     if(background)group.append(node('path',{d:flapPath||`M0 0H${w}V${h}H0Z`,fill:background}));
-    design.logos.forEach((logo,i)=>{
-      const svg=normalizeLogo(logo.svgMarkup,`sp-logo-${i}-`);
+    for(const [i,entry] of orderedItems(design).entries()){
+      if(entry.type==='text'){group.append(await outlineText(entry.obj,w,h));continue;}
+      const logo=entry.obj;const svg=normalizeLogo(logo.svgMarkup,`sp-logo-${i}-`);
       for(const [key,value] of Object.entries({x:logo.x*w-logo.w/2,y:logo.y*h-logo.h/2,width:logo.w,height:logo.h}))svg.setAttribute(key,String(value));
       group.append(svg);
-    });
-    for(const text of design.texts)group.append(await outlineText(text,w,h));
+    }
     if(contour){const wrapper=new DOMParser().parseFromString(`<svg xmlns="${NS}">${contour}</svg>`,'image/svg+xml');group.append(document.importNode(wrapper.documentElement.firstElementChild,true));}
     if(background)for(const hole of holes)group.append(node('rect',{x:hole.x,y:hole.y,width:hole.w,height:hole.h,rx:hole.h/2,fill:'#FFFFFF'}));
     if(root.querySelector('image,text,tspan,textPath,foreignObject,filter,mask'))throw new ExportError('De vectorcontrole is mislukt. Er wordt geen PDF als afbeelding gemaakt.');
@@ -188,5 +192,5 @@
     if(/\/Subtype\s*\/Image\b/.test(new TextDecoder('latin1').decode(buffer)))throw new ExportError('De PDF bevat een rasterafbeelding. De export is gestopt.');
     return new Blob([buffer],{type:'application/pdf'});
   }
-  window.SpatlapVectorExport={cssFont,firstFamily,families,issuesFor,parseLogo,normalizeLogo,artwork,createPdf,ExportError};
+  window.SpatlapVectorExport={orderedItems,cssFont,firstFamily,families,issuesFor,parseLogo,normalizeLogo,artwork,createPdf,ExportError};
 })();

@@ -11,9 +11,9 @@ export function productDesignUrl(o,item,mode='local') {
 }
 export const productDesignSignature=item=>JSON.stringify([item.id,item.width,item.height,item.quantity,item.designDocumentId||'',item.designUpdatedAt||'']);
 export function designMeasurements(flap) {
-  const width=Math.round(Number(flap.w)*10),height=Math.round(Number(flap.h)*10),quantity=Number(flap.qty);
+  const width=Math.round(Number(flap.w)*10),height=Math.round(Number(flap.h)*10),quantity=String(flap.qty??'').trim()===''?null:Number(flap.qty);
   if (!Number.isSafeInteger(width)||width<1||!Number.isSafeInteger(height)||height<1) throw Error('Vul geldige afmetingen in centimeters in.');
-  if (!Number.isSafeInteger(quantity)||quantity<1) throw Error('Vul een heel aantal van minimaal 1 in.');
+  if (quantity!==null&&(!Number.isSafeInteger(quantity)||quantity<1)) throw Error('Vul een heel aantal van minimaal 1 in.');
   return {width,height,quantity};
 }
 function read(db,name,key) {
@@ -43,7 +43,7 @@ export async function saveProductDesign(binding,record,preview) {
   const designDocumentId=crypto.randomUUID(),designPreviewId=crypto.randomUUID();
   const stored={...record,context:{customerId:binding.customerId,orderId:binding.orderId,itemId:binding.itemId,designId:record.id}};
   // Keep the saved artwork and PNG on the same whole-millimetre dimensions.
-  stored.payload.f.w=measurements.width/10;stored.payload.f.h=measurements.height/10;stored.payload.f.qty=String(measurements.quantity);
+  stored.payload.f.w=measurements.width/10;stored.payload.f.h=measurements.height/10;stored.payload.f.qty=measurements.quantity===null?'':String(measurements.quantity);
   const designBlob=new Blob([JSON.stringify(stored)],{type:'application/json'});
   let savedItem;
   await new Promise((resolve,reject)=>{
@@ -53,7 +53,7 @@ export async function saveProductDesign(binding,record,preview) {
       const next=request.result,o=next?.orders.find(o=>o.id===binding.orderId),item=o?.items.find(i=>i.id===binding.itemId);
       if (!item) throw Error('Dit product is intussen verwijderd. Het ontwerp is niet opgeslagen.');
       if (productDesignSignature(item)!==binding.signature) throw Error('Dit product of ontwerp is intussen gewijzigd. Bewaar zo nodig een ontwerpbestand via Download en open het product opnieuw.');
-      if (item.costSource==='supplierInvoice'&&measurements.quantity!==item.quantity) {
+      if (measurements.quantity!==null&&item.costSource==='supplierInvoice'&&measurements.quantity!==item.quantity) {
         const lines=(next.purchases||[]).flatMap(p=>supplierInvoices(p).flatMap(inv=>(inv.lines||[]).filter(l=>l.itemId===item.id)));
         const quantity=lines.reduce((sum,line)=>sum+physicalQuantity(line),0);
         if (measurements.quantity<quantity) throw Error('Er zijn al '+quantity+' stuks gekoppeld aan leveranciersfacturen. Pas eerst die inkoopregels aan voordat je het aantal verlaagt.');
@@ -65,7 +65,8 @@ export async function saveProductDesign(binding,record,preview) {
       const metadata={ownerId:o.id,itemId:item.id,category:'other',date:day,createdAt:now};
       next.documents.push({...metadata,id:designDocumentId,name:'Ontwerp_'+o.number+'_'+item.id+'.json',type:designBlob.type,size:designBlob.size,internalDesign:true},
         {...metadata,id:designPreviewId,name:'Ontwerpvoorbeeld_'+o.number+'_'+item.id+'.png',type:'image/png',size:preview.size,imageRole:'reference',productDesignPreview:true});
-      Object.assign(item,measurements,{designId:record.id,designDocumentId,designPreviewId,designUpdatedAt:now});
+      if(removable.has(item.primaryImageId))item.primaryImageId=designPreviewId;
+      Object.assign(item,{width:measurements.width,height:measurements.height,...(measurements.quantity===null?{}:{quantity:measurements.quantity})},{designId:record.id,designDocumentId,designPreviewId,designUpdatedAt:now});
       next.activities.unshift({id:crypto.randomUUID(),message:'Ontwerp en voorbeeld bewaard bij '+item.description+' · order #'+(o.sourceNumber||o.number),time:now});
       const fs=tx.objectStore('files');for(const id of removable)fs.delete(id);
       fs.put({id:designDocumentId,blob:designBlob});fs.put({id:designPreviewId,blob:preview});ss.put(next,'main');savedItem=structuredClone(item);

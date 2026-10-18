@@ -1,0 +1,11 @@
+// Optional anonymous counters in this browser. No artwork, customer data or network.
+export function installDesignUsage(){
+ const key='spatlap-button-usage-v1',toggle=document.getElementById('designUsageEnabled'),list=document.getElementById('designUsageList');
+ const labels={headerAddLogo:'Logo toevoegen (header)',headerAddText:'Tekst invoegen (header)',headerQuickVector:'Quick witte vector',matchVectorHeight:'Hoogte overnemen',quickCenterSelection:'Horizontaal midden',quickBalanceSelection:'Tussen rand en logo',quickBottomSide:'Onder gelijk aan zij',quickAddLogo:'Logo toevoegen',quickAddText:'Tekst toevoegen',shrinkSelected:'Kleiner',growSelected:'Groter',selectionColor:'Kleur',selectionPipette:'Pipet',duplicateOtherSideSelected:'Andere zijde',deleteSelected:'Verwijderen',headerSave:'Bewaar',download:'Klantpreview',downloadArtworkPdf:'Drukbestand',selectionRatioLock:'Slotje',selectionWidth:'Breedte',selectionHeight:'Hoogte'};
+ let data={enabled:false,counts:{}};try{const saved=JSON.parse(localStorage.getItem(key)||'null');if(saved&&typeof saved.enabled==='boolean'){data.enabled=saved.enabled;for(const id of Object.keys(labels))if(Number.isSafeInteger(saved.counts?.[id])&&saved.counts[id]>=0)data.counts[id]=saved.counts[id];}}catch{}
+ function paint(){toggle.checked=data.enabled;list.textContent=Object.entries(data.counts).sort((a,b)=>b[1]-a[1]).map(([id,n])=>labels[id]+': '+n).join(' · ')||'Nog geen knopgebruik bijgehouden.';}
+ function save(){try{localStorage.setItem(key,JSON.stringify(data));paint();}catch{list.textContent='Browser kan de gebruiksteller niet bewaren.';}}
+ toggle.onchange=()=>{data.enabled=toggle.checked;save();};document.getElementById('designUsageClear').onclick=()=>{data.counts={};save();};
+ document.addEventListener('click',event=>{if(!data.enabled||!event.isTrusted)return;const id=event.target.closest('button')?.id;if(!labels[id])return;data.counts[id]=Math.min(1000000,(data.counts[id]||0)+1);save();},true);
+ document.addEventListener('change',event=>{if(!data.enabled||!event.isTrusted||!['selectionWidth','selectionHeight'].includes(event.target.id))return;const id=event.target.id;data.counts[id]=Math.min(1000000,(data.counts[id]||0)+1);save();},true);paint();
+}
