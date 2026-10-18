@@ -1,0 +1,4 @@
+export function hexColor(value){const match=String(value||'').trim().match(/^#?([a-f\d]{3}|[a-f\d]{6})$/i);if(!match)return null;const v=match[1];return '#'+(v.length===3?v.split('').map(c=>c+c).join(''):v).toUpperCase();}
+export function rgbColor(values){if(values.length!==3||values.some(v=>!Number.isFinite(Number(v))||Number(v)<0||Number(v)>255))return null;return '#'+values.map(v=>Math.round(Number(v)).toString(16).padStart(2,'0')).join('').toUpperCase();}
+export function rgbValues(hex){const color=hexColor(hex);return color?[1,3,5].map(i=>parseInt(color.slice(i,i+2),16)):null;}
+export function samplePoint(x,y,rect,width,height){if(!rect.width||!rect.height||x<rect.left||y<rect.top||x>rect.left+rect.width||y>rect.top+rect.height)return null;return {x:Math.min(width-1,Math.max(0,Math.floor((x-rect.left)/rect.width*width))),y:Math.min(height-1,Math.max(0,Math.floor((y-rect.top)/rect.height*height)))};}

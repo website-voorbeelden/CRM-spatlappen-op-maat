@@ -1,20 +1,25 @@
+import {isReviewMode,reviewPack,reviewSnapshot,readOnlyMessage} from './offline/review.js';
+import {companyFor} from '../shared/companies.js';
 const clone = value => value===undefined?undefined:structuredClone(value);
 let selectedStorage;
 export async function storageRuntime() {
   if (!selectedStorage) selectedStorage=(async()=>{
+    if(isReviewMode()){const p=await reviewPack({verify:true});return {...p.runtime,offlineReview:true,offlinePreparedAt:p.preparedAt,offlineUntil:p.grant.expiresAt};}
     const response=await fetch('/crm-runtime.json',{cache:'no-store'});
     if (!response.ok) throw Error('De opslaginstellingen ontbreken. Herlaad het CRM.');
     const runtime=await response.json();
     if (new URLSearchParams(location.search).get('storage')==='cloud') runtime.mode='cloud';
     if (runtime.mode==='cloud') {
       const config=await cloudRequest('/config');
+      if(runtime.companyId&&runtime.companyId!==config.companyId)throw Error('De CRM-code hoort bij een andere bedrijfsopslag. Publicatie controleren; er is niets gewijzigd.');
       Object.assign(runtime,config);
     }
-    return runtime;
+    runtime.companyId??='spatlappen';companyFor(runtime.companyId);return runtime;
   })();
   return selectedStorage;
 }
 export async function cloudRequest(path,options={}) {
+  if(isReviewMode())throw Error(readOnlyMessage);
   let response;
   try {response=await fetch('/api/crm'+path,{cache:'no-store',...options});}
   catch {throw Error('Geen verbinding met de centrale opslag. Er is niets lokaal als vervanging opgeslagen. Probeer opnieuw.');}
@@ -35,15 +40,21 @@ let cloudDatabase;
 export async function openCrmDatabase() {
   const runtime=await storageRuntime();
   if (runtime.mode==='cloud') return cloudDatabase??=new CloudDatabase();
-  return openBrowserDatabase('spatlappen-crm',['state','files']);
+  return openBrowserDatabase(companyFor(runtime.companyId).browserDb,['state','files']);
 }
 export async function openFeedbackDatabase() {
   if ((await storageRuntime()).mode==='cloud') return cloudDatabase??=new CloudDatabase();
-  return openBrowserDatabase('spatlappen-crm-feedback',['reports']);
+  return openBrowserDatabase(companyFor((await storageRuntime()).companyId).feedbackDb,['reports']);
 }
 export async function openDesignDatabase() {
   if ((await storageRuntime()).mode==='cloud') return cloudDatabase??=new CloudDatabase();
-  return openBrowserDatabase('spatlap-preview-designs',['designs']);
+  return openBrowserDatabase(companyFor((await storageRuntime()).companyId).designsDb,['designs']);
+}
+
+export async function openPlanningDatabase() {
+  const runtime=await storageRuntime();
+  if(runtime.mode==='cloud')return cloudDatabase??=new CloudDatabase();
+  return openBrowserDatabase(companyFor(runtime.companyId).browserDb+'-planning',['planning']);
 }
 
 export async function uploadCloudFile(blob) {
@@ -62,6 +73,7 @@ export async function readCloudFile(id,metadata) {
   return {id,blob};
 }
 export async function commitCloud(body) {
+  body={...body,companyId:(await storageRuntime()).companyId};
   const options={method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)};
   try {return await cloudRequest('/commit',options);}
   catch(error) {
@@ -87,7 +99,7 @@ class CloudTransaction {
   constructor(db,names,mode) {this.db=db;this.names=names;this.mode=mode;this.requests=[];this.operations=[];this.aborted=false;this.done=false;this.readKeys=new Set();}
   abort() {this.aborted=true;}
   objectStore(name) {
-    if (!this.names.includes(name)||!['state','files','reports','designs'].includes(name)) throw Error('Onbekende gegevensverzameling.');
+    if (!this.names.includes(name)||!['state','files','reports','designs','planning'].includes(name)) throw Error('Onbekende gegevensverzameling.');
     const enqueue=(action,key,value)=>{
       if (this.done||this.aborted) throw Error('Deze opslagbewerking is al afgesloten.');
       if (['put','delete','clear'].includes(action)&&this.mode!=='readwrite') throw Error('Deze opslagbewerking is alleen-lezen.');
@@ -99,7 +111,8 @@ class CloudTransaction {
   async run() {
     try {
       if (this.aborted) throw Error('Opslaan afgebroken.');
-      const data=await cloudRequest('/snapshot?stores='+this.names.join(','));
+      if(isReviewMode()&&this.mode==='readwrite')throw Error(readOnlyMessage);
+      const data=isReviewMode()?await reviewSnapshot(this.names):await cloudRequest('/snapshot?stores='+this.names.join(','));
       const values=new Map(this.names.map(name=>[name,new Map(name==='files'?data.files.map(f=>[f.id,f]):Object.entries(data.records[name]||{}))]));
       this.db.revision=data.revision;
       while (this.requests.length) {
@@ -157,6 +170,7 @@ class CloudTransaction {
 }
 
 export function startCloudRefresh({onChanged}) {
+  if(isReviewMode())return ()=>{};
   let busy=false;
   async function check() {
     if (busy||document.hidden) return;

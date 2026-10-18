@@ -12,7 +12,7 @@ export function supplierFinance(p){
  return {invoices,unknown,known:invoices.length>0&&!unknown,total:invoices.reduce((s,i)=>s+(i.total??0),0),paid:invoices.reduce((s,i)=>s+invoiceFinance(i).paid,0),balance:invoices.reduce((s,i)=>s+Math.max(0,invoiceFinance(i).balance??0),0),advance:invoices.reduce((s,i)=>s+Math.max(0,-(invoiceFinance(i).balance??0)),0)};
 }
 export const physicalQuantity=line=>line.quantity*(line.unit==='pair'?2:1);
-export const itemCostTotal=item=>item.costSource==='supplierInvoice'&&item.purchaseCostTotal!=null?item.purchaseCostTotal:(item.cost??0)*item.quantity;
+export const itemCostTotal=item=>item.costSource==='calculator'&&item.calculatedCostTotal!=null?item.calculatedCostTotal:item.costSource==='supplierInvoice'&&item.purchaseCostTotal!=null?item.purchaseCostTotal:(item.cost??0)*item.quantity;
 export function syncSupplierInvoiceCosts(state,p){
  const allocated=new Map();
  for(const invoice of supplierInvoices(p))for(const line of invoice.lines||[]){
