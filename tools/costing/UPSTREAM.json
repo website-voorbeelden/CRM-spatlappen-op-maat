@@ -1,0 +1,25 @@
+{
+  "repository": "https://github.com/website-voorbeelden/Rekentool",
+  "commit": "2ea77feb588cd1cfe3c7130eb6f5c74bed5ceb36",
+  "originalSha256": {
+    "assets/gasket-configurator-core.js": "4281ec7f46f6bd4bb634e91e11e8bbda25e50aebc17508d433a2d4ef25c1e3c2",
+    "assets/gasket-configurator-drawing.js": "27a86ec62e4a2e044e41b1feda8b1f3d46543523d41716b9e0d6f8535125da85",
+    "assets/gasket-configurator-nesting.js": "d098475bafe971bafca16b13406ee5ed7b32df14d850187d6f10f6f07289bcab",
+    "assets/gasket-configurator-worker.js": "f2ceefb63c57642a781aad5a8c8112940ad756415c6982deaf0e34b44c3d5e7e",
+    "assets/gasket-configurator.css": "ab576fb3698e95cbd4748a99977baac0d8fd6c86f0cbbd03930bca341ea6fe5f",
+    "assets/gasket-configurator.js": "4a8883ec6d5eb8d224300759267ce9a1905e06cbcf2da2a15ab8dac9985695d1",
+    "assets/quote-calculator-ai.js": "02da08ed49db5cd1163af8641a07a8341d0d5ff7b0baab791a437cd50023e1a5",
+    "assets/quote-calculator-chart-worker.js": "0ed8425a0860b5afb051b47b5ca4b28b1ce88f67ee79722e1318f2e9bc8b8166",
+    "assets/quote-calculator-chart.js": "1e4de93a703738af9f530e07e3b68d83aca98dcd5ab09245f79c0713e3e26930",
+    "assets/quote-calculator-core.js": "c588582399e8204c776fc7b1a4014499a15a3a538b1cd58b452f79823231f8f3",
+    "assets/quote-calculator-preview.js": "c2fd39591946536199d4630b01bcaeeeba850ad3b179bc43c10ca33362594133",
+    "assets/quote-calculator-view.js": "16cbb99a806651da2669a572731fb2d7f8348c537ed6f694b47030463df546c2",
+    "assets/quote-calculator.css": "14f4d8b18f9f8c5fe95df65a3fb482794ce90068214e56829882ce551b2605f6",
+    "assets/quote-calculator.js": "f3e578e011e7d3587825b9d4b4c5811c31cd3c17d1612e4a722555e5c70aaac7"
+  },
+  "integrationChanges": {
+    "assets/quote-calculator.js": "CRM export/import/calculate adapter plus change event only. Original UI preserved.",
+    "assets/quote-calculator-core.js": "Expose directCost, supplierCost and ownWorkCost in result lines only. Calculation formulas and original output fields preserved.",
+    "index.html": "Original calculator assets/main with separate sticky CRM toolbar, reviewed order transfer and reusable CRM feedback/assistant companions."
+  }
+}

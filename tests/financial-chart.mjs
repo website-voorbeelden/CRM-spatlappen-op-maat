@@ -1,0 +1,8 @@
+import assert from 'node:assert/strict';
+import {financialGroups} from '../shared/financial-chart.js';
+import {defaultOrderSearch,searchOrderItems} from '../admin/dossier-search.js';
+const state={customers:[{id:'c',company:'Voorbeeld',country:'Nederland'}],purchases:[{id:'p',name:'Batch'}],orders:[{id:'a',customerId:'c',purchaseId:'p',date:'2026-10-01',items:[{description:'Product',quantity:1,price:100}],shippingKnown:true,archived:true},{id:'b',customerId:'c',date:'2026-10-17',items:[],shippingKnown:false}],payments:[]};
+const options={dimension:'month',metric:'revenue',totals:o=>({net:o.id==='a'?100:0,priceKnown:o.id==='a'}),economics:o=>({profit:50,provisional:o.id==='b'})};
+const rows=financialGroups(state,state.orders,options);assert.equal(rows.length,1);assert.equal(rows[0].value,100);assert.equal(rows[0].known,false);assert.deepEqual(rows[0].orderIds,['a','b']);assert.equal(financialGroups(state,state.orders,{...options,metric:'count'})[0].value,2);assert.throws(()=>financialGroups(state,state.orders,{...options,metric:'arbitrary'}),/ondersteunde/);
+assert.deepEqual([...new Set(searchOrderItems(state,{...defaultOrderSearch(),visibility:'all',orderIds:['a']},{includeIncomplete:true}).map(r=>r.o.id))],['a']);assert.deepEqual([...new Set(searchOrderItems(state,{...defaultOrderSearch(),visibility:'all',orderIds:['b']},{includeIncomplete:true}).map(r=>r.o.id))],['b'],'Drilldown includes incomplete requests as well as archived orders');
+console.log('✓ Eigen grafiek: begrensde dimensies/eenheden, ontbrekende bedragen herkenbaar, archief/incomplete aanvragen en exacte dossierselectie zonder gegevensmutaties.');

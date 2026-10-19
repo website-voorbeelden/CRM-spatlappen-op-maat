@@ -1,16 +1,26 @@
 {
-  "name": "crm-spatlappen-op-maat",
-  "version": "1.0.0",
+  "name": "crm-gedeelde-basis",
+  "version": "2.0.0",
   "private": true,
   "scripts": {
-    "dev": "python3 dev-server.py",
+    "dev": "node scripts/dev-both.mjs spatlappen",
     "start": "python3 dev-server.py",
     "build": "node scripts/build-pages.mjs",
     "prepare:render": "node scripts/prepare-render.mjs",
     "prepare:github": "node scripts/prepare-github.mjs",
     "test:backend": "node tests/cloud-backend.mjs",
     "dev:cloud": "node scripts/cloud-dev.mjs",
-    "test:cloud": "node tests/cloud-integration.mjs"
+    "test:cloud": "node tests/cloud-integration.mjs",
+    "dev:kunststof": "node scripts/dev-both.mjs maatwerkkunststof",
+    "check": "node scripts/check.mjs",
+    "release:plan": "node scripts/release.mjs --plan",
+    "release": "node scripts/release.mjs --deploy",
+    "test:shared": "node tests/shared.mjs",
+    "test:costing": "node --test tests/costing/*.test.cjs",
+    "dev:both": "node scripts/dev-both.mjs",
+    "dev:cloud:kunststof": "CRM_COMPANY_ID=maatwerkkunststof node scripts/cloud-dev.mjs",
+    "test:assistant": "node tests/assistant.mjs && node tests/assistant-interaction.mjs && node tests/assistant-local-speech.mjs && node tests/assistant-page-context.mjs",
+    "plan": "node scripts/render-plan.mjs"
   },
   "devDependencies": {
     "@playwright/test": "^1.64.0",

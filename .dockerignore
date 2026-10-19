@@ -6,3 +6,6 @@
 !document-service/Dockerfile
 !document-service/templates/
 !document-service/templates/*.docx
+
+!document-service/templates/maatwerkkunststof/
+!document-service/templates/maatwerkkunststof/*.docx

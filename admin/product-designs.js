@@ -1,5 +1,5 @@
 import {openCrmDatabase} from './cloud-storage.js';
-import {supplierInvoices,physicalQuantity} from './supplier-costs.js';
+import {supplierInvoices,physicalQuantity} from "./purchases/costs.js";
 
 export function productDesignUrl(o,item,mode='local') {
   const query=new URLSearchParams({orderId:o.id,itemId:item.id,unit:'cm'});

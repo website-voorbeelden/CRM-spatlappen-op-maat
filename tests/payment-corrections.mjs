@@ -1,0 +1,14 @@
+import assert from 'node:assert/strict';
+import {correctPayment,restoreRemovedPayment} from '../shared/payment-corrections.js';
+import {applyTikkiePayments} from '../admin/payment-workflow.js';
+import {validateBusinessState} from '../shared/state-validation.js';
+const receipt={id:'receipt',orderId:'o',amount:1234,date:'2026-10-17',reference:'Fictief'},state={customers:[],orders:[{id:'o',items:[],paymentLinks:[]}],payments:[receipt],documents:[{id:'doc',ownerId:'o',name:'Factuur.pdf'}],activities:[]};
+const original=structuredClone(receipt),docs=JSON.stringify(state.documents);
+assert.throws(()=>correctPayment(state,'receipt','stale',{kind:'remove',reason:'Testcorrectie',correctionId:'c'}),/gewijzigd/);
+correctPayment(state,'receipt',JSON.stringify(receipt),{kind:'replace',reason:'Verkeerd bedrag ingevoerd',amount:1000,date:'2026-10-17',reference:'Juist',correctionId:'edit'});assert.equal(state.payments[0].amount,1000);assert.deepEqual(state.paymentCorrections[0].before,original);assert.equal(JSON.stringify(state.documents),docs);
+correctPayment(state,'receipt',JSON.stringify(state.payments[0]),{kind:'remove',reason:'Dubbele proefontvangst',correctionId:'remove'});assert.equal(state.payments.length,0);const record=state.paymentCorrections[1];restoreRemovedPayment(state,'remove',JSON.stringify(record));assert.equal(state.payments[0].amount,1000);assert.ok(record.restoredAt);assert.throws(()=>restoreRemovedPayment(state,'remove',JSON.stringify(record)),/al hersteld/);
+state.payments=[{...original,source:'tikkie',externalId:'tikkie:token',paymentLinkId:'link'}];assert.throws(()=>correctPayment(state,'receipt',JSON.stringify(state.payments[0]),{kind:'replace',reason:'Providerbedrag corrigeren',amount:999,date:'2026-10-17',reference:'x',correctionId:'bad'}),/Providerbedrag|providerbedrag/);
+correctPayment(state,'receipt',JSON.stringify(state.payments[0]),{kind:'remove',reason:'Verkeerd gekoppelde ontvangst',correctionId:'tikkie-remove'});
+const links=[{id:'link',payments:[{amountInCents:1234,paymentToken:'token',createdAt:'2026-10-17T12:00:00Z'}]}];assert.equal(applyTikkiePayments(state,state.orders[0],links,{uid:()=> 'new',timeZone:'Europe/Amsterdam'}),0);assert.equal(state.payments.length,0,'A corrected provider receipt must not reappear on the next check');
+const removed=state.paymentCorrections.at(-1);restoreRemovedPayment(state,removed.id,JSON.stringify(removed));assert.equal(applyTikkiePayments(state,state.orders[0],links,{uid:()=> 'new',timeZone:'Europe/Amsterdam'}),0);assert.equal(state.payments.length,1);validateBusinessState(state);
+console.log('✓ Betaalcorrecties: oude registratie/historische documenten behouden, reden/conflict/herstel, providerbedrag niet aangepast en Tikkie-import na verwijdering/herstel gededupliceerd.');

@@ -1,0 +1,55 @@
+// Feature implementation. context provides live dependencies from workspace composition.
+// Keep state reads through context.state; never cache a separate dossier snapshot here.
+export function createOrderPlanning(context){
+function elapsed(start,end=context.today()){if(!start)return null;return Math.max(0,Math.round((new Date(end+'T12:00:00')-new Date(start+'T12:00:00'))/86400000));}
+
+function paidDate(o){const t=context.totals(o);if(!t.priceKnown||t.balance>0||t.total<=0)return '';let sum=0;for(const p of context.state.payments.filter(p=>p.orderId===o.id).sort((a,b)=>a.date.localeCompare(b.date))){sum+=p.amount;if(sum>=t.total)return p.date;}return '';}
+
+function compactWorkflow(o){const groups=[['Ontwerp','Ontwerp maken','Ontwerp goedgekeurd'],['Offerte','Offerte verstuurd','Offerte verstuurd'],['Betaling','Wachten op betaling','Wachten op betaling'],['Inkoop & productie','Productie vrijgegeven','Binnen in Nederland'],['Levering','Verzonden','Afgerond']],index=context.stages.indexOf(o.stage),fullyPaid=context.orderReadiness(context.state,o,context.company.id).fullyPaid;return `<div class="phase-track">${groups.map(([name,first,last],n)=>{const start=context.stages.indexOf(first),end=context.stages.indexOf(last);return `<div class="phase ${index>end||n===2&&fullyPaid?'passed':''} ${index>=start&&index<=end&&!(n===2&&fullyPaid)?'active':''}"><span class="phase-number">${n===2&&fullyPaid?'✓':n+1}</span><span>${name}</span></div>`;}).join('')}</div>`;}
+
+function orderSummaryRows(rows){return rows.map(([key,value])=>`<div class="order-summary-row"><span>${key}</span><strong>${value}</strong></div>`).join('');}
+
+function addCalendarDays(value,days){const d=new Date(value+'T12:00:00Z');d.setUTCDate(d.getUTCDate()+days);return d.toISOString().slice(0,10);}
+
+function calendarDays(start,end){return Math.round((new Date(end+'T12:00:00Z')-new Date(start+'T12:00:00Z'))/86400000);}
+
+function deliveryWindow(o){
+ const min=o.leadTimeMinWeeks,max=o.leadTimeMaxWeeks,basis=o.leadTimeBasis||'payment';
+ const baseline=basis==='order'?o.date:basis==='manual'?o.leadTimeStartDate:paidDate(o);
+ const basisLabel=basis==='order'?'na bestelling':basis==='manual'?'vanaf afgesproken startdatum':'na volledige betaling';
+ if(o.expectedDateFrom||o.expectedDateTo)return {from:o.expectedDateFrom||o.expectedDateTo,to:o.expectedDateTo||o.expectedDateFrom,baseline,terms:'Vast afgesproken levervenster',agreed:true};
+ if(min!=null&&max!=null){const terms=`${min===max?min:min+'–'+max} weken ${basisLabel}`;return {from:baseline?addCalendarDays(baseline,min*7):'',to:baseline?addCalendarDays(baseline,max*7):'',baseline,terms,agreed:true,pending:!baseline};}
+ return {from:o.expectedDate||'',to:o.expectedDate||'',baseline:'',terms:o.expectedDate?'Geplande leverdatum':'Nog geen leverafspraak ingevuld',agreed:false};
+}
+
+function deliveryTiming(o){
+ const w=deliveryWindow(o),now=o.deliveredDate||context.today();
+ if(!w.to)return {...w,color:'',label:w.pending?'Levertermijn nog niet gestart':w.terms,help:w.pending?(o.leadTimeBasis==='manual'?'Vul de afgesproken startdatum in.':'De levertermijn start zodra de volledige betaling is geregistreerd.'):'Vul de afgesproken levertijd in bij Planning.',progress:0};
+ const left=calendarDays(now,w.to),late=Math.max(0,-left),span=w.baseline?calendarDays(w.baseline,w.to):0,progress=span>0?Math.max(0,Math.min(100,calendarDays(w.baseline,now)/span*100)):0;
+ const range=w.from===w.to?context.date(w.to):context.date(w.from)+' t/m '+context.date(w.to);
+ const label=o.deliveredDate?(late?`${late} dagen na ${w.agreed?'de afgesproken levertijd':'de geplande datum'}`:'Geleverd binnen '+(w.agreed?'afgesproken levertijd':'planning')):late?`${late} dagen ${w.agreed?'buiten afgesproken levertijd':'na geplande datum'}`:w.agreed?'Binnen afgesproken levertijd':'Binnen planning';
+ return {...w,color:late?'orange':left<=7&&!o.deliveredDate?'orange':'green',label,help:late?`Laatste ${w.agreed?'afgesproken':'geplande'} leverdatum: ${context.date(w.to)}.`:o.deliveredDate?`Geleverd op ${context.date(o.deliveredDate)}.`:now<w.from?`Levervenster begint over ${calendarDays(now,w.from)} dagen. Nog ${left} dagen tot de uiterste leverdatum.`:`Nog ${left} dagen tot ${context.date(w.to)}.`,progress,late,range};
+}
+
+function leadTimeFields(o){const useDefaults=o.leadTimeMinWeeks==null&&o.leadTimeMaxWeeks==null;return `<section class="form-section"><h3>Afgesproken levertijd</h3><div class="fields">${context.field('leadTimeMinWeeks','Vanaf (weken)',useDefaults?'':o.leadTimeMinWeeks??'','number','min="0" max="104" step="1"')}${context.field('leadTimeMaxWeeks','Uiterlijk (weken)',useDefaults?'':o.leadTimeMaxWeeks??'','number','min="0" max="104" step="1"')}<label>Levertijd rekenen vanaf<select name="leadTimeBasis"><option value="payment" ${!o.leadTimeBasis||o.leadTimeBasis==='payment'?'selected':''}>Volledige betaling</option><option value="order" ${o.leadTimeBasis==='order'?'selected':''}>Besteldatum</option><option value="manual" ${o.leadTimeBasis==='manual'?'selected':''}>Andere afgesproken startdatum</option></select></label>${context.field('leadTimeStartDate','Andere startdatum (indien gekozen)',o.leadTimeStartDate,'date')}</div><p class="form-help">Vul alleen een afgesproken termijn in. Bij een eerste aanvraag mag dit leeg blijven. Het levervenster en de resterende tijd worden automatisch berekend.</p><details class="form-details"><summary>Vaste afgesproken leverdata (optioneel)</summary><div class="fields">${context.field('expectedDateFrom','Levering vanaf',o.expectedDateFrom,'date')}${context.field('expectedDateTo','Levering uiterlijk',o.expectedDateTo,'date')}</div><p class="form-help">Ingevulde vaste data krijgen voorrang op de berekening in weken. Laat ze leeg om automatisch te blijven rekenen.</p></details></section>`;}
+
+function readLeadTime(fd){
+ const value=key=>fd.get(key)==null||fd.get(key)===''?null:Number(fd.get(key));
+ const min=value('leadTimeMinWeeks'),max=value('leadTimeMaxWeeks');
+ if((min==null)!==(max==null)||[min,max].some(v=>v!=null&&(!Number.isInteger(v)||v<0||v>104))||(min!=null&&min>max))throw context.formProblem('Vul een geldige minimale en maximale levertijd in weken in.',{field:'leadTimeMinWeeks'});
+ const basis=fd.get('leadTimeBasis')||'payment',from=fd.get('expectedDateFrom')||'',to=fd.get('expectedDateTo')||'',start=fd.get('leadTimeStartDate')||'';
+ if(!['payment','order','manual'].includes(basis)||from&&to&&from>to)throw context.formProblem('Controleer de start en het einde van de levertijd.',{field:from&&to&&from>to?'expectedDateFrom':'leadTimeBasis'});
+ if(basis==='manual'&&min!=null&&!start&&!from&&!to)throw context.formProblem('Vul de afgesproken startdatum in.',{field:'leadTimeStartDate'});
+ return {leadTimeMinWeeks:min,leadTimeMaxWeeks:max,leadTimeBasis:basis,leadTimeStartDate:start,expectedDateFrom:from,expectedDateTo:to};
+}
+
+function orderPlanningBlock(o){
+ const t=deliveryTiming(o),sincePaid=elapsed(paidDate(o),o.deliveredDate||context.today());
+ return `<section class="order-surface"><div class="section-heading"><div><h2>Planning & levertijd</h2><p>${context.esc(t.terms)}</p></div>${context.button('planning','Aanpassen',o.id)}</div>${context.badge(t.label,t.color)}${t.range?`<p class="delivery-window-range">${t.range}</p>`:''}${t.to&&t.baseline?`<div class="lead-time-track" aria-hidden="true"><span style="width:${t.progress}%"></span></div>`:''}<p class="form-help">${context.esc(t.help)}</p>${orderSummaryRows([['Aanvraagdatum',context.date(o.date)],['Offerte akkoord',context.date(o.quoteAcceptedDate)],['Volledig betaald op',context.date(paidDate(o))],['Wachttijd sinds aanvraag',(elapsed(o.date,o.deliveredDate||context.today())??'—')+' dagen'],['Wachttijd sinds volledige betaling',sincePaid==null?'Nog niet volledig betaald':sincePaid+' dagen'],['Productie vrijgegeven',context.date(o.productionReleasedDate)],['Productie gestart',o.productionDate?context.date(o.productionDate):'Nog niet bevestigd'],['Verzonden naar klant',o.shippedDate?context.date(o.shippedDate):'Nog niet bevestigd'],['Geplande levering',context.date(o.expectedDate)],['Geleverd op',context.date(o.deliveredDate)]])}<details class="history-details"><summary>Volledige tijdlijn bekijken</summary>${context.orderTimeline(o)}</details></section>`;
+}
+
+function planningSummary(o){const t=deliveryTiming(o);return `<span>${context.date(o.date)}</span><small>${elapsed(o.date,o.deliveredDate||context.today())??'—'} dagen sinds bestelling</small>${t.range?`<small>Levering: ${t.range}</small>`:''}<small class="${t.late?'danger':''}">${context.esc(t.label)}</small>`;}
+
+function planningForm(id){const o=context.order(id);context.openForm('Planning & levertijd',`${leadTimeFields(o)}<section class="form-section"><h3>Werkelijke datums</h3><p class="form-help">Productie vrijgeven en de bevestigde productiestart zijn aparte momenten. Vul alleen bekende datums in.</p><div class="fields">${[['date','Besteld / akkoord op'],['quoteAcceptedDate','Offerte akkoord'],['designSentDate','Ontwerp ter goedkeuring gestuurd'],['approvedDate','Ontwerp goedgekeurd'],['quoteSentDate','Offerte verstuurd'],['paymentRequestedDate','Betaling gevraagd'],['productionReleasedDate','Productie vrijgegeven'],['supplierOrderedDate','Besteld bij leverancier'],['productionDate','Productie daadwerkelijk gestart'],['transitDate','Onderweg naar Nederland'],['arrivedDate','Binnen in Nederland'],['shippedDate','Verzonden naar klant'],['deliveredDate','Bij klant geleverd'],['expectedDate','Geplande levering (optioneel)']].map(([key,label])=>context.field(key,label,o[key],'date',key==='date'?'required':'')).join('')}</div></section>`,async fd=>{const lead=readLeadTime(fd),dates=Object.fromEntries(['date','quoteAcceptedDate','designSentDate','approvedDate','quoteSentDate','paymentRequestedDate','productionReleasedDate','supplierOrderedDate','productionDate','transitDate','arrivedDate','shippedDate','deliveredDate','expectedDate'].map(key=>[key,fd.get(key)||'']));Object.assign(o,lead,dates);await context.save('Planning en levertijd bijgewerkt');});}
+return {elapsed,paidDate,compactWorkflow,orderSummaryRows,addCalendarDays,calendarDays,deliveryWindow,deliveryTiming,leadTimeFields,readLeadTime,orderPlanningBlock,planningSummary,planningForm};
+}

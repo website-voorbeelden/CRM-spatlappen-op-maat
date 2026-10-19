@@ -86,7 +86,8 @@ class Handler(BaseHTTPRequestHandler):
     def do_POST(self):
         if not self.authorized():
             return
-        if urlsplit(self.path).path != '/render':
+        preview = urlsplit(self.path).path == '/preview'
+        if urlsplit(self.path).path not in ('/render', '/preview'):
             self.json(404, {'error': 'Onbekend verzoek.'})
             return
         if not self.headers.get('Content-Type', '').startswith('application/json'):
@@ -94,7 +95,7 @@ class Handler(BaseHTTPRequestHandler):
             return
         try:
             length = int(self.headers.get('Content-Length', '0'))
-            if not 0 < length <= 1_000_000:
+            if not 0 < length <= (16_000_000 if preview else 1_000_000):
                 self.json(413, {'error': 'Het documentverzoek is te groot of leeg.'})
                 return
             self.connection.settimeout(30)
@@ -105,10 +106,11 @@ class Handler(BaseHTTPRequestHandler):
                 self.json(503, {'error': 'De omzetter maakt al een document. Probeer zo opnieuw.'})
                 return
             try:
-                result = generator.render(payload)
-                result['downloads'] = {fmt: cache_download(base64.b64decode(result[fmt], validate=True),
-                    result['filename'] + '.' + fmt, mimetypes.guess_type('document.' + fmt)[0] or 'application/octet-stream')
-                    for fmt in ('pdf', 'docx')}
+                result = generator.preview_pdf(payload) if preview else generator.render(payload)
+                if not preview:
+                    result['downloads'] = {fmt: cache_download(base64.b64decode(result[fmt], validate=True),
+                        result['filename'] + '.' + fmt, mimetypes.guess_type('document.' + fmt)[0] or 'application/octet-stream')
+                        for fmt in ('pdf', 'docx') if fmt in result}
             finally:
                 RENDER_LOCK.release()
             self.json(200, result)

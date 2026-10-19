@@ -1,0 +1,44 @@
+import assert from 'node:assert/strict';
+import {recognizeRequest,requestMissing,requestReviewBasis,saveRecognizedRequest} from '../shared/request-recognition.js';
+import {companyIds} from '../shared/companies.js';
+import {provenanceFor} from '../shared/provenance.js';
+
+const message={gmailId:'a1',threadId:'b1',mailbox:'office@example.invalid',direction:'incoming',from:'"Jan Voorbeeld" <jan@example.invalid>',subject:'Offerte pakkingen',receivedAt:'2026-10-16T12:00:00Z',text:'Bedrijf: Voorbeeld BV\nNaam: Jan Voorbeeld\nTelefoon: +31 20 1234567\nProduct: EPDM pakkingen\nAantal: 20\nMateriaal: EPDM\nBuitendiameter: 10 cm\nBinnendiameter: 4 cm\nDikte: 3 mm\nKleur: zwart'};
+const thread={mailbox:message.mailbox,threadId:message.threadId,messages:[message]};
+const empty=()=>({customers:[],orders:[],payments:[],documents:[],activities:[],purchases:[]});
+let i=0;const options={uid:()=>`request-fixture-${++i}`,now:'2026-10-16T12:30:00Z'};
+for(const companyId of companyIds){
+ const data=recognizeRequest(message,companyId);
+ assert.equal(data.customer.company,'Voorbeeld BV');assert.equal(data.customer.contact,'Jan Voorbeeld');assert.equal(data.customer.email,'jan@example.invalid');assert.equal(data.customer.phone,'+31 20 1234567');
+ assert.equal(data.specs.quantity,20);assert.equal(data.specs.diameter,100);assert.equal(data.specs.holeDiameter,40);assert.equal(data.specs.thickness,3);assert.equal(data.specs.material,'EPDM');
+ assert.ok(data.evidence.diameter.includes('10 cm'));assert.equal(data.specs.price,undefined);
+ assert.equal(requestMissing(data,companyId).includes('Bedrukking / drukkleuren'),companyId==='spatlappen');
+ const state=empty(),original=structuredClone(state),expected=requestReviewBasis(state,thread,message);
+ assert.throws(()=>saveRecognizedRequest(state,thread,message,data,companyId,{expected}),/bevestig/);assert.deepEqual(state,original);
+ const result=saveRecognizedRequest(state,thread,message,data,companyId,{...options,expected,approved:true});
+ assert.equal(state.customers.length,1);assert.equal(state.orders.length,1);assert.equal(state.orders[0].inquirySpecs.diameter,100);assert.equal(state.orders[0].items[0].price,null);assert.equal(state.payments.length,0);
+ assert.equal(provenanceFor(state.customers[0],'email').source,'mailRecognition');assert.equal(provenanceFor(state.orders[0],'inquirySpecs.material').source,'mailRecognition');
+ assert.equal(state.incomingEmails.length,1);const after=structuredClone(state);
+ assert.equal(saveRecognizedRequest(state,thread,message,data,companyId,{...options,expected,approved:true}).orderId,result.orderId);assert.deepEqual(state,after,'Herhalen schrijft niets.');
+ assert.throws(()=>saveRecognizedRequest(empty(),thread,message,{...data,companyId:'wrong'},companyId,{expected,approved:true}),/ander bedrijf/);
+ const changed=empty(),baseline=requestReviewBasis(changed,thread,message);changed.customers.push({id:'new',company:'Tussendoor aangemaakt',email:data.customer.email,contact:''});const before=structuredClone(changed);
+ assert.throws(()=>saveRecognizedRequest(changed,thread,message,data,companyId,{expected:baseline,approved:true}),/intussen gewijzigd/);assert.deepEqual(changed,before);
+ const sourceChanged=structuredClone(thread);sourceChanged.messages[0].text+='\nNieuwe tekst';assert.throws(()=>saveRecognizedRequest(empty(),sourceChanged,message,data,companyId,{expected,approved:true}),/bronmail/);
+ const known=empty(),customer={id:'customer-1',number:2001,company:'Bestaande naam',email:data.customer.email,contact:'',phone:'Bestaand nummer',notes:'Behoud dit',archived:false};known.customers.push(customer);
+ saveRecognizedRequest(known,thread,message,data,companyId,{...options,expected:requestReviewBasis(known,thread,message),approved:true});assert.equal(known.customers.length,1);assert.deepEqual(known.customers[0],customer,'Alle bestaande klantvelden blijven behouden.');
+}
+const partial=recognizeRequest({from:'jan@example.invalid',text:'Graag een offerte voor 25 stuks PVC. Afmeting 20 x 10 cm. € 12 betaald.',subject:'Platen'},'maatwerkkunststof');
+assert.equal(partial.specs.width,200);assert.equal(partial.specs.height,100);assert.equal(partial.specs.thickness,undefined);assert.equal(partial.customer.company,'');assert.ok(requestMissing(partial,'maatwerkkunststof').includes('Dikte (mm)'));assert.equal(partial.price,undefined);
+const conflict=recognizeRequest({...message,text:'Aantal: 20\nAantal: 30\nEPDM of NBR\nBreedte: 10 cm\nBreedte: 200 mm'},'maatwerkkunststof');
+assert.equal(conflict.specs.quantity,null);assert.equal(conflict.specs.material,null);assert.equal(conflict.specs.width,null);assert.ok(conflict.warnings.length>=3);
+for(const text of ['10 of 20 stuks','10 tot 20 stuks','10–20 stuks'])assert.equal(recognizeRequest({...message,text},'maatwerkkunststof').specs.quantity,null);
+const history=recognizeRequest({...message,text:'Product: Plaat\n20 stuks PVC 200 x 100 mm\n\nOp vrijdag schreef Jan:\nAantal: 99\nNBR dikte 40 mm'},'maatwerkkunststof');
+assert.equal(history.specs.quantity,20);assert.equal(history.specs.material,'PVC');assert.equal(history.specs.thickness,undefined);assert.ok(history.warnings.some(w=>w.includes('geciteerde')));
+const triple=recognizeRequest({...message,text:'Plaat 200 x 100 x 3 mm'},'maatwerkkunststof');assert.equal(triple.specs.width,undefined);assert.ok(triple.warnings.some(w=>w.includes('Drie maten')));
+const noUnit=recognizeRequest({...message,text:'Breedte: 200\nHoogte: 100\nDikte: 3'},'maatwerkkunststof');assert.equal(noUnit.specs.width,undefined);
+const negated=recognizeRequest({...message,text:'Geen EPDM, maar NBR. 20 stuks.'},'maatwerkkunststof');assert.equal(negated.specs.material,null);
+const zero=recognizeRequest({...message,text:'20 ronde schijven. Diameter: 100 mm. Zonder middengat. Dikte: 2 mm. PVC.'},'maatwerkkunststof');assert.equal(zero.specs.holeDiameter,0);assert.ok(!requestMissing(zero,'maatwerkkunststof').includes('Gatdiameter (mm)'));
+const multi=recognizeRequest({...message,text:'20 stuks PVC 200 x 100 mm, dikte 3 mm.\n20 ringen EPDM, diameter 100 mm.'},'maatwerkkunststof');assert.equal(multi.specs.quantity,null);assert.equal(multi.specs.diameter,null);assert.equal(multi.specs.material,null);assert.ok(multi.warnings.some(w=>w.includes('productregels')));
+const suffix=recognizeRequest({...message,text:'20 stuks PVC. 20 cm breed, 10 cm lang, 3 mm dik.'},'maatwerkkunststof');assert.equal(suffix.specs.width,200);assert.equal(suffix.specs.height,100);assert.equal(suffix.specs.thickness,3);
+const input=recognizeRequest(message,'maatwerkkunststof'),wrongSource={...message,direction:'outgoing'};assert.throws(()=>saveRecognizedRequest(empty(),thread,wrongSource,input,'maatwerkkunststof',{approved:true}),/ontvangen/);
+console.log('✓ Aanvraagherkenning: beide bedrijven, afzender/contact/telefoon, eenheden, onbekenden, citaten, tegenstrijdigheden, bronvermelding, atomaire bevestiging, herhalen en bestaande klanten behouden. Geen netwerk of echte dossiers.');

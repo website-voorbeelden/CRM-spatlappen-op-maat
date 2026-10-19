@@ -1,7 +1,12 @@
-import {authReady,localBypass} from './auth.js';
+import {validateTaskProgress} from '../shared/planning/progress.js';
+import {handleMarketing} from './marketing.js';
+import {websiteAnalytics} from './site-analytics.js';
+import {companyFromEnv} from '../shared/companies.js';
+import {validateBusinessState} from '../shared/state-validation.js';
+import {authReady,localBypass,authenticated} from './auth.js';
 import {tikkieReady,validateJournal} from './tikkie.js';
 import {documentsReady} from './documents.js';
-const stores = new Set(['state','reports','designs']);
+const stores = new Set(['state','reports','designs','planning']);
 const validKey = key => typeof key === 'string' && /^[a-zA-Z0-9._-]{1,160}$/.test(key);
 const MAX_JSON = 32_000_000, MAX_FILE = 32_000_000;
 const json = (data,status=200) => Response.json(data,{status,headers:{'Cache-Control':'no-store'}});
@@ -35,6 +40,7 @@ async function snapshot(db,selected) {
 }
 
 function validateState(state) {
+  validateBusinessState(state);
   if (!state || typeof state!=='object' || !['customers','orders','payments','documents','activities'].every(k=>Array.isArray(state[k])) || state.purchases!==undefined&&!Array.isArray(state.purchases)) fail('Ongeldige CRM-gegevens.');
   for (const name of ['customers','orders','payments','documents','purchases']) {
     const entries = state[name]||[];
@@ -52,7 +58,8 @@ function packJson(rows) {
   if (parts.length) batches.push('['+parts.join(',')+']');return batches;
 }
 
-async function commit({DB:db,CRM_FILES:bucket},body) {
+async function commit(env,body) {
+  const {DB:db,CRM_FILES:bucket}=env;
   if (!validKey(body.id)||!Number.isSafeInteger(body.revision)||body.revision<0||!Array.isArray(body.operations)||!body.operations.length||body.operations.length>10000) fail('Ongeldig opslagverzoek.');
   const hash = await digest(encoder.encode(JSON.stringify(body)));
   const previous = await db.prepare('SELECT revision,digest FROM crm_commits WHERE id=?').bind(body.id).first();
@@ -68,12 +75,13 @@ async function commit({DB:db,CRM_FILES:bucket},body) {
   const files = new Map(current.files.map(f=>[f.id,f]));
   let nextState = current.records.state?.main;
   for (const op of body.operations) {
-    if (!['put','delete','clear'].includes(op.action)||!['state','files','reports','designs'].includes(op.store)||op.action!=='clear'&&!validKey(op.key)) fail('Ongeldige opslagbewerking.');
+    if (!['put','delete','clear'].includes(op.action)||!['state','files','reports','designs','planning'].includes(op.store)||op.action!=='clear'&&!validKey(op.key)) fail('Ongeldige opslagbewerking.');
     if (op.store==='state'&&(op.key!=='main'||op.action!=='put')) fail('CRM-gegevens kunnen alleen als geheel worden opgeslagen.');
     if (op.action==='put'&&op.store!=='files') {
       if (op.value===undefined) fail('Een waarde ontbreekt.');
       if (op.store==='state') {validateState(op.value);nextState=op.value;}
       else if (!op.value||op.value.id!==op.key) fail('De record-ID wijkt af.');
+      if(op.store==='planning')validateTaskProgress(op.value,companyFromEnv(env).id);
     }
     if (op.store!=='files') continue;
     if (op.action==='clear') files.clear();
@@ -134,21 +142,36 @@ async function commit({DB:db,CRM_FILES:bucket},body) {
 
 export async function handleCrm({request,env}) {
   try {
+    const company=companyFromEnv(env);
     const url=new URL(request.url),path=url.pathname.replace(/^\/api\/crm\/?/,'');
     if (request.method==='GET'&&path==='config') {
-      const local=localBypass(request,env),localServices=local&&env.CRM_LOCAL_SERVICES==='http://127.0.0.1:3000';
-      return json({storage:'cloud',local,allowedEmail:env.CRM_ALLOWED_EMAIL,authEnabled:authReady(env)&&!local,tikkieReady:localServices||tikkieReady(env),documentsReady:localServices||documentsReady(env),localServices});
+      const local=localBypass(request,env),localServices=local&&['http://127.0.0.1:3000','http://127.0.0.1:3010'].includes(env.CRM_LOCAL_SERVICES)&&company.id==='spatlappen';
+      return json({storage:'cloud',companyId:company.id,release:env.CRM_RELEASE||'2.0.0',local,allowedEmail:env.CRM_ALLOWED_EMAIL,authEnabled:authReady(env)&&!local,tikkieReady:localServices||tikkieReady(env),documentsReady:localServices||documentsReady(env),gmailReady:/^[a-f0-9]{64}$/.test(env.CRM_INTEGRATIONS_KEY||''),mailReady:/^[a-f0-9]{64}$/.test(env.CRM_INTEGRATIONS_KEY||''),localServices});
+    }
+    if(request.method==='GET'&&path==='offline-grant'){
+      const user=await authenticated(request,env);if(!user)return json({error:'Log opnieuw in om offline werken klaar te zetten.'},401);
+      return json({companyId:company.id,owner:await digest(encoder.encode('offline-v1|'+company.id+'|'+user.email)),expiresAt:Date.now()+24*3600*1000});
+    }
+    if(request.method==='GET'&&path==='commit-status'){
+      const id=url.searchParams.get('id');if(!validKey(id))fail('Ongeldig opslagnummer.');
+      const found=await env.DB.prepare('SELECT revision FROM crm_commits WHERE id=?').bind(id).first();return json({committed:!!found,...(found?{revision:found.revision}:{})});
+    }
+    if(path.startsWith('marketing/'))return handleMarketing({request,env});
+    if (request.method==='GET'&&path==='website-analytics') {
+      const current=env.DB?await snapshot(env.DB,['state']):null;
+      return websiteAnalytics({request,env,state:current?.records.state?.main||{}});
     }
     if (!env.DB||!env.CRM_FILES) fail('Database- of bestandsbinding ontbreekt.',503);
     if (request.method==='GET'&&path==='snapshot') {
-      const selected=(url.searchParams.get('stores')||'state,files,reports,designs').split(',');
+      const selected=(url.searchParams.get('stores')||'state,files,reports,designs,planning').split(',');
       if (selected.some(s=>!stores.has(s)&&s!=='files')) fail('Onbekende gegevensverzameling.');
       return json(await snapshot(env.DB,selected));
     }
     if (request.method==='POST'&&path==='commit') {
       if (!request.headers.get('Content-Type')?.startsWith('application/json')) fail('JSON verwacht.',415);
       const raw=await request.text();if (encoder.encode(raw).length>MAX_JSON) fail('Opslagverzoek is te groot.',413);
-      return json(await commit(env,JSON.parse(raw)));
+      const body=JSON.parse(raw);if((body.companyId||'spatlappen')!==company.id)fail('Dit opslagverzoek hoort bij een ander bedrijf. Herlaad het CRM.',409);
+      return json(await commit(env,body));
     }
     if (request.method==='POST'&&path==='files') {
       const bytes=await request.arrayBuffer();if (bytes.byteLength>MAX_FILE) fail('Bestanden mogen maximaal 32 MB zijn.',413);

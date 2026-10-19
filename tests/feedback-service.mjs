@@ -1,0 +1,46 @@
+import assert from 'node:assert/strict';
+import {mkdtemp,rm,readFile,stat,writeFile} from 'node:fs/promises';
+import path from 'node:path';
+import {tmpdir} from 'node:os';
+import {createFeedbackService} from '../assistant/feedback-service.mjs';
+import {startAssistantServer} from '../assistant/server.mjs';
+const folder=await mkdtemp(path.join(tmpdir(),'crm-feedback-test-'));
+const record=id=>({id,createdAt:'2026-10-10T10:00:00.000Z',kind:'bug',status:'open',message:'Fictieve verbetering <script>',details:'',context:{route:'#orders/fictief',page:'Fictief'}});
+let helper;
+try{
+ const service=createFeedbackService(path.join(folder,'feedback'));
+ assert.deepEqual(await service.list('spatlappen'),[]);
+ await assert.rejects(()=>service.list('../outside'),/Onbekend/);
+ await Promise.all([service.create('spatlappen',record('one')),createFeedbackService(path.join(folder,'feedback')).create('spatlappen',record('two'))]);
+ assert.equal((await service.list('spatlappen')).length,2);
+ assert.deepEqual(await service.list('maatwerkkunststof'),[]);
+ const changed=await service.status('spatlappen',{id:'one',status:'resolved',expectedVersion:record('one').createdAt,resolution:'Fictieve reparatie gecontroleerd'});
+ await assert.rejects(()=>service.status('spatlappen',{id:'one',status:'open',expectedVersion:record('one').createdAt}),/inmiddels gewijzigd/);
+ assert.equal((await service.import('spatlappen',[record('one'),record('three')])).added,1);
+ assert.equal((await service.list('spatlappen')).find(r=>r.id==='one').status,'resolved');
+ assert.equal((await service.import('spatlappen',[])).total,3); // Backup restore cannot erase backlog.
+ assert.equal((await stat(path.join(folder,'feedback/spatlappen/feedback.json'))).mode&0o777,0o600);
+ assert.equal((await stat(path.join(folder,'feedback/spatlappen'))).mode&0o777,0o700);
+ assert.match(await readFile(path.join(folder,'feedback/spatlappen/FEEDBACK.md'),'utf8'),/Fictieve reparatie gecontroleerd/);
+ assert.equal(JSON.parse(await readFile(path.join(folder,'feedback/spatlappen/feedback.json'),'utf8')).companyId,'spatlappen');
+ await writeFile(path.join(folder,'feedback/spatlappen/.feedback.lock'),'99999999');
+ await service.status('spatlappen',{id:'one',status:'open',expectedVersion:changed.updatedAt});
+ await assert.rejects(()=>service.import('spatlappen',[{...record('bad'),context:{route:'javascript:evil',page:'test'}}]),/Ongeldige/);
+ await assert.rejects(()=>service.create('spatlappen',{...record('big'),message:'a'.repeat(10001)}),/Ongeldige/);
+ const key='f'.repeat(64),noNetwork=()=>{throw Error('Geen providerverkeer toegestaan');};
+ helper=await startAssistantServer({key,port:0,directory:path.join(folder,'auth'),feedbackDirectory:path.join(folder,'api-feedback'),mailDirectory:path.join(folder,'mail'),gmailDirectory:path.join(folder,'gmail'),connection:{status:()=>({connected:false})},speech:{status:()=>({available:false})},fetchImpl:noNetwork});
+ const url='http://127.0.0.1:'+helper.port;
+ const headers={'Authorization':'Bearer '+key,'X-CRM-Company':'spatlappen','Content-Type':'application/json'};
+ assert.equal((await fetch(url+'/feedback-list')).status,403);
+ assert.equal((await fetch(url+'/feedback-list',{headers:{...headers,'X-CRM-Company':'unknown'}})).status,403);
+ const api=async(action,data,company='spatlappen')=>fetch(url+'/feedback-'+action,{headers:{...headers,'X-CRM-Company':company},...(data===undefined?{}:{method:'POST',body:JSON.stringify(data)})});
+ assert.equal((await api('create',record('api-one'))).status,200);
+ assert.equal((await (await api('list')).json()).reports.length,1);
+ assert.equal((await (await api('list',undefined,'maatwerkkunststof')).json()).reports.length,0);
+ assert.equal((await api('status',{id:'api-one',status:'resolved',expectedVersion:'wrong'})).status,409);
+ assert.equal((await api('status',{id:'api-one',status:'resolved',expectedVersion:record('api-one').createdAt})).status,200);
+ assert.equal((await api('import',{reports:[record('api-one')]})).status,200);
+ assert.equal((await (await api('list')).json()).reports[0].status,'resolved');
+ assert.equal((await api('create',{...record('bad'),id:'../escape'})).status,400);
+ console.log('Privéfeedback: behoud/import/concurrentie/conflicten/bedrijfsscheiding en beveiligde lokale routes geslaagd.');
+}finally{await helper?.close();await rm(folder,{recursive:true,force:true});}

@@ -1,0 +1,6 @@
+import {hasActiveFormEdits} from './form-guidance.js';
+export function createMailNotifications({toast=()=>{}}={}){
+ const pending=new Map();let box;
+ function paint(){if(!pending.size){box?.remove();box=null;return;}if(!box?.isConnected){box=document.createElement('section');box.className='mail-notifications';box.setAttribute('aria-label','Nieuwe mail en aanvragen');document.body.append(box);}box.replaceChildren();const heading=document.createElement('strong');heading.setAttribute('role','status');heading.textContent=pending.size===1?'Nieuw in je CRM':pending.size+' nieuwe meldingen';box.append(heading);for(const [key,item] of [...pending].slice(-5)){const row=document.createElement('div'),link=document.createElement('a'),close=document.createElement('button');link.href=item.href;link.textContent=item.label;link.onclick=e=>{if(document.querySelector('dialog[open]')||hasActiveFormEdits(document)){e.preventDefault();toast('Bewaar of sluit eerst je huidige invoer. De melding blijft voor je klaarstaan.');return;}if(item.onOpen?.())e.preventDefault();pending.delete(key);paint();};close.type='button';close.textContent='×';close.setAttribute('aria-label','Melding sluiten');close.onclick=()=>{pending.delete(key);paint();};row.append(link,close);box.append(row);}}
+ return {add(key,item){pending.set(key,item);paint();},paint,size:()=>pending.size};
+}

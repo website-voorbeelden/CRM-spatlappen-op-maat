@@ -1,0 +1,23 @@
+import {workQueue} from '../shared/work-queue.js';
+import assert from 'node:assert/strict';
+import {guardPurchaseLink,latePurchase,purchaseArchiveInfo,archivePurchase} from '../shared/purchase-workflow.js';
+import {arrivalMail} from '../shared/arrival-mail.js';
+import {batchPackingRows} from '../shared/batch-packing.js';
+const c={id:'c',company:'Fictief',email:'test@example.invalid',shippingAddress:'Voorbeeldstraat 1\n1234 AB Voorbeeld',country:'Nederland'};
+const o={id:'o',number:1,customerId:'c',date:'2026-10-17',stage:'Binnen in Nederland',purchaseId:'p',fulfilmentMethod:'shipping',shippingKnown:true,shippingCharge:100,vat:21,items:[{id:'i',description:'Spatlap',quantity:2,price:1000,cost:0}]};
+const state={customers:[c],orders:[o],purchases:[{id:'p',name:'Batch',status:'Binnen in Nederland',freight:123,invoices:[{id:'inv',total:200,lines:[],payments:[{id:'pay',amount:200}]}]},{id:'late',status:'Onderweg'},{id:'open',status:'Verzamelen'}],payments:[{id:'received',orderId:'o',amount:1000}],documents:[],activities:[]};
+const before=structuredClone(state);guardPurchaseLink(state,o,'p');assert.throws(()=>guardPurchaseLink(state,o,'late'),/al onderweg/);guardPurchaseLink(state,o,'late',{acknowledged:true});assert.deepEqual(state,before);
+state.purchases[1].archived=true;assert.throws(()=>guardPurchaseLink(state,o,'late',{acknowledged:true}),/gearchiveerd/);state.purchases[1].archived=false;
+state.purchases[0].invoices[0].lines=[{itemId:'i'}];assert.throws(()=>guardPurchaseLink(state,o,'open'),/leveranciersregels/);assert.throws(()=>guardPurchaseLink(state,o,''),/leveranciersregels/);state.purchases[0].invoices[0].lines=[];
+assert.ok(latePurchase({shippedDate:'2026-10-17',status:'Verzamelen'}));
+let info=purchaseArchiveInfo(state,'p');assert.throws(()=>archivePurchase(state,'p',info.signature),/klantleveringen/);o.archived=true;assert.throws(()=>archivePurchase(state,'p',purchaseArchiveInfo(state,'p').signature),/klantleveringen/);o.archived=false;o.deliveredDate='2026-10-17';assert.throws(()=>archivePurchase(state,'p',info.signature),/gewijzigd/);
+const financial=structuredClone(state.purchases[0].invoices);archivePurchase(state,'p',purchaseArchiveInfo(state,'p').signature);assert.equal(o.purchaseId,'p');assert.deepEqual(state.purchases[0].invoices,financial);assert.equal(state.purchases[0].freight,123);archivePurchase(state,'p',purchaseArchiveInfo(state,'p').signature,false);delete o.deliveredDate;
+const company={id:'spatlappen',website:'example.invalid'},opts={euro:n=>'EUR '+n};
+let mail=arrivalMail(state,'o',company,opts);assert.equal(mail.variant,'balance');assert.match(mail.body,/EUR 1541/);assert.ok(!/morgen|gratis/i.test(mail.body));assert.equal(mail.to,c.email);
+state.payments[0].amount=2541;delete o.fulfilmentMethod;assert.equal(arrivalMail(state,'o',company,opts).variant,'arrangement');o.fulfilmentMethod='shipping';assert.equal(arrivalMail(state,'o',company,opts).variant,'ready');o.items[0].price=null;mail=arrivalMail(state,'o',company,opts);assert.equal(mail.variant,'unknown');assert.ok(!mail.body.includes('EUR 0'));o.items[0].price=1000;
+assert.throws(()=>arrivalMail(state,'o',{id:'maatwerkkunststof'},opts),/Spatlappen/);o.stage='In productie';state.purchases[0].status='Onderweg';assert.throws(()=>arrivalMail(state,'o',company,opts),/werkelijke aankomst/);state.purchases[0].status='Binnen in Nederland';
+assert.equal(batchPackingRows(state,'p')[0].ready,true);state.documents.push({id:'packing',ownerId:'o',category:'packing',name:'Pakbon.pdf'});assert.equal(batchPackingRows(state,'p')[0].existing.id,'packing');o.delivery={source:'custom',address:'',recipient:'',country:''};assert.equal(batchPackingRows(state,'p')[0].ready,false,'Never use customer address when a distinct order address is empty');delete o.delivery;
+const unchanged=JSON.stringify(state);batchPackingRows(state,'p');arrivalMail(state,'o',company,opts);assert.equal(JSON.stringify(state),unchanged);
+console.log('✓ Batches: verse linkguards, bewuste transitafwijking, factuurkoppelingen, archief zonder financieel verlies, drie aankomstvarianten/unknown, pakbonhergebruik en geen mutaties/providers.');
+
+const packState=structuredClone(state);packState.purchases[0].status='Besteld';packState.orders[0].stage='In productie';packState.payments=[];packState.documents=[];delete packState.customers[0].shippingAddress;assert.equal(workQueue(packState,'spatlappen',{now:Date.parse('2026-10-18T12:00:00Z')}).tasks[0].kind,'packing-check');

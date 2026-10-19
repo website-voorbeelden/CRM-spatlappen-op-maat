@@ -1,0 +1,16 @@
+import assert from 'node:assert/strict';
+import {readFile} from 'node:fs/promises';
+import {runInNewContext} from 'node:vm';
+import {defaultOrderSearch,searchOrderItems,orderDossierLabel} from '../admin/dossier-search.js';
+import {hasActiveFormEdits} from '../admin/form-guidance.js';
+const draft={id:'q1',number:3004,customerId:'c1',inquiryDraft:true,inquiryName:'Fictieve indiener',inquiryProduct:'Spatlap blauw',inquirySpecs:{width:2400,height:300},date:'2026-10-15',stage:'Ontwerp maken',vat:21,items:[]};
+const data={customers:[{id:'c1',company:'Fictieve klant',email:'klant@example.invalid'}],orders:[draft],payments:[]},f=defaultOrderSearch(),before=JSON.stringify(data);
+assert.equal(searchOrderItems(data,f).length,0);const rows=searchOrderItems(data,f,{includeIncomplete:true});assert.equal(rows.length,1);assert.equal(rows[0].item,null);assert.equal(rows[0].o.id,'q1');assert.equal(JSON.stringify(data),before);
+assert.equal(searchOrderItems(data,{...f,text:'indiener'},{includeIncomplete:true}).length,1);assert.equal(searchOrderItems(data,{...f,text:'blauw'},{includeIncomplete:true}).length,1);assert.equal(searchOrderItems(data,{...f,quantity:'1'},{includeIncomplete:true}).length,0);assert.equal(searchOrderItems(data,{...f,width:'240'},{includeIncomplete:true}).length,1);assert.equal(searchOrderItems(data,{...f,mode:'prices'},{includeIncomplete:true}).length,0);
+assert.equal(searchOrderItems(data,{...f,stage:'Prijs nog onbekend'},{includeIncomplete:true}).length,1);assert.equal(searchOrderItems(data,{...f,visibility:'archived'},{includeIncomplete:true}).length,0);
+assert.equal(orderDossierLabel(draft),'Aanvraag');assert.equal(orderDossierLabel({...draft,quoteSentDate:'2026-10-15'}),'Offerte');assert.equal(orderDossierLabel({...draft,quoteAcceptedDate:'2026-10-15'}),'Order');
+const source=await readFile(new URL('../admin/app.js',import.meta.url),'utf8'),start=source.indexOf('function ordersTable('),end=source.indexOf('\nfunction sortedOrders',start);let output;
+runInNewContext(source.slice(start,end)+'\noutput=ordersTable([draft]);',{draft,funnelUI:{row:()=>''},orderDossierLabel,output,totals:()=>({paid:0,total:0,balance:0,priceKnown:false}),purchase:()=>null,customer:()=>data.customers[0],esc:String,badge:v=>'<span>'+v+'</span>',paymentStatus:()=> 'Prijs nog onbekend',planningSummary:()=>'',euro:v=>'EUR'+v,sort:'number',ascending:false,record:()=>{},get output(){return output;},set output(v){output=v;}});
+assert.ok(output.includes('Aanvraag'));assert.ok(output.includes('Nog te bepalen'));assert.ok(!output.includes('Orderbedrag voldaan'));assert.ok(!output.includes('EUR0'));assert.ok(output.includes('#orders/q1'));
+const dialog={open:false,hasAttribute:()=>false},closedForm={dataset:{unsavedEdit:'true'},closest:()=>dialog,getAttribute:()=>null},root={querySelectorAll:()=>[closedForm],activeElement:null};assert.equal(hasActiveFormEdits(root),false);dialog.open=true;assert.equal(hasActiveFormEdits(root),true);dialog.open=false;root.activeElement={tagName:'INPUT',closest:()=>closedForm};assert.equal(hasActiveFormEdits(root),false);
+console.log('✓ Aanvragen zonder productregel zichtbaar en zoekbaar zonder nepitems/bedragen; prijsvergelijking sluit ze uit; Aanvraag/Offerte/Order labels; gesloten oude formulieren blokkeren intake niet, open bewerkingen wel.');

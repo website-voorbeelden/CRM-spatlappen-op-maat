@@ -1,0 +1,58 @@
+// Offline postal/place lookup. Data is packaged locally; no address is sent to a map service.
+let dataPromise;
+const normalize=value=>String(value||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim();
+const escape=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const countryCodes=new Map([['nl','NL'],['nederland','NL'],['netherlands','NL'],['the netherlands','NL'],['holland','NL'],['be','BE'],['belgie','BE'],['belgium','BE'],['belgique','BE'],['belgien','BE'],['lu','LU'],['luxemburg','LU'],['luxembourg','LU']]);
+const project=(lon,lat)=>[40+(lon-2.3)*98,35+(53.75-lat)*156];
+function pathFor(geometry){const polygons=geometry.type==='Polygon'?[geometry.coordinates]:geometry.coordinates;return polygons.map(polygon=>polygon.map(ring=>ring.map(([lon,lat],i)=>{const [x,y]=project(lon,lat);return `${i?'L':'M'}${x.toFixed(1)},${y.toFixed(1)}`;}).join(' ')+' Z').join(' ')).join(' ');}
+function center(rows){return {lat:rows.reduce((s,r)=>s+r[2],0)/rows.length,lon:rows.reduce((s,r)=>s+r[3],0)/rows.length};}
+function locate(details,places){
+ const raw=details.address||'',country=normalize(details.country);let code=countryCodes.get(country);
+ if(country&&!code)return {message:'Dit adres ligt buiten de Benelux-kaart.'};
+ const match=raw.match(/(?:^|[\n,;])\s*(?:(?:NL|BE|B|LU|L)[-\s]*)?(\d{4})(?:\s*([A-Z]{2})\b)?(?:\s+([^\n,;]+))?/im);
+ if(!code){const lines=raw.split('\n').map(normalize);code=lines.map(line=>countryCodes.get(line)).find(Boolean);}
+ if(!code&&match?.[2])code='NL';
+ const countries=code?[code]:['NL','BE','LU'];
+ const addressText=' '+normalize(raw)+' ';
+ const matchingPlace=(name)=>{const place=normalize(name);return place.length>=3&&addressText.includes(' '+place+' ');};
+ if(match){let candidates=countries.flatMap(cc=>(places[cc]||[]).filter(r=>r[0]===match[1]).map(r=>({cc,row:r})));const withPlace=candidates.filter(c=>matchingPlace(c.row[1]));if(withPlace.length)candidates=withPlace;
+ if(candidates.length&&new Set(candidates.map(c=>c.cc)).size===1){const rows=candidates.map(c=>c.row);return {...center(rows),label:`Postcodegebied ${match[1]}${rows.every(r=>r[1]===rows[0][1])?' · '+rows[0][1]:''}`,message:'Geschatte locatie op basis van postcodegebied. Geen exacte straat of huisnummer.'};}
+ }
+ const matches=countries.flatMap(cc=>(places[cc]||[]).filter(r=>matchingPlace(r[1])).map(row=>({cc,row})));
+ if(matches.length){const longest=Math.max(...matches.map(c=>normalize(c.row[1]).length)),selected=matches.filter(c=>normalize(c.row[1]).length===longest);if(new Set(selected.map(c=>c.cc+' '+normalize(c.row[1]))).size===1)return {...center(selected.map(c=>c.row)),label:selected[0].row[1],message:'Geschatte locatie op basis van plaatsnaam. Geen exact afleverpunt.'};}
+ return {message:raw?'Geen eenduidige locatie gevonden. Vul postcode, plaats en land in om de kaart te plaatsen.':'Vul eerst een afleveradres in; de kaart toont daarna ongeveer waar het ligt.'};
+}
+function mapSvg(borders,point,markers=''){const countries={NLD:{name:'Nederland',label:[5.35,52.65]},BEL:{name:'België',label:[4.6,50.5]},LUX:{name:'Luxemburg',label:[6.05,49.63]}};
+ const outlines=borders.features.map(f=>`<path class="country-shape ${f.properties.country}" d="${pathFor(f.geometry)}" fill-rule="evenodd"/>`).join('');
+ const labels=Object.entries(countries).map(([cc,c])=>{const [x,y]=project(...c.label);return `<text class="country-label ${cc}" x="${x}" y="${y}">${c.name}</text>`;}).join('');
+ const grid=[50,51,52,53].map(lat=>{const [x,y]=project(2.4,lat);return `<line x1="${x}" y1="${y}" x2="500" y2="${y}"/>`;}).join('');
+ let pin='';if(point.lat!=null){const [x,y]=project(point.lon,point.lat);pin=`<g class="map-marker"><circle cx="${x}" cy="${y}" r="19" class="map-radius"/><circle cx="${x}" cy="${y}" r="7" class="map-dot"/><title>${escape(point.label)}</title></g>`;}
+ return `<svg class="benelux-map" viewBox="0 0 540 760" role="${markers?'group':'img'}" aria-label="${markers?'Orderkaart: klik op een punt voor details':'Schematische Benelux-kaart'}${point.label?' met geschatte afleverlocatie bij '+escape(point.label):''}"><rect width="540" height="760" rx="16" fill="#f2f6fb"/><g class="map-grid">${grid}</g><text x="76" y="165" class="sea-label">NOORDZEE</text>${outlines}${labels}${pin}${markers}<g transform="translate(485 45)"><path d="M0 24 L0 0 L-5 7 M0 0 L5 7" fill="none" stroke="#8b9db4" stroke-width="1.5"/><text x="0" y="-8" text-anchor="middle" font-size="11" fill="#8b9db4">N</text></g></svg>`;
+}
+export async function renderDeliveryMap(container,details){if(!container)return;container.innerHTML='<p class="muted">Benelux-kaart laden…</p>';try{const [places,borders]=await loadMapData();if(!container.isConnected)return;const point=locate(details,places);container.innerHTML=`${mapSvg(borders,point)}<div class="map-caption">${point.label?`<strong>${escape(point.label)}</strong>`:''}<p>${escape(point.message)}</p></div>${mapCredit}`;}catch{if(container.isConnected)container.innerHTML='<p class="muted">De kaartgegevens konden niet worden geladen. Je kunt het afleveradres gewoon blijven gebruiken.</p>';}}
+const mapCredit='<p class="map-credit">Postcodes: <a href="https://www.geonames.org/" target="_blank" rel="noreferrer">GeoNames</a> · Kaart: <a href="https://www.naturalearthdata.com/" target="_blank" rel="noreferrer">Natural Earth</a></p>';
+function loadMapData(){return dataPromise??=Promise.all([fetch('./data/benelux-places.json').then(r=>{if(!r.ok)throw Error();return r.json();}),fetch('./data/benelux-borders.json').then(r=>{if(!r.ok)throw Error();return r.json();})]).catch(error=>{dataPromise=undefined;throw error;});}
+let selectedMapOrder='';
+export async function renderOrdersMap(container,rows){
+ if(!container)return;container.innerHTML='<p class="muted">Orderkaart laden…</p>';
+ const card=row=>`<article class="map-order-detail"><div class="section-heading"><div><h3>Order #${escape(row.number)}</h3><strong>${escape(row.customer)}</strong></div><span class="badge blue">${escape(row.stage)}</span></div><address class="delivery-address"><span>${escape(row.recipient)}</span><span>${escape(row.address)||'Afleveradres nog invullen.'}</span><span>${escape(row.country)}</span></address><div class="map-order-facts"><div><span>${escape(row.waitLabel)}</span><strong>${escape(row.wait)}</strong></div><div><span>Order incl. btw</span><strong>${escape(row.amount)}</strong></div><div><span>Nog te ontvangen</span><strong>${escape(row.balance)}</strong></div></div>${row.location?.label?`<p class="form-help">${escape(row.location.label)} · geschatte locatie</p>`:''}<div class="section-footer"><a class="map-order-open" href="#orders/${escape(row.id)}">Order openen →</a><a href="#orders/${escape(row.id)}/delivery">Adres aanpassen</a></div></article>`;
+ let places,borders;
+ try{[places,borders]=await loadMapData();}catch{
+  if(container.isConnected)container.innerHTML=`<section class="order-surface"><h2>Kaart tijdelijk niet beschikbaar</h2><p class="muted">De lokale kaartgegevens konden niet worden geladen. Je kunt de orders hieronder gewoon openen.</p>${rows.map(card).join('')||'<p>Geen orders in dit filter.</p>'}</section>`;return;
+ }
+ if(!container.isConnected)return;
+ const located=rows.map(row=>({...row,location:locate(row,places)})),found=located.filter(row=>row.location.lat!=null),missing=located.filter(row=>row.location.lat==null);
+ const byPoint=new Map();
+ for(const row of found){const point=row.location,key=point.lat.toFixed(3)+','+point.lon.toFixed(3);if(!byPoint.has(key))byPoint.set(key,{point,rows:[]});byPoint.get(key).rows.push(row);}
+ const groups=[...byPoint.values()];
+ const markers=groups.map((group,n)=>{const [x,y]=project(group.point.lon,group.point.lat),label=`${group.rows.length} order${group.rows.length===1?'':'s'} · ${group.point.label}`,color=group.rows.every(row=>row.color===group.rows[0].color)?group.rows[0].color:'#255ce5';return `<g class="order-map-marker" role="button" tabindex="0" data-map-group="${n}" aria-label="${escape(label)}" aria-pressed="false" transform="translate(${x.toFixed(1)},${y.toFixed(1)})"><circle class="marker-halo" r="20"/><circle class="marker-core" r="${group.rows.length>1?12:9}" fill="${color}"/>${group.rows.length>1?`<text text-anchor="middle" y="4" class="marker-count">${group.rows.length}</text>`:''}<title>${escape(group.rows.map(row=>`#${row.number} · ${row.customer} · ${row.stage}`).join('\n'))}</title></g>`;}).join('');
+ container.innerHTML=`<div class="order-map-layout"><section class="order-surface"><div class="section-heading"><div><h2>Orders in de Benelux</h2><p>${found.length} op de kaart · ${missing.length} zonder kaartlocatie</p></div></div><div class="order-map-legend"><span><i style="background:#7185bf"></i>Ontwerp</span><span><i style="background:#d89b32"></i>Offerte / betaling</span><span><i style="background:#255ce5"></i>Inkoop / productie</span><span><i style="background:#2a9978"></i>Levering</span></div>${mapSvg(borders,{},markers)}${!rows.length?'<p class="map-caption">Geen orders in dit filter.</p>':''}<p class="form-help">Klik op een punt voor orderdetails. Orders op dezelfde locatie delen één punt met een aantal. De locatie is geschat op basis van postcode of plaats.</p>${mapCredit}</section><div><section class="order-surface"><h2>Orderdetails</h2><div data-map-details aria-live="polite"><p class="muted">Kies een punt op de kaart om de order te bekijken.</p></div></section><section class="order-surface"><div class="section-heading"><div><h2>Geen locatie op de kaart (${missing.length})</h2><p>Deze orders blijven zichtbaar, ook zonder gevonden locatie.</p></div></div>${missing.map((row,n)=>`<button type="button" class="unlocated-order" data-map-missing="${n}"><strong>#${escape(row.number)} · ${escape(row.customer)}</strong><small>${escape(row.location.message)}</small></button>`).join('')||'<p class="muted">Alle orders in dit filter staan op de kaart.</p>'}</section></div></div>`;
+ const selectGroup=index=>{
+  const group=groups[index];if(!group)return;selectedMapOrder=group.rows[0].id;
+  container.querySelectorAll('[data-map-group]').forEach(marker=>{const active=Number(marker.dataset.mapGroup)===index;marker.classList.toggle('selected',active);marker.setAttribute('aria-pressed',String(active));});
+  container.querySelector('[data-map-details]').innerHTML=group.rows.map(card).join('');
+ };
+ container.onclick=e=>{const marker=e.target.closest('[data-map-group]');if(marker){selectGroup(Number(marker.dataset.mapGroup));return;}const button=e.target.closest('[data-map-missing]');if(button){const row=missing[Number(button.dataset.mapMissing)];selectedMapOrder=row.id;container.querySelectorAll('[data-map-group]').forEach(marker=>{marker.classList.remove('selected');marker.setAttribute('aria-pressed','false');});container.querySelector('[data-map-details]').innerHTML=`<p class="form-help">${escape(row.location.message)}</p>`+card(row);}};
+ container.onkeydown=e=>{const marker=e.target.closest('[data-map-group]');if(marker&&['Enter',' '].includes(e.key)){e.preventDefault();selectGroup(Number(marker.dataset.mapGroup));}};
+ const previous=groups.findIndex(group=>group.rows.some(row=>row.id===selectedMapOrder));if(previous>=0)selectGroup(previous);else if(groups.length===1)selectGroup(0);else if(!groups.length)container.querySelector('[data-map-details]').innerHTML=`<p class="muted">${missing.length?'Kies een order uit de lijst hieronder om een afleveradres aan te vullen.':'Er zijn geen orders in dit filter.'}</p>`;
+}

@@ -17,6 +17,6 @@ assert.deepEqual(customerDocumentItems([item],fd)[0].details,['Afmeting: 190,5 �
 const source=await readFile(new URL('../admin/app.js',import.meta.url),'utf8');
 const form=source.slice(source.indexOf('function confirmationForm'),source.indexOf("document.addEventListener('click'"));
 assert.ok(form.includes('items:customerDocumentItems(o.items,fd)'));
-assert.ok(form.includes("area('details_'+n,'Extra tekst voor de klant (optioneel · één regel per detail)','')"));
+assert.ok(form.includes('customerExecutionDetails(i,company.id)'));
 assert.ok(!form.includes('i.notes')&&!form.includes('i.specs'));
 console.log('Klantdocumenten: interne notities, specificaties, kostprijs, planning en leverancier worden niet automatisch overgenomen; handmatige klanttekst blijft mogelijk.');

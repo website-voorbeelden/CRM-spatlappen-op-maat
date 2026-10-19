@@ -1,0 +1,13 @@
+import assert from 'node:assert/strict';
+import {ensureCustomerNumbers} from '../admin/customer-numbers.js';
+import {changeCustomerNumber,setCustomerNumberPreferences} from '../shared/customer-number-settings.js';
+import {primaryImageInfo,choosePrimaryImage} from '../shared/product-primary-image.js';
+import {documentRemovalInfo,removeDocument} from '../shared/document-removal.js';
+const state={customers:[{id:'c',number:'KL-0010'},{id:'d',number:'ABC'}],orders:[],documents:[],payments:[],activities:[]};
+setCustomerNumberPreferences(state,{start:100,padding:0},JSON.stringify([1,4]));ensureCustomerNumbers(state);state.customers.push({id:'new'});ensureCustomerNumbers(state);assert.equal(state.customers[2].number,'KL-100');assert.equal(state.customers[0].number,'KL-0010');
+changeCustomerNumber(state,'c','KLANT-10','KL-0010');assert.throws(()=>changeCustomerNumber(state,'c','abc','KLANT-10'),/al in gebruik/);assert.throws(()=>changeCustomerNumber(state,'c','other','stale'),/intussen/);assert.throws(()=>setCustomerNumberPreferences(state,{start:1,padding:1},'stale'),/gewijzigd/);
+state.customers=state.customers.filter(c=>c.id!=='new');state.customers.push({id:'another'});ensureCustomerNumbers(state);assert.equal(state.customers.at(-1).number,'KL-101','Deleted sequence number is never reused');
+state.orders=[{id:'o',customerId:'c',items:[{id:'i',quantity:1,price:123,cost:0,designPreviewId:'old'}]}];state.documents=[{id:'old',ownerId:'o',itemId:'i',type:'image/png',name:'old.png',imageRole:'approved'},{id:'new',ownerId:'o',itemId:'i',type:'image/png',name:'new.png'},{id:'foreign',ownerId:'other',itemId:'i',type:'image/png',name:'other.png'}];
+let info=primaryImageInfo(state,'o','i');assert.throws(()=>choosePrimaryImage(state,'o','i','foreign',info.signature),/dit product/);choosePrimaryImage(state,'o','i','new',info.signature);assert.equal(state.orders[0].items[0].primaryImageId,'new');assert.equal(state.orders[0].items[0].designPreviewId,'old');assert.equal(state.documents[0].imageRole,'approved');assert.equal(state.orders[0].items[0].price,123);
+assert.throws(()=>choosePrimaryImage(state,'o','i','old',info.signature),/gewijzigd/);removeDocument(state,'new',documentRemovalInfo(state,'new').signature,{confirmed:true});assert.equal(state.orders[0].items[0].primaryImageId,undefined);assert.equal(state.orders[0].items[0].designPreviewId,'old');
+console.log('✓ Nummering: unieke handmatige nummers, start/padding, geen hernummering of hergebruik, transactiesignaturen. Afbeelding: productgrens, hoofdkeuze los van goedkeuring, verwijderfallback en historie.');

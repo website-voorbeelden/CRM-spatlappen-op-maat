@@ -36,6 +36,7 @@ export function createSessionUndo(database, {onChange = () => {}, getRoute = () 
     if (boundary) return clear('Na het terugzetten van een back-up begint een nieuwe geschiedenis.');
     const oldState = before === undefined ? undefined : JSON.parse(before), newState = JSON.parse(after);
     if (!oldState) return clear();
+    if (json(oldState.vatLedger)!==json(newState.vatLedger)) return clear('Btw-register bijgewerkt; corrigeer via de btw-werkplek zodat de historie behouden blijft.');
     if (externalAddition(oldState, newState)) return clear('Tikkie bijgewerkt; betaalverzoeken en ontvangsten blijven behouden.');
     observe(oldState);
     let size = (before.length + after.length) * 2;

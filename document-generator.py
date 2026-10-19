@@ -13,6 +13,9 @@ from zipfile import ZipFile
 from lxml import etree
 
 ROOT = Path(__file__).resolve().parent
+COMPANY = os.environ.get('CRM_COMPANY_ID', 'spatlappen')
+if COMPANY not in ('spatlappen','maatwerkkunststof'): raise ValueError('Onbekend bedrijf')
+TEMPLATE_ROOT = ROOT / '.local/templates' if COMPANY == 'spatlappen' else ROOT / '.local/templates' / COMPANY
 W = 'http://schemas.openxmlformats.org/wordprocessingml/2006/main'
 NS = {'w': W}
 TAG = lambda name: '{' + W + '}' + name
@@ -21,6 +24,7 @@ DOCUMENT_TYPES = {
     'quote': {'title': 'Offerte', 'prefix': 'OF', 'label': 'Offertenummer', 'file': 'Offerte'},
     'proforma': {'title': 'Proforma factuur', 'prefix': 'PF', 'label': 'Proformanummer', 'file': 'Proforma_factuur'},
     'invoice': {'title': 'Factuur', 'prefix': 'F', 'label': 'Factuurnummer', 'file': 'Factuur'},
+    'packing': {'title': 'Pakbon', 'prefix': 'PB', 'label': 'Pakbonnummer', 'file': 'Pakbon'},
 }
 
 
@@ -208,7 +212,7 @@ def build_invoice(payload, target, slots, items, package):
     # Only an explicitly entered customer note is printed; accounting comments
     # about receipts, shortfalls or overpayments belong in the CRM.
     slots['payment_note'] = slots['invoice_note']
-    with ZipFile(ROOT / '.local/templates/invoice.docx') as source:
+    with ZipFile(TEMPLATE_ROOT / 'invoice.docx') as source:
         doc = etree.fromstring(source.read('word/document.xml'))
         body = doc.find('w:body', NS)
         tables = body.findall('w:tbl', NS)
@@ -276,13 +280,104 @@ def build_invoice(payload, target, slots, items, package):
                                 if info.filename in changed else source.read(info.filename))
 
 
+def build_packing_slip(payload, target):
+    from datetime import date
+    fields = payload.get('fields', {})
+    if not isinstance(fields, dict):
+        raise ValueError('Controleer de pakbonvelden.')
+    keys = ['shipping_company', 'shipping_attention', 'shipping_street', 'shipping_postal_city',
+            'shipping_country', 'customer_reference', 'order_number', 'delivery_notes']
+    slots = {key: text(fields.get(key, '')) for key in keys}
+    if not slots['shipping_company'] or not slots['shipping_street'] or not slots['shipping_postal_city']:
+        raise ValueError('Vul naam, straat en postcode/plaats van het afleveradres in.')
+    slots['packing_slip_number'] = payload['number']
+    try:
+        slots['packing_slip_date'] = date.fromisoformat(text(fields.get('document_date', ''))).strftime('%d-%m-%Y')
+        day = text(fields.get('delivery_date', ''))
+        slots['delivery_date'] = date.fromisoformat(day).strftime('%d-%m-%Y') if day else ''
+    except ValueError:
+        raise ValueError('Controleer de pakbon- en leverdatum.')
+    items = payload.get('items', [])
+    if not isinstance(items, list) or not 1 <= len(items) <= 40:
+        raise ValueError('Een pakbon heeft 1 tot 40 productregels nodig.')
+    clean_items = []
+    for item in items:
+        if not isinstance(item, dict):
+            raise ValueError('Controleer de productregels op de pakbon.')
+        description = text(item.get('description', ''))
+        quantity, delivered = item.get('quantity'), item.get('deliveredQuantity')
+        if not description or len(description) > 200:
+            raise ValueError('Gebruik een productomschrijving van maximaal 200 tekens.')
+        if isinstance(quantity, bool) or not isinstance(quantity, int) or not 1 <= quantity <= 100_000:
+            raise ValueError('Controleer de bestelde aantallen.')
+        if isinstance(delivered, bool) or not isinstance(delivered, int) or not 0 <= delivered <= quantity:
+            raise ValueError('Het geleverde aantal moet tussen 0 en het bestelde aantal liggen.')
+        details = item.get('details', [])
+        if not isinstance(details, list) or len(details) > 100:
+            raise ValueError('Gebruik maximaal 100 tekstregels per artikel.')
+        clean_items.append({'description': description, 'quantity': quantity, 'delivered': delivered,
+                            'details': [value for raw in details if (value := text(raw))]})
+    if not any(item['delivered'] for item in clean_items):
+        raise ValueError('Vul bij minstens één product een geleverd aantal in.')
+    with ZipFile(TEMPLATE_ROOT / 'packing-slip.docx') as source:
+        doc = etree.fromstring(source.read('word/document.xml'))
+        body = doc.find('w:body', NS)
+        tables = body.findall('w:tbl', NS)
+        if len(tables) != 3 or len(tables[2].findall('w:tr', NS)) != 2:
+            raise ValueError('De pakbontemplate heeft een onverwachte indeling.')
+        if not slots['delivery_date']:
+            for paragraph in list(tables[0].findall('.//w:p', NS)):
+                if '{{delivery_date}}' in ''.join(paragraph.xpath('.//w:t/text()', namespaces=NS)):
+                    paragraph.getparent().remove(paragraph)
+        articles = tables[2]
+        heading, prototype = articles.findall('w:tr', NS)
+        articles.remove(prototype)
+        properties = heading.find('w:trPr', NS)
+        if properties is None:
+            properties = etree.Element(TAG('trPr'))
+            heading.insert(0, properties)
+        if properties.find('w:tblHeader', NS) is None:
+            etree.SubElement(properties, TAG('tblHeader'))
+        keep_row_with_next(heading)
+        for index, item in enumerate(clean_items, 1):
+            row = copy.deepcopy(prototype)
+            row.find('w:tc', NS).find('.//w:t', NS).text = str(index)
+            row_properties = row.find('w:trPr', NS)
+            if row_properties is None:
+                row_properties = etree.Element(TAG('trPr'))
+                row.insert(0, row_properties)
+            if row_properties.find('w:cantSplit', NS) is None:
+                etree.SubElement(row_properties, TAG('cantSplit'))
+            height = row.find('w:trPr/w:trHeight', NS)
+            if height is not None:
+                height.set(TAG('hRule'), 'atLeast')
+            fill_invoice_text(row, dict(slots, item_description=item['description'],
+                                       item_details=item['details'][0] if item['details'] else '',
+                                       item_notes='\n'.join(item['details'][1:]),
+                                       qty=str(item['quantity']), delivered_qty=str(item['delivered'])))
+            articles.append(row)
+        if not slots['delivery_notes']:
+            for paragraph in list(body.findall('w:p', NS)):
+                if '{{delivery_notes}}' in ''.join(paragraph.xpath('.//w:t/text()', namespaces=NS)):
+                    body.remove(paragraph)
+        fill_invoice_text(body, slots)
+        if '{{' in ''.join(doc.xpath('//w:t/text()', namespaces=NS)):
+            raise ValueError('Er staan nog onverwerkte pakbonvariabelen in de template.')
+        with ZipFile(target, 'w') as output:
+            for info in source.infolist():
+                output.writestr(info, etree.tostring(doc, xml_declaration=True, encoding='UTF-8', standalone=True)
+                                if info.filename == 'word/document.xml' else source.read(info.filename))
+
+
 def build(payload, target):
     spec = DOCUMENT_TYPES.get(payload.get('kind'))
     if spec is None:
-        raise ValueError('Kies offerte, orderbevestiging, proforma of factuur.')
+        raise ValueError('Kies offerte, orderbevestiging, proforma, factuur of pakbon.')
     number = text(payload.get('number', ''))
     if number != 'CONCEPT' and not re.fullmatch(spec['prefix'] + r'-\d{4}-\d{4,}', number):
         raise ValueError('Ongeldig documentnummer.')
+    if payload['kind'] == 'packing':
+        return build_packing_slip(payload, target)
     fields = payload.get('fields', {})
     keys = ['billing_company', 'billing_street', 'billing_postal_city', 'billing_country',
             'shipping_company', 'shipping_street', 'shipping_postal_city', 'shipping_country',
@@ -329,7 +424,7 @@ def build(payload, target):
     if payload['kind'] == 'invoice':
         slots['_grand_total'] = net + tax
         return build_invoice(payload, target, slots, items, package)
-    template = ROOT / '.local/templates/order-confirmation.docx'
+    template = TEMPLATE_ROOT / 'order-confirmation.docx'
     with ZipFile(template) as source:
         doc = etree.fromstring(source.read('word/document.xml'))
         body = doc.find('w:body', NS)
@@ -431,6 +526,39 @@ def build(payload, target):
                                 if info.filename in changed_parts else source.read(info.filename))
 
 
+def preview_pdf(payload):
+    """Render one page of the actual saved PDF. No regeneration or persistence."""
+    encoded, page = payload.get('data'), payload.get('page', 1)
+    if not isinstance(encoded, str) or len(encoded) > 14_000_000:
+        raise ValueError('Een PDF-voorbeeld ondersteunt bestanden tot 10 MB.')
+    data = base64.b64decode(encoded, validate=True)
+    if not data.startswith(b'%PDF-') or not 5 <= len(data) <= 10_000_000:
+        raise ValueError('Kies een geldige PDF van maximaal 10 MB.')
+    if isinstance(page, bool) or not isinstance(page, int) or not 1 <= page <= 200:
+        raise ValueError('Kies een geldige paginanummer tussen 1 en 200.')
+    runtime_path = Path(os.environ.get('CRM_DOCUMENT_RUNTIME', str(ROOT / '.local/document-runtime.json')))
+    runtime = json.loads(runtime_path.read_text())
+    with tempfile.TemporaryDirectory(prefix='crm-pdf-preview-') as directory:
+        work = Path(directory)
+        pdf = work / 'document.pdf'
+        pdf.write_bytes(data)
+        try:
+            info = subprocess.run([runtime['pdfinfo'], str(pdf)], capture_output=True, text=True, check=True, timeout=15).stdout
+            match = re.search(r'^Pages:\s+(\d+)', info, re.M)
+            pages = int(match.group(1)) if match else 0
+            if not 1 <= pages <= 200 or page > pages:
+                raise ValueError('Dit PDF-voorbeeld ondersteunt maximaal 200 pagina’s; controleer de gekozen pagina.')
+            subprocess.run([str(Path(runtime['pdfinfo']).with_name('pdftoppm')), '-f', str(page), '-l', str(page),
+                            '-scale-to', '1800', '-singlefile', '-png', str(pdf), str(work / 'page')],
+                           capture_output=True, check=True, timeout=30)
+        except subprocess.CalledProcessError:
+            raise ValueError('Deze PDF kan niet worden weergegeven. Mogelijk is hij beschadigd of met een wachtwoord beveiligd.')
+        image = (work / 'page.png').read_bytes()
+        if not image.startswith(b'\x89PNG\r\n\x1a\n') or len(image) > 5_000_000:
+            raise ValueError('Deze pagina is te groot om weer te geven.')
+        return {'page': page, 'pages': pages, 'image': base64.b64encode(image).decode()}
+
+
 def render(payload):
     runtime_path = Path(os.environ.get('CRM_DOCUMENT_RUNTIME', str(ROOT / '.local/document-runtime.json')))
     runtime = json.loads(runtime_path.read_text())
@@ -467,13 +595,14 @@ def render(payload):
             previews = [base64.b64encode(path.read_bytes()).decode()
                         for path in sorted(work.glob('page-*.png'), key=lambda p: int(p.stem.split('-')[-1]))]
         return {'pdf': base64.b64encode(pdf.read_bytes()).decode(),
-                'docx': base64.b64encode(docx.read_bytes()).decode(), 'pages': actual_pages, 'previews': previews,
+                **({'docx': base64.b64encode(docx.read_bytes()).decode()} if payload.get('formats') != ['pdf'] else {}), 'pages': actual_pages, 'previews': previews,
                 'filename': DOCUMENT_TYPES[payload['kind']]['file'] + '_' + payload['number']}
 
 
 if __name__ == '__main__':
     try:
-        print(json.dumps(render(json.load(sys.stdin))))
+        payload = json.load(sys.stdin)
+        print(json.dumps(preview_pdf(payload) if sys.argv[1:] == ['--preview'] else render(payload)))
     except (ValueError, KeyError) as error:
         print(json.dumps({'error': str(error)}))
         sys.exit(1)

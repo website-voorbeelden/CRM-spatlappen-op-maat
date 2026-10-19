@@ -1,0 +1,56 @@
+import {orderInputs} from '../tools/costing/order-inputs.js';
+import assert from 'node:assert/strict';
+import {readFile,access} from 'node:fs/promises';
+import {DatabaseSync} from 'node:sqlite';
+import vm from 'node:vm';
+import {companyFor,toolUrl} from '../shared/companies.js';
+import {validateBusinessState} from '../shared/state-validation.js';
+import {applyCalculation,calculationRecord,calculationSignature} from '../tools/costing/crm-storage.js';
+import {verifyTargets,targetConfig,verifyExistingBindings} from '../scripts/release-config.mjs';
+import {itemCostTotal} from '../admin/supplier-costs.js';
+import {defaultMail} from '../admin/payment-workflow.js';
+import {buildPages} from '../scripts/build-pages.mjs';
+import {handleCrm} from '../cloudflare/api.js';
+import {onRequest as middleware} from '../functions/_middleware.js';
+import {parseBackup} from '../admin/cloud-migration.js';
+async function checkBrowserModules(file,seen=new Set()){const url=new URL(file);url.search='';if(seen.has(url.href))return;seen.add(url.href);const code=await readFile(url,'utf8');for(const match of code.matchAll(/\b(?:import|export)\s+(?:[^'";]+?\s+from\s+)?['"]([^'"]+)['"]/g)){if(match[1].startsWith('.'))await checkBrowserModules(new URL(match[1],url),seen);}}
+const names=['spatlappen','maatwerkkunststof'];assert.throws(()=>companyFor('foreign'));assert.notEqual(companyFor(names[0]).browserDb,companyFor(names[1]).browserDb);
+const config=JSON.parse(await readFile(new URL('../deploy/targets.json',import.meta.url),'utf8'));verifyTargets(config);
+const invalid=structuredClone(config);invalid.maatwerkkunststof.production.databaseId=invalid.spatlappen.production.databaseId;assert.throws(()=>verifyTargets(invalid),/geen opslag delen/);
+assert.throws(()=>targetConfig(config,'maatwerkkunststof','production','test'),/moet eerst/);
+assert.throws(()=>verifyExistingBindings({deployment_configs:{production:{d1_databases:{DB:{id:'wrong'}}}}},config.spatlappen.production,'production'),/wijkt af/);
+const state={customers:[{id:'customer-1',company:'Testklant',extraField:'KEEP'}],orders:[{id:'order-1',customerId:'customer-1',number:3452,items:[{id:'item-1',description:'Kunststof',quantity:2,width:500,height:250,price:5000,cost:1200,designDocumentId:'old-design',unknown:'KEEP'}],unknown:'KEEP'}],payments:[{id:'payment-1',orderId:'order-1',amount:5000}],documents:[{id:'old-design',ownerId:'order-1',name:'Ontwerp.json'}],activities:[],purchases:[],documentSequences:{'F-2026':3452}};
+validateBusinessState(state);const malicious=structuredClone(state);malicious.orders[0].items[0].width='<img onerror=void(0)>';assert.throws(()=>validateBusinessState(malicious));malicious.orders[0].items[0].width=500;malicious.orders[0].items[0].id='bad" onload="';assert.throws(()=>validateBusinessState(malicious));
+globalThis.window=globalThis;await import('../tools/costing/assets/gasket-configurator-nesting.js');await import('../tools/costing/assets/quote-calculator-core.js');
+const core=window.QuoteCalculatorCore,inputs=core.defaultState();inputs.pieces[0].quantity=2;core.ensureRates(inputs);Object.values(inputs.scenarios[0].rates).forEach(rate=>rate.price=80);
+const calculation=core.calculate(inputs,window.GasketConfiguratorNesting),snapshot=calculationRecord({calculation,selectedScenarioId:calculation.scenarios[0].id},{version:'test-release',coreVersion:'source'});
+const next=structuredClone(state),binding={orderId:'order-1',itemId:'item-1',signature:calculationSignature(next.orders[0].items[0])};
+const item=applyCalculation(next,binding,snapshot);assert.equal(item.price,5000);assert.equal(item.cost,1200);assert.deepEqual(next.payments,state.payments);assert.deepEqual(next.documents,state.documents);assert.deepEqual(next.customers,state.customers);assert.deepEqual(next.documentSequences,state.documentSequences);assert.equal(item.unknown,'KEEP');
+inputs.scenarios[0].transport=9999;assert.notEqual(snapshot.inputs.scenarios[0].transport,9999);assert.throws(()=>applyCalculation(next,binding,snapshot),/intussen gewijzigd/);
+const costState=structuredClone(state),costItem=costState.orders[0].items[0];applyCalculation(costState,{...binding,signature:calculationSignature(costItem)},snapshot,{copyCost:true});assert.equal(itemCostTotal(costItem),snapshot.result.directCostInCents);
+const invoiced=structuredClone(state);invoiced.orders[0].items[0].costSource='supplierInvoice';assert.throws(()=>applyCalculation(invoiced,{...binding,signature:calculationSignature(invoiced.orders[0].items[0])},snapshot,{copyCost:true}),/leveranciersfactuur/);
+const badQty=structuredClone(snapshot);badQty.result.quantity=4;assert.throws(()=>applyCalculation(structuredClone(state),binding,badQty),/aantal/);
+const mail=defaultMail({customer:state.customers[0],order:state.orders[0],euro:x=>String(x),companyWebsite:companyFor('maatwerkkunststof').website});assert.ok(!mail.body.includes('Spatlappen'));assert.ok(mail.subject.includes('Maatwerkkunststof'));
+assert.equal(new URL(toolUrl(companyFor('maatwerkkunststof'),state.orders[0],state.orders[0].items[0],'cloud'),'https://test.invalid').pathname,'/tools/costing/index.html');
+const sql=new DatabaseSync(':memory:');for(const file of ['0001_crm.sql','0002_login_tikkie.sql'])sql.exec(await readFile(new URL('../migrations/'+file,import.meta.url),'utf8'));
+sql.prepare('INSERT INTO crm_records VALUES(?,?,?,?)').run('state','main',0,JSON.stringify(state));sql.exec("INSERT INTO crm_files VALUES('old-design','uploads/00000000-0000-0000-0000-000000000000',1,'application/json','digest')");const migration=await readFile(new URL('../migrations/0003_company_identity.sql',import.meta.url),'utf8');sql.exec(migration);sql.exec(migration);sql.exec("INSERT OR IGNORE INTO crm_company_identity VALUES(1,'spatlappen')");assert.deepEqual(JSON.parse(sql.prepare('SELECT payload FROM crm_records').get().payload),state);assert.equal(sql.prepare('SELECT COUNT(*) n FROM crm_files').get().n,1);
+const env={CRM_COMPANY_ID:'maatwerkkunststof',CRM_LOCAL_DEV:'true',DB:{},CRM_FILES:{}};
+const req=new Request('http://localhost/api/crm/commit',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({companyId:'spatlappen'})});assert.equal((await handleCrm({request:req,env})).status,409);
+assert.equal((await middleware({request:new Request('http://localhost/spatlap-preview.html'),env,next:async()=>new Response('should not run')})).status,404);
+assert.equal((await middleware({request:new Request('https://test.invalid/__local/tikkie/create',{method:'POST'}),env:{CRM_RELEASE_ENV:'preview'},next:async()=>new Response('should not run')})).status,403);
+const backup={format:'spatlappen-crm-backup',version:1,state,files:[]};await assert.rejects(()=>parseBackup(new Blob([JSON.stringify(backup)]),{companyId:'maatwerkkunststof'}),/ander bedrijf/);
+const source=await readFile(new URL('../admin/app.js',import.meta.url),'utf8'),line=prefix=>source.split('\n').find(l=>l.startsWith(prefix));const html=vm.runInNewContext([line('const esc ='),line('const field='),'field("x","<img onerror=void(0)>")'].join('\n'));assert.ok(!html.includes('<img'));assert.ok(html.includes('&lt;img'));
+for(const id of names){const directory=await buildPages({companyId:id,outDir:'dist/'+id,release:'checked-version'});await checkBrowserModules(new URL('file://'+directory+'/admin/app.js'));if(id==='maatwerkkunststof'){await checkBrowserModules(new URL('file://'+directory+'/tools/costing/crm-bridge.js'));await checkBrowserModules(new URL('file://'+directory+'/tools/costing/quote-workspace.js'));}const runtime=JSON.parse(await readFile(directory+'/crm-runtime.json','utf8'));assert.equal(runtime.companyId,id);assert.equal(runtime.release,'checked-version');if(id==='maatwerkkunststof')await assert.rejects(()=>access(directory+'/spatlap-preview.html'));else await assert.rejects(()=>access(directory+'/tools/costing/index.html'));}
+sql.close();console.log('✓ Bedrijfsisolatie, bestaande gegevens, historische calculatorinvoer, prijsopties, conflicten, migratie, back-ups, veilige HTML en beide builds gecontroleerd.');
+
+// Actual order -> original core -> reviewed record -> order round trip.
+const seeded=orderInputs(snapshot.inputs,{quantity:9,width:180,height:75});
+assert.equal(seeded.pieces[0].quantity,9);assert.equal(seeded.pieces[0].width,180);
+const roundSeed=core.normalizeState(orderInputs(snapshot.inputs,{quantity:8,width:null,height:null},{diameter:50,holeDiameter:8,thickness:3,material:'PVC'}));
+assert.equal(roundSeed.pieces[0].shape,'circle');assert.equal(roundSeed.pieces[0].innerDiameter,8);assert.equal(roundSeed.pieces[0].thickness,3);
+const transfer=structuredClone(snapshot);transfer.inputs.pieces[0].width=180;transfer.inputs.pieces[0].height=75;transfer.inputs.pieces[0].quantity=9;transfer.result.quantity=9;
+const transferState=structuredClone(state),transferItem=transferState.orders[0].items[0];
+applyCalculation(transferState,{...binding,signature:calculationSignature(transferItem)},transfer,{copyProduct:true,copyCost:true});
+assert.equal(transferItem.width,180);assert.equal(transferItem.height,75);assert.equal(transferItem.quantity,9);assert.equal(transferItem.price,5000);assert.equal(itemCostTotal(transferItem),transfer.result.directCostInCents);validateBusinessState(transferState);
+const blocked=structuredClone(state);blocked.orders[0].items[0].costSource='supplierInvoice';const beforeBlock=JSON.stringify(blocked);
+assert.throws(()=>applyCalculation(blocked,{...binding,signature:calculationSignature(blocked.orders[0].items[0])},transfer,{copyProduct:true}),/leveranciersfactuur/);assert.equal(JSON.stringify(blocked),beforeBlock);

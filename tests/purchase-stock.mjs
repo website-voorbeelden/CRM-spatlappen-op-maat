@@ -1,0 +1,15 @@
+import assert from 'node:assert/strict';
+import {purchaseStockPreview,planPurchaseSurplus} from '../shared/purchase-stock.js';
+import {inventoryOf,inventoryChange,stockCount,validateInventory} from '../shared/inventory.js';
+import {validateBusinessState} from '../shared/state-validation.js';
+const state={customers:[],orders:[{id:'o1',purchaseId:'p1',items:[{id:'i1',description:'Maatwerk met eigen bedrukking A',quantity:2,width:200,height:230}]},{id:'o2',purchaseId:'p1',items:[{id:'i2',description:'Maatwerk met eigen bedrukking B',quantity:2,width:200,height:230}]}],purchases:[{id:'p1'}],payments:[],documents:[],activities:[]};
+const action={purchaseId:'p1',lines:[{orderId:'o1',itemId:'i1'},{orderId:'o2',itemId:'i2'}],totalQuantity:8};
+const preview=purchaseStockPreview(state,action);assert.equal(preview.customerQuantity,4);assert.equal(preview.surplus,4);
+const before=JSON.stringify([state.orders,state.purchases,state.payments]);const receipt=planPurchaseSurplus(state,0,{...action,basis:preview.basis});assert.equal(receipt.quantity,4);assert.equal(receipt.purchaseSplit.totalQuantity,8);assert.equal(receipt.purchaseSplit.customerQuantity,4);assert.equal(receipt.purchaseId,'p1');assert.equal(state.inventory.items[0].isStandard,false);assert.equal(stockCount(state.inventory,receipt.stockId),0);validateBusinessState(state);
+const booked=JSON.stringify(state);assert.throws(()=>planPurchaseSurplus(state,state.inventory.revision,{...action,basis:preview.basis}),/al een inkoopverdeling/);assert.equal(JSON.stringify(state),booked);
+inventoryChange(state,state.inventory.revision,{type:'receive',stockId:receipt.stockId,incomingId:receipt.id,quantity:4});assert.equal(stockCount(state.inventory,receipt.stockId),4);assert.equal(JSON.stringify([state.orders,state.purchases,state.payments]),before);
+const fresh=structuredClone(state);delete fresh.inventory;const p=purchaseStockPreview(fresh,action);fresh.orders[1].items[0].quantity=3;assert.throws(()=>planPurchaseSurplus(fresh,0,{...action,basis:p.basis}),/intussen gewijzigd/);assert.equal(fresh.inventory,undefined);
+fresh.orders[1].items[0].quantity=2;fresh.orders[1].items[0].width=201;assert.throws(()=>purchaseStockPreview(fresh,action),/verschillen/);
+fresh.orders[1].items[0].width=200;assert.throws(()=>purchaseStockPreview(fresh,{...action,totalQuantity:3}),/groter dan 4/);
+const invalid=structuredClone(state);invalid.inventory.incoming[0].purchaseSplit.customerQuantity=5;assert.throws(()=>validateInventory(invalid),/Ongeldige verdeling/);
+console.log('✓ Inkoopverdeling: twee klantorders × 2, totaal 8 → uitsluitend 4 verwachte blanco’s; ontvangst 4, geen automatische standaardmaat, duplicaten/conflicten/mixmaten geblokkeerd, financiële gegevens intact.');

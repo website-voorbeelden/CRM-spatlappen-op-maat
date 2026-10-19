@@ -14,7 +14,7 @@ function identity(payload){
 }
 const uncertain='Tikkie heeft nog geen zeker antwoord gegeven. Controleer je Tikkie-portaal; we maken geen tweede link aan.';
 async function provider(env,path,method='GET',body){
-  return fetch((env.TIKKIE_BASE_URL||'https://api.abnamro.com/v2/tikkie')+path,{method,headers:{'API-Key':env.TIKKIE_API_KEY,'X-App-Token':env.TIKKIE_APP_TOKEN,'Content-Type':'application/json',Accept:'application/json'},body:body===undefined?undefined:JSON.stringify(body),signal:AbortSignal.timeout(25000),redirect:'error'});
+  return fetch((env.TIKKIE_BASE_URL||'https://api.abnamro.com/v2/tikkie')+path,{method,headers:{'API-Key':env.TIKKIE_API_KEY,'X-App-Token':env.TIKKIE_APP_TOKEN,'Content-Type':'application/json',Accept:'application/json'},body:body===undefined?undefined:JSON.stringify(body),signal:AbortSignal.timeout(25000),redirect:'manual'});
 }
 async function create(env,payload){
   const {id,value}=identity(payload),encoded=JSON.stringify(value);

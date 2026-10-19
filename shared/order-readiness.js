@@ -1,0 +1,33 @@
+import {productionReleaseInfo} from './production-release.js';
+import {inboundReadiness} from './inbound-readiness.js';
+import {salesFunnel} from './sales-funnel.js?v=workspace-search-20261017';
+const date=value=>Boolean(value)&&Number.isFinite(Date.parse(value));
+// Read-only follow-up facts. Payment is never evidence of an approved design,
+// a sent document, an order at a supplier or actual production.
+export function orderReadiness(state,o,companyId,{funnel}={}){
+ const f=funnel||salesFunnel(state,o,companyId),documents=(state.documents||[]).filter(d=>d.ownerId===o.id),hasPdf=kind=>documents.some(d=>(d.generated?.kind||d.category)===kind&&(/\.pdf$/i.test(d.name||'')||d.type==='application/pdf'));
+ const checks=[];const add=(key,label,complete,action,cta,reason)=>checks.push({key,label,complete,action,cta,reason});
+ add('specs','Productspecificaties',!f.missing.length,'specs','Gegevens aanvullen',f.fields.filter(v=>!v.complete).map(v=>v.label).join(', '));
+ add('prices','Prijsafspraak',f.payment.known,'calculate','Prijs berekenen','Productprijs of verzendprijs is nog onbekend.');
+ if(companyId==='spatlappen'){
+  const approved=date(o.approvedDate)||documents.some(d=>d.imageRole==='approved');
+  const prepared=documents.some(d=>d.productDesignPreview||d.itemId&&d.type?.startsWith('image/'))||(o.items||[]).some(i=>i.designDocumentId||i.designPreviewId||i.designId);
+  add('design','Ontwerp / akkoord',approved,'view','Ontwerp controleren',prepared?'Er staat een ontwerp, maar geen ontwerpgoedkeuring geregistreerd.':'Er is nog geen ontwerp of ontwerpgoedkeuring vastgelegd.');
+ }
+ const confirmationSent=date(o.confirmationSentDate)||f.events.some(e=>e.phase==='confirmation'&&!['pending','dismissed'].includes(e.review));
+ add('confirmation','Orderbevestiging',confirmationSent&&hasPdf('confirmation'),confirmationSent&&!hasPdf('confirmation')?'documents':'confirmation',confirmationSent&&!hasPdf('confirmation')?'Bestaande bevestiging toevoegen':hasPdf('confirmation')?'Orderbevestiging mailen':'Orderbevestiging maken',confirmationSent&&!hasPdf('confirmation')?'Verzending is geregistreerd, maar de documentkopie ontbreekt. Voeg de bestaande bevestiging toe.':hasPdf('confirmation')?'De orderbevestiging staat klaar, maar verzending is nog niet geregistreerd.':'Geen verstuurde orderbevestiging geregistreerd.');
+ add('invoice','Factuur',f.invoiceSent&&f.invoicePrepared,f.invoiceSent&&!f.invoicePrepared?'documents':'invoice',f.invoiceSent&&!f.invoicePrepared?'Bestaande factuur toevoegen':f.invoicePrepared?'Factuur mailen':companyId==='maatwerkkunststof'?'Factuur toevoegen':'Factuur maken',f.invoiceSent&&!f.invoicePrepared?'Verzending is geregistreerd, maar de factuurkopie ontbreekt. Voeg de bestaande factuur toe; maak geen dubbele.':f.invoicePrepared?'De factuur-PDF staat klaar, maar verzending is nog niet geregistreerd.':'Er staat nog geen factuur klaar.');
+ const supplier=(o.items||[]).some(i=>i.productionSource!=='local'),purchase=(state.purchases||[]).find(p=>p.id===o.purchaseId);
+ if(supplier){const ordered=Boolean(purchase&&(date(o.supplierOrderedDate)||date(purchase.orderedDate)||['Besteld','In productie','Onderweg','Binnen in Nederland'].includes(purchase.status)));
+  add('purchase','Inkoop bij leverancier',ordered,'purchase',purchase?'Bestelling controleren':'Inkoop koppelen',purchase?'De inkoop is gekoppeld, maar bestellen is nog niet geregistreerd.':date(o.supplierOrderedDate)?'Bestellen is geregistreerd, maar de inkoopkoppeling ontbreekt.':'Er is nog geen inkoopbestelling gekoppeld.');
+ }
+ const inbound=inboundReadiness(state,o,companyId);
+ const gaps=checks.filter(c=>!c.complete),paid=f.payment.paid>0;
+ // Financial documents first after full payment; then resolve missing work in
+ // order. Local-only production never gets a supplier task.
+ let next=null;if(f.payment.fullyPaid){next=gaps.find(c=>c.key==='invoice')||gaps.find(c=>['specs','prices','design','confirmation','purchase'].includes(c.key))||null;}
+ else if(paid)next=gaps.find(c=>['specs','prices','design','confirmation'].includes(c.key))||null;
+ const release=productionReleaseInfo(state,o,companyId,{payment:f.payment});if(!inbound.active&&!o.productionReleasedDate&&!f.payment.fullyPaid&&release.eligible)next={key:'release',label:'Productievrijgave',action:'production-release',cta:'Vrijgave controleren',reason:`De ${release.percentage}%-aanbetaling en ontwerpvoorwaarden zijn aanwezig. Bevestig de productievrijgave apart.`};
+ if(!inbound.active&&o.productionReleasedDate&&release.active){if(release.eligible)next=gaps.find(c=>c.key==='purchase')||{key:'production-start',label:'Productiestart',action:'production',cta:'Productiestart registreren',reason:'Vrijgave is vastgelegd. Registreer de productiestart pas zodra die werkelijk bevestigd is.'};else next=gaps.find(c=>['specs','prices','design'].includes(c.key))||{key:'deposit',label:'Aanbetaling',action:'payment',cta:'Aanbetaling controleren',reason:release.reasons.join(' ')};}
+ return {checks,gaps:inbound.active?inbound.gaps:gaps,next:inbound.active?inbound.next:next,inbound:inbound.active,paid,fullyPaid:f.payment.fullyPaid,receivedPercent:f.payment.known&&f.payment.total>0?Math.round(f.payment.paid/f.payment.total*1000)/10:null};
+}

@@ -6,7 +6,7 @@ import {createSessionUndo} from '../admin/session-undo.js';
 // localhost service, production API or actual customer data is touched.
 const originalFetch = globalThis.fetch;
 globalThis.window = {dispatchEvent() {}};
-globalThis.location = {search: ''};
+globalThis.location={search:''};
 const empty = () => ({customers: [], orders: [], payments: [], documents: [], activities: [], purchases: []});
 let server, fileReads;
 function fixture(value = empty()) {
@@ -18,7 +18,7 @@ function fixture(value = empty()) {
 const response = (value, status = 200) => Response.json(value, {status});
 globalThis.fetch = async (url, options = {}) => {
   const parsed = new URL(url, 'http://memory.invalid'), path = parsed.pathname;
-  if (path === '/crm-runtime.json') return response({mode: 'local'});
+  if (path === '/crm-runtime.json') return response({mode:'local',companyId:'spatlappen'});
   if (path === '/api/crm/snapshot') return response({revision: server.revision, records: server.records, files: [...server.files.values()]});
   if (path === '/api/crm/files' && options.method === 'POST') {
     const blob = options.body, key = crypto.randomUUID(), metadata = {key, size: blob.size, type: blob.type, sha256: await blobDigest(blob)};

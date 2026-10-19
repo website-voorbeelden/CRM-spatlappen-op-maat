@@ -1,0 +1,1 @@
+export const vatWorkspaceTabs=active=>`<nav class="analytics-tabs" aria-label="Btw-werkplek">${[['quarter','Kwartaal voorbereiden'],['sources','Bronnen & boekingen'],['exceptions','Afwijkende btw'],['settings','Inrichting']].map(([key,label])=>`<a href="#analytics/vat/${key}" ${active===key?'aria-current="page"':''}>${label}</a>`).join('')}</nav>`;

@@ -1,0 +1,56 @@
+import assert from 'node:assert/strict';
+import vm from 'node:vm';
+import {readFile} from 'node:fs/promises';
+import {newCostQuote,privateCostInputs,validateCostQuote,editCostQuote,applyQuoteCalculation,quoteSaleTotal,productBasis,mergeSupplierQuote} from '../tools/costing/quote-domain.js';
+import {calculationChoice,costingLink,salesFieldsFromCalculation,purchaseFieldsFromCalculation,syncProductToCalculation} from '../shared/costing-link.js';
+const context={window:{},console};vm.createContext(context);
+for(const file of ['gasket-configurator-nesting.js','quote-calculator-core.js'])vm.runInContext(await readFile('tools/costing/assets/'+file,'utf8'),context);
+const Core=context.window.QuoteCalculatorCore,Nesting=context.window.GasketConfiguratorNesting;
+const inputs=JSON.parse(JSON.stringify(Core.normalizeState(Core.defaultState()))),piece=inputs.pieces[0],a=inputs.scenarios[0];
+piece.name='Product zonder klant';piece.quantity=3;piece.material='HDPE';piece.width=500;piece.height=250;
+a.name='Leverancier A';a.costSource='quote_per_piece';a.quotedUnitPrices[piece.id]=10;a.transport=7;a.other=2;
+const b=JSON.parse(JSON.stringify(Core.newScenario('Leverancier B','saw')));b.costSource='quote_per_piece';b.quotedUnitPrices[piece.id]=12;inputs.scenarios.push(b);inputs.selectedScenarioId=a.id;
+const source={customers:[{company:'PRIVATE_CUSTOMER'}],orders:[{id:'PRIVATE_ORDER'}],payments:[{amount:999}],email:'PRIVATE_EMAIL',...inputs};source.pieces[0].customerName='PRIVATE_NAME';source.scenarios[0].apiKey='PRIVATE_KEY';source.scenarios[0].rates.extra={unit:'m2',price:5,token:'PRIVATE_TOKEN'};
+const safe=privateCostInputs(source);assert.ok(!JSON.stringify(safe).includes('PRIVATE_'));assert.equal(safe.pieces[0].name,piece.name);assert.equal(source.scenarios[0].apiKey,'PRIVATE_KEY');
+assert.throws(()=>privateCostInputs({...source,pieces:[{...piece,name:{email:'LEAK'}}]}),/eenvoudige/);
+let q=newCostQuote(safe,{id:'test-quote',now:'2026-10-14T00:00:00Z'});assert.equal(q.companyId,'maatwerkkunststof');assert.equal(q.lines[0].unitSaleInCents,null);assert.equal(quoteSaleTotal(q),null);
+const calc=state=>JSON.parse(JSON.stringify(Core.calculate(state,Nesting)));
+const snapshot={calculation:calc(q.inputs),selectedScenarioId:a.id};
+assert.throws(()=>applyQuoteCalculation(q,snapshot),/controleer|Controleer/);q=applyQuoteCalculation(q,snapshot,{copySale:true,confirmSupplierQuote:true});assert.equal(q.result.supplier,'Leverancier A');assert.equal(q.result.directCostInCents,3000);assert.equal(q.result.transportInCents,700);assert.equal(q.result.otherInCents,200);assert.equal(q.result.landedCostInCents,3900);assert.equal(quoteSaleTotal(q),q.result.saleInCents);assert.equal(q.offers[0].confirmedBasis,productBasis(q.inputs));assert.ok(!JSON.stringify(q).includes('PRIVATE_'));
+const editedInputs=structuredClone(q.inputs);editedInputs.pieces[0].quantity=5;editedInputs.pieces[0].width=700;
+const edited=editCostQuote(q,{title:'Bewerkbaar concept',inputs:editedInputs,selectedScenarioId:b.id,lines:[{pieceId:piece.id,unitSaleInCents:2222}],offers:q.offers});assert.equal(edited.result,null);assert.equal(edited.inputs.pieces[0].quantity,5);assert.equal(edited.inputs.scenarios[1].linePricing[piece.id].value,22.22);assert.equal(quoteSaleTotal(edited),11110);assert.equal(q.inputs.pieces[0].quantity,3);
+assert.throws(()=>applyQuoteCalculation(edited,{calculation:calc(edited.inputs),selectedScenarioId:a.id}),/Controleer/);
+const chosen=applyQuoteCalculation(edited,{calculation:calc(edited.inputs),selectedScenarioId:b.id},{copySale:false,confirmSupplierQuote:true});assert.equal(chosen.result.supplier,'Leverancier B');assert.equal(chosen.result.directCostInCents,6000);assert.equal(chosen.lines[0].unitSaleInCents,2222);
+const changed=structuredClone(chosen.inputs);changed.pieces[0].quantity=6;const notCopy=applyQuoteCalculation(chosen,{calculation:calc(changed),selectedScenarioId:b.id},{copySale:false,confirmSupplierQuote:true});assert.equal(notCopy.lines[0].unitSaleInCents,null); // no stale price silently reused after structural changes
+const multi=structuredClone(chosen.inputs),newPiece=JSON.parse(JSON.stringify(Core.newPiece('saw')));newPiece.name='Tweede stuk';newPiece.material='HDPE';multi.pieces.push(newPiece);multi.scenarios[1].quotedUnitPrices[newPiece.id]=8;
+const multiple=applyQuoteCalculation(chosen,{calculation:calc(multi),selectedScenarioId:b.id},{copySale:true,confirmSupplierQuote:true});assert.equal(multiple.lines.length,2);assert.equal(quoteSaleTotal(multiple),multiple.result.saleInCents);
+const leaked={...multiple,customerId:'SHOULD_NOT_EXIST',notes:'PRIVATE_NOTES',result:{...multiple.result,credentials:'PRIVATE_CRED'}};assert.ok(!JSON.stringify(validateCostQuote(leaked)).includes('PRIVATE_'));assert.equal(validateCostQuote(leaked).customerId,undefined);
+assert.throws(()=>validateCostQuote({...q,companyId:'spatlappen'}),/Ongeldige/);assert.throws(()=>validateCostQuote({...q,lines:[{pieceId:piece.id,unitSaleInCents:-1}]}),/offerteprijzen/);assert.throws(()=>validateCostQuote({...q,offers:[q.offers[0],q.offers[0]]}),/Dubbele/);
+const incomplete=structuredClone(chosen.inputs);incomplete.scenarios[1].quotedUnitPrices[piece.id]=0;assert.throws(()=>applyQuoteCalculation(chosen,{calculation:calc(incomplete),selectedScenarioId:b.id}),/tarieven/);
+const fractional=structuredClone(chosen.inputs);fractional.pieces[0].quantity=1.5;assert.throws(()=>applyQuoteCalculation(chosen,{calculation:calc(fractional),selectedScenarioId:b.id},{confirmSupplierQuote:true}),/geheel/);
+const imported=mergeSupplierQuote(q,q,a.id,{newId:'merged-supplier'});assert.equal(imported.selectedScenarioId,'merged-supplier');assert.equal(imported.inputs.scenarios.at(-1).quotedUnitPrices[piece.id],10);assert.equal(imported.lines[0].unitSaleInCents,q.lines[0].unitSaleInCents);assert.equal(imported.offers.at(-1).confirmedBasis,'');assert.throws(()=>mergeSupplierQuote(edited,q,a.id),/andere producten/);
+const ownInputs=structuredClone(q.inputs);ownInputs.pieces[0].holes=3;ownInputs.scenarios[0].holeCost={mode:'per_hole',value:2,hourlyRate:75,performedBy:'own'};const ownQuote=applyQuoteCalculation(q,{calculation:calc(ownInputs),selectedScenarioId:a.id},{copySale:true,confirmSupplierQuote:true});
+const choice=calculationChoice(ownQuote,piece.id),link=costingLink(choice);assert.equal(choice.directCostInCents,4800);assert.equal(choice.supplierCostInCents,3000);assert.equal(salesFieldsFromCalculation(choice).cost,1600);assert.equal(purchaseFieldsFromCalculation(choice).price,1000);assert.equal(link.source,'costCalculator');
+const changedSale=syncProductToCalculation(ownQuote,link,{quantity:4,width:550,height:260,price:2500,customerName:'NEVER_SENT'});assert.equal(changedSale.inputs.pieces[0].quantity,4);assert.equal(changedSale.inputs.pieces[0].width,550);assert.equal(changedSale.inputs.scenarios[0].linePricing[piece.id].value,25);assert.equal(changedSale.result,null);assert.ok(!JSON.stringify(changedSale).includes('NEVER_SENT'));
+const changedPurchase=syncProductToCalculation(ownQuote,link,{quantity:3,price:1400},{direction:'purchase'});assert.equal(changedPurchase.inputs.scenarios[0].quotedUnitPrices[piece.id],14);assert.equal(changedPurchase.inputs.scenarios[0].costSource,'quote_per_piece');assert.equal(changedPurchase.result,null);
+assert.throws(()=>syncProductToCalculation({...ownQuote,updatedAt:'2026-10-15T00:00:00Z'},link,{quantity:3,width:500,height:250,price:2500}),/intussen gewijzigd/);assert.throws(()=>calculationChoice(changedSale,piece.id),/opnieuw/);
+const foreignInputs=structuredClone(ownQuote.inputs);foreignInputs.scenarios[0].currency='TRY';foreignInputs.scenarios[0].exchangeRate=40;foreignInputs.scenarios[0].quotedUnitPrices[piece.id]=400;foreignInputs.scenarios[0].transport=280;const foreign=applyQuoteCalculation(ownQuote,{calculation:calc(foreignInputs),selectedScenarioId:a.id},{copySale:true,confirmSupplierQuote:true});const foreignChoice=calculationChoice(foreign,piece.id);const foreignChanged=syncProductToCalculation(foreign,costingLink(foreignChoice),{quantity:3,price:1200},{direction:'purchase'});assert.equal(foreignChanged.inputs.scenarios[0].quotedUnitPrices[piece.id],480);assert.equal(foreignChanged.inputs.scenarios[0].transport,280);assert.equal(foreignChanged.inputs.scenarios[0].currency,'TRY');
+// Dedicated storage cannot write to orders/customers/payment/document stores.
+const storage=await readFile('admin/cost-quote-store.js','utf8');assert.ok(!storage.includes('openCrmDatabase'));assert.ok(!storage.includes("transaction('state'"));assert.ok(storage.includes('quoteSignature(validateCostQuote(r.result))'));assert.ok(storage.includes("runtime.companyId!=='maatwerkkunststof'"));
+console.log('✓ Cost quotes: supplier selection, editable bidirectional inputs/prices, explicit application, unknown prices, per-piece totals, separate extras, changed quote validity, multiple products, privacy allowlists and no order/customer mutation.');
+// Exercise the real quote-store with a transactional IndexedDB facade. Two
+// editors start from one snapshot; exactly one can commit, with no partial put.
+{
+ const rows=new Map(),usedStores=[],dbCalls=[];let lock=Promise.resolve(),companyId='maatwerkkunststof';
+ function transaction(name,mode){usedStores.push(name);const previous=lock;let release;const done=new Promise(resolve=>release=resolve);lock=previous.then(()=>done);let staged=null,aborted=false;
+  const tx={abort(){aborted=true;queueMicrotask(()=>{tx.onabort?.();release();});},objectStore(){return {get(id){return request(()=>rows.get(id));},getAll(){return request(()=>[...rows.values()]);},put(q){staged=structuredClone(q);}}}};
+  function request(get){const r={};previous.then(()=>{r.result=structuredClone(get());r.onsuccess?.();queueMicrotask(()=>{if(!aborted){if(staged)rows.set(staged.id,staged);tx.oncomplete?.();release();}});});return r;}return tx;
+ }
+ const storageEnv={...domainForStorage(),storageRuntime:async()=>({companyId}),openBrowserDatabase:async(name,stores)=>{dbCalls.push({name,stores});return {transaction,close(){}};},structuredClone,crypto,console};
+ function domainForStorage(){return {validateCostQuote,quoteSignature:q=>JSON.stringify(q)};}
+ const storageCode=(await readFile('admin/cost-quote-store.js','utf8')).replace(/^import .*;\n/gm,'').replace(/^export /gm,'');vm.runInNewContext(storageCode,storageEnv);
+ await storageEnv.saveCostQuote(q);const saved=await storageEnv.readCostQuote(q.id),expected=JSON.stringify(saved);assert.deepEqual(saved,q);
+ const two=await Promise.allSettled([storageEnv.saveCostQuote({...saved,title:'Editor A'},expected),storageEnv.saveCostQuote({...saved,title:'Editor B'},expected)]);assert.equal(two.filter(v=>v.status==='fulfilled').length,1);assert.equal((await storageEnv.readCostQuote(q.id)).title,'Editor A');assert.equal(rows.size,1);assert.ok(usedStores.every(s=>s==='quotes'));assert.ok(dbCalls.every(c=>c.name==='maatwerkkunststof-cost-quotes'&&c.stores.join()==='quotes'));
+ const before=dbCalls.length;companyId='spatlappen';await assert.rejects(()=>storageEnv.listCostQuotes(),/hoort bij Maatwerkkunststof/);assert.equal(dbCalls.length,before);
+ console.log('✓ Real quote storage: dedicated company database, atomic creation, two-editor conflict, preserved existing records and no customer/order stores opened.');
+}

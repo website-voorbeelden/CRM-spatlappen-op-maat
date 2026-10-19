@@ -13,3 +13,8 @@ test-results/
 playwright-report/
 __pycache__/
 *.pyc
+
+.release-*.jsonc
+
+# Tijdelijke onderzoeksbestanden en logs; bestaande lokale inhoud behouden.
+work/

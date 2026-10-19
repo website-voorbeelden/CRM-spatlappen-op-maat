@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="nl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Kostprijsberekening voor zaag- en freesdelen met leveranciersvergelijking.">
+  <title>Stukken kostprijscalculator</title>
+  <link rel="stylesheet" href="./assets/quote-calculator.css?build=20260928-11">
+  <link rel="stylesheet" href="crm-integration.css?v=order-transfer-20261014">
+  <link rel="stylesheet" href="crm-companion.css?v=order-transfer-20261014">
+</head>
+<body>
+  <section id="crm-binding" aria-label="CRM-koppeling">
+    <div class="crm-toolbar"><a id="crm-return" href="/admin/">← Terug naar CRM</a><strong>Kostprijscalculator</strong><div id="crm-companion"><span data-ai-launcher-slot></span><span data-ai-feedback-slot></span></div></div>
+    <p id="crm-status" role="status">CRM-koppeling laden…</p>
+    <div id="crm-order-actions" hidden><button id="crm-reload" type="button">Ordergegevens opnieuw laden</button> <button id="crm-save" type="button" hidden disabled>Uitkomst controleren & overnemen →</button></div>
+    <dialog id="crm-review" aria-label="Berekening overnemen"><h2>Terugzetten in de order</h2><pre id="crm-review-values"></pre>
+      <label><input id="crm-copy-product" type="checkbox" checked> Aantal en maten overnemen</label>
+      <label><input id="crm-copy-cost" type="checkbox" checked> Directe productkostprijs overnemen</label>
+      <label id="crm-price-option"><input id="crm-copy-sale" type="checkbox"> Verkoopprijs overnemen (excl. btw)</label>
+      <label id="crm-supplier-option" hidden><input id="crm-confirm-supplier" type="checkbox"> De gekozen leveranciersofferte geldt voor deze maten en aantallen.</label>
+      <p>Transport, invoer en overige kosten worden niet aan de order toegevoegd. Een gekoppelde bronberekening blijft behouden.</p>
+      <p id="crm-review-error" role="alert"></p><button id="crm-confirm" type="button">Bevestigen, opslaan & terug naar order</button> <button id="crm-cancel" type="button">Verder rekenen</button>
+    </dialog>
+  </section>
+  <main class="qcalc" data-quote-calculator><noscript>JavaScript is nodig om de kostprijsberekening te gebruiken.</noscript></main>
+  <div id="toast" role="status" hidden></div>
+  <script src="./assets/gasket-configurator-nesting.js?build=20260928-3"></script>
+  <script src="./assets/quote-calculator-core.js?build=20260928-10"></script>
+  <script src="./assets/quote-calculator-preview.js?build=20260928-10"></script>
+  <script src="./assets/quote-calculator-chart.js?build=20260928-10"></script>
+  <script src="./assets/quote-calculator-ai.js?build=20260928-10"></script>
+  <script src="./assets/quote-calculator-view.js?build=20260928-7"></script>
+  <script src="./assets/quote-calculator.js?build=20260928-11"></script>
+  <script type="module" src="crm-bridge.js?v=order-transfer-20261014"></script>
+  <script type="module" src="crm-companion.js?v=order-transfer-20261014"></script>
+</body>
+</html>

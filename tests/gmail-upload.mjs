@@ -1,0 +1,18 @@
+import assert from 'node:assert/strict';
+import {readFile} from 'node:fs/promises';
+import {runInNewContext} from 'node:vm';
+import {parseGoogleDesktopClient} from '../shared/google-oauth-client.js';
+import {hasActiveFormEdits,installFormGuidance,markFormClean} from '../admin/form-guidance.js';
+const text=JSON.stringify({installed:{client_id:'fake.apps.googleusercontent.com',client_secret:'FAKE_ONLY',redirect_uris:['http://localhost']}});
+assert.deepEqual(parseGoogleDesktopClient(text),{clientId:'fake.apps.googleusercontent.com',clientSecret:'FAKE_ONLY'});assert.deepEqual(parseGoogleDesktopClient('\uFEFF'+text),parseGoogleDesktopClient(text));
+for(const invalid of ['{','null',JSON.stringify({type:'service_account',private_key:'PRIVATE_FAKE'}),'x'.repeat(20001),JSON.stringify({installed:{client_id:'wrong',client_secret:'PRIVATE_FAKE'}})]){assert.throws(()=>parseGoogleDesktopClient(invalid),e=>e.field==='credentials'&&!e.message.includes('PRIVATE_FAKE'));}
+assert.throws(()=>parseGoogleDesktopClient(JSON.stringify({web:{client_id:'fake.apps.googleusercontent.com',client_secret:'PRIVATE_FAKE'}})),/Web-app.*Desktop-app/);
+const handlers={},attrs=new Map(),form={dataset:{},inert:false,addEventListener:(name,fn)=>{(handlers[name]??=[]).push(fn);},getAttribute:k=>attrs.get(k)};const input={tagName:'INPUT',type:'file',closest:()=>form};const root={activeElement:null,querySelectorAll:()=>[form],querySelector:()=>null};
+installFormGuidance(form);const emit=(type,event)=>handlers[type]?.forEach(fn=>fn(event));assert.equal(hasActiveFormEdits(root),false);emit('click',{target:input});assert.equal(hasActiveFormEdits(root),true);emit('cancel',{target:input});assert.equal(hasActiveFormEdits(root),false);root.activeElement=input;assert.equal(hasActiveFormEdits(root),true);root.activeElement=null;emit('change',{target:input});assert.equal(hasActiveFormEdits(root),true);markFormClean(form);assert.equal(hasActiveFormEdits(root),false);form.inert=true;assert.equal(hasActiveFormEdits(root),true);form.inert=false;attrs.set('aria-busy','true');assert.equal(hasActiveFormEdits(root),true);attrs.clear();
+const app=await readFile(new URL('../admin/app.js',import.meta.url),'utf8'),start=app.indexOf('function editingLocally()'),code=app.slice(start,app.indexOf('\ndataChannel?',start));let rendered=0,reads=0,resolveRead;const current={customers:[],orders:[],payments:[],documents:[],activities:[],purchases:[]};const env={hasActiveFormEdits,document:root,deliveryDrafts:new Map(),externalRefreshSeq:0,pendingExternalRefresh:true,state:current,sessionUndo:{observe(){}},store:()=>{reads++;return new Promise(r=>resolveRead=r);},render:()=>rendered++,syncSingleOrderDelivery(){}};runInNewContext(code,env);
+// A file chooser's returning focus must not replace the settings form.
+emit('click',{target:input});await env.refreshExternalState();assert.equal(reads,0);assert.equal(rendered,0);assert.equal(env.pendingExternalRefresh,true);emit('cancel',{target:input});
+// Also guard the async race: a refresh began before the file was chosen.
+const pending=env.refreshExternalState();assert.equal(reads,1);emit('change',{target:input});resolveRead(structuredClone(current));await pending;assert.equal(rendered,0);assert.equal(env.pendingExternalRefresh,true);markFormClean(form);
+const idle=env.refreshExternalState();resolveRead(structuredClone(current));await idle;assert.equal(rendered,1);assert.equal(env.pendingExternalRefresh,false);
+console.log('✓ Gmail JSON-format/BOM/size/Web-app errors without secrets; chooser/focus/dirty/busy protection, refresh-before-upload race and refresh after saving. No real credentials, provider or mailbox accessed.');

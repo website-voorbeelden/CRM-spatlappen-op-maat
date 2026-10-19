@@ -1,5 +1,5 @@
-import {ensureCustomerNumbers} from './customer-numbers.js?v=documents-flexible-20261010';
-import {supplierInvoices,syncSupplierInvoiceCosts} from './supplier-costs.js?v=invoices-20261009-2';
+import {ensureCustomerNumbers} from "./customers/numbers.js?v=documents-flexible-20261010";
+import {supplierInvoices,syncSupplierInvoiceCosts} from "./purchases/costs.js?v=invoices-20261009-2";
 // Only the loopback development server exposes this import queue.
 const customerKeys=['company','contact','email','invoiceEmail','phone','vatNumber','country','billingAddress','shippingAddress','notes'];
 const textKeys=['sourceNumber','date','stage','supplier','batch','expectedDate','notes','quoteAcceptedDate','productionReleasedDate','productionDate','supplierOrderedDate','shippedDate','deliveredDate','leadTimeStartDate','expectedDateFrom','expectedDateTo','purchaseId'];
@@ -39,7 +39,8 @@ function validate(entry,stages){
  for(const file of entry.documents)if(typeof file.name!=='string'||!['quote','confirmation','proforma','invoice','other'].includes(file.category)||typeof file.file!=='string'||!/^[a-f0-9]{24}\.[a-z0-9]+$/.test(file.file))throw Error('Ongeldige bijlage.');
 }
 
-export async function importLocalOrders({db,stages,today,beforeCommit}){
+export async function importLocalOrders({db,stages,today,beforeCommit,companyId='spatlappen'}){
+ if(companyId!=='spatlappen')return null;
  if(!['localhost','127.0.0.1','[::1]'].includes(location.hostname))return null;
  const response=await fetch('/__local/imports',{cache:'no-store'});
  if(response.status===404)return null;

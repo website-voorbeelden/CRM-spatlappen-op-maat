@@ -1,19 +1,18 @@
 import {spawn} from 'node:child_process';
-import {copyFile,mkdir,access} from 'node:fs/promises';
+import {writeFile,mkdir} from 'node:fs/promises';
 import {fileURLToPath} from 'node:url';
 import path from 'node:path';
+import {companyFor} from '../shared/companies.js';
 import {buildPages} from './build-pages.mjs';
-const root=fileURLToPath(new URL('../',import.meta.url));
-process.chdir(root);
-await mkdir('.wrangler/logs',{recursive:true});
-try{await access('.dev.vars');}catch{await copyFile('.dev.vars.example','.dev.vars');}
-const env={...process.env,WRANGLER_LOG_PATH:path.join(root,'.wrangler/logs/local.log'),WRANGLER_SEND_METRICS:'false'};
-const wrangler=path.join(root,'node_modules/wrangler/bin/wrangler.js');
-const persist=process.env.CRM_TEST_STORAGE||'.wrangler/state';
-function run(args){return new Promise((resolve,reject)=>{const child=spawn(process.execPath,[wrangler,...args],{env,stdio:'inherit'});child.on('error',reject);child.on('exit',code=>code===0?resolve():reject(Error('Lokale Wrangler-opdracht mislukt: '+code)));});}
-await buildPages();
-// Always --local: the real EU database remains untouched.
-await run(['d1','migrations','apply','spatlappen-crm','--local','--persist-to',persist]);
-const child=spawn(process.execPath,[wrangler,'pages','dev','dist','--ip','127.0.0.1','--port',process.env.CRM_CLOUD_PORT||'8788','--persist-to',persist],{env,stdio:'inherit'});
-for(const signal of ['SIGINT','SIGTERM'])process.on(signal,()=>child.kill(signal));
-child.on('exit',code=>process.exit(code||0));
+const root=fileURLToPath(new URL('../',import.meta.url));process.chdir(root);
+const company=companyFor(process.env.CRM_COMPANY_ID||'spatlappen'),id=company.id;
+const port=process.env.CRM_CLOUD_PORT||(id==='spatlappen'?'8788':'8789');
+await mkdir('.local',{recursive:true});await mkdir('.wrangler/logs',{recursive:true});
+const out=await buildPages({companyId:id,outDir:'dist/'+id});
+const config={name:'local-'+id,pages_build_output_dir:out,compatibility_date:'2026-10-09',d1_databases:[{binding:'DB',database_name:'local-'+id,database_id:id==='spatlappen'?'11111111-1111-1111-1111-111111111111':'22222222-2222-2222-2222-222222222222',migrations_dir:path.join(root,'migrations')}],r2_buckets:[{binding:'CRM_FILES',bucket_name:'local-'+id+'-files'}],vars:{CRM_COMPANY_ID:id,CRM_LOCAL_DEV:'true',CRM_LOCAL_SERVICES:id==='spatlappen'?'http://127.0.0.1:3010':'',CRM_RELEASE_ENV:'preview'}};
+const file='.local/cloud-'+id+'.jsonc';await writeFile(file,JSON.stringify(config,null,2));
+const env={...process.env,WRANGLER_LOG_PATH:path.join(root,'.wrangler/logs/'+id+'.log'),WRANGLER_SEND_METRICS:'false'},wrangler=path.join(root,'node_modules/wrangler/bin/wrangler.js'),persist=process.env.CRM_TEST_STORAGE||'.wrangler/state/'+id;
+const migration=spawn(process.execPath,[wrangler,'d1','migrations','apply','local-'+id,'--local','--config',file,'--persist-to',persist],{env,stdio:'inherit'});
+await new Promise((resolve,reject)=>{migration.on('error',reject);migration.on('exit',code=>code===0?resolve():reject(Error('Lokale migratie mislukt.')));});
+const child=spawn(process.execPath,[wrangler,'pages','dev',out,'--config',file,'--ip','127.0.0.1','--port',port,'--persist-to',persist],{env,stdio:'inherit'});
+for(const signal of ['SIGINT','SIGTERM'])process.on(signal,()=>child.kill(signal));child.on('exit',code=>process.exit(code||0));

@@ -1,0 +1,45 @@
+import {batchDocumentsMarkup,batchArchiveButton} from '../admin/purchases/workflow.js';
+import {searchLauncherMarkup} from '../admin/search/workspace-search.js';
+import {navigationMarkup} from '../admin/workspace/navigation.js';
+import {documentBundles,documentVersionGroups} from '../admin/document-library.js';
+import {installMobileUI} from '../admin/mobile-ui.js';
+import {installGuidedActions} from '../admin/guided-actions.js';
+import assert from 'node:assert/strict';
+import {assistantPageContext,describeAssistantPageContext,normalizeAssistantPageContext} from '../shared/assistant-page-context.js';
+import {assistantContext,assistantSnapshot} from '../shared/assistant-domain.js';
+import {runAssistant} from '../assistant/engine.mjs';
+import {readFile} from 'node:fs/promises';
+import {runInNewContext} from 'node:vm';
+const state={customers:[{id:'c1',company:'Test BV'}],orders:[{id:'o1',number:3001,customerId:'c1',vat:21,stage:'Ontwerp maken',items:[{id:'i1',description:'Fictief product',quantity:1,price:1000}]}],payments:[],documents:[],activities:[],purchases:[]};
+const snapshot=assistantSnapshot(state,'spatlappen');
+for(const companyId of ['spatlappen','maatwerkkunststof'])for(const page of ['development','inventory','dashboard','analytics','orders','customers','purchases','order-map','designs','settings','feedback','assistant']){
+ const context=assistantPageContext({companyId,page});assert.equal(context.companyId,companyId);assert.ok(context.label);assert.ok(describeAssistantPageContext(context)[0].startsWith('Pagina:'));
+ if(page==='designs')assert.equal(context.label,companyId==='spatlappen'?'Ontwerptool':'Kostprijscalculator');
+}
+const analytics=assistantPageContext({companyId:'spatlappen',page:'analytics',filters:{period:'year',from:'2026-01-01',to:'2026-12-31',secret:'NEVER_SEND'},facts:{revenueInCents:123400,marginPercent:12.5,provisionalOrderCount:2,private:'NEVER_SEND'}});
+assert.ok(describeAssistantPageContext(analytics).some(line=>line.includes('Dit jaar')));assert.ok(describeAssistantPageContext(analytics).some(line=>line.includes('1.234,00')));assert.ok(!JSON.stringify(analytics).includes('NEVER_SEND'));
+const selected=assistantContext(snapshot,assistantPageContext({companyId:'spatlappen',page:'orders',section:'documents',selected:{entity:'order',id:'o1',label:'Fake label'},facts:{documentCount:3}}));assert.equal(selected.sectionLabel,'Documenten');assert.equal(selected.selected.label,'Order #3001');assert.ok(!JSON.stringify(selected).includes('Fake label'));
+assert.throws(()=>assistantContext(snapshot,assistantPageContext({companyId:'spatlappen',page:'orders',selected:{entity:'order',id:'missing'}})),/bestaat niet/);
+assert.throws(()=>assistantContext(snapshot,{...analytics,companyId:'maatwerkkunststof'}),/ander bedrijf/);assert.throws(()=>assistantPageContext({companyId:'spatlappen',page:'unknown'}),/Ongeldige/);assert.throws(()=>assistantPageContext({companyId:'spatlappen',page:'analytics',selected:{entity:'order',id:'o1'}}),/Ongeldig dossier/);
+const list=assistantPageContext({companyId:'spatlappen',page:'orders',section:'prices',filters:{text:'Fictief',width:'60',visibility:'all'},visible:{entity:'order',ids:['o1','o1'],total:32}});assert.equal(list.visible.ids.length,1);assert.equal(list.visible.limited,true);assert.equal(list.filters.width,'60');assert.equal(assistantContext(snapshot,list).visible.ids[0],'o1');
+assert.throws(()=>assistantContext(snapshot,{...list,visible:{entity:'order',ids:['missing'],total:1}}),/bestaat niet/);
+const many=assistantPageContext({companyId:'spatlappen',page:'orders',visible:{entity:'order',ids:Array.from({length:100},(_,i)=>'o'+i),total:100}});assert.equal(many.visible.ids.length,20);assert.equal(many.visible.limited,true);
+const purchase=assistantPageContext({companyId:'spatlappen',page:'purchases',section:'invoices',reference:{id:'p1',label:'Testzending',providerToken:'NEVER_SEND'},facts:{supplierPaidInCents:10000,goodsKnown:false}});assert.ok(!JSON.stringify(purchase).includes('NEVER_SEND'));
+const privateInput={...analytics,label:'NEVER_SEND',html:'NEVER_SEND',form:'NEVER_SEND',files:['NEVER_SEND'],tokens:'NEVER_SEND'};assert.ok(!JSON.stringify(normalizeAssistantPageContext(privateInput,'spatlappen')).includes('NEVER_SEND'));
+const connection={models:async()=>[{id:'fake'}],token:async()=>'FAKE'};
+let captured;
+const fetchImpl=async(url,options)=>{captured=JSON.parse(options.body);return new Response('data: '+JSON.stringify({type:'response.completed',response:{status:'completed',output:[{type:'message',content:[{type:'output_text',text:'Fictief antwoord'}]}],usage:{input_tokens:10,output_tokens:5}}})+'\n\n');};
+await runAssistant({connection,companyId:'spatlappen',state,model:'fake',message:'Leg deze cijfers uit',context:privateInput,fetchImpl});assert.ok(captured.input.at(-2).content.includes('"revenueInCents":123400'));assert.ok(captured.input.at(-2).content.includes('CRM-paginacontext'));assert.ok(!captured.instructions.includes('123400'));assert.ok(!JSON.stringify(captured).includes('NEVER_SEND'));
+await runAssistant({connection,companyId:'spatlappen',state,model:'fake',message:'Vraag zonder pagina',context:null,fetchImpl});assert.equal(captured.input.length,1);assert.ok(!JSON.stringify(captured).includes('123400'));
+const injection=assistantPageContext({companyId:'spatlappen',page:'orders',filters:{text:'INJECTED_PAGE_INSTRUCTION'}});await runAssistant({connection,companyId:'spatlappen',state,model:'fake',message:'Zoek',context:injection,fetchImpl});assert.ok(!captured.instructions.includes('INJECTED_PAGE_INSTRUCTION'));assert.ok(captured.input.at(-2).content.includes('INJECTED_PAGE_INSTRUCTION'));
+// Exercise the actual app shell and purchase document renderer without a browser.
+const appSource=await readFile(new URL('../admin/app.js',import.meta.url),'utf8');
+const shellSource=appSource.slice(appSource.indexOf('function shell('),appSource.indexOf('\nfunction refreshUndoButton'));
+const renderStart=appSource.indexOf('function renderPurchase(id)'),renderSource=appSource.slice(renderStart,appSource.indexOf('\n}',renderStart)+2);
+const purchaseRecord={id:'p1',name:'Testzending',supplier:'Testleverancier',status:'Besteld'},appState={...state,purchases:[purchaseRecord]},node={innerHTML:'',querySelectorAll:()=>[],querySelector:()=>null};let mountedContext;
+const env={batchDocumentsMarkup,batchArchiveButton,globalSearch:{invalidate(){}},searchLauncherMarkup,navigationMarkup,documentBundles,documentVersionGroups,installSidebar(){},funnelUI:{install(){},navigation(){return '';}},inventoryUI:{install(){},purchaseMarkup(){return '';}} ,installMobileUI,installGuidedActions,inboxUI:{install(){}},company:{id:'spatlappen',name:'Spatlappen op maat',brand:'spatlappen',toolLabel:'Ontwerptool'},runtime:{mode:'local'},state:appState,route:()=>['purchases','p1','documents'],assistantPageContext,orderView:{tab:'overview'},orderSearch:{mode:'orders'},customerSearch:{},sort:'number',ascending:false,orderMapFilter:'open',currentAssistantPageContext:null,$:()=>node,esc:v=>String(v??''),refreshUndoButton(){},renderDocumentImages(){},purchase:()=>purchaseRecord,purchaseInfo:()=>({orders:[],goods:0,shared:0,goodsKnown:false,sharedKnown:false}),supplierFinance:()=>({invoices:[],paid:0}),documentsForOwner:()=>[],documents:()=>'<p>Leveranciersdocumenten</p>',paymentLinksPanel:()=>{throw Error('Orderbetalingen horen niet in leveranciersdocumenten.');},heading:()=>'',button:()=>'',badge:()=>'',euro:v=>String(v),assistant:{enabled:true,beforeRender(){},mount(){mountedContext=env.currentAssistantPageContext;}}};
+runInNewContext(shellSource+'\n'+renderSource+'\nrenderPurchase("p1");',env);assert.equal(mountedContext.page,'purchases');assert.equal(mountedContext.section,'documents');assert.equal(mountedContext.reference.id,'p1');assert.ok(node.innerHTML.includes('Leveranciersdocumenten'));
+env.route=()=>['orders','o1','payments'];runInNewContext('shell("Fictieve order", "orders", {section:"payments"});',env);assert.equal(mountedContext.selected.id,'o1');assert.equal(mountedContext.sectionLabel,'Betalingen');assert.deepEqual(Object.keys(mountedContext.filters),[]);
+env.route=()=>['analytics'];runInNewContext('shell("Fictieve analytics", "analytics", {filters:{period:"year"},facts:{revenueInCents:123400}});',env);assert.equal(mountedContext.filters.period,'year');assert.equal(mountedContext.facts.revenueInCents,123400);assert.equal(mountedContext.selected,undefined);
+env.route=()=>['development'];runInNewContext('shell("Ontwikkelplan", "development");',env);assert.equal(mountedContext.page,'development');assert.equal(mountedContext.selected,undefined);assert.ok(!node.innerHTML.includes('data-action="ai-export"'));assert.ok(node.innerHTML.includes('aria-current="page"'));
+console.log('✓ Alle CRM-pagina’s/bedrijven, tabbladen, filters, Analytics-cijfers, beperkte resultaatlijsten, context uit, bedrijfsafscheiding, verouderde dossiers en context als brondata gecontroleerd. Geen browser of OpenAI-aanvraag.');

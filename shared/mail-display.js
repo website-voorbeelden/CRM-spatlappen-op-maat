@@ -1,0 +1,2 @@
+// Only split presentation. The original message remains intact for reply, export and intake.
+export function splitQuotedMail(value){const text=String(value??''),lines=text.split('\n');let offset=0;for(let i=0;i<lines.length;i++){const line=lines[i];if(i>=2&&/^(?:\s*>|\s*Op .+ schreef.*:\s*$|\s*On .+ wrote:\s*$|\s*-{3,}\s*(?:Original Message|Oorspronkelijk bericht)\s*-*)/i.test(line))return {current:text.slice(0,offset).trimEnd(),quoted:text.slice(offset)};offset+=line.length+1;}return {current:text,quoted:''};}

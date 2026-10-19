@@ -1,8 +1,12 @@
 import {localBypass} from '../../cloudflare/auth.js';
 import {handleTikkie} from '../../cloudflare/tikkie.js';
 import {handleDocuments} from '../../cloudflare/documents.js';
+import {handleGmail} from '../../cloudflare/gmail.js';
+import {handleMail} from '../../cloudflare/mail.js';
 export async function onRequest({request,env}) {
-  if (!localBypass(request,env) || env.CRM_LOCAL_SERVICES !== 'http://127.0.0.1:3000') {
+  if (!localBypass(request,env) || !['http://127.0.0.1:3000','http://127.0.0.1:3010'].includes(env.CRM_LOCAL_SERVICES)) {
+    if(new URL(request.url).pathname.startsWith('/__local/assistant/gmail-'))return handleGmail({request,env});
+    if(new URL(request.url).pathname.startsWith('/__local/assistant/mail-'))return handleMail({request,env});
     if(new URL(request.url).pathname.startsWith('/__local/tikkie/'))return handleTikkie({request,env});
     return handleDocuments({request,env});
   }

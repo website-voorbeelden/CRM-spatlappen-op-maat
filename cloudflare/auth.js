@@ -35,6 +35,10 @@ export async function authenticated(request, env) {
   const found = await env.DB.prepare('SELECT email,auth_version,expires_at FROM crm_sessions WHERE token_hash=?').bind(await digest(value)).first();
   return found && found.email === email(env) && found.auth_version === await digest(env.CRM_PASSWORD_HASH) && found.expires_at > Math.floor(Date.now() / 1000) ? {email: found.email} : null;
 }
+export async function sessionFingerprint(request,env){
+ if(!await authenticated(request,env))throw Object.assign(Error('Log opnieuw in om de koppeling te gebruiken.'),{status:401});
+ return digest(token(request)+'|'+env.CRM_PASSWORD_HASH+'|'+env.CRM_COMPANY_ID);
+}
 export async function handleAuth({request, env}) {
   const path = new URL(request.url).pathname;
   if (!authReady(env)) return json({error: 'De login is nog niet ingesteld.'}, 503);
@@ -54,7 +58,7 @@ export async function handleAuth({request, env}) {
     // Count before checking credentials, atomically. Both IP and account limits
     // prevent unlimited guesses; currently logged-in sessions stay available.
     const address = await digest(request.headers.get('CF-Connecting-IP') || 'local');
-    const limits = await env.DB.batch([address, 'account'].map(id => env.DB.prepare(`INSERT INTO crm_login_limits(id,window_start,attempts) VALUES(?,?,1)
+    const limits = await env.DB.batch([address, data.email.trim().toLowerCase()===email(env)?'account':'other:'+address].map(id => env.DB.prepare(`INSERT INTO crm_login_limits(id,window_start,attempts) VALUES(?,?,1)
       ON CONFLICT(id) DO UPDATE SET attempts=CASE WHEN window_start<=? THEN 1 ELSE attempts+1 END,
       window_start=CASE WHEN window_start<=? THEN excluded.window_start ELSE window_start END RETURNING attempts`).bind(id, now, now - 900, now - 900)));
     if (limits[0].results[0].attempts > 10 || limits[1].results[0].attempts > 100) return json({error: 'Te veel loginpogingen. Probeer over 15 minuten opnieuw.'}, 429, {'Retry-After': '900'});

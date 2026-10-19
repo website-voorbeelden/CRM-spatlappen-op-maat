@@ -72,4 +72,15 @@ for fmt in ['pdf', 'docx']:
 bad = Request('/render', {})
 bad.do_POST()
 assert bad.status == 400
+pdf_data = base64.b64encode((ROOT / 'tests/fixtures/document-preview-two-pages.pdf').read_bytes()).decode()
+blocked = Request('/preview', {'data': pdf_data, 'page': 1}, authorized=False)
+blocked.do_POST()
+assert blocked.status == 401
+before = len(service.DOWNLOADS)
+preview = Request('/preview', {'data': pdf_data, 'page': 2})
+preview.do_POST()
+result = json.loads(preview.wfile.getvalue())
+assert preview.status == 200 and result['page'] == 2 and result['pages'] == 2
+assert 'downloads' not in result and len(service.DOWNLOADS) == before
+assert base64.b64decode(result['image']).startswith(b'\x89PNG\r\n\x1a\n')
 print('Document service: real Word/PDF + preview, authenticated downloads, expired cache and invalid input passed. Local runtime; Docker/Render not deployed.')

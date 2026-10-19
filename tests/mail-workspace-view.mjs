@@ -1,0 +1,11 @@
+import assert from 'node:assert/strict';
+import {threadMessagesMarkup} from '../admin/mail-workspace.js';
+const mail=n=>({gmailId:'mail'+n,direction:'incoming',from:'Klant <client@example.invalid>',to:'info@example.invalid',receivedAt:'2026-10-15T0'+n+':00:00Z',text:'Bericht '+n});
+const messages=[mail(1),mail(2),mail(3),mail(4),{id:'draft',status:'draft',body:'ACTIEF CONCEPT'}, {id:'uncertain',status:'uncertain',body:'ONZEKER'}];
+const before=JSON.stringify(messages),html=threadMessagesMarkup(messages,'spatlappen','draft');
+assert.match(html,/Eerdere berichten \(3\)/);assert.ok(!html.includes('ACTIEF CONCEPT'));assert.equal(JSON.stringify(messages),before);
+const split=html.indexOf('</details></details>');assert.ok(split>0);assert.ok(html.indexOf('ONZEKER')>split);assert.ok(html.indexOf('Bericht 4')>split);assert.ok(!html.includes('<client@example.invalid>'));assert.ok(html.includes('&lt;client@example.invalid&gt;'));
+assert.ok(!threadMessagesMarkup([mail(1),mail(2)],'maatwerkkunststof').includes('mail-earlier-messages'));
+const bad={id:'problem',status:'uncertain',body:'<script>unsafe</script>',sender:'CRM'};
+const warning=threadMessagesMarkup([bad,...[1,2,3,4].map(mail)],'spatlappen');assert.ok(warning.includes('&lt;script&gt;unsafe&lt;/script&gt;'));assert.ok(!warning.includes('<script>'));assert.ok(warning.indexOf('unsafe')>warning.indexOf('</details></details>'));
+console.log('✓ Mailweergave: oudere berichten samengevouwen, actieve concepttekst alleen in composer, onzekere verzending zichtbaar buiten oude historie, veilige tekst en geen mutaties.');

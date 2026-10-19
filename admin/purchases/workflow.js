@@ -1,0 +1,16 @@
+import {latePurchase,purchaseArchiveInfo,archivePurchase,batchDocumentKinds} from '../../shared/purchase-workflow.js';
+export function transitAcknowledgement(){return '<label class="check-row" data-transit-ack hidden><input type="checkbox" name="ackPurchaseTransit">Ik bevestig dat deze order bewust aan een al vertrokken of aangekomen batch wordt gekoppeld.</label>';}
+export function installTransitWarning(form,{getState}){
+ if(!form)return;const box=form.querySelector('[data-transit-ack]');if(!box)return;
+ const update=()=>{const select=form.querySelector('[name=purchaseId],[name=aiPurchaseId]'),p=select?getState().purchases.find(p=>p.id===select.value):{status:form.elements.status?.value,shippedDate:form.elements.shippedDate?.value,arrivedDate:form.elements.arrivedDate?.value};box.hidden=!latePurchase(p);box.querySelector('input').checked=false;};
+ form.addEventListener('change',e=>{if(['purchaseId','aiPurchaseId','status','shippedDate','arrivedDate'].includes(e.target.name))update();});update();
+}
+export function batchDocumentsMarkup(p,{esc}){return `<section class="order-surface"><h3>Batchdocument toevoegen</h3><p class="form-help">Bestanden blijven bij deze batch. Een upload registreert geen leveranciersbetaling of transportstatus.</p><div class="actions">${batchDocumentKinds.map(([kind,label])=>`<button type="button" data-batch-upload="${kind}" data-purchase="${esc(p.id)}">${label} uploaden</button>`).join('')}</div></section>`;}
+export function batchArchiveButton(p,{esc}){return `<button type="button" data-batch-archive="${esc(p.id)}">${p.archived?'Batch heropenen':'Batch archiveren'}</button>`;}
+export function installPurchaseWorkflow({getState,openForm,mergeStoredState,render,toast,addDocuments,esc}){
+ document.addEventListener('click',async event=>{try{
+  const upload=event.target.closest('[data-batch-upload]');if(upload){const id=upload.dataset.purchase,kind=upload.dataset.batchUpload;if(!getState().purchases.some(p=>p.id===id)||!batchDocumentKinds.some(([k])=>k===kind))return;const input=document.createElement('input');input.type='file';input.multiple=true;input.onchange=()=>addDocuments(id,'other',input.files,{batchDocumentKind:kind}).catch(e=>toast(e.message));input.click();return;}
+  const button=event.target.closest('[data-batch-archive]');if(!button)return;const id=button.dataset.batchArchive,info=purchaseArchiveInfo(getState(),id),archived=!info.purchase.archived;
+  openForm(archived?'Batch archiveren':'Batch heropenen',`<p>${esc(info.purchase.name)} · ${info.orders.length} gekoppelde klantorders.</p>${archived&&info.pending.length?`<p class="notice">Nog af te handelen: ${info.pending.map(o=>'#'+esc(o.sourceNumber||o.number)).join(', ')}. Registreer eerst de werkelijke leveringen.</p>`:'<p>Kosten, omzet, betalingen, bestanden en koppelingen blijven bewaard en doorzoekbaar.</p>'}<label class="check-row"><input type="checkbox" name="confirmBatchArchive" required>Ik bevestig deze wijziging.</label>`,async fd=>{if(!fd.has('confirmBatchArchive'))throw Error('Bevestig de archiefkeuze.');await mergeStoredState(state=>archivePurchase(state,id,info.signature,archived));toast(archived?'Batch gearchiveerd':'Batch heropend');},{afterSave:render});
+ }catch(error){toast(error.message);}});
+}
