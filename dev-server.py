@@ -158,11 +158,6 @@ class Handler(SimpleHTTPRequestHandler):
             payload = json.loads(self.rfile.read(length))
             if not isinstance(payload, dict):
                 raise ValueError('Controleer de documentgegevens.')
-            # Only the company's own packing slip is configured yet. Do not
-            # fall back to Spatlappen invoices, payment services or credentials.
-            if COMPANY != 'spatlappen' and path == '/__local/documents/render' and payload.get('kind') != 'packing':
-                self.send_error(503, 'Eigen documentconfiguratie nog niet ingesteld')
-                return
             if path == '/__local/tikkie/create':
                 response = create_request(payload)
             elif path == '/__local/tikkie/check':

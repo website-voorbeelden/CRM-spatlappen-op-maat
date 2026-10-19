@@ -5,7 +5,7 @@ WORKDIR /app
 RUN pip install --no-cache-dir 'lxml>=5.3,<7'
 COPY document-generator.py ./
 COPY document-service/server.py document-service/runtime.json ./document-service/
-COPY document-service/templates/ ./.local/templates/
+COPY document-service/templates/ ./document-service/templates/
 RUN useradd --create-home --uid 10001 crm && chown -R crm:crm /app
 USER crm
 ENV CRM_DOCUMENT_RUNTIME=/app/document-service/runtime.json PORT=10000

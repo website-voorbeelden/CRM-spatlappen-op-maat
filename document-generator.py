@@ -15,7 +15,15 @@ from lxml import etree
 ROOT = Path(__file__).resolve().parent
 COMPANY = os.environ.get('CRM_COMPANY_ID', 'spatlappen')
 if COMPANY not in ('spatlappen','maatwerkkunststof'): raise ValueError('Onbekend bedrijf')
-TEMPLATE_ROOT = ROOT / '.local/templates' if COMPANY == 'spatlappen' else ROOT / '.local/templates' / COMPANY
+def company_templates(company_id=COMPANY):
+    if company_id not in ('spatlappen', 'maatwerkkunststof'):
+        raise ValueError('Onbekend bedrijf')
+    # Versioned templates are shared by local and hosted conversion. No private
+    # runtime directory is needed to select a company's public templates.
+    base = ROOT / 'document-service/templates'
+    return base if company_id == 'spatlappen' else base / company_id
+
+TEMPLATE_ROOT = company_templates()
 W = 'http://schemas.openxmlformats.org/wordprocessingml/2006/main'
 NS = {'w': W}
 TAG = lambda name: '{' + W + '}' + name
@@ -195,7 +203,7 @@ def fill_invoice_text(element, slots):
                 position += 2
 
 
-def build_invoice(payload, target, slots, items, package):
+def build_invoice(payload, target, slots, items, package, template_root=TEMPLATE_ROOT):
     from datetime import date
     fields = payload.get('fields', {})
     for key in ['billing_attention', 'payment_method', 'date_label', 'transaction_date', 'invoice_note']:
@@ -212,7 +220,7 @@ def build_invoice(payload, target, slots, items, package):
     # Only an explicitly entered customer note is printed; accounting comments
     # about receipts, shortfalls or overpayments belong in the CRM.
     slots['payment_note'] = slots['invoice_note']
-    with ZipFile(TEMPLATE_ROOT / 'invoice.docx') as source:
+    with ZipFile(template_root / 'invoice.docx') as source:
         doc = etree.fromstring(source.read('word/document.xml'))
         body = doc.find('w:body', NS)
         tables = body.findall('w:tbl', NS)
@@ -280,7 +288,7 @@ def build_invoice(payload, target, slots, items, package):
                                 if info.filename in changed else source.read(info.filename))
 
 
-def build_packing_slip(payload, target):
+def build_packing_slip(payload, target, template_root=TEMPLATE_ROOT):
     from datetime import date
     fields = payload.get('fields', {})
     if not isinstance(fields, dict):
@@ -319,7 +327,7 @@ def build_packing_slip(payload, target):
                             'details': [value for raw in details if (value := text(raw))]})
     if not any(item['delivered'] for item in clean_items):
         raise ValueError('Vul bij minstens één product een geleverd aantal in.')
-    with ZipFile(TEMPLATE_ROOT / 'packing-slip.docx') as source:
+    with ZipFile(template_root / 'packing-slip.docx') as source:
         doc = etree.fromstring(source.read('word/document.xml'))
         body = doc.find('w:body', NS)
         tables = body.findall('w:tbl', NS)
@@ -369,7 +377,8 @@ def build_packing_slip(payload, target):
                                 if info.filename == 'word/document.xml' else source.read(info.filename))
 
 
-def build(payload, target):
+def build(payload, target, company_id=COMPANY):
+    template_root = company_templates(company_id)
     spec = DOCUMENT_TYPES.get(payload.get('kind'))
     if spec is None:
         raise ValueError('Kies offerte, orderbevestiging, proforma, factuur of pakbon.')
@@ -377,7 +386,7 @@ def build(payload, target):
     if number != 'CONCEPT' and not re.fullmatch(spec['prefix'] + r'-\d{4}-\d{4,}', number):
         raise ValueError('Ongeldig documentnummer.')
     if payload['kind'] == 'packing':
-        return build_packing_slip(payload, target)
+        return build_packing_slip(payload, target, template_root)
     fields = payload.get('fields', {})
     keys = ['billing_company', 'billing_street', 'billing_postal_city', 'billing_country',
             'shipping_company', 'shipping_street', 'shipping_postal_city', 'shipping_country',
@@ -423,8 +432,8 @@ def build(payload, target):
                  _vat_label=str(vat).rstrip('0').rstrip('.') if '.' in str(vat) else str(vat))
     if payload['kind'] == 'invoice':
         slots['_grand_total'] = net + tax
-        return build_invoice(payload, target, slots, items, package)
-    template = TEMPLATE_ROOT / 'order-confirmation.docx'
+        return build_invoice(payload, target, slots, items, package, template_root)
+    template = template_root / 'order-confirmation.docx'
     with ZipFile(template) as source:
         doc = etree.fromstring(source.read('word/document.xml'))
         body = doc.find('w:body', NS)
@@ -559,13 +568,13 @@ def preview_pdf(payload):
         return {'page': page, 'pages': pages, 'image': base64.b64encode(image).decode()}
 
 
-def render(payload):
+def render(payload, company_id=COMPANY):
     runtime_path = Path(os.environ.get('CRM_DOCUMENT_RUNTIME', str(ROOT / '.local/document-runtime.json')))
     runtime = json.loads(runtime_path.read_text())
     with tempfile.TemporaryDirectory(prefix='spatlappen-document-') as directory:
         work = Path(directory)
         docx = work / 'orderbevestiging.docx'
-        build(payload, docx)
+        build(payload, docx, company_id)
         profile = (work / 'office-profile').as_uri()
         env = dict(os.environ)
         if runtime.get('fontDirectories'):

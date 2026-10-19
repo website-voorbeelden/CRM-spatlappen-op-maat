@@ -109,7 +109,8 @@ Eerst deze basis afmaken voordat we meer functies toevoegen.
 - **ID:** `company-documents`
 - **Voor:** Maatwerkkunststof
 - **Doel:** Offerte, orderbevestiging en factuur laten aansluiten op de Maatwerkkunststof-order en huisstijl.
-- **Volgende stap:** Controleer de bestaande templates en ontbrekende velden met fictieve orders, inclusief onbekende prijs en gedeeltelijke levering.
+- **Omvang / status:** Gebouwd · online activering in uitvoering · gebruiker test zelf
+- **Volgende stap:** Op verzoek dezelfde Spatlappen-templates/opmaak en registratie-/bankgegevens met Maatwerkkunststof-naam/website. Offerte, bevestiging, proforma, factuur en pakbon beschikbaar; gedeelde converter met eigen bedrijfstoken en gescheiden tijdelijke downloads. Render/Cloudflare-activering afronden; geen tests of proefdocumenten uitgevoerd.
 - **Klaar wanneer:** PDF/Word-preview en bedragen kloppen; het document blijft in het bestaande dossier. Aanmaken verstuurt geen mail.
 - **Eerst nodig:** Geen aparte stap in dit plan.
 - **Vindplaatsen:** `document-service/`, `document-generator.py`, `admin/document-library.js`

@@ -7,7 +7,7 @@ export function revisionSource(state,id,companyId){
  if(!document||!editable.has(g?.kind)||!g.generationId||!g.payload||g.payload.kind!==g.kind||g.payload.number!==g.number)throw Error('Dit bestand heeft geen bewaarde bewerkbare documentgegevens.');
  const p=g.payload;
  if(!p.fields||typeof p.fields!=='object'||Array.isArray(p.fields)||!Array.isArray(p.items)||!p.items.length||p.items.length>40||p.items.some(i=>typeof i.description!=='string'||!Number.isSafeInteger(i.quantity)||i.quantity<1||!Array.isArray(i.details)||i.details.some(d=>typeof d!=='string')||(g.kind==='packing'?!Number.isSafeInteger(i.deliveredQuantity)||i.deliveredQuantity<0||i.deliveredQuantity>i.quantity:!Number.isSafeInteger(i.price)||i.price<0)))throw Error('De bewaarde productgegevens zijn onvolledig. Maak een nieuw document vanuit de order.');
- if(!['spatlappen','maatwerkkunststof'].includes(companyId)||companyId==='maatwerkkunststof'&&g.kind!=='packing')throw Error('Dit documenttype is voor dit bedrijf nog niet ingericht.');
+ if(!['spatlappen','maatwerkkunststof'].includes(companyId))throw Error('Dit documenttype is voor dit bedrijf nog niet ingericht.');
  const order=state.orders.find(o=>o.id===document.ownerId);if(!order)throw Error('De bijbehorende order bestaat niet meer.');
  const family=state.documents.filter(d=>documentSeriesKey(d)===documentSeriesKey(document));
  const current=Math.max(...family.map(documentVersion));if(documentVersion(document)!==current)throw Error('Er is een nieuwere versie. Open Aanpassen bij de nieuwste versie.');

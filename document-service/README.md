@@ -1,6 +1,12 @@
 # Gratis Word/PDF-dienst
 
-Deze dienst vult dezelfde Word-templates als het lokale CRM. De vier documenttypes en de bestaande variabelen blijven werken. Documentgegevens worden via HTTPS en een geheime bearer-token doorgestuurd; de dienst heeft geen CRM-database of Tikkie-sleutels. Opgeslagen documenten blijven in Cloudflare R2.
+Deze dienst vult dezelfde Word-templates als het lokale CRM: orderbevestiging, offerte, proforma, factuur en pakbon. De bestaande variabelen blijven werken. Documentgegevens worden via HTTPS en een geheime bearer-token doorgestuurd; de dienst heeft geen CRM-database of Tikkie-sleutels. Opgeslagen documenten blijven in Cloudflare R2.
+
+`POST /preview` toont één pagina van een reeds opgeslagen PDF als PNG, met dezelfde bearer-authenticatie als `/render`. Input: `{data: <PDF-base64>, page: <integer>}`; output: `{page, pages, image: <PNG-base64>}`. Maximaal10MBPDF/200pagina’s,16MBJSONrequest,1800pxPNG/max5MB; tijden pdfinfo15s/render30s. Geen Wordtemplate invullen, documentnummer reserveren, downloadcache, inhoudlogging of blijvende bestandsopslag. Cloudflare-proxy behoudt bestaande login/bedrijf/serviceguards. Dit endpoint is lokaal getest en nog niet gepubliceerd op Render.
+
+De bestaande Spatlappen-templates blijven ongewijzigd. `templates/maatwerkkunststof/` bevat dezelfde opmaak voor orderbevestiging (ook offerte/proforma), factuur en pakbon met aangepaste bedrijfsnaam en website. Op expliciet verzoek zijn de bestaande TJ Worx-, adres-, KvK-, btw- en bankgegevens overgenomen. De pakbonvariant bevat geen Spatlappen-logo. Deze bronbestanden worden lokaal en online rechtstreeks gebruikt; privé-runtimeconfiguratie blijft apart.
+
+Eén converter kan beide CRM's bedienen. Het bestaande `CRM_DOCUMENT_SERVICE_TOKEN` blijft gekoppeld aan `CRM_COMPANY_ID` (standaard `spatlappen`). Een extra, verschillende `CRM_DOCUMENT_MAATWERKKUNSTSTOF_TOKEN` geeft uitsluitend toegang tot Maatwerkkunststof. Gebruik die waarde als `CRM_DOCUMENT_SERVICE_TOKEN` in het Maatwerkkunststof Pages-project, naast `CRM_DOCUMENT_COMPANY_ID=maatwerkkunststof` en dezelfde service-URL. De geauthenticeerde server kiest het bedrijf; documentpayloads kiezen geen bedrijfsprofiel. Tijdelijke downloads zijn aan dat bedrijf gebonden. Geen CRM-databases of nummerreeksen samenvoegen en geen secrets in GitHub.
 
 ## Render
 

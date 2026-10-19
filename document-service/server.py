@@ -20,9 +20,19 @@ RENDER_LOCK = threading.Lock()
 CACHE_LOCK = threading.Lock()
 DOWNLOADS = {}
 TOKEN = os.environ.get('CRM_DOCUMENT_SERVICE_TOKEN', '')
+MAAT_TOKEN = os.environ.get('CRM_DOCUMENT_MAATWERKKUNSTSTOF_TOKEN', '')
 
 
-def cache_download(body, name, content_type):
+def token_companies():
+    tokens = [(generator.COMPANY, TOKEN)]
+    if len(MAAT_TOKEN) >= 32:
+        if generator.COMPANY != 'spatlappen' or hmac.compare_digest(TOKEN, MAAT_TOKEN):
+            raise ValueError('Gebruik een eigen documenttoken per bedrijf.')
+        tokens.append(('maatwerkkunststof', MAAT_TOKEN))
+    return tokens
+
+
+def cache_download(body, name, content_type, company_id):
     token = secrets.token_urlsafe(24)
     with CACHE_LOCK:
         now = time.time()
@@ -33,7 +43,7 @@ def cache_download(body, name, content_type):
             del DOWNLOADS[next(iter(DOWNLOADS))]
         if len(body) > 32_000_000:
             raise ValueError('Het document is te groot.')
-        DOWNLOADS[token] = {'body': body, 'name': name, 'type': content_type, 'expires': now + 3600}
+        DOWNLOADS[token] = {'body': body, 'name': name, 'type': content_type, 'expires': now + 3600, 'companyId': company_id}
     return '/__local/downloads/' + token
 
 
@@ -58,10 +68,15 @@ class Handler(BaseHTTPRequestHandler):
         self.send_bytes(status, json.dumps(data).encode(), 'application/json; charset=utf-8')
 
     def authorized(self):
-        if len(TOKEN) < 32 or not hmac.compare_digest(self.headers.get('Authorization', '').encode(), ('Bearer ' + TOKEN).encode()):
-            self.json(401, {'error': 'Geen toegang tot de documentservice.'})
-            return False
-        return True
+        supplied = self.headers.get('Authorization', '').encode()
+        self.company_id = None
+        for company_id, token in token_companies():
+            if len(token) >= 32 and hmac.compare_digest(supplied, ('Bearer ' + token).encode()):
+                self.company_id = company_id
+        if self.company_id is not None:
+            return True
+        self.json(401, {'error': 'Geen toegang tot de documentservice.'})
+        return False
 
     def do_GET(self):
         path = urlsplit(self.path).path
@@ -76,7 +91,7 @@ class Handler(BaseHTTPRequestHandler):
                 if file and file['expires'] < time.time():
                     del DOWNLOADS[path.removeprefix('/downloads/')]
                     file = None
-            if file:
+            if file and file.get('companyId') == self.company_id:
                 self.send_bytes(200, file['body'], file['type'], file['name'])
             else:
                 self.json(404, {'error': 'Dit voorbeeld is verlopen. Maak een nieuw voorbeeld. Opgeslagen documenten staan bij Documenten in het CRM.'})
@@ -106,10 +121,12 @@ class Handler(BaseHTTPRequestHandler):
                 self.json(503, {'error': 'De omzetter maakt al een document. Probeer zo opnieuw.'})
                 return
             try:
-                result = generator.preview_pdf(payload) if preview else generator.render(payload)
+                # The authenticated backend token selects the company. Ignore
+                # any company claimed by an untrusted browser document payload.
+                result = generator.preview_pdf(payload) if preview else generator.render(payload, self.company_id)
                 if not preview:
                     result['downloads'] = {fmt: cache_download(base64.b64decode(result[fmt], validate=True),
-                        result['filename'] + '.' + fmt, mimetypes.guess_type('document.' + fmt)[0] or 'application/octet-stream')
+                        result['filename'] + '.' + fmt, mimetypes.guess_type('document.' + fmt)[0] or 'application/octet-stream', self.company_id)
                         for fmt in ('pdf', 'docx') if fmt in result}
             finally:
                 RENDER_LOCK.release()
@@ -123,4 +140,5 @@ class Handler(BaseHTTPRequestHandler):
 if __name__ == '__main__':
     if len(TOKEN) < 32:
         raise SystemExit('Stel CRM_DOCUMENT_SERVICE_TOKEN in voordat je de service start.')
+    token_companies()
     ThreadingHTTPServer(('0.0.0.0', int(os.environ.get('PORT', '10000'))), Handler).serve_forever()
