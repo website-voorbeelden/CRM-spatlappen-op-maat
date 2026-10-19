@@ -18,10 +18,13 @@ if COMPANY not in ('spatlappen','maatwerkkunststof'): raise ValueError('Onbekend
 def company_templates(company_id=COMPANY):
     if company_id not in ('spatlappen', 'maatwerkkunststof'):
         raise ValueError('Onbekend bedrijf')
-    # Versioned templates are shared by local and hosted conversion. No private
-    # runtime directory is needed to select a company's public templates.
-    base = ROOT / 'document-service/templates'
-    return base if company_id == 'spatlappen' else base / company_id
+    # Hosted conversion uses versioned templates. Retain the existing local
+    # Spatlappen template path so private template customizations stay intact.
+    configured = os.environ.get('CRM_DOCUMENT_TEMPLATES')
+    if configured:
+        base = Path(configured)
+        return base if company_id == 'spatlappen' else base / company_id
+    return ROOT / '.local/templates' if company_id == 'spatlappen' else ROOT / 'document-service/templates' / company_id
 
 TEMPLATE_ROOT = company_templates()
 W = 'http://schemas.openxmlformats.org/wordprocessingml/2006/main'

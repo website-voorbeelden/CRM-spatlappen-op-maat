@@ -8,6 +8,6 @@ COPY document-service/server.py document-service/runtime.json ./document-service
 COPY document-service/templates/ ./document-service/templates/
 RUN useradd --create-home --uid 10001 crm && chown -R crm:crm /app
 USER crm
-ENV CRM_DOCUMENT_RUNTIME=/app/document-service/runtime.json PORT=10000
+ENV CRM_DOCUMENT_RUNTIME=/app/document-service/runtime.json CRM_DOCUMENT_TEMPLATES=/app/document-service/templates PORT=10000
 EXPOSE 10000
 CMD ["python", "document-service/server.py"]
