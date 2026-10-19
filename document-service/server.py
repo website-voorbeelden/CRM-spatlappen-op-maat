@@ -1,5 +1,6 @@
 """Stateless, authenticated Word/PDF service. No CRM database or Tikkie keys."""
 import base64
+import hashlib
 import hmac
 import importlib.util
 import json
@@ -21,6 +22,10 @@ CACHE_LOCK = threading.Lock()
 DOWNLOADS = {}
 TOKEN = os.environ.get('CRM_DOCUMENT_SERVICE_TOKEN', '')
 MAAT_TOKEN = os.environ.get('CRM_DOCUMENT_MAATWERKKUNSTSTOF_TOKEN', '')
+if not MAAT_TOKEN and generator.COMPANY == 'spatlappen' and len(TOKEN) >= 32:
+    # Give the second CRM its own credential without a second operator-managed
+    # Render secret. A versioned context separates it from the root credential.
+    MAAT_TOKEN = hmac.new(TOKEN.encode('utf-8'), b'crm-document-service:maatwerkkunststof:v1', hashlib.sha256).hexdigest()
 
 
 def token_companies():

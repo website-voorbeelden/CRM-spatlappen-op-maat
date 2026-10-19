@@ -9,5 +9,3 @@ services:
     envVars:
       - key: CRM_DOCUMENT_SERVICE_TOKEN
         sync: false
-      - key: CRM_DOCUMENT_MAATWERKKUNSTSTOF_TOKEN
-        sync: false
