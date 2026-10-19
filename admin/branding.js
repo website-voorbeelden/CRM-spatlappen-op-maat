@@ -1,1 +1,1 @@
-export function applyCompanyFavicon(company){const link=document.querySelector('link[rel="icon"]');if(link)link.href='/admin/icons/'+company.id+'.svg';}
+export function applyCompanyFavicon(company){const link=document.querySelector('link[rel="icon"]');if(link)link.href='/admin/icons/'+company.id+'.svg'+(company.id==='maatwerkkunststof'?'?v=green-square-20261019':'');}
