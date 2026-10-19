@@ -77,7 +77,7 @@ import {standardTemplateMail,templateContext,checkMailText} from '../shared/mail
 import {createMailTemplatesUI} from "./mail/templates.js?v=direct-actions-20261016";
 import {createMailInboxUI} from './mail-inbox.js?v=gmail-attachment-route-20261019';
 import {emailAvailable,emailRequest,emailSettingsMarkup,installEmailSettings,openInlineEmailSettings,pdfEmailAttachment} from './email-service.js?v=signature-position-20261019';
-import {installAssistant} from './assistant.js?v=workspace-search-20261017';
+import {installAssistant} from './assistant.js?v=agent-entry-20261019';
 import {assistantPageContext} from '../shared/assistant-page-context.js?v=customer-workspace-20261016';
 import {applyAssistantPlan,assistantSnapshot} from '../shared/assistant-domain.js?v=vat-quarter-20261019';
 import {createSessionUndo} from './session-undo.js';
@@ -436,7 +436,7 @@ const funnelUI=createSalesFunnelUI({releaseProduction:openProductionRelease,getS
 const inventoryUI=createInventoryUI({getState:()=>state,mergeStoredState,openForm,render,toast});
 const feedback=installFeedback({downloadBlob,today,toast});
 let currentAssistantPageContext=null;
-const assistant=installAssistant({company,runtime,toast,composeMail:openAssistantMail,reviewSpecs:async proposal=>{const current=await store('state','readonly',s=>s.get('main')),checked=reviewSpecsProposal(assistantSnapshot(current,company.id),proposal,company.id);state=current;inquiryUI.edit(checked.orderId,checked.fields);},getContext:()=>currentAssistantPageContext,loadState:async()=>await store('state','readonly',s=>s.get('main'))||{customers:[],orders:[],payments:[],documents:[],activities:[],purchases:[]},
+const assistant=installAssistant({company,runtime,toast,openAiExport:()=>aiExportUI.open(),composeMail:openAssistantMail,reviewSpecs:async proposal=>{const current=await store('state','readonly',s=>s.get('main')),checked=reviewSpecsProposal(assistantSnapshot(current,company.id),proposal,company.id);state=current;inquiryUI.edit(checked.orderId,checked.fields);},getContext:()=>currentAssistantPageContext,loadState:async()=>await store('state','readonly',s=>s.get('main'))||{customers:[],orders:[],payments:[],documents:[],activities:[],purchases:[]},
  savePlan:async plan=>{
   if(runtime.mode!=='local')throw Error('De assistent schrijft alleen in de lokale ontwikkelversie.');
   if(editingLocally())throw Error('Sla je openstaande formulier eerst op of sluit het vóór je een assistentvoorstel opslaat.');

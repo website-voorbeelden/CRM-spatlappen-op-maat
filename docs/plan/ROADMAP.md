@@ -30,6 +30,17 @@ Eerst deze basis afmaken voordat we meer functies toevoegen.
 - **Eerst nodig:** Geen aparte stap in dit plan.
 - **Vindplaatsen:** `admin/mail/`, `admin/mail-workspace.js`, `shared/mail-service.js`, `shared/mail-signature.js`, `shared/document-mail-context.js`, `admin/documents/generated-forms.js`, `docs/MAIL-HERZIENING.md`
 
+### AI-assistent weer vindbaar maken
+
+- **ID:** `assistant-discoverability-20261019`
+- **Voor:** Spatlappen en Maatwerkkunststof
+- **Doel:** Philippe kan de agent vinden en ziet eerlijk welke verbinding beschikbaar is.
+- **Omvang / status:** Ingang gebouwd · online dienst nog niet gekoppeld
+- **Volgende stap:** Cloudknop was hard uitgeschakeld door runtime.mode===local. Nu vaste Agent-ingang op desktop/mobiel en sneltoets; cloudstatus met bestaande AI-export en handmatig kopieerbare vraag. Geen actieve online agentdienst of ChatGPT-login nagebootst. Echte online agentkoppeling blijft vervolgwerk; lokale agent blijft intact.
+- **Klaar wanneer:** Zichtbare vaste ingang, duidelijke status als dienst niet beschikbaar is, geen onopgeslagen invoerverlies of automatische provideracties.
+- **Eerst nodig:** Mail grondig herstellen en overzichtelijk maken
+- **Vindplaatsen:** `admin/app.js`, `admin/assistant.js`, `docs/MAIL-HERZIENING.md`
+
 ### 6. Analytics-tabbladen afronden en controleren
 
 - **ID:** `analytics-tabs-expanded`
@@ -106,17 +117,6 @@ Eerst deze basis afmaken voordat we meer functies toevoegen.
 ## Daarna
 
 Voortbouwen op dezelfde dossiers, bediening en controles.
-
-### AI-assistent weer vindbaar maken
-
-- **ID:** `assistant-discoverability-20261019`
-- **Voor:** Spatlappen en Maatwerkkunststof
-- **Doel:** Philippe kan de bestaande AI-assistent eenvoudig vinden en openen in het CRM.
-- **Omvang / status:** Na mailherziening
-- **Volgende stap:** Gemeld: assistent volledig onvindbaar. Bestaande mount, readiness, desktop/mobiele knop en instellingen nalopen nadat de mailfunctie is hersteld; geen nieuwe AI-dienst beloven.
-- **Klaar wanneer:** Zichtbare vaste ingang, duidelijke status als dienst niet beschikbaar is, geen onopgeslagen invoerverlies of automatische provideracties.
-- **Eerst nodig:** Mail grondig herstellen en overzichtelijk maken
-- **Vindplaatsen:** `admin/app.js`, `admin/assistant.js`, `docs/MAIL-HERZIENING.md`
 
 ### 38. Vectorselectie rond de echte zichtbare tekening
 
