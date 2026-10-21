@@ -1,4 +1,4 @@
-import {sanitizeSignature} from '../../shared/mail-signature.js';
+import {sanitizeSignature} from '../../shared/mail-signature.js?v=signatures-20261021';
 // Template contents stay detached: selecting an image never fetches remote assets.
 const templateFor=html=>{const template=document.createElement('template');template.innerHTML=sanitizeSignature(html);return template;};
 export function signatureImages(html){return [...templateFor(html).content.querySelectorAll('img')].map((image,index)=>({index,label:image.getAttribute('alt')||'Afbeelding '+(index+1),missing:image.hasAttribute('data-sp-signature-slot')}));}

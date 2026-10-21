@@ -1,0 +1,21 @@
+# Run from the project root with an operator-owned private .env outside the repository.
+services:
+  agent:
+    build:
+      context: ../..
+      dockerfile: assistant/host/Dockerfile
+    restart: "no"
+    # Fail closed after an unclean stop; inspect runtime.lock before restarting.
+    ports:
+      - "127.0.0.1:3040:3040"
+    environment:
+      CRM_AGENT_SPATLAPPEN_TOKEN: ${CRM_AGENT_SPATLAPPEN_TOKEN:?Set a separate private service key}
+      CRM_AGENT_MAATWERKKUNSTSTOF_TOKEN: ${CRM_AGENT_MAATWERKKUNSTSTOF_TOKEN:?Set a different private service key}
+    volumes:
+      - ${CRM_AGENT_DATA_PATH:?Set the private persistent account directory}:/data
+    read_only: true
+    tmpfs:
+      - /tmp:size=16m,mode=1777
+    cap_drop: [ALL]
+    security_opt:
+      - no-new-privileges:true

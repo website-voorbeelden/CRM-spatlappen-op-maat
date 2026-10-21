@@ -1,4 +1,5 @@
-import {validateTaskProgress} from '../shared/planning/progress.js';
+import {handleOnlineAssistant,hostedAgentReady} from './assistant.js';
+import {validateTaskProgress} from '../shared/planning/progress.js?v=build-triage-20261021';
 import {handleMarketing} from './marketing.js';
 import {websiteAnalytics} from './site-analytics.js';
 import {companyFromEnv} from '../shared/companies.js';
@@ -146,7 +147,7 @@ export async function handleCrm({request,env}) {
     const url=new URL(request.url),path=url.pathname.replace(/^\/api\/crm\/?/,'');
     if (request.method==='GET'&&path==='config') {
       const local=localBypass(request,env),localServices=local&&['http://127.0.0.1:3000','http://127.0.0.1:3010'].includes(env.CRM_LOCAL_SERVICES)&&company.id==='spatlappen';
-      return json({storage:'cloud',companyId:company.id,release:env.CRM_RELEASE||'2.0.0',local,allowedEmail:env.CRM_ALLOWED_EMAIL,authEnabled:authReady(env)&&!local,tikkieReady:localServices||tikkieReady(env),documentsReady:localServices||documentsReady(env),gmailReady:/^[a-f0-9]{64}$/.test(env.CRM_INTEGRATIONS_KEY||''),mailReady:/^[a-f0-9]{64}$/.test(env.CRM_INTEGRATIONS_KEY||''),localServices});
+      return json({storage:'cloud',companyId:company.id,release:env.CRM_RELEASE||'2.0.0',local,allowedEmail:env.CRM_ALLOWED_EMAIL,authEnabled:authReady(env)&&!local,tikkieReady:localServices||tikkieReady(env),documentsReady:localServices||documentsReady(env),agentReady:hostedAgentReady(env),gmailReady:/^[a-f0-9]{64}$/.test(env.CRM_INTEGRATIONS_KEY||''),mailReady:/^[a-f0-9]{64}$/.test(env.CRM_INTEGRATIONS_KEY||''),localServices});
     }
     if(request.method==='GET'&&path==='offline-grant'){
       const user=await authenticated(request,env);if(!user)return json({error:'Log opnieuw in om offline werken klaar te zetten.'},401);
@@ -156,6 +157,11 @@ export async function handleCrm({request,env}) {
       const id=url.searchParams.get('id');if(!validKey(id))fail('Ongeldig opslagnummer.');
       const found=await env.DB.prepare('SELECT revision FROM crm_commits WHERE id=?').bind(id).first();return json({committed:!!found,...(found?{revision:found.revision}:{})});
     }
+    if(path.startsWith('assistant/'))return handleOnlineAssistant({request,env,
+      loadSnapshot:async()=>{const s=await snapshot(env.DB,['state']);return {revision:s.revision,state:s.records.state?.main||{customers:[],orders:[],payments:[],documents:[],activities:[],purchases:[]}};},
+      loadCommit:async id=>await env.DB.prepare('SELECT revision FROM crm_commits WHERE id=?').bind(id).first(),
+      commitState:(state,{id,revision})=>commit(env,{id,revision,companyId:company.id,operations:[{action:'put',store:'state',key:'main',value:state}]})
+    });
     if(path.startsWith('marketing/'))return handleMarketing({request,env});
     if (request.method==='GET'&&path==='website-analytics') {
       const current=env.DB?await snapshot(env.DB,['state']):null;

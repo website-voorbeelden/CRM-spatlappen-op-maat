@@ -87,7 +87,7 @@ class Handler(SimpleHTTPRequestHandler):
             self.wfile.write(data)
 
     def proxy_assistant(self):
-        allowed = {'feedback-list': 'GET', 'feedback-create': 'POST', 'feedback-import': 'POST', 'feedback-status': 'POST', 'status': 'GET', 'models': 'GET', 'login': 'POST', 'cancel': 'POST', 'select': 'POST', 'logout': 'POST', 'chat': 'POST', 'stop': 'POST', 'gmail-actions-capabilities': 'GET', 'gmail-actions-list': 'GET', 'gmail-actions-propose': 'POST', 'gmail-actions-review': 'POST', 'gmail-actions-confirm': 'POST', 'gmail-actions-cancel': 'POST', 'gmail-status': 'GET', 'gmail-configure': 'POST', 'gmail-login': 'POST', 'gmail-disconnect': 'POST', 'gmail-list': 'POST', 'gmail-message': 'POST', 'gmail-thread': 'POST', 'gmail-attachment': 'POST', 'mail-status': 'GET', 'mail-journal': 'GET', 'mail-configure': 'POST', 'mail-send': 'POST', 'speech-status': 'GET', 'speech-diagnostics': 'GET', 'speech-report': 'POST', 'transcribe': 'POST'}
+        allowed = {'feedback-list': 'GET', 'feedback-create': 'POST', 'feedback-import': 'POST', 'feedback-status': 'POST', 'status': 'GET', 'models': 'GET', 'login': 'POST', 'cancel': 'POST', 'select': 'POST', 'logout': 'POST', 'chat': 'POST', 'stop': 'POST', 'gmail-actions-capabilities': 'GET', 'gmail-actions-list': 'GET', 'gmail-actions-propose': 'POST', 'gmail-actions-review': 'POST', 'gmail-actions-confirm': 'POST', 'gmail-actions-cancel': 'POST', 'gmail-status': 'GET', 'gmail-configure': 'POST', 'gmail-login': 'POST', 'gmail-disconnect': 'POST', 'gmail-labels': 'POST', 'gmail-phase-auto-status': 'GET', 'gmail-phase-auto-configure': 'POST', 'gmail-phase-auto-sync': 'POST', 'gmail-phase-review': 'POST', 'gmail-phase-apply': 'POST', 'gmail-list': 'POST', 'gmail-message': 'POST', 'gmail-thread': 'POST', 'gmail-attachment': 'POST', 'mail-status': 'GET', 'mail-journal': 'GET', 'mail-configure': 'POST', 'mail-send': 'POST', 'speech-status': 'GET', 'speech-diagnostics': 'GET', 'speech-report': 'POST', 'transcribe': 'POST'}
         endpoint = urlsplit(self.path).path.removeprefix('/__local/assistant/')
         if allowed.get(endpoint) != self.command:
             self.send_error(404)
@@ -109,6 +109,10 @@ class Handler(SimpleHTTPRequestHandler):
                     return
                 headers = {'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json',
                            'X-CRM-Company': COMPANY, 'X-CRM-Origin': f'http://localhost:{LOCAL_PORT}/'}
+                if endpoint == 'gmail-phase-apply' and self.headers.get('X-CRM-Gmail-Confirm') == 'phase-labels':
+                    headers['X-CRM-Gmail-Confirm'] = 'phase-labels'
+                if endpoint in {'gmail-phase-auto-configure', 'gmail-phase-auto-sync'} and self.headers.get('X-CRM-Gmail-Confirm') in {'phase-auto-settings', 'phase-auto-resolution'}:
+                    headers['X-CRM-Gmail-Confirm'] = self.headers.get('X-CRM-Gmail-Confirm')
                 conn = http.client.HTTPConnection('127.0.0.1', int(os.environ.get('CRM_ASSISTANT_PORT', '3030')), timeout=500)
                 conn.request(self.command, '/' + endpoint, body=self.rfile.read(length) if length else None, headers=headers)
                 response = conn.getresponse()

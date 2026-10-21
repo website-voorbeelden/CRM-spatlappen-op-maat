@@ -18,6 +18,23 @@ export function installFeedback({downloadBlob,today,toast,launcherHost=null,cont
  const dialog=document.createElement('dialog');dialog.id='feedback-dialog';dialog.setAttribute('aria-label','Feedback melden');document.body.append(dialog);
  const launcher=document.createElement('button');launcher.type='button';launcher.className='feedback-launcher';launcher.dataset.feedbackAction='start';launcher.textContent='Feedback melden';(launcherHost||document.body).append(launcher);
 
+ // Own the button reference: replacing the shell must never destroy our only launcher.
+ const mobile=window.matchMedia?.('(max-width:760px)');let mountedRoot=null,layoutObserver=null;
+ function placeLauncher(){
+  if(launcherHost)return;
+  const assistantSlot=mobile?.matches&&document.body.classList.contains('assistant-open')?[...document.querySelectorAll('[data-feedback-assistant-slot]')].find(slot=>!slot.closest('[hidden]')):null;
+  const shellSlot=mountedRoot?.isConnected?mountedRoot.querySelector(mobile?.matches?'[data-feedback-mobile-launcher-slot]':'[data-ai-feedback-slot]'):null;
+  const target=assistantSlot||shellSlot||document.body;
+  launcher.hidden=false;if(launcher.parentElement!==target)target.append(launcher);
+ }
+ function beforeRender(){if(!launcherHost&&launcher.parentElement!==document.body)document.body.append(launcher);}
+ function mount(root){
+  if(launcherHost)return;
+  if(mountedRoot!==root){layoutObserver?.disconnect();mountedRoot=root;layoutObserver=new MutationObserver(placeLauncher);layoutObserver.observe(root,{childList:true});}
+  placeLauncher();
+ }
+ if(!launcherHost){mobile?.addEventListener?.('change',placeLauncher);window.addEventListener('crm-assistant-visibility',placeLauncher);window.addEventListener('focus',placeLauncher);}
+
  async function legacyList(){
   const db=await database;
   return new Promise((resolve,reject)=>{const tx=db.transaction('reports'),r=tx.objectStore('reports').getAll();let records=[];r.onsuccess=()=>records=r.result;tx.oncomplete=()=>resolve(records.sort((a,b)=>b.createdAt.localeCompare(a.createdAt)));tx.onerror=()=>reject(tx.error);});
@@ -166,7 +183,7 @@ export function installFeedback({downloadBlob,today,toast,launcherHost=null,cont
  window.addEventListener('hashchange',()=>{stopPicking();});
  channel?.addEventListener('message',()=>{void refresh();});
  window.addEventListener('focus',()=>{void refresh();});
- return {list,replaceAll,refresh,validate:validateReports};
+ return {list,replaceAll,refresh,validate:validateReports,beforeRender,mount};
 }
 function validateReports(records){
  if(!Array.isArray(records)||records.some(r=>!r||typeof r.id!=='string'||!r.id||typeof r.createdAt!=='string'||!Number.isFinite(Date.parse(r.createdAt))||!Object.hasOwn(kinds,r.kind)||!Object.hasOwn(statusLabels,r.status)||typeof r.message!=='string'||typeof r.context?.route!=='string'||!r.context.route.startsWith('#')||typeof r.context.page!=='string'))throw Error('Ongeldige feedback in de back-up.');

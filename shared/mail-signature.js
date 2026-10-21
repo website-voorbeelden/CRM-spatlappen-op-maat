@@ -43,6 +43,7 @@ export function htmlSignatureMessage(text,config){
  for(const ending of endings)if(body.endsWith(ending)){body=body.slice(0,-ending.length).trimEnd();break;}
  if(signature||plain)body=body.replace(/(?:^|\n)(?:Met vriendelijke groet(?:en)?|Vriendelijke groet(?:en)?|Kind regards|Best regards)[, \t]*\n[\s\S]{0,500}$/i,'').trimEnd();
  const alternative=[body,plain].filter(Boolean).join('\n\n');if(!signature)return {text:alternative};
+ if((signature.match(/<img\b/gi)||[]).length>12)throw Error('Gebruik maximaal twaalf afbeeldingen in één handtekening.');
  const inlines=[];
  const htmlSignature=signature.replace(/src="data:image\/(png|jpeg|gif);base64,([a-z0-9+/=]+)"/gi,(_,type,fileblob)=>{
   let bytes;try{bytes=atob(fileblob);}catch{throw Error('De handtekening bevat een ongeldige afbeelding.');}

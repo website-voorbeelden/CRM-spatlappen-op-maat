@@ -1,0 +1,28 @@
+# Aanvragen en orders als verkoopfunnel
+
+Klik op Aanvragen & orders: alleen in deze lijst verschijnt onder de menu-optie de uitgeklapte fasekeuze met aantallen en Opvolging nodig. Er is geen tweede fasekeuze boven de tabel en geen apart scrollvlak binnen de faselijst. Het dossier blijft hetzelfde van eerste aanvraag tot levering. Geleverd / gearchiveerd omvat ook gearchiveerde dossiers; andere zoekfilters blijven gelden. Filters wissen wist ook de fasekeuze.
+
+Fases: Nieuwe aanvragen, Specificaties opgevraagd, Prijs berekenen, Prijsindicatie verstuurd, Offerte verstuurd, Orderbevestiging / wacht op betaling, Betaald, In productie, Geleverd / gearchiveerd.
+
+Het vak Volgende stap toont de fase, ontbrekende specificaties en passende knoppen. Gegevens opvragen opent het bestaande vinkjesmenu met bewerkbare tekst. Prijsindicatie en Opvolging gebruiken eigen bewerkbare standaardtemplates; die zijn ook via instellingen aan te passen. Vul bij een prijsindicatie eerst de prijs en uitgangspunten in. Offerte en orderbevestiging gebruiken een bestaande PDF of openen de documentmaker en gaan na opslaan direct verder naar de mail. De berekenactie registreert eerst bewust de werkfase en opent daarna de rekentool/ordereditor.
+
+Een concept of gegenereerd document telt niet als verstuurd. Alleen een door SMTP2GO geaccepteerd bericht met een bekend documenttype of expliciet maildoel wordt voor de fase meegenomen. Acceptatie is geen aflever- of leesbevestiging. Ook handmatige registratie van verzending buiten het CRM is mogelijk via Fase bijwerken, met datum, notitie en bevestiging. De bestaande werk-/productiestatus blijft behouden naast de verkoopfase.
+
+Betaling volgt de werkelijk geregistreerde bedragen. Onbekende prijzen, ontbrekende producten en onbekende verzending zijn nooit volledig betaald. Productiestart via de funnel vereist volledige betaling en een geregistreerde factuurverzending. Geleverd registreren archiveert het dossier. Een fase kiezen maakt geen betaling en verstuurt geen mail.
+
+Opvolging verschijnt standaard na 7 dagen sinds een geregistreerde verzending, zolang de fase op klantreactie wacht en er geen nieuwer antwoord in de opgeslagen CRM-mail staat. De termijn is per dossier instelbaar (1–365 dagen). Dit is geen live onderzoek van alle Gmail-reacties: ververs en bewaar het gesprek vóór opvolgen. Een opvolgmail is altijd eerst een bewerkbaar voorstel met preview en aparte verzendbevestiging. Geen automatische verzending of geplande achtergrondtaak.
+
+Historie wordt als optionele salesFunnel-metadata bij de order bewaard en bij opslag gevalideerd. Oude dossiers blijven bruikbaar; beschikbare verzenddatums, mailresultaten, betalingen en werkstatus leveren de beginsituatie. Fasewijzigingen controleren op gelijktijdige dossierwijzigingen. Beide bedrijven gebruiken dezelfde code met gescheiden bedrijfsopslag.
+
+Betaling wordt gevraagd bij de orderbevestiging. De volgende stap in die fase is Betaling registreren. Na de echte volledige betaling volgt Factuur voorbereiden en daarna Productiestart registreren. Factuurverzending is nog als gebeurtenis bewaard en leesbaar in de historie, maar is geen eigen wacht-op-betaling-fase meer. Oude factuurfasegegevens worden in de weergave bij Orderbevestiging / wacht op betaling ondergebracht zolang het bedrag niet betaald is; er worden geen gegevens gewist.
+
+
+## Actieoverzicht en fasevoorstellen — 15 oktober 2026
+
+Overzicht begint met **Wat staat mij te doen?**. Eén hoofdactie per dossier; andere handelingen staan onder Meer. Nieuwe aanvragen, prijsberekening, opgeslagen klantreacties, opvolging en betaalde dossiers worden onderscheiden. Verstreken ingevulde leverdata staan bovenaan. Aanvragen vanaf drie dagen oud krijgen meer prioriteit; opvolging gebruikt de bestaande termijn (standaard zeven dagen). Ontbrekende specificaties openen direct de bewerkbare vragenmail, ook wanneer het dossier al bij prijsberekening staat. Bij prijsberekening staat onder Meer ook een bewerkbare prijsindicatie. De bestaande preview en afzonderlijke verzendknop blijven verplicht.
+
+De ouderdom is expliciet **dagen sinds aanvraag**, geen verzonnen beloofde reactietermijn. Een ontbrekende datum blijft onbekend. Bij leverdatum geldt de kalenderdag: vandaag is niet te laat. Het overzicht gebruikt uitsluitend bewaarde gegevens. Een extern verzonden mail of ongelezen/onbewaard Gmailantwoord kan daarom ontbreken. Overige lopende dossiers, de volledige ordertabel en recente activiteiten zijn inklapbaar. Geen nieuwe achtergrondtaak, automatische mail of AI-aanroep.
+
+Nieuwe SMTP2GO-aanbiedingen krijgen `emailDrafts[].funnelReview = pending`. Hun verzenddatum telt wel als contactmoment en hun factuurverzending als feit, maar ze veranderen de verkoopfase niet. Bij specificatieverzoek, prijsindicatie, offerte of orderbevestiging opent na de succesvolle opslag een apart fasevoorstel. Kies verplaatsen of huidige fase behouden, daarna Opslaan. Sluiten laat het voorstel open voor later via overzicht/dossier. Bevestigen registreert een fase-event; behouden markeert dismissed. Beide controleren het exacte dossier tegen wijzigingen in andere tabbladen. Een nieuwer handmatig fase-event of nieuwere gerichte verzending maakt een oud voorstel niet meer actueel. Betaald, productie en geleverd krijgen geen voorstel terug naar een eerdere verkoopfase.
+
+Bestaande mails zonder deze nieuwe reviewmetadata behouden hun historische faseafleiding. Factuurverzending en betaling veranderen geen productie automatisch: de bestaande betaal-/factuurvoorwaarden blijven gelden en de productiestart wordt afzonderlijk bevestigd. Een aangeboden mail is nog geen bewijs van aflevering.

@@ -15,7 +15,7 @@ export async function handleMail({request,env},{fetcher=fetch}={}){
   await sessionFingerprint(request,env);const url=new URL(request.url),action=url.pathname.replace('/__local/assistant/mail-',''),service=createCloudMail(env,{fetcher});
   if(request.method==='GET'&&['status','journal'].includes(action))return json(await service[action](env.CRM_COMPANY_ID));
   if(request.method!=='POST'||request.headers.get('Origin')!==url.origin||!request.headers.get('Content-Type')?.startsWith('application/json')||!['configure','send'].includes(action))throw integrationError('Ongeldig mailverzoek.',403);
-  const raw=await request.text();if(new TextEncoder().encode(raw).length>(action==='send'?15_000_000:650000))throw integrationError('Het mailverzoek is te groot.',413);
+  const raw=await request.text();if(new TextEncoder().encode(raw).length>(action==='send'?15_000_000:4_000_000))throw integrationError('Het mailverzoek is te groot.',413);
   let input;try{input=JSON.parse(raw);}catch{throw integrationError('Ongeldig mailverzoek.');}if(!input||typeof input!=='object'||Array.isArray(input))throw integrationError('Ongeldig mailverzoek.');
   if(action==='send'&&env.CRM_RELEASE_ENV==='preview')throw integrationError('Echte mailverzending staat uit in de testomgeving.',403);
   return json(await service[action](env.CRM_COMPANY_ID,input));

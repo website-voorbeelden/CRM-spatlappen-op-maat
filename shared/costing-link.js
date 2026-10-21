@@ -8,7 +8,7 @@ export function calculationChoice(value,pieceId){
  return {...data,sourceSignature:JSON.stringify(data)};
 }
 export function costingLink(choice){return {source:'costCalculator',quoteId:choice.quoteId,pieceId:choice.pieceId,scenarioId:choice.scenarioId,sourceVersion:choice.updatedAt,sourceSignature:choice.sourceSignature,supplier:choice.supplier,title:choice.title,syncedAt:new Date().toISOString()};}
-export function salesFieldsFromCalculation(choice){return {description:choice.description,quantity:choice.quantity,width:choice.width,height:choice.height,price:choice.unitSaleInCents,cost:Math.round(choice.directCostInCents/choice.quantity)};}
+export function salesFieldsFromCalculation(choice){return {description:choice.description,quantity:choice.quantity,width:choice.width,height:choice.height,material:choice.material??'',thickness:choice.thickness??null,price:choice.unitSaleInCents,cost:Math.round(choice.directCostInCents/choice.quantity)};}
 export function purchaseFieldsFromCalculation(choice){return {description:choice.description,quantity:choice.quantity,unit:'piece',price:Math.round(choice.supplierCostInCents/choice.quantity)};}
 const cents=n=>{if(n!==null&&(!Number.isSafeInteger(n)||n<0))throw Error('Controleer de ingevulde prijs.');return n;};
 // Only product/price fields enter the calculator, never customer IDs or contact data.
@@ -20,6 +20,8 @@ export function syncProductToCalculation(value,link,fields,{direction='sale'}={}
  if(!supplier)throw Error('De gekozen leverancier bestaat niet meer.');
  piece.quantity=fields.quantity;
  if(direction==='sale'){
+  if(Object.hasOwn(fields,'material')){if(typeof fields.material!=='string'||!fields.material.trim()||fields.material.length>200)throw Error('Vul het materiaal in.');piece.material=fields.material.trim();}
+  if(Object.hasOwn(fields,'thickness')){if(typeof fields.thickness!=='number'||!Number.isFinite(fields.thickness)||fields.thickness<=0||fields.thickness>1000000)throw Error('Vul een geldige dikte in millimeters in.');piece.thickness=fields.thickness;}
   for(const k of ['width','height'])if(!Number.isSafeInteger(fields[k])||fields[k]<1)throw Error('Vul de productmaten in.');
   if(piece.shape==='circle'){if(fields.width!==fields.height)throw Error('Een ronde berekening vereist gelijke breedte en hoogte. Pas de vorm aan in de rekentool.');piece.outerDiameter=fields.width;}else{piece.width=fields.width;piece.height=fields.height;}
  }else if(direction!=='purchase')throw Error('Onbekende prijsrichting.');

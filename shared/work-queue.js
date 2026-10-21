@@ -1,7 +1,7 @@
 import {batchPackingRows} from './batch-packing.js';
 import {productionReleaseInfo} from './production-release.js';
 import {orderReadiness} from './order-readiness.js';
-import {salesFunnel,pendingFunnelMail} from './sales-funnel.js?v=workspace-search-20261017';
+import {salesFunnel,pendingFunnelMail} from './sales-funnel.js?v=maat-cleanup-20261021';
 import {orderMailThreads} from './mail-inbox.js?v=workspace-search-20261017';
 import {mailAttention,compareMailAttention} from './mail-attention.js?v=mail-priority-20261016-2';
 const day=86400000,time=v=>Number.isFinite(Date.parse(v))?Date.parse(v):0;
@@ -31,6 +31,7 @@ export function workQueue(state,companyId,{now=Date.now()}={}){
   const release=productionReleaseInfo(state,o,companyId,{payment:f.payment});
   if(!f.payment.fullyPaid&&!o.productionReleasedDate&&release.eligible){add('production-release',release.sampleZero?'Teststuk · vrijgave controleren':`${release.percentage}% ontvangen · vrijgave controleren`,'Controleer de afgesproken aanbetaling en ontwerpgoedkeuring. Vrijgave en fysieke productiestart zijn aparte stappen.','production-release','Vrijgave controleren',10,'hoog','Aanbetalingsvoorwaarden aanwezig');continue;}
   if(f.phase==='released'){const next=readiness.next;add('released',release.eligible?'Productie vrijgegeven · volgende stap':'Vrijgavevoorwaarden opnieuw controleren',next?.reason||release.reasons.join(' '),next?.action||f.next[0],next?.cta||f.next[1],12,release.eligible?'normaal':'hoog',release.eligible?'':'Vrijgavevoorwaarden gewijzigd');continue;}
+  if(f.phase==='paid'&&!f.payment.fullyPaid){add('payment-check','Gmail-betaalfase controleren','Het label is geen betaalbewijs. Controleer of de betaling werkelijk is ontvangen.','payment','Betaling controleren',10,'hoog','Betaling nog niet vastgesteld');continue;}
   if(f.phase==='paid'){
    const next=readiness.next;
    const title=next?.action==='documents'?'Betaald · documentkopie ontbreekt':next?.key==='invoice'?(f.invoicePrepared?'Betaald · factuur staat klaar':'Betaald · factuur maken'):next?'Betaald · '+next.label.toLowerCase()+' controleren':'Betaald · productie voorbereiden';
@@ -40,7 +41,7 @@ export function workQueue(state,companyId,{now=Date.now()}={}){
   const pack=packing.get(o.id);if(f.phase==='production'&&pack&&!pack.existing&&pack.missing.length){const productGap=pack.missing.some(reason=>reason.includes('Producten'));add('packing-check','Pakbon voorbereiden · gegevens aanvullen',pack.missing.join(' · '),productGap?'order-edit':'delivery-details',productGap?'Producten controleren':'Levergegevens aanvullen',17);continue;}
   if(f.phase==='production'&&readiness.gaps.length){const next=readiness.gaps.find(c=>c.key==='invoice')||readiness.gaps[0];add('production-check','Uitvoering · dossier controleren',next.reason,next.action,next.cta,14,'hoog','Ontbrekende stap tijdens uitvoering');continue;}
 
-  if(f.phase==='pricing'||f.phase==='new'){
+  if(f.phase==='pricing'||f.phase==='new'||f.phase==='welcome'){
    const pricing=f.phase==='pricing'||!f.missing.length;
    const delayed=age>=3||attention?.needsReply&&attention.priority==='hoog';
    add(pricing?'pricing':'new',pricing?'Klant wacht op een prijs':'Nieuwe aanvraag beoordelen',f.missing.length?'Nog nodig: '+f.fields.filter(v=>!v.complete).map(v=>v.label).join(', '):'Benodigde aanvraaggegevens aanwezig',f.missing.length?'specs':f.next[0],f.missing.length?'Specificaties opvragen':f.next[1],pricing&&delayed?12:20,delayed?'hoog':'normaal',delayed?(attention?.needsReply&&attention.priority==='hoog'?'Klant wacht minimaal 3 dagen':'Aanvraag minimaal 3 dagen oud'):'');continue;

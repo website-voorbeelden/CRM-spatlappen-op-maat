@@ -1,6 +1,6 @@
 import {productionReleaseInfo} from './production-release.js';
 import {inboundReadiness} from './inbound-readiness.js';
-import {salesFunnel} from './sales-funnel.js?v=workspace-search-20261017';
+import {salesFunnel} from './sales-funnel.js?v=maat-cleanup-20261021';
 const date=value=>Boolean(value)&&Number.isFinite(Date.parse(value));
 // Read-only follow-up facts. Payment is never evidence of an approved design,
 // a sent document, an order at a supplier or actual production.
@@ -18,8 +18,8 @@ export function orderReadiness(state,o,companyId,{funnel}={}){
  add('confirmation','Orderbevestiging',confirmationSent&&hasPdf('confirmation'),confirmationSent&&!hasPdf('confirmation')?'documents':'confirmation',confirmationSent&&!hasPdf('confirmation')?'Bestaande bevestiging toevoegen':hasPdf('confirmation')?'Orderbevestiging mailen':'Orderbevestiging maken',confirmationSent&&!hasPdf('confirmation')?'Verzending is geregistreerd, maar de documentkopie ontbreekt. Voeg de bestaande bevestiging toe.':hasPdf('confirmation')?'De orderbevestiging staat klaar, maar verzending is nog niet geregistreerd.':'Geen verstuurde orderbevestiging geregistreerd.');
  add('invoice','Factuur',f.invoiceSent&&f.invoicePrepared,f.invoiceSent&&!f.invoicePrepared?'documents':'invoice',f.invoiceSent&&!f.invoicePrepared?'Bestaande factuur toevoegen':f.invoicePrepared?'Factuur mailen':'Factuur maken',f.invoiceSent&&!f.invoicePrepared?'Verzending is geregistreerd, maar de factuurkopie ontbreekt. Voeg de bestaande factuur toe; maak geen dubbele.':f.invoicePrepared?'De factuur-PDF staat klaar, maar verzending is nog niet geregistreerd.':'Er staat nog geen factuur klaar.');
  const supplier=(o.items||[]).some(i=>i.productionSource!=='local'),purchase=(state.purchases||[]).find(p=>p.id===o.purchaseId);
- if(supplier){const ordered=Boolean(purchase&&(date(o.supplierOrderedDate)||date(purchase.orderedDate)||['Besteld','In productie','Onderweg','Binnen in Nederland'].includes(purchase.status)));
-  add('purchase','Inkoop bij leverancier',ordered,'purchase',purchase?'Bestelling controleren':'Inkoop koppelen',purchase?'De inkoop is gekoppeld, maar bestellen is nog niet geregistreerd.':date(o.supplierOrderedDate)?'Bestellen is geregistreerd, maar de inkoopkoppeling ontbreekt.':'Er is nog geen inkoopbestelling gekoppeld.');
+ if(supplier){const ordered=Boolean(date(o.supplierOrderedDate)||purchase&&(date(purchase.orderedDate)||['Besteld','In productie','Onderweg','Binnen in Nederland'].includes(purchase.status)));
+  add('purchase','Inkoop bij leverancier',ordered,'purchase',purchase||ordered?'Bestelling controleren':'Inkoop vastleggen',purchase?'De inkoop is gekoppeld, maar bestellen is nog niet geregistreerd.':ordered?'Bestellen voor deze losse order is geregistreerd.':'Registreer de losse bestelling of koppel een gezamenlijke inkoopbestelling.');
  }
  const inbound=inboundReadiness(state,o,companyId);
  const gaps=checks.filter(c=>!c.complete),paid=f.payment.paid>0;

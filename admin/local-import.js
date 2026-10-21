@@ -34,7 +34,8 @@ function validate(entry,stages){
  }
  for(const p of d.payments)if(!money(p.amount)||p.amount<=0||!validDate(p.date)||typeof p.reference!=='string')throw Error('Controleer de ontvangen betalingen.');
  const min=o.leadTimeMinWeeks,max=o.leadTimeMaxWeeks;
- if(min!=null||max!=null){if(![min,max].every(v=>Number.isInteger(v)&&v>=0&&v<=104)||max<min||!['payment','order','manual'].includes(o.leadTimeBasis))throw Error('Controleer de levertijd.');}
+ if(o.leadTimeDepositPercent!=null&&(!Number.isInteger(o.leadTimeDepositPercent)||o.leadTimeDepositPercent<1||o.leadTimeDepositPercent>100)||o.leadTimeBasis==='deposit'&&o.leadTimeDepositPercent==null)throw Error('Controleer het afgesproken aanbetalingspercentage voor de levertijd.');
+ if(min!=null||max!=null){if(![min,max].every(v=>Number.isInteger(v)&&v>=0&&v<=104)||max<min||!['payment','deposit','order','manual'].includes(o.leadTimeBasis))throw Error('Controleer de levertijd.');}
  if(o.expectedDateFrom&&o.expectedDateTo&&o.expectedDateFrom>o.expectedDateTo)throw Error('Controleer het levervenster.');
  for(const file of entry.documents)if(typeof file.name!=='string'||!['quote','confirmation','proforma','invoice','other'].includes(file.category)||typeof file.file!=='string'||!/^[a-f0-9]{24}\.[a-z0-9]+$/.test(file.file))throw Error('Ongeldige bijlage.');
 }
@@ -94,7 +95,7 @@ export async function importLocalOrders({db,stages,today,beforeCommit,companyId=
      if(o.purchaseId&&!next.purchases.some(p=>p.id===o.purchaseId))throw Error('De gekoppelde inkoopbestelling bestaat niet meer.');
      let client=next.customers.find(x=>x.company.trim().toLowerCase()===c.company.trim().toLowerCase()||c.email&&x.email?.toLowerCase()===c.email.toLowerCase());
      if(!client){client={id:crypto.randomUUID(),archived:false};for(const key of customerKeys)client[key]=c[key].trim();next.customers.push(client);}
-     const item={id:crypto.randomUUID(),number:Math.max(3000,...next.orders.map(x=>x.number))+1,customerId:client.id,archived:false,vat:o.vat,shippingKnown:o.shippingCharge!=null,shippingCharge:o.shippingCharge??0,packagePrice:o.packagePrice??null,shippingExpected:null,shippingActual:null,extraCosts:null,leadTimeMinWeeks:o.leadTimeMinWeeks??null,leadTimeMaxWeeks:o.leadTimeMaxWeeks??null,leadTimeBasis:o.leadTimeBasis||'payment'};
+     const item={id:crypto.randomUUID(),number:Math.max(3000,...next.orders.map(x=>x.number))+1,customerId:client.id,archived:false,vat:o.vat,shippingKnown:o.shippingCharge!=null,shippingCharge:o.shippingCharge??0,packagePrice:o.packagePrice??null,shippingExpected:null,shippingActual:null,extraCosts:null,leadTimeMinWeeks:o.leadTimeMinWeeks??null,leadTimeMaxWeeks:o.leadTimeMaxWeeks??null,leadTimeBasis:o.leadTimeBasis||'payment',...(o.leadTimeDepositPercent!=null?{leadTimeDepositPercent:o.leadTimeDepositPercent}:{})};
      for(const key of textKeys)item[key]=o[key]||'';
      item.items=o.items.map(i=>({id:crypto.randomUUID(),description:i.description.trim(),quantity:i.quantity,width:i.width??null,height:i.height??null,price:i.price??null,cost:i.cost??null,printColors:i.printColors??null,specs:i.specs,productionSource:i.productionSource||'supplier'}));
      next.orders.push(item);ids.push(item.id);targetRoute=`orders/${item.id}`;

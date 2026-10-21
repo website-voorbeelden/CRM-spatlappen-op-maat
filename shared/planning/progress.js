@@ -1,11 +1,15 @@
-import {items,planFor} from './roadmap.js';
-export const taskStatuses={open:'Open',doing:'Mee bezig',blocked:'Geblokkeerd',done:'Afgerond'};
+import {items,planFor} from './roadmap.js?v=delivery-map-20261021';
+import {sourceUpdates} from './source-updates.js?v=delivery-map-20261021';
+export const taskStatuses={open:'Open',doing:'Mee bezig',blocked:'Geblokkeerd',review:'Gebouwd · jouw controle',done:'Afgerond'};
 export const taskDeliveries={unknown:'Niet vastgelegd',local:'Alleen lokaal',live:'Live gepubliceerd'};
 const fail=(message,status=400)=>{throw Object.assign(Error(message),{status});};
 const key=v=>typeof v==='string'&&/^[a-zA-Z0-9._-]{1,160}$/.test(v);
 const text=(v,max)=>typeof v==='string'&&v.length<=max;
 const validTime=v=>typeof v==='string'&&Number.isFinite(Date.parse(v));
-export function taskBaseline(item,companyId){return {status:item.stage==='done'?'done':'open',delivery:item.delivery==='live-spatlappen'&&companyId==='spatlappen'?'live':/lokaal/i.test(item.effort||'')?'local':'unknown'};}
+export function taskSourceEvents(item,companyId){return sourceUpdates.filter(entry=>entry.taskId===item.id&&entry.companies.includes(companyId)).slice().sort((a,b)=>Date.parse(a.at)-Date.parse(b.at));}
+export function taskBaseline(item,companyId){const latest=taskSourceEvents(item,companyId).at(-1);return {status:latest?.status||(item.stage==='done'?'done':item.stage==='review'?'review':'open'),delivery:latest?.delivery||(item.delivery==='live-spatlappen'&&companyId==='spatlappen'?'live':/lokaal/i.test(item.effort||'')?'local':'unknown')};}
+export const taskFilters={open:'Te bouwen',review:'Jouw controle',done:'Afgerond',all:'Alles'};
+export function taskMatchesFilter(status,filter){return filter==='all'||(filter==='open'?!['review','done'].includes(status):status===filter);}
 export function validateTaskProgress(record,companyId){
  if(!record||!key(record.id)||record.companyId!==companyId||!['spatlappen','maatwerkkunststof'].includes(companyId)||!Number.isSafeInteger(record.version)||record.version<1||!Object.hasOwn(taskStatuses,record.status)||!Object.hasOwn(taskDeliveries,record.delivery)||!Array.isArray(record.events)||record.events.length!==record.version||record.events.length>1000)fail('Ongeldig bouwlog.');
  const task=items.find(i=>i.id===record.id);if(task&&!task.companies.includes(companyId))fail('Deze bouwtaak hoort bij een ander bedrijf.');
@@ -22,7 +26,7 @@ export function applyTaskChange(previous,change,companyId,{now=new Date().toISOS
  if(same){if(same.author!==author||same.note!==note||same.evidence!==evidence||same.requestedStatus!==status||same.requestedDelivery!==delivery)fail('Deze bewaaractie is al met andere inhoud verwerkt. Ververs de taak.',409);return previous;}
  if(!status&&!delivery&&!note&&!evidence)fail('Schrijf een opmerking of wijzig de taakstatus.');
  if((status||delivery)&&(change.expectedVersion??0)!==(previous?.version||0))fail('Deze taak is intussen gewijzigd. Je invoer blijft staan; open de taak opnieuw voor een statuswijziging.',409);
- if(status==='done'&&!note&&!evidence)fail('Noteer kort wat is afgerond of hoe het is gecontroleerd.');
+ if(['review','done'].includes(status)&&!note&&!evidence)fail('Noteer kort wat is gebouwd of afgerond en wat nog gecontroleerd moet worden.');
  if((previous?.events.length||0)>=1000)fail('Dit bouwlog is vol. Exporteer het log en laat de opslag uitbreiden; er is niets verwijderd.');
  const base=previous||{id:task.id,companyId,version:0,...taskBaseline(task,companyId),events:[]},nextStatus=status||base.status,nextDelivery=delivery||base.delivery;
  const result={...base,version:base.version+1,status:nextStatus,delivery:nextDelivery,events:[...base.events,{id:change.id,at:now,author,note,evidence,kind,requestedStatus:status,requestedDelivery:delivery,status:nextStatus,delivery:nextDelivery}]};return validateTaskProgress(result,companyId);

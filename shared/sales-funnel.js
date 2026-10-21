@@ -1,9 +1,13 @@
+import {salesPhaseSignal,adoptedGmailPhase} from './sales-phase-signal.js';
 import {productionReleaseInfo} from './production-release.js';
 import {mailTemplates,fillMailTemplate,templateContext} from './mail-templates.js?v=sales-funnel-20261015';
 import {companyFor} from './companies.js';
 import {inquiryRequirements} from './inquiries.js?v=workspace-search-20261017';
 export const funnelPhases=[['new','Nieuwe aanvragen'],['specs','Specificaties opgevraagd'],['pricing','Prijs berekenen'],['indication','Prijsindicatie verstuurd'],['quote','Offerte verstuurd'],['confirmation','Orderbevestiging · wacht op betaling'],['paid','Betaald'],['released','Productie vrijgegeven'],['production','In productie'],['delivered','Geleverd / gearchiveerd']];
-const phaseIds=new Set([...funnelPhases.map(([id])=>id),'invoice']),day=86400000;
+export const funnelPhasesFor=companyId=>companyFor(companyId).salesPhases||funnelPhases;
+export function funnelDisplayPhase(phase,companyId){return companyId==='maatwerkkunststof'&&['confirmation','paid','released'].includes(phase)?'received':phase;}
+export const funnelPhaseLabel=(phase,companyId)=>funnelPhasesFor(companyId).find(([id])=>id===funnelDisplayPhase(phase,companyId))?.[1]||funnelPhases.find(([id])=>id===phase)?.[1]||phase;
+const phaseIds=new Set([...funnelPhases.map(([id])=>id),'invoice','welcome','received']),day=86400000;
 const timestamp=value=>Number.isFinite(Date.parse(value))?Date.parse(value):0;
 export function funnelPayment(state,o){const known=o.items.length>0&&(o.packagePrice!=null||o.items.every(i=>Number.isSafeInteger(i.price)))&&o.shippingKnown!==false;const net=(o.packagePrice??o.items.reduce((s,i)=>s+i.quantity*(i.price||0),0))+(o.shippingCharge||0),total=net+Math.round(net*(o.vat??21)/100),paid=state.payments.filter(p=>p.orderId===o.id).reduce((n,p)=>n+p.amount,0);return {known,total,paid,fullyPaid:known&&total>0&&paid>=total};}
 export function funnelMailEvents(state,o){return (o.emailDrafts||[]).filter(d=>d.status==='accepted'&&timestamp(d.sentAt)).map(d=>{const doc=state.documents.find(x=>x.id===d.documentId),kind=doc?.generated?.kind||doc?.category;return {id:d.id,phase:({quote:'quote',confirmation:'confirmation',invoice:'invoice'})[kind]||d.funnelPurpose||'',at:d.sentAt,source:'mail',review:d.funnelReview};}).filter(e=>phaseIds.has(e.phase)||e.phase==='followup');}
@@ -17,18 +21,22 @@ export function salesFunnel(state,o,companyId,{now=Date.now(),followupDays=o.sal
  if(o.productionReleasedDate||o.stage==='Productie vrijgegeven')phase='released';
  if(['In productie','Onderweg naar Nederland','Binnen in Nederland','Verzonden'].includes(o.stage)||o.productionDate)phase='production';
  if(o.archived||o.deliveredDate||o.stage==='Afgerond')phase='delivered';
+ const signal=salesPhaseSignal(state,o,funnelDisplayPhase(phase,companyId),events);
+ if(o.salesFunnel?.selection?.basis===signal.basis){signal.phase=o.salesFunnel.selection.phase;phase=signal.phase;}
+ const gmail=adoptedGmailPhase(state,o,signal);
+ if(gmail)phase=gmail.phase;
  const sent=events.filter(e=>['specs','indication','quote','confirmation','invoice','followup'].includes(e.phase)).at(-1);
  const inbound=(state.incomingEmails||[]).filter(m=>m.orderId===o.id&&m.direction!=='outgoing').reduce((n,m)=>Math.max(n,timestamp(m.receivedAt)),0);
  const waiting=['specs','indication','quote','confirmation','invoice'].includes(phase)&&sent&&inbound<=timestamp(sent.at),days=sent?Math.max(0,Math.floor((now-timestamp(sent.at))/day)):null;
  const followup=Boolean(waiting&&days>=followupDays),invoiceSent=events.some(e=>e.phase==='invoice');
  const invoicePrepared=state.documents.some(d=>d.ownerId===o.id&&(d.generated?.kind||d.category)==='invoice'&&/\.pdf$/i.test(d.name||''));
- const actions={new:['specs','Specificaties opvragen'],specs:['specs','Specificaties controleren'],pricing:['calculate','Prijs berekenen'],indication:['quote','Offerte voorbereiden'],quote:['confirmation','Orderbevestiging voorbereiden'],confirmation:['payment','Betaling registreren'],invoice:['payment','Betaling registreren'],paid:invoiceSent?['production','Productiestart registreren']:['invoice',invoicePrepared?'Factuur mailen':'Factuur maken'],released:(o.items.some(i=>i.productionSource!=='local')?['purchase','Inkoopbestelling controleren']:['production','Productiestart registreren']),production:['delivery','Levering registreren'],delivered:['view','Dossier bekijken']};
- const next=['new','specs'].includes(phase)&&!requirements.missing.length?['calculate','Prijs berekenen']:actions[phase]||actions.new;
- return {phase,label:funnelPhases.find(([id])=>id===phase)?.[1]||'Nieuwe aanvraag',payment,missing:requirements.missing,fields:requirements.fields,invoicePrepared,invoiceSent,sentAt:sent?.at||'',daysSinceContact:days,hasSavedReply:!!sent&&inbound>timestamp(sent.at),followup,next,events};
+ const actions={welcome:['specs','Specificaties controleren'],received:['confirmation','Orderbevestiging voorbereiden'],new:['specs','Specificaties opvragen'],specs:['specs','Specificaties controleren'],pricing:['calculate','Prijs berekenen'],indication:['quote','Offerte voorbereiden'],quote:['confirmation','Orderbevestiging voorbereiden'],confirmation:['payment','Betaling registreren'],invoice:['payment','Betaling registreren'],paid:!payment.fullyPaid?['payment','Betaling controleren']:invoiceSent?['production','Productiestart registreren']:['invoice',invoicePrepared?'Factuur mailen':'Factuur maken'],released:(o.items.some(i=>i.productionSource!=='local')?['purchase','Inkoopbestelling controleren']:['production','Productiestart registreren']),production:['delivery','Levering registreren'],delivered:['view','Dossier bekijken']};
+ const next=['new','welcome','specs'].includes(phase)&&!requirements.missing.length?['calculate','Prijs berekenen']:actions[phase]||actions.new;
+ return {phase,signal,gmail,displayPhase:funnelDisplayPhase(phase,companyId),label:funnelPhaseLabel(phase,companyId),payment,missing:requirements.missing,fields:requirements.fields,invoicePrepared,invoiceSent,sentAt:sent?.at||'',daysSinceContact:days,hasSavedReply:!!sent&&inbound>timestamp(sent.at),followup,next,events};
 }
 export function registerFunnel(state,id,{phase,at,note='',expected,followupDays=7},{uuid=()=>crypto.randomUUID(),companyId=''}={}){
  if(!Number.isInteger(followupDays)||followupDays<1||followupDays>365)throw Error('Kies een opvolgtermijn tussen 1 en 365 dagen.');
- if(!phaseIds.has(phase)||!timestamp(at))throw Error('Kies een geldige fase en datum.');
+ if(!phaseIds.has(phase)||['welcome','received'].includes(phase)&&companyId!=='maatwerkkunststof'||!timestamp(at))throw Error('Kies een geldige fase en datum.');
  const o=state.orders.find(o=>o.id===id);if(!o)throw Error('Dit dossier bestaat niet meer.');
  if(expected!==JSON.stringify(o))throw Error('Dit dossier is intussen gewijzigd. Open de fase opnieuw.');
  const payment=funnelPayment(state,o);
@@ -39,7 +47,8 @@ export function registerFunnel(state,id,{phase,at,note='',expected,followupDays=
  const event={id:uuid(),phase,at,recordedAt:new Date().toISOString(),note:String(note).slice(0,2000)};o.salesFunnel??={events:[]};o.salesFunnel.events.push(event);o.salesFunnel.followupDays=followupDays;
  const key={quote:'quoteSentDate',confirmation:'confirmationSentDate',invoice:'invoiceSentDate',released:'productionReleasedDate',production:'productionDate',delivered:'deliveredDate'}[phase];if(key)o[key]=at.slice(0,10);
  if(phase==='released')o.stage='Productie vrijgegeven';if(phase==='production')o.stage='In productie';if(phase==='delivered'){o.stage='Afgerond';o.archived=true;}
- state.activities.unshift({id:uuid(),message:'Funnel: '+(phase==='invoice'?'Factuurversturing':funnelPhases.find(([p])=>p===phase)[1])+' geregistreerd',time:at});
+ const signal=salesFunnel(state,o,companyId||'spatlappen').signal;o.salesFunnel.selection={phase:phase==='invoice'?signal.phase:funnelDisplayPhase(phase,companyId),basis:signal.basis};
+ state.activities.unshift({id:uuid(),message:'Funnel: '+(phase==='invoice'?'Factuurversturing':funnelPhaseLabel(phase,companyId||'spatlappen'))+' geregistreerd',time:at});
  return event;
 }
 export function funnelMail(state,o,companyId,purpose){
@@ -66,6 +75,6 @@ export function reviewFunnelMail(state,id,draftId,accept,{expected,companyId,uui
  if(!o||JSON.stringify(o)!==expected)throw Error('Dit dossier is intussen gewijzigd. Open het fasevoorstel opnieuw.');
  const event=pendingFunnelMail(state,o,companyId);
  if(!event||event.id!==draftId)throw Error('Dit fasevoorstel is niet meer actueel.');
- if(accept)registerFunnel(state,id,{phase:event.phase,at:event.at,expected,followupDays:o.salesFunnel?.followupDays||7,note:'Na verstuurde mail expliciet bevestigd'},{uuid});
+ if(accept)registerFunnel(state,id,{phase:event.phase,at:event.at,expected,followupDays:o.salesFunnel?.followupDays||7,note:'Na verstuurde mail expliciet bevestigd'},{uuid,companyId});
  o.emailDrafts.find(d=>d.id===draftId).funnelReview=accept?'confirmed':'dismissed';
 }

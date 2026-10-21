@@ -1,4 +1,4 @@
-import {inlineTaskClient} from './inline-task-client.js';
+import {inlineTaskClient} from './inline-task-client.js?v=build-triage-20261021';
 import {calculationChoice} from '../../shared/costing-link.js';
 import {newCostQuote,editCostQuote,validateCostQuote,quoteSignature,quoteSaleTotal,productBasis,mergeSupplierQuote} from './quote-domain.js';
 import {listCostQuotes,readCostQuote,saveCostQuote} from './quote-store.js';

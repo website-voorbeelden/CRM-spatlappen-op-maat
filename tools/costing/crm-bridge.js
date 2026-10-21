@@ -1,4 +1,4 @@
-import {installQuoteBridge} from './quote-bridge.js';
+import {installQuoteBridge} from './quote-bridge.js?v=build-triage-20261021';
 import {openCrmDatabase,storageRuntime} from '../../admin/cloud-storage.js';
 import {calculationSignature,calculationRecord,applyCalculation} from './crm-storage.js';
 import {orderInputs,productValues} from './order-inputs.js';

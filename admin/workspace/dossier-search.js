@@ -1,6 +1,7 @@
+import {materialKey} from '../../shared/product-metrics.js?v=product-thickness-20261021';
 import {customerFinancials} from "../../shared/customer-workspace.js?v=mail-priority-20261016-2";
 export const normalizeSearch=value=>String(value??'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[×✕]/g,'x').replace(/\s+/g,' ').trim();
-export const defaultOrderSearch=()=>({text:'',visibility:'active',customerId:'',stage:'',outcome:'',width:'',height:'',quantity:'',printColors:'',tolerance:'0',from:'',to:'',expanded:false,mode:'orders',sourceOrderId:'',orderIds:[],selectionLabel:''});
+export const defaultOrderSearch=()=>({text:'',visibility:'active',customerId:'',stage:'',outcome:'',width:'',height:'',quantity:'',printColors:'',material:'',thickness:'',tolerance:'0',from:'',to:'',expanded:false,mode:'orders',sourceOrderId:'',orderIds:[],selectionLabel:''});
 export const defaultCustomerSearch=()=>({text:'',visibility:'active',activity:'',country:'',sort:'name',expanded:false});
 export const quoteOutcomeOptions=[['','Automatisch uit akkoord / betaling'],['accepted','Akkoord'],['pending','Wacht op antwoord'],['declined','Afgewezen'],['no_response','Geen reactie']];
 function localPhone(value){
@@ -29,8 +30,8 @@ function orderPaymentStatus(o,paid){
 }
 function inScope(record,scope){return scope==='all'||(scope==='archived'?record.archived:!record.archived);}
 export function orderFilterError(f){
- for(const [key,label] of [['width','breedte'],['height','hoogte'],['quantity','aantal'],['printColors','drukkleuren']]){
-  if(f[key]==='')continue;const n=Number(f[key]);
+ for(const [key,label] of [['width','breedte'],['height','hoogte'],['quantity','aantal'],['printColors','drukkleuren'],['thickness','dikte in mm']]){
+  if(f[key]===''||f[key]==null)continue;const n=Number(f[key]);
   if(!Number.isFinite(n)||n<(key==='printColors'?0:0.00001)||(['quantity','printColors'].includes(key)&&!Number.isInteger(n))||key==='printColors'&&n>99)return `Vul een geldige ${label} in.`;
  }
  return f.from&&f.to&&f.from>f.to?'De begindatum ligt na de einddatum.':'';
@@ -51,8 +52,10 @@ export function searchOrderItems(data,f,{includeIncomplete=false}={}){
     distance+=Math.abs(actual-wanted)/wanted;dimensions++;
    }
    if(!matches||f.printColors!==''&&(item.printColors==null||item.printColors!==Number(f.printColors)))continue;
+   if(f.material&&materialKey(item.material)!==materialKey(f.material))continue;
+   if(f.thickness!==''&&f.thickness!=null&&(typeof item.thickness!=='number'||!Number.isFinite(item.thickness)||Math.abs(item.thickness-Number(f.thickness))>0.000000001))continue;
    const size=item.width&&item.height?`${item.width} ${item.height} ${item.width/10}x${item.height/10} ${item.width}x${item.height}`:'';
-   if(!textMatches(common+' '+[item.description,item.specs,size].join(' '),f.text))continue;
+   if(!textMatches(common+' '+[item.description,item.specs,item.material,typeof item.thickness==='number'?[String(item.thickness)+'mm',String(item.thickness)+' mm',String(item.thickness).replace('.',',')+'mm',String(item.thickness).replace('.',',')+' mm'].join(' '):'',size].join(' '),f.text))continue;
    rows.push({o,item:incomplete?null:item,c,result,paid:paid.get(o.id)||0,distance:dimensions?distance/dimensions:0});
   }
  }

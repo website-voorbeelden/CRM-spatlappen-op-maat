@@ -1,0 +1,33 @@
+# Mobiel, persoonlijke sneltoetsen en invulhulp
+
+De gedeelde CRM-code biedt vanaf 14 oktober 2026 dezelfde bediening voor beide bedrijven. Herlaad na een update. Er is niets gepubliceerd en er zijn geen echte mails, Gmail-wijzigingen of betaalverzoeken uitgevoerd tijdens deze uitbreiding.
+
+## Gebruik
+
+- Onder 760 px verschijnt een vaste kop met Menu en Assistent. Het menu opent over de pagina; de achtergrond wordt tijdelijk inert. Sluiten en Escape brengen de focus terug. De AI krijgt een schermvullend paneel, grotere tikvlakken, scrollbare berichten en ruimte voor het schermtoetsenbord/safe areas. Op mobiel maakt Enter een nieuwe regel; Vraag sturen of Cmd/Ctrl+Enter verstuurt de vraag.
+- Open het tandwiel bij Assistent → Praten & toetsen. Klik in een sneltoetsveld en druk Cmd/Ctrl met een letter, cijfer of F2–F12, eventueel Shift. Conflicten worden geweigerd; kopieer/plak- en veelgebruikte browsertoetsen blijven beschermd. Elke actie kan worden uitgeschakeld. Standaard is O voor chat en P voor praten. Shift+K werkt alleen zolang beide standaardbindings gelden. Voorkeuren blijven per bedrijf/browser bewaard, niet per cloudaccount. Een toets vastleggen start geen opname of AI-aanvraag.
+- Vanuit elke order is Factuur mailen beschikbaar. De nieuwste eigen factuur-PDF wordt geselecteerd; er volgt nog geen verzending. Spatlappen: als de PDF ontbreekt, eerst factuur controleren/opslaan en vervolgens mailen. Maatwerk: eigen PDF toevoegen (inhoud begint met %PDF-, maximaal 2 MB) en vervolgens mailen; de Spatlappen-factuurtemplate wordt niet voor Maatwerk gebruikt. De gemaakte factuur blijft als bestand bewaard, ook als je daarna de mail annuleert.
+- Bij een ontbrekende factuur staat in de mail een maak-/toevoegknop. Onderwerp, body, ontvanger, afzender, template, concept- en aanvraag-ID blijven behouden bij terugkeer of annuleren. Een gewijzigde bijlage vervangt de mailtekst niet: controleer die zelf.
+- Vraag de AI om een mail bij een bestaande klant/order. crm.propose_email maakt alleen een tekstvoorstel; geen conceptopslag, verzending, PDF of Gmail-actie. Mail controleren & verder opent het normale formulier met de echte dossierontvanger. Voorbeeld bekijken en Versturen zijn aparte gebruikershandelingen. De AI kan geen eigen ontvanger, afzender of bestand aan zijn tool toevoegen. Bij een gewijzigd dossier, verlopen voorstel of ander bedrijf wordt het voorstel geweigerd. Voorstellen en gesprekken verdwijnen bij herladen.
+
+## Gedeeld UX-patroon voor volgende wijzigingen
+
+admin/guided-actions.js levert guidanceMarkup/showGuidance/installGuidedActions/runGuidedAction: lege of geblokkeerde toestand met passende nabijgelegen actie. Labels zijn concreet: aanmaken, aanvullen, controleren of opnieuw proberen. Knoppen worden tijdens hun eigen actie bewaakt tegen dubbelklikken en herstellen bij fouten. HTML-tekst wordt geescaped. Installeren van een actie voert haar niet uit. Toon laden voor werk dat echt loopt, niet gedurende de tijd dat iemand een formulier invult.
+
+admin/inline-tasks.js bewaart de daadwerkelijke ouder-DOM. Een afzonderlijk dialog staat erboven: invoer, bestanden, selectie en eventhandlers worden niet opnieuw opgebouwd of in browseropslag gezet. De aanroep wacht op resultaat/null. Opslaan en annuleren keren terug, wijzigingen weggooien vraagt bevestiging, annuleren tijdens opslaan is geblokkeerd. Gebruik openInlineFormTask voor een nieuw gerelateerd record. Herlees actuele opslag, controleer duplicaten en schrijf alleen het nieuwe record. Gebruik de expliciete bestaande-recordactie bij een duplicaat, overschrijf het bestaande dossier niet. Het ouderformulier moet daarna nog afzonderlijk worden opgeslagen.
+
+openCostingTask gebruikt uitsluitend vaste same-origin toolpaden. postMessage vereist framebron, origin en tasknonce; seed bevat alleen numerieke aantallen/maten. Geen klantnamen, IDs, mails, notities of bestanden worden naar de calculator doorgestuurd. Resultaat bevat alleen quoteId/pieceId; de picker herleest de scoped bron en vraagt bestaande prefill-bevestiging. Lege/stale berekeningen bieden maken, aanvullen of bron controleren. Er wordt niet automatisch een order of betaling gemaakt.
+
+Toegepast op klant/inkoop-keuzes, orderproducten/leveranciersberekeningen, lege klant/orderlijsten, formulierfouten, inline SMTP-instellingen, ontbrekende/verlopen betaallinks, ontbrekende facturen en de keuze voor nog niet bewaarde Gmail-gesprekken. Bij mail importeren kan een ontbrekende klant op dezelfde manier worden aangemaakt. Andere nieuwe formulieren moeten dit patroon hergebruiken in plaats van een los doodlopend foutbericht te maken.
+
+## Grenzen voor gebruik op een telefoon
+
+De responsive bediening is lokaal gebouwd. localhost op een telefoon verwijst naar die telefoon, niet naar de Mac. De huidige ChatGPT Plus-, spraak-, Gmail- en SMTP-hulpdienst draait alleen op de Mac; de online Cloudflare-app krijgt die niet automatisch mee. Een andere browser/apparaat/poort heeft bovendien andere lokale dossiers. Voor buitengebruik is een apart beveiligd HTTPS- en server/opslagtraject nodig. Geen publieke poort of tunnel is voor deze UX-update geopend. Fysieke iOS/Android-browser, microfoon en toetsenbord moeten bij de latere toegangsinrichting nog worden getest; de huidige schermtests gebruiken een fictieve DOM.
+
+Gmail blijft readonly bij aanmelden. Extra scopes registreren in Google verandert dat niet. De toekomstige Gmail-mutationgate en menselijke review blijven van kracht; productie heeft nog geen executor. Bestaande SMTP2GO-verzending blijft via de handmatige preview-/bevestigingsroute lopen. AI-mails verschijnen hierdoor niet automatisch in Gmail Verzonden.
+
+## Validatie
+
+npm run check: bestaande functionele/securitychecks, nieuwe tests/assistant-mail-shortcuts.mjs en tests/guided-actions.mjs, 43 calculatorchecks en builds voor beide bedrijven. Nieuwe fake-providerproeven controleren mailvoorstel, dossier/bedrijf/expiry, ontvangerafleiding en mislukte provider zonder opslaan; toetsen controleren conflicten, uitschakelen en beschermde bindings.
+
+Tijdelijke schermfixtures in work/assistant-dom-test: guided-mobile-check.mjs, check.mjs --mobile en --local, cost-quotes-ui-check.mjs, mail-composer-check.mjs, mail-send-flow-check.mjs en templates-inbox-check.mjs. Ze bedienen echte modules met fictieve records/DOM/providerantwoorden, inclusief invoer-/bestandsbehoud, busy/cancel, duplicaten, tool-origin/nonce, mobiel menu/focus, AI-mailreview, inline SMTP-herstel en preview → expliciete gesimuleerde verzending. Geen productiegegevens of echte provideracties.

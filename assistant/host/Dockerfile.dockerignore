@@ -1,0 +1,15 @@
+**
+!package.json
+!shared/
+!shared/**/
+!shared/**/*.js
+!admin/
+!admin/**/
+!admin/**/*.js
+!assistant/
+!assistant/chatgpt-auth.mjs
+!assistant/engine.mjs
+!assistant/host/
+!assistant/host/*.mjs
+!assistant/host/Dockerfile
+!assistant/host/Dockerfile.dockerignore

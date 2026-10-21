@@ -1,5 +1,6 @@
 import {installFormGuidance,validateForm,showFormProblem} from './form-guidance.js';
 import {loading} from './loading.js';
+import {costingInlineProduct} from '../shared/costing-inline-context.js';
 let active=null;
 const escape=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 // Keep the actual parent DOM, handlers, files, selection and private fields in
@@ -30,7 +31,7 @@ const toolPaths=new Set(['/tools/costing/quotes.html','/tools/costing/index.html
 export function openCostingTask({title='Berekening aanmaken',quoteId='',product=null}={}){
  const path='/tools/costing/index.html';if(!toolPaths.has(path))throw Error('Deze tool is niet beschikbaar.');
  if(quoteId&&!/^[-a-zA-Z0-9_]{1,100}$/.test(quoteId))throw Error('Ongeldige berekening.');
- const seed=product?Object.fromEntries(['quantity','width','height'].map(k=>[k,Number.isSafeInteger(product[k])&&product[k]>0&&product[k]<=1000000?product[k]:k==='quantity'?1:0])):null;
+ const seed=costingInlineProduct(product);
  const task=surface(title),d=task.dialog,taskId=crypto.randomUUID(),url=new URL(path,location.origin);url.searchParams.set('taskId',taskId);if(quoteId)url.searchParams.set('quoteId',quoteId);
  d.classList.add('inline-tool-dialog');d.innerHTML=`<div class="dialog-heading"><h2>${escape(title)}</h2><button type="button" data-task-cancel>← Terug naar mijn formulier</button></div><p class="inline-tool-status" role="status">Rekentool laden… Je huidige formulier blijft behouden.</p><iframe title="${escape(title)}" sandbox="allow-scripts allow-same-origin allow-downloads"></iframe>`;
  const frame=d.querySelector('iframe'),status=d.querySelector('[role=status]');let timeout;

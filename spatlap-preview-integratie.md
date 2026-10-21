@@ -1,3 +1,17 @@
+# Actuele CRM-koppeling — 17 oktober 2026
+
+De preview is al gekoppeld aan CRM-producten. De historische beschrijving hieronder van een later in te vullen generieke adapter betekent niet dat productopslag nog ontbreekt. De huidige automatische productroute gebruikt `admin/product-designs.js` via de bestaande `admin/cloud-storage.js`-facade.
+
+- Los openen: `http://localhost:3010/spatlap-preview.html`.
+- Dossiergekoppeld openen: bij de productregel **Ontwerp openen**; `productDesignUrl` maakt orderId/itemId/maten/aantal en zo nodig storage=cloud klaar.
+- Bewaren bij product: ontwerp-JSON + PNG + actuele maat/aantal in één bestaande transactie. De editor gebruikt cm; CRM hele mm. Bestaande versie-/producthandtekening, goedgekeurde voorbeelden en gekoppelde leveranciersaantallen beschermen.
+- Meerdere A/B-ontwerpen bij dezelfde maat is **taak27, nog niet gebouwd**. Huidige opslag heeft één bewerkbaar productontwerp; vervanggedrag niet als alternatiefbeheer presenteren.
+- Hoofdbron: `spatlap-preview.html`, vector-editor/export/imagetracer ernaast. Uitgebreide startcontext: [docs/PROJECTCONTEXT.md](docs/PROJECTCONTEXT.md).
+
+De oudere publieke export/import-API en formaatbeschrijving blijven hieronder staan als integratieachtergrond. Bij afwijkingen is de actuele broncode leidend; verander opgeslagen formaten niet zonder compatibiliteitscontrole.
+
+---
+
 # Spatlap Preview Tool koppelen aan een CRM
 
 De tool blijft zelfstandig werken. Lokale opslag, bestaande `#design=`-links en de huidige downloads gebruiken hun bestaande werkwijze. Het CRM kan later de functies hieronder gebruiken zonder de ontwerplogica aan te passen.

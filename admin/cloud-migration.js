@@ -1,4 +1,4 @@
-import {validateTaskProgressList} from '../shared/planning/progress.js';
+import {validateTaskProgressList} from '../shared/planning/progress.js?v=build-triage-20261021';
 import {openBrowserDatabase,openDesignDatabase,cloudRequest,uploadCloudFile,readCloudFile,commitCloud,blobDigest,storageRuntime} from './cloud-storage.js';
 
 import {validateBusinessState} from '../shared/state-validation.js';

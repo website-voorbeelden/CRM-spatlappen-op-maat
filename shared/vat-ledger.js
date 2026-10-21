@@ -21,6 +21,7 @@ export function vatSources(state){
   if(doc.vatEvidence)continue;
   if(doc.generated?.kind==='invoice'){
    const g=doc.generated,key='invoice:'+doc.ownerId+':'+g.number,row=groups.get(key)||[];row.push(doc);groups.set(key,row);
+  }else if(doc.supplierDocument?.kind==='invoice'){const source=doc.supplierDocument;sources.push({key:'file:'+doc.id,kind:'uploaded',label:'Leveranciersfactuur · '+doc.name,documentNumber:source.reference||'',counterparty:source.supplier||'',date:vatDate(source.date)?source.date:'',orderId:doc.ownerId,documentIds:[doc.id],signature:vatFingerprint([doc.id,doc.ownerId,doc.name,doc.size,source]),seed:null});
   }else if(doc.category==='invoice'&&!doc.generated){sources.push({key:'file:'+doc.id,kind:'uploaded',label:doc.name,documentNumber:'',date:vatDate(doc.date)?doc.date:'',documentIds:[doc.id],signature:vatFingerprint([doc.id,doc.ownerId,doc.name,doc.size,doc.date]),seed:null});}
  }
  for(const [key,docs] of groups){

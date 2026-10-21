@@ -8,6 +8,8 @@ Toon alleen bediening die voor de huidige werkstap nodig is. Een functie behoude
 
 ## Documenten
 
+Facturen tonen hun bewaarde betaalstand bij aanmaken: status, ontvangen percentage en incl.-bedragen compact op de kaart. Oude PDF’s niet als actueel voldaan presenteren. Onbekende bron expliciet, PDF/Word samen. Stempels passen op twee regels binnen het bestaande kader. Nieuwe volledige factuur bij bestaande nummers duidelijk toelichten; een andere betaalstand is geen extra te factureren omzet. Zie [Factuur-betaalstand](FACTUUR-BETAALSTAND.md). Lokaal bronwerk, gebruikercontrole open.
+
 - De documententeller gebruikt dezelfde documentreeksen als de bibliotheek: PDF/Word en hun revisies tellen samen als één document. Losse uploads blijven afzonderlijk. Verwijderdialogen tellen bewust echte bestanden.
 - Het documententabblad toont de bibliotheek direct. Uitgebreide orderstatus, tijdlijn en financiële kaarten blijven beschikbaar bij de order; ordernummer en betaalbadge blijven in beeld.
 - Preview, PDF downloaden en Mail voorbereiden zijn direct beschikbaar. Word downloaden, verwijderen, categoriseren en overige beheertaken staan onder Meer / bestanden beheren.
@@ -347,3 +349,88 @@ Sorteren staat zichtbaar boven de lijst: Aandacht eerst, Nieuwste eerst, Oudste 
 ## Agent ook online vindbaar — 19 oktober 2026
 
 Vaste Agent-knop desktop/mobiel en Cmd/Ctrl+O in beide versies. Lokale agent behoudt bestaande bediening. Online is de ingang zichtbaar met expliciete status Online agent nog niet gekoppeld; geen login-/microfoon-/verzendknoppen voor niet-bestaande serverroutes. Bestaande AI-export bereikbaar en een vraag handmatig kopiëren; geen automatische gegevensoverdracht, geen verwarring tussen lokale en centrale dossiers. Echte online agentdienst blijft apart vervolgwerk.
+
+## Maatwerkkunststof: productgegevens — 20 oktober 2026
+
+Materiaal en dikte staan direct in de gewone productregel en in het orderoverzicht. Drukkleuren blijven bij Spatlappen; bestaande waarden worden bij Maat niet verwijderd. Nieuwe kunststofregels beginnen met onbekende maten, niet met de oude Spatlappen-standaard 600 × 350 mm. Lege materiaal-/diktevelden mogen bij een eerste aanvraag blijven staan.
+
+De aanvraagcontrole leest ook dikte, ronde vorm en diameters uit de productregel. Bij meerdere kunststofproducten worden aantal, materiaal, dikte, vorm en maten per product beoordeeld. Algemene aanvraagwaarden worden niet over verschillende productregels uitgesmeerd. Verschillen tussen een enkele productregel en de oorspronkelijke aanvraag blijven ter controle zichtbaar. Bij meerdere producten wordt de productgebonden invoer via Productregels bewerken gedaan; algemene oorspronkelijke aanvraaggegevens blijven bewaard.
+
+De bestaande V1-offertekoppeling neemt nu materiaal en dikte mee bij de expliciete overname én terugstuuractie. De bevestiging vermeldt deze gegevens. Een gewijzigd materiaal of andere dikte maakt een berekende kostprijs ongeldig, net als andere maten/aantallen. Bij opslaan vervalt alleen de ongewijzigd oude berekende kostprijs; een bewust ingevulde nieuwe prijs blijft staan. Een leveranciersfactuur blijft leidend. De bronberekening wordt bewaard, en een afwijkende bewaarde orderberekening krijgt een melding in het productvak. Tijdens bewerken verschijnt de waarschuwing dichtbij de betrokken regel.
+
+V1-toolbestanden zelf zijn niet gewijzigd. De oudere inline V1-route vult nog uitsluitend aantal en buitenmaten vooraf in; materiaal/dikte invullen gebeurt daar in de calculator. De lokale hoofdroute via V2 leest deze productvelden al. V2 blijft lokaal; deze wijziging is geen toestemming of vrijgave om V2 online te leveren. Geen tests of browser-QA uitgevoerd op gebruikersafspraak.
+
+## Antwoordhulp bij het gesprek — 20 oktober 2026
+
+Antwoordhulp staat ingeklapt bij het antwoordvak, met een opdracht in gewone taal en eigen denksessie per bedrijf/gesprek/dossier. Context & werkinstructies biedt exacte contextweergave, dossierkeuze, optionele interne notities en expliciet bewaarbare instructies. Nieuwe denksessie wist geen mailconcept. Alleen antwoordtekst overnemen; geen wijziging van afzender/ontvanger/onderwerp/headers/bijlagen. Verouderde context of gewijzigd concept blokkeert overnemen. Vragen aan de gebruiker en aandachtspunten staan apart van de klanttekst. Generatie toont bezig/stop/fout/klaar; niets wordt automatisch verstuurd of bewaard. Online directe agentdienst ontbreekt nog: handmatig context kopiëren/JSON terugplakken is als afzonderlijke route voorbereid. Zie ANTWOORDHULP.md voor grenzen en opslag. Lokaal, geen tests/publicatie.
+
+
+## Analytics en AI-ingang per bedrijf — 20 oktober 2026
+
+Analytics toont dezelfde tabbladen Financiën, Btw, Websitegebruik, Aanvragen en Google & SEO voor beide bedrijven. Een niet-ingerichte bron wordt uitgelegd op het tabblad, niet verborgen of als financiële tab geopend. Website-metingen vereisen de publieke website-instrumentatie en een eigen bedrijfsgebonden meetdatabase. Ontbrekende binding blijft onbekend, geen nulcijfers of overname van de andere onderneming. Bewaarde CRM-aanvragen blijven een afzonderlijke projectie op bestaande dossiers. Google & SEO geeft eigen Search Console-/optionele GA4-inrichting; een Google-login alleen activeert onze website-metingen niet.
+
+De online Agent benoemt expliciet dat directe ChatGPT-aanmelding nog niet is ingericht. Geen schijn-login of API-sleutelveld. Voorlopig: bewust geselecteerde pagina-/dossiergegevens klaarzetten via bestaande AI-export, zelf kopiëren en ChatGPT openen. De link stuurt geen prompt/klantdata in de URL. Een lokale login koppelt niet automatisch het online CRM. Bestaande keuze voor het eigen ChatGPT-abonnement blijft; geen stil API-verbruik als alternatief. Echte online agentdienst blijft vervolgwerk.
+
+Alleen bron lokaal aangepast; geen tests, checks, build, browser-QA, publicatie of bron-/accountkoppeling uitgevoerd. Online CRM verandert pas na afzonderlijke publicatie. Geen website-meetgegevens of gebruikersdata ingelezen.
+
+
+## Maatwerkkunststof-fases en gesprekslabels — 20 oktober 2026
+
+Maat gebruikt de eigen Gmail-nummerreeks00–08 als verkoopfases; geen ontwerpworkflow bovenaan het dossier. Betaling, productievrijgave en verzending blijven feiten naast de fase. Eén Behandeldknop, overige gesprekstags onder Labels; geen conceptvervanging. Bij fasewijziging kan de gebruiker optioneel een exacte Gmail-labelreview openen; andere kant levert opnieuw gelezen Gmail-labels als expliciet te bevestigen CRM-voorstel. Geen stille wijziging/automatische synclus, geen mailrechten aanvragen bij gewoon openen. Zie MAAT-FASES-EN-LABELS.md. Bronwerk, niet getest/gepubliceerd.
+
+
+## Feedbackknop blijft bereikbaar — 20 oktober 2026
+
+De feedbackfunctie is eigenaar van één knop; AI-componenten mogen hem niet verplaatsen of in hun verborgen parkeerplaats bewaren. Shell voor/na render geeft de plek door. Desktop: naast Agent, ook bij ingeklapt menu. Mobiel: bovenbalk; bij een geopende AI-chat binnen het paneel zodat de inert gemaakte achtergrond geen blokkade vormt. Ontbreekt de shell, dan blijft de vaste bodyknop beschikbaar. Toolwerkplekken met expliciete launcherHost behouden hun eigen plek. Alleen bronwijziging, niet functioneel gecontroleerd.
+
+
+## AI op de eigen laptop — 21 oktober 2026
+
+Zichtbare AI aan/uitknop boven de composer; uit maakt gewone CRM-functies niet onbruikbaar. Online opent de gebruiker een gecontroleerd lokaal koppelvenster; geen popups bij automatisch laden. Een verlopen/gesloten verbinding zet de schakelaar weer uit, zodat opnieuw verbinden één herkenbare actie blijft. Standaard alleen gekozen dossier, extra bedrijfsbrede context in de bestaande instellingen; wijzigen start een nieuw gesprek. Replyhulp gebruikt dezelfde verbinding, geen tweede login/AIachtergrondtaak. Tokens/credentials nooit in browserdrafts. Browser ontkoppelen trekt alleen die lokale toestemming in, niet het ChatGPT-account. Zie LAPTOP-AI.md; geen functionele controle uitgevoerd.
+
+
+## Gmail ↔ CRM-fases — 21 oktober 2026
+
+Eén instelbare vaste toestemming voor expliciet gekozen verkoopfaselabels van gekoppelde ordergesprekken. Geen mail nodig om een fase gelijk te houden. Gmail is leidend totdat een relevante nieuwe CRM-handeling plaatsvindt; gewone notities/prijzen/paginabezoek tellen niet als faseopdracht. Conflicten vragen één keuze dichtbij dossier/mail, geen hoogstefasegok of synclus. Fase is een projectie, geen betaling/levering. Donkerpaarse herkomst. Stillere achtergrondrondes zonder laadscherm en zonder invoer te vervangen. Geldt zolang zichtbaar CRM open is; geen 24/7-claim. Zie GMAIL-FASESYNCHRONISATIE.md; bron niet getest/gepubliceerd/geactiveerd.
+
+
+## Levertijd en Maat-bediening — 21 oktober 2026
+
+Levertijd heeft nu optionele basis Aanbetaling ontvangen, met zichtbaar bewerkbaar percentage en cumulatieve werkelijke ontvangstdatum. Geen start uit betaalverzoek of Gmailfase. Vaste leverdata blijven leidend. Planning geeft passende aanvulactie bij ontbrekende betaal-/prijsgegevens; documentvoorstel volgt de orderplanning en bewaart bestaande eigen tekst. Zie LEVERTIJD-AANBETALING.md.
+
+Maat gebruikt geen drukkleuren, logo-/ontwerpgoedkeuring of Spatlappen-ontwerpvoortgang. Productbestanden/technische tekeningen blijven beschikbaar. Eigen statuskeuzes en nieuwe aanvragen zonder ontwerpstatus; historische records/data blijven behouden. Spat houdt zijn drukwerkflow. Ook documentvelden, mailtemplatekeuze, AI-import/-antwoordcontext en prijsvergelijking volgen het bedrijf. Zie MAAT-EIGEN-WERKPROCES.md. Geen tests of publicatie in deze ronde.
+
+## Handtekeningen en kopieerbare AI-uitleg — 21 oktober 2026
+
+Eén editor met profielkeuze, geen formulierkopie per afzender. Een HTML-indeling met meerdere afbeeldingen krijgt expliciete bestand→vakcontrole vóór plaatsen; bestaande maten/posities blijven. Afzenderbindingen staan ingeklapt. Mail gebruikt automatisch de adreskeuze, afwijkingen onder extra opties, de echte handtekening zichtbaar in preview. Wijzigingen blijven in het formulier tot bevestigde opslag; tijdens ophalen/bestanden lezen/opslaan geen overlappende edits.
+
+Uitleg voor AI is een gedeeld kopieervenster, zonder providerverzoek. Huidige inhoud alleen na aanvinken; geen credentials, ingebedde afbeeldingdata wordt vervangen door vakken. Nu toegepast bij handtekeningen. Zie MAIL-HANDTEKENINGEN.md. Alleen lokaal, gebruiker controleert.
+
+## Bouwtaken: afgerond uit de werkvoorraad — 21 oktober 2026
+
+Te bouwen is de standaardlijst met echt open werk (Open/Mee bezig/Geblokkeerd), eerst eerstvolgende stappen en onderzoek onderaan. Gebouwd · jouw controle heeft een eigen compacte tab; geen implementatie opnieuw bouwen omdat alleen gebruikerscontrole of publicatie ontbreekt. Afgerond staat buiten beide werkvoorraden maar behoudt ID en compleet log. Publicatie blijft een apart gegeven, geen automatische afleiding uit een vinkje of bronwijziging. Opgeslagen expliciete status gaat vóór de catalogusbasis. Geen automatische tests of provideracties door deze bediening.
+
+## Orderstappen en losse voortgang — 21 oktober 2026
+
+De bolletjes worden echte navigatie naar de relevante onderdelen van dezelfde order, met een bekende toestand per stap. Maat begint bij Aanvraag & prijs, Spat bij Ontwerp. Verkoopfase en geregistreerde fysieke uitvoering expliciet benoemen; een mailfase of positie in een statuslijst is geen bewijs van betaling/productie/levering. Geen dubbele ruwe orderstatuskeuze en passieve stapjes naast de verkoopfase. Klikken opent, bevestigde gebeurtenis registreert.
+
+Eigen voortgang werkt zonder gezamenlijke inkoop. Uitvoeringkaart bij Kosten/Levering staat voor de order; gezamenlijke inkoop is optioneel en wordt niet meeveranderd. Alleen bekende eigen feiten als vinkje, andere ontbrekende datums niet aanvullen. Opslag via actuele merge/conflictcontrole, bevestiging vóór opslaan en archiveren. Zie ORDERVOORTGANG.md. Gebruiker controleert zelf; geen functionele browserQA/tests/publicatie.
+
+
+## Eén leverancier direct bij de Maat-order — 21 oktober 2026
+
+Inkoop & marge begint bij eigen kosten/marge en een compacte leverancierskaart met Inkoop invullen en Factuur toevoegen. Geen verplichte aparte inkoopbestelling. Ook bestaande exclusieve inkoop compact op de order, met behoud van de oorspronkelijke kostenscope. Meerorders-inkoop blijft gedeeld; geen stille allocatiewijziging. Gezamenlijke koppeling bij losse orders en de calculator onder extra/gesloten onderdelen. Facturen intern met preview en expliciet bronlabel, geen klantfactuur of impliciete betaling. Zie INKOOP-BIJ-ORDER.md; lokaal gebouwd, gebruikercontrole open.
+
+
+## Bedragbasis zichtbaar en gescheiden — 21 oktober 2026
+
+Verkoop/kosten/marge primair excl. btw. Volledige klantontvangsten, betaalverzoek en saldo incl. btw in een apart betaalvak. Bedragbasis direct in kop of invoerlabel, niet alleen ergens in een alinea. Orderlijst primair netto met bruto betaalinfo apart, Analytics resultaat en ontvangen geld visueel gescheiden. Dezelfde compacte basislabels uit workspace/money.js. Geen omgerekende bankontvangsten of historische leverancierstotalen zonder bekende btw-basis als netto/bruto aanduiden. Onvolledig blijft voorlopig/onbekend. Zie BEDRAGEN-EN-BTW.md. Lokaal, Philippe test zelf.
+
+
+## Maat-dikte is een productgegeven, geen vrije offertetekst — 21 oktober 2026
+
+Materiaal/dikte vanuit de productregel automatisch als vaste publieke documentdetails; numerieke dikte in mm blijft de bron voor zoeken/analyse. Nieuwe Maat-klantdocumenten niet stil zonder dikte maken: directe aanvulknop naar betrokken product, terug naar het document met invoerbehoud. Oude bestanden behouden, actuele producten pas na bewuste laadkeuze in revisie. Analytics Materialen & diktes telt geregistreerde dossiers/productregels/stuks, onbekend apart en materiaalkeuze/doorklik met passende filters. Geen geleverde omzet uit aanvragen afleiden. Zie DIKTE-EN-PRODUCTDATA.md; lokaal gebouwd, gebruikercontrole open.
+
+## Orderkaart als uitvoeringswerkplek — 21 oktober 2026
+
+Standaard fysieke In productie, hoofdkeuzes uitvoering en levering; geen ontwerp-/offertelegenda. Levering kiezen toont alle fases binnen die koppeling; search/leverwijze onder extra filters met invoer/open-onderdeelbehoud. Alle gefilterde orders naast kaart, ook zonder postcodepunt. Bestaande echte orderverzending/levering niet overschrijven uit batchcontext en compleetheid niet aannemen. Optionele routeschets met eigen vertrek en bewuste stopvolgorde; ontbrekende leverwijze dichtbij invullen, adres direct bij order. Routelinks pas op klik, geen kosten/statuswijziging of route-optimaliteitsclaim. Zie [Orderkaart en bezorgroute](ORDERKAART-EN-BEZORGROUTE.md). Lokaal bronwerk, Philippe controleert zelf.

@@ -1,11 +1,12 @@
 import {markFormSources} from './provenance-ui.js';
 import {markProvenance} from '../shared/provenance.js';
 import {showGuidance,installGuidedActions} from './guided-actions.js';
-import {openCostingTask} from './inline-tasks.js';
+import {openCostingTask} from './inline-tasks.js?v=build-triage-20261021';
 import {formProblem,focusFormField} from './form-guidance.js';
 import {listCostQuotes,readCostQuote,saveCostQuote} from './cost-quote-store.js';
 import {quoteSignature} from '../shared/cost-quote-domain.js';
 import {calculationChoice,costingLink,salesFieldsFromCalculation,purchaseFieldsFromCalculation,syncProductToCalculation} from '../shared/costing-link.js';
+import {costingBasisFields,costingLinkedFields,sameCostingFields} from '../shared/costing-product.js';
 const links=new WeakMap();
 const applied=new WeakSet();
 const repairs=new WeakMap();
@@ -18,14 +19,14 @@ export function finishCostingItem(item,element){const link=links.get(element);if
  const sameSource=item.costQuoteLink?.quoteId===link.quoteId&&item.costQuoteLink?.pieceId===link.pieceId;
  item.costQuoteLink=structuredClone(link);if(!sameSource||applied.has(element))delete item.costCalculation;
  if(item.costCalculation){item.costQuoteLink.localModified=true;return item;}
- const basis=link.linkedFields;if(applied.has(element))for(const key of ['description','quantity','width','height','price','cost'])if(basis&&item[key]===basis[key])markProvenance(item,[key],'calculator');const match=basis&&['quantity','width','height','cost'].every(k=>item[k]===basis[k]);item.costQuoteLink.localModified=!basis||['description','quantity','width','height','price','cost'].some(k=>item[k]!==basis[k]);
+ const basis=link.linkedFields;if(applied.has(element))for(const key of costingLinkedFields)if(basis&&item[key]===basis[key])markProvenance(item,[key],'calculator');const match=sameCostingFields(item,basis,[...costingBasisFields,'cost']);item.costQuoteLink.localModified=!sameCostingFields(item,basis,costingLinkedFields);
  if(match&&item.costSource!=='supplierInvoice'&&Number.isSafeInteger(link.directCostInCents)&&link.directCostInCents>=0){item.costSource='calculator';item.calculatedCostTotal=link.directCostInCents;}
  else if(item.costSource==='calculator'){delete item.costSource;delete item.calculatedCostTotal;}return item;
 }
 export function installCostingPickers(root,{company,getOriginal=()=>null,direction='sale',onChange=()=>{},canPush=()=>true}={}){
  if(company.id!=='maatwerkkunststof')return;
  for(const picker of root.querySelectorAll('[data-costing-picker]')){
-  if(picker.dataset.installed)continue;picker.dataset.installed='true';const element=picker.closest('.item')||root,initial=getOriginal(element)?.costQuoteLink;if(initial)links.set(element,structuredClone(initial));
+  if(picker.dataset.installed)continue;picker.dataset.installed='true';const element=picker.closest('.item')||root,initial=getOriginal(element)?.costQuoteLink;if(initial){const link=structuredClone(initial),original=getOriginal(element);if(link.linkedFields)link.linkedFields={material:original?.material??'',thickness:original?.thickness??null,...link.linkedFields};links.set(element,link);}
   const select=picker.querySelector('[data-costing-select]'),status=picker.querySelector('[data-costing-status]'),buttons=[...picker.querySelectorAll('button')],help=picker.querySelector('[data-costing-help]');let busy=false,options=[];
   const field=name=>element.querySelector('[name="'+name+'"]');const label=text=>status.textContent=text;
   function state(){const link=links.get(element);for(const action of ['pull','push','unlink'])picker.querySelector('[data-costing-'+action+']').hidden=!link;picker.querySelector('[data-costing-open]').href='/tools/costing/'+(link?'index.html?quoteId='+encodeURIComponent(link.quoteId):'index.html');}
@@ -36,7 +37,7 @@ export function installCostingPickers(root,{company,getOriginal=()=>null,directi
    if(!options.length)showGuidance(help,{title:'Nog geen actuele berekening',message:quotes.length?'Er zijn concepten die nog berekend moeten worden. Vul hier een berekening aan of maak er een nieuwe.':'Maak hier een berekening. Je huidige formulier blijft behouden.',actions:[{id:'create',label:'Berekening aanmaken',primary:true},...(quotes.length?[{id:'finish',label:'Bestaande berekening aanvullen'}]:[])]},{create:()=>run(()=>createOrRepair('')),finish:()=>run(()=>createOrRepair(quotes[0].id))},{onError:problem});
    const link=links.get(element);if(link){try{const current=calculationChoice(quotes.find(q=>q.id===link.quoteId),link.pieceId);if(current.sourceSignature!==link.sourceSignature)problem(Error('De rekentool heeft een andere versie. Je huidige invoer blijft staan; controleer de berekening hier.'));}catch{problem(Error('De gekoppelde berekening ontbreekt of moet opnieuw worden berekend. Je kunt dit hier herstellen.'));}}
   }
-  async function createOrRepair(wanted=links.get(element)?.quoteId||''){let id=wanted;if(id)try{await readCostQuote(id);}catch{id='';}const result=await openCostingTask({quoteId:id,title:id?'Berekening controleren & terug':'Berekening aanmaken & terug',product:{quantity:Number(field('quantity')?.value),width:direction==='sale'?Number(field('width')?.value):0,height:direction==='sale'?Number(field('height')?.value):0}});if(!result)return;
+  async function createOrRepair(wanted=links.get(element)?.quoteId||''){let id=wanted;if(id)try{await readCostQuote(id);}catch{id='';}const result=await openCostingTask({quoteId:id,title:id?'Berekening controleren & terug':'Berekening aanmaken & terug',product:{quantity:Number(field('quantity')?.value)*(direction==='purchase'&&field('unit')?.value==='pair'?2:1),width:direction==='sale'?Number(field('width')?.value):0,height:direction==='sale'?Number(field('height')?.value):0,material:field('material')?.value||'',thickness:Number(field('thickness')?.value)}});if(!result)return;
    await reload();const q=await readCostQuote(result.quoteId),pieceId=result.pieceId||q.inputs.pieces[0].id;select.value=result.quoteId+'|'+pieceId;select.dispatchEvent(new Event('change',{bubbles:true}));apply(calculationChoice(q,pieceId));
   }
   repairs.set(picker,()=>run(createOrRepair));picker.querySelector('[data-costing-create]').onclick=()=>run(()=>createOrRepair(''));picker.querySelector('[data-costing-refresh]').onclick=()=>run(reload);
@@ -44,7 +45,7 @@ export function installCostingPickers(root,{company,getOriginal=()=>null,directi
    const original=getOriginal(element);if(direction==='sale'&&original?.costSource==='supplierInvoice')throw formProblem('Deze inkoopprijs komt uit een leveranciersfactuur en kan niet door een berekening worden vervangen. Je kunt de huidige inkoopprijs hier bekijken.',{field:field('cost')});
    if(direction==='sale'&&root.querySelector('[name=packagePrice]')?.value)throw formProblem('Deze order gebruikt een totaalprijs. Controleer die instelling eerst voordat je losse verkoopprijzen overneemt.',{field:root.querySelector('[name=packagePrice]')});
    const values=direction==='sale'?salesFieldsFromCalculation(choice):purchaseFieldsFromCalculation(choice);
-   if(!confirm('Gegevens uit '+choice.title+' · '+choice.supplier+' in dit formulier overnemen?\n'+choice.description+' · '+choice.quantity+' stuks\n'+(direction==='sale'?'Verkoopprijs: '+(values.price===null?'onbekend':(values.price/100).toFixed(2)+' €/stuk'):'Inkoopprijs: '+(values.price/100).toFixed(2)+' €/stuk')+'\nBestaande invoer in deze productregel wordt vervangen. Er wordt nog geen order of inkoopdocument opgeslagen.'))return;
+   if(!confirm('Gegevens uit '+choice.title+' · '+choice.supplier+' in dit formulier overnemen?\n'+choice.description+' · '+choice.quantity+' stuks\n'+(direction==='sale'?(choice.material||'Materiaal onbekend')+' · '+choice.thickness+' mm dik\n':'')+(direction==='sale'?'Verkoopprijs: '+(values.price===null?'onbekend':(values.price/100).toFixed(2)+' €/stuk'):'Inkoopprijs: '+(values.price/100).toFixed(2)+' €/stuk')+'\nBestaande invoer in deze productregel wordt vervangen. Er wordt nog geen order of inkoopdocument opgeslagen.'))return;
    if(direction==='sale'){const unknown=field('measurementUnknown');if(unknown){unknown.checked=false;unknown.dispatchEvent(new Event('change',{bubbles:true}));}field('productionSource').value='supplier';}
    for(const [name,value] of Object.entries(values)){const input=field(name);if(!input)continue;input.disabled=false;input.value=['price','cost'].includes(name)?value===null?'':(value/100).toFixed(2):String(value);input.dispatchEvent(new Event('input',{bubbles:true}));}
    links.set(element,{...costingLink(choice),linkedFields:values,directCostInCents:choice.directCostInCents});applied.add(element);markFormSources(element,markProvenance({...values},Object.keys(values),'calculator'));state();onChange();label('Bron: rekentool · '+choice.title+' · '+choice.supplier+' · vooraf ingevuld en aanpasbaar. Sla dit formulier zelf op.');
@@ -54,8 +55,8 @@ export function installCostingPickers(root,{company,getOriginal=()=>null,directi
   picker.querySelector('[data-costing-push]').onclick=()=>run(async()=>{
    const link=links.get(element);if(!link)throw Error('Kies eerst een berekening.');if(!canPush())throw Error('Een echte factuur of betaald leveranciersdocument stuur je niet terug als wijziging van een berekening. Gebruik deze knop bij een offerte.');
    const quantity=Number(field('quantity').value)*(direction==='purchase'&&field('unit').value==='pair'?2:1),raw=field('price').value,price=raw===''?null:Math.round(Number(raw.replace(',','.'))*100)/(direction==='purchase'&&field('unit').value==='pair'?2:1);
-   const fields={quantity,price,width:direction==='sale'?Number(field('width').value):null,height:direction==='sale'?Number(field('height').value):null};
-   if(!confirm('De productmaten/aantallen en '+(direction==='sale'?'verkoopprijs':'inkoopprijs als EUR-offerte per stuk')+' uit deze regel terugsturen naar de rekentool?\nKlantgegevens worden niet meegestuurd. De bestaande kostprijsuitkomst vervalt; bereken daarna opnieuw. Dit slaat het CRM-formulier nog niet op.'))return;
+   const fields={quantity,price,width:direction==='sale'?Number(field('width').value):null,height:direction==='sale'?Number(field('height').value):null,...(direction==='sale'?{material:field('material')?.value.trim()||'',thickness:Number(field('thickness')?.value)||null}:{})};
+   if(!confirm('De productmaten/aantallen en '+(direction==='sale'?'materiaal, dikte en verkoopprijs':'inkoopprijs als EUR-offerte per stuk')+' uit deze regel terugsturen naar de rekentool?\nKlantgegevens worden niet meegestuurd. De bestaande kostprijsuitkomst vervalt; bereken daarna opnieuw. Dit slaat het CRM-formulier nog niet op.'))return;
    const q=await readCostQuote(link.quoteId),next=syncProductToCalculation(q,link,fields,{direction});await saveCostQuote(next,quoteSignature(q));label('Productgegevens teruggestuurd. Bereken de kostprijs opnieuw in de rekentool en haal die daarna bewust op in dit formulier. Klantgegevens zijn niet meegestuurd.');
   });
   picker.querySelector('[data-costing-unlink]').onclick=()=>{if(!confirm('De rekentoolkoppeling voor deze regel verwijderen? Ingevulde productgegevens en prijzen blijven staan.'))return;links.set(element,null);applied.delete(element);state();label('Koppeling verwijderd. De ingevulde gegevens blijven bewerkbaar.');};

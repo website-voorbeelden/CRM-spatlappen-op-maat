@@ -10,7 +10,7 @@ export function productionReleaseInfo(state,o,companyId,{payment,percentage=o.pr
  else if(!sampleZero&&payment.total<=0)reasons.push('Controleer de prijsafspraak; nul heeft alleen een aparte teststukroute.');
  const required=payment.known?Math.round(payment.total*percentage/100):null;
  if(payment.known&&!sampleZero&&(payment.paid<required||payment.paid<=0))reasons.push('De afgesproken aanbetaling is nog niet volledig ontvangen.');
- if(!(o.approvedDate&&Number.isFinite(Date.parse(o.approvedDate)))&&!approved.length)reasons.push('Ontwerpgoedkeuring ontbreekt.');
+ if(companyId==='spatlappen'&&!(o.approvedDate&&Number.isFinite(Date.parse(o.approvedDate)))&&!approved.length)reasons.push('Ontwerpgoedkeuring ontbreekt.');
  if(specs.missing.length)reasons.push('Productspecificaties zijn nog onvolledig.');
  if(!active)reasons.push('Deze order is al in uitvoering of afgehandeld.');
  const requested=(o.paymentLinks||[]).filter(l=>l.amountInCents>0).at(-1)?.amountInCents;

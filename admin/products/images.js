@@ -22,8 +22,8 @@ function productImageActions(o,i){return `<button type="button" data-action="upl
 function productImageCard(o,i){
  const images=productImages(o,i).reverse().sort((a,b)=>(b.createdAt||b.date).localeCompare(a.createdAt||a.date)),primary=images.find(d=>d.id===i.primaryImageId)||images.find(d=>d.id===i.designPreviewId)||images.find(d=>d.imageRole==='approved')||images[0];
  if(!primary)return ''; // Uploaden blijft beschikbaar in de productknoppen.
- const controls=d=>`<div class="image-controls">${context.button('view-product-image','Vergroten',d.id)}${d.id===i.primaryImageId?'<span>Hoofdafbeelding</span>':`<button type="button" data-primary-image="${context.esc(d.id)}" data-order="${context.esc(o.id)}" data-item="${context.esc(i.id)}">Als eerste tonen</button>`}${d.imageRole==='approved'?context.button('unapprove-product-image','Goedkeuring weghalen',d.id):context.button('approve-product-image','Als goedgekeurd aanwijzen',d.id)}</div>`;
- const display=d=>`<div class="product-image-card"><button type="button" class="image-open" data-action="view-product-image" data-id="${d.id}" aria-label="Vergroot ${context.esc(d.name)}">${imageTag(d)}</button><div class="product-image-info">${context.badge(d.imageRole==='approved'?'Goedgekeurd ontwerp':d.productDesignPreview?'Ontwerpvoorbeeld':'Klantvoorbeeld',d.imageRole==='approved'?'green':'')}<small>${context.esc(d.name)}</small>${controls(d)}</div></div>`;
+ const controls=d=>`<div class="image-controls">${context.button('view-product-image','Vergroten',d.id)}${d.id===i.primaryImageId?'<span>Hoofdafbeelding</span>':`<button type="button" data-primary-image="${context.esc(d.id)}" data-order="${context.esc(o.id)}" data-item="${context.esc(i.id)}">Als eerste tonen</button>`}${context.company.tool==='design'?(d.imageRole==='approved'?context.button('unapprove-product-image','Goedkeuring weghalen',d.id):context.button('approve-product-image','Als goedgekeurd aanwijzen',d.id)):''}</div>`;
+ const display=d=>`<div class="product-image-card"><button type="button" class="image-open" data-action="view-product-image" data-id="${d.id}" aria-label="Vergroot ${context.esc(d.name)}">${imageTag(d)}</button><div class="product-image-info">${context.badge(context.company.tool!=='design'?'Productafbeelding':d.imageRole==='approved'?'Goedgekeurd ontwerp':d.productDesignPreview?'Ontwerpvoorbeeld':'Klantvoorbeeld',d.imageRole==='approved'?'green':'')}<small>${context.esc(d.name)}</small>${controls(d)}</div></div>`;
  return `<div class="product-artwork" data-drop-owner="${o.id}" data-drop-item="${i.id}" data-drop-category="other">${display(primary)}${images.length>1?`<details class="history-details"><summary>Andere afbeeldingen (${images.length-1})</summary><div class="other-product-images">${images.filter(d=>d.id!==primary.id).map(display).join('')}</div></details>`:''}</div>`;
 }
 
@@ -34,10 +34,11 @@ function uploadProductImage(orderId,itemId){
 
 function viewProductImage(id){
  const d=context.state.documents.find(d=>d.id===id);if(!d)return;
- context.openForm('Besteld ontwerp',`<div class="full-product-image">${imageTag(d)}</div><p>${context.badge(d.imageRole==='approved'?'Goedgekeurd ontwerp':d.productDesignPreview?'Ontwerpvoorbeeld':'Klantvoorbeeld',d.imageRole==='approved'?'green':'')} ${context.esc(d.name)}</p>${context.button('download','Origineel downloaden',d.id)}${context.documentDeleteButton(d)}`,async()=>{});context.$('#dialog [type=submit]').textContent='Sluiten';context.$('#cancel').hidden=true;renderDocumentImages();
+ context.openForm(context.company.tool==='design'?'Besteld ontwerp':'Productafbeelding',`<div class="full-product-image">${imageTag(d)}</div><p>${context.badge(context.company.tool!=='design'?'Productafbeelding':d.imageRole==='approved'?'Goedgekeurd ontwerp':d.productDesignPreview?'Ontwerpvoorbeeld':'Klantvoorbeeld',d.imageRole==='approved'?'green':'')} ${context.esc(d.name)}</p>${context.button('download','Origineel downloaden',d.id)}${context.documentDeleteButton(d)}`,async()=>{});context.$('#dialog [type=submit]').textContent='Sluiten';context.$('#cancel').hidden=true;renderDocumentImages();
 }
 
 async function markProductImage(id,approved){
+ if(context.company.tool!=='design')throw Error('Ontwerpgoedkeuring hoort bij Spatlappen. Gebruik hier de productbestanden.');
  const next=structuredClone(context.state),d=next.documents.find(d=>d.id===id);if(!d?.itemId)return;
  if(approved)for(const other of next.documents)if(other.ownerId===d.ownerId&&other.itemId===d.itemId&&other.imageRole==='approved')other.imageRole='reference';
  d.imageRole=approved?'approved':'reference';d.markedApprovedAt=approved?new Date().toISOString():'';

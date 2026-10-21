@@ -1,3 +1,4 @@
+import {createBrowserBridge} from './browser-bridge.mjs';
 import {createServer} from 'node:http';
 import {timingSafeEqual,createHmac} from 'node:crypto';
 import {ChatGPTConnection} from './chatgpt-auth.mjs';
@@ -24,22 +25,25 @@ export async function startAssistantServer({key,directory,port=3030,connection:p
  const gmailActions=createGmailActions({directory:(gmailDirectory||(directory?directory+'/../gmail':'.local/gmail'))+'/actions',getIdentity:company=>gmail.permissionIdentity(company)});
  const speech=providedSpeech||await createLocalSpeech('.local/speech-runtime');
  const connection=provided||await new ChatGPTConnection(directory,{fetchImpl:network}).init();let activeRequest=false,activeJob=null;const cancelled=new Map();
+ const bridge=await createBrowserBridge({directory:'.local/browser-bridge',connection,signal:shutdown.signal,run:async(input,signal)=>{if(activeRequest)throw Object.assign(Error('De assistent verwerkt al een vraag. Probeer zo opnieuw.'),{status:409});activeRequest=true;try{return await runAssistant({connection,companyId:input.companyId,state:input.state,message:input.message,history:input.history,model:input.model,context:input.context,task:input.task,mailContext:input.mailContext,guidance:input.guidance,requestId:input.requestId,signal,fetchImpl:network});}finally{activeRequest=false;}}});
  const server=createServer(async(req,res)=>{
   const json=(value,status=200)=>{res.writeHead(status,{'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store','X-Content-Type-Options':'nosniff'});res.end(JSON.stringify(value));};
   let url;try{url=new URL(req.url,'http://127.0.0.1');}catch{return json({error:'Ongeldige route.'},400);}
   const actualPort=server.address().port;
   if(req.headers.host!=='127.0.0.1:'+actualPort)return json({error:'Onbekende lokale host.'},403);
+  if(await bridge.handle(req,res,url,body))return;
   if(url.pathname==='/auth/callback'&&req.method==='GET'){
    let returnUrl=connection.pending?.returnUrl||'http://localhost:3010/admin/#assistant';
-   try{const result=await connection.finish(url.searchParams);returnUrl=result.returnUrl;res.writeHead(200,{'Content-Type':'text/html; charset=utf-8','Cache-Control':'no-store','Content-Security-Policy':"default-src 'none'; style-src 'unsafe-inline'; base-uri 'none'; frame-ancestors 'none'",'Referrer-Policy':'no-referrer'});res.end('<!doctype html><html lang="nl"><title>ChatGPT verbonden</title><body style="font-family:system-ui;padding:32px"><h1>ChatGPT gekoppeld</h1><p>Je kunt terug naar het CRM. Je Plus-gebruik blijft binnen de limieten van je abonnement.</p><a href="'+escape(returnUrl)+'">Terug naar de assistent</a></body></html>');}
+   try{const result=await connection.finish(url.searchParams);bridge.invalidate();returnUrl=result.returnUrl;res.writeHead(200,{'Content-Type':'text/html; charset=utf-8','Cache-Control':'no-store','Content-Security-Policy':"default-src 'none'; style-src 'unsafe-inline'; base-uri 'none'; frame-ancestors 'none'",'Referrer-Policy':'no-referrer'});res.end('<!doctype html><html lang="nl"><title>ChatGPT verbonden</title><body style="font-family:system-ui;padding:32px"><h1>ChatGPT gekoppeld</h1><p>Je kunt terug naar het CRM. Je Plus-gebruik blijft binnen de limieten van je abonnement.</p><a href="'+escape(returnUrl)+'">Terug naar de assistent</a></body></html>');}
    catch(e){res.writeHead(e.status||400,{'Content-Type':'text/html; charset=utf-8','Cache-Control':'no-store','Content-Security-Policy':"default-src 'none'; style-src 'unsafe-inline'; frame-ancestors 'none'",'Referrer-Policy':'no-referrer'});res.end('<!doctype html><html lang="nl"><title>ChatGPT koppelen</title><body style="font-family:system-ui;padding:32px"><h1>Koppelen niet afgerond</h1><p>'+escape(e.message)+'</p><a href="'+escape(returnUrl)+'">Terug naar CRM</a></body></html>');}return;
   }
   if(url.pathname==='/gmail/callback'&&req.method==='GET'){
-   try{const result=await gmail.finish(url.searchParams);res.writeHead(200,{'Content-Type':'text/html; charset=utf-8','Cache-Control':'no-store','Content-Security-Policy':"default-src 'none'; style-src 'unsafe-inline'; base-uri 'none'; frame-ancestors 'none'",'Referrer-Policy':'no-referrer'});res.end('<!doctype html><html lang="nl"><title>Gmail gekoppeld</title><body style="font-family:system-ui;padding:32px"><h1>Gmail gekoppeld</h1><p>Alleen leestoegang. Ga terug naar het CRM en kies Mails ophalen.</p><a href="'+escape(result.returnUrl)+'">Terug naar CRM</a></body></html>');}
+   try{const result=await gmail.finish(url.searchParams);res.writeHead(200,{'Content-Type':'text/html; charset=utf-8','Cache-Control':'no-store','Content-Security-Policy':"default-src 'none'; style-src 'unsafe-inline'; base-uri 'none'; frame-ancestors 'none'",'Referrer-Policy':'no-referrer'});res.end('<!doctype html><html lang="nl"><title>Gmail gekoppeld</title><body style="font-family:system-ui;padding:32px"><h1>Gmail gekoppeld</h1><p>Ga terug naar het CRM. Verkoopfaselabels werken pas na afzonderlijke activering; mail versturen blijft via SMTP2GO.</p><a href="'+escape(result.returnUrl)+'">Terug naar CRM</a></body></html>');}
    catch(e){res.writeHead(400,{'Content-Type':'text/html; charset=utf-8','Cache-Control':'no-store','Content-Security-Policy':"default-src 'none'; style-src 'unsafe-inline'; frame-ancestors 'none'",'Referrer-Policy':'no-referrer'});res.end('<!doctype html><html lang="nl"><title>Gmail koppelen</title><body style="font-family:system-ui;padding:32px"><h1>Koppelen niet afgerond</h1><p>'+escape(e.message)+'</p><p>Ga terug naar het CRM om opnieuw te koppelen.</p></body></html>');}return;
   }
   if(!equals(req.headers.authorization,'Bearer '+key))return json({error:'Geen toegang tot de lokale assistent.'},403);
   const companyId=req.headers['x-crm-company'];if(!companies.has(companyId))return json({error:'Onbekend bedrijf.'},403);
+  if(['/login','/logout','/select'].includes(url.pathname))bridge.invalidate();
   if(url.pathname.startsWith('/feedback-')){try{
    if(url.pathname==='/feedback-list'&&req.method==='GET')return json({reports:await feedback.list(companyId)});
    if(url.pathname==='/feedback-create'&&req.method==='POST')return json(await feedback.create(companyId,await body(req)));
@@ -56,11 +60,25 @@ export async function startAssistantServer({key,directory,port=3030,connection:p
     if(req.method==='POST'){const input=await body(req),action=url.pathname.replace('/gmail-actions-','');if(['propose','review','confirm','cancel'].includes(action))return json(await gmailActions[action](companyId,input,{...context,channel:action==='propose'?'proposal':'human'}));}
     return json({error:'Onbekende Gmail-voorstelroute.'},404);
    }
+   if(url.pathname==='/gmail-phase-auto-status'&&req.method==='GET')return json(await gmail.phaseAuto(companyId,'status'));
+   if(['/gmail-phase-auto-configure','/gmail-phase-auto-sync'].includes(url.pathname)&&req.method==='POST'){
+    const origin=req.headers['x-crm-origin'];if(origin!=='http://localhost:'+(companyId==='spatlappen'?'3010':'3011')+'/')throw Error('Onbekende bevestigingssessie.');
+    const input=await body(req),configure=url.pathname.endsWith('-configure');
+    if(configure&&input.enabled===true&&req.headers['x-crm-gmail-confirm']!=='phase-auto-settings')throw Error('Bevestig eerst automatische faselabels.');
+    if(input.confirmation&& !configure&&req.headers['x-crm-gmail-confirm']!=='phase-auto-resolution')throw Error('Bevestig eerst de conflictoplossing.');
+    return json(await gmail.phaseAuto(companyId,configure?'configure':'sync',input));
+   }
    if(url.pathname==='/gmail-status'&&req.method==='GET')return json(await gmail.status(companyId));
    if(url.pathname==='/gmail-configure'&&req.method==='POST')return json(await gmail.configure(companyId,await body(req)));
-   if(url.pathname==='/gmail-login'&&req.method==='POST')return json(await gmail.start(companyId,{origin:req.headers['x-crm-origin'],redirectUri:'http://127.0.0.1:'+actualPort+'/gmail/callback'}));
+   if(url.pathname==='/gmail-login'&&req.method==='POST')return json(await gmail.start(companyId,{origin:req.headers['x-crm-origin'],redirectUri:'http://127.0.0.1:'+actualPort+'/gmail/callback',enablePhaseLabels:(await body(req)).enablePhaseLabels===true}));
    if(url.pathname==='/gmail-disconnect'&&req.method==='POST')return json(await gmail.disconnect(companyId));
    if(url.pathname==='/gmail-list'&&req.method==='POST')return json(await gmail.list(companyId,await body(req)));
+   if(['/gmail-phase-review','/gmail-phase-apply'].includes(url.pathname)&&req.method==='POST'){
+    const origin=req.headers['x-crm-origin'];if(origin!=='http://localhost:'+(companyId==='spatlappen'?'3010':'3011')+'/')throw Error('Onbekende bevestigingssessie.');
+    if(url.pathname==='/gmail-phase-apply'&&req.headers['x-crm-gmail-confirm']!=='phase-labels')throw Error('Expliciete gebruikersbevestiging ontbreekt.');
+    const session=createHmac('sha256',key).update(companyId+'|'+origin).digest('hex');return json(await gmail.phaseSync(companyId,session,url.pathname.endsWith('-review')?'review':'apply',await body(req)));
+   }
+   if(url.pathname==='/gmail-labels'&&req.method==='POST')return json(await gmail.labels(companyId,await body(req)));
    if(url.pathname==='/gmail-thread'&&req.method==='POST')return json(await gmail.thread(companyId,await body(req)));
    if(url.pathname==='/gmail-attachment'&&req.method==='POST')return json(await gmail.attachment(companyId,await body(req)));
    if(url.pathname==='/gmail-message'&&req.method==='POST')return json(await gmail.message(companyId,await body(req)));
@@ -104,7 +122,7 @@ export async function startAssistantServer({key,directory,port=3030,connection:p
     if(typeof input.requestId!=='string'||!/^[-a-zA-Z0-9_]{1,100}$/.test(input.requestId))throw Error('Ongeldige aanvraag-ID. Herlaad de CRM-pagina.');
     if((cancelled.get(companyId+'/'+input.requestId)||0)>Date.now())throw Object.assign(Error('Aanvraag gestopt. Er is niets opgeslagen.'),{status:409});
     const controller=new AbortController();activeJob={id:input.requestId,companyId,controller};
-    return json(await runAssistant({connection,companyId,state:input.state,message:input.message,history:input.history,model:input.model,context:input.context,signal:controller.signal,fetchImpl:network}));
+    return json(await runAssistant({connection,companyId,state:input.state,message:input.message,history:input.history,model:input.model,context:input.context,task:input.task,mailContext:input.mailContext,guidance:input.guidance,requestId:input.requestId,signal:controller.signal,fetchImpl:network}));
    }
    return json({error:'Onbekende aanvraag.'},404);
   }catch(e){return json({error:e.status?e.message:e.message?.startsWith('fetch')||e.name==='TimeoutError'?'De koppeling reageert niet. Er is niets opgeslagen.':e.name==='AbortError'?'Aanvraag gestopt. Er is niets opgeslagen.':e.message||'De assistent kon de aanvraag niet afronden.'},e.status||400);}

@@ -3,7 +3,7 @@ export function navigationGroups(company) {
  return [
   {id:'daily',label:'Werkdag',links:[['dashboard','Overzicht','⌂'],['mail','E-mail','✉']]},
   {id:'sales',label:'Verkoop & relaties',links:[['orders','Aanvragen & orders','▤'],['customers','Klanten','♙'],['order-map','Orderkaart','◇']]},
-  {id:'operations',label:'Uitvoering',links:[['purchases','Inkoopbestellingen','⇣'],['inventory','Voorraad','▦'],['designs',company.toolLabel,'✎']]},
+  {id:'operations',label:'Uitvoering',links:[['purchases','Inkoopbestellingen','⇣'],['inventory','Voorraad','▦'],['designs',company.toolLabel,company.tool==='design'?'✎':'∑']]},
   {id:'management',label:'Beheer',links:[['analytics','Analytics','◴'],['feedback','Feedback','☏'],['development','Bouwtaken','≡'],['settings','Instellingen & back-up','⚙']]}
  ];
 }

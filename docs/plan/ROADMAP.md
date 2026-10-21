@@ -1,6 +1,6 @@
 # Ontwikkelplan — beide CRM’s
 
-Bijgewerkt: 2026-10-19. Automatisch gemaakt uit `shared/planning/roadmap.js` met `npm run plan`. Bewerk de bron, niet dit bestand.
+Bijgewerkt: 2026-10-21. Automatisch gemaakt uit `shared/planning/roadmap.js` met `npm run plan`. Bewerk de bron, niet dit bestand.
 
 Dit is een geordende planning, geen opdracht om alles tegelijk uit te voeren. De volgorde binnen Eerstvolgend is het vertrekpunt; de gebruiker kan die bijstellen. Dezelfde taakcatalogus staat in beide CRM’s onder **Beheer → Bouwtaken**, gefilterd op bedrijf. Actuele afvinkstatus, publicatie en opmerkingen staan in de aparte CRM-planningopslag; deze gegenereerde catalogus is daarvan geen live export.
 
@@ -8,38 +8,15 @@ Dit is een geordende planning, geen opdracht om alles tegelijk uit te voeren. De
 
 Eerst deze basis afmaken voordat we meer functies toevoegen.
 
-### Aanvrager en klantbedrijf bewust koppelen
+### Eigen verkoopfases en gecontroleerde Gmail-faselabels
 
-- **ID:** `inquiry-customer-review-20261019`
-- **Voor:** Spatlappen en Maatwerkkunststof
-- **Doel:** Gedeeld e-mailadres met afwijkende namen of telefoon zichtbaar controleren bij de order.
-- **Omvang / status:** Lokaal gebouwd · gebruikercontrole open
-- **Volgende stap:** Philippe controleert zelf: bestaande klant houden, aparte klant met deze order/mail of extra contactpersoon bij het bedrijf. Oude aanvragen lezen de bewaarde bron; geen stille overschrijving. Geen tests of publicatie uitgevoerd.
-- **Klaar wanneer:** Controle op alle ordertabs, bron naast bestaande gegevens, expliciete keuze en historie, contactpersonen in klantdossier, geen andere orders verplaatsen of oude documenten herschrijven; dubbel mailadres niet automatisch gokken.
+- **ID:** `maat-sales-gmail-labels-20261020`
+- **Voor:** Maatwerkkunststof
+- **Doel:** De bestaande Verkoopfase/00–08-labels aansluiten op het Maat-dossier, met compacte gesprekstags en behoud van betaalfeiten.
+- **Volgende stap:** Bron lokaal uitgebreid: opt-in tweerichtings-fasesynchronisatie voor gekoppelde gesprekken, betekenisvolle CRM-feiten (ook betaling), Gmail-voorrang bij gewone edits en conflictreview. Geen AI nodig. Zichtbaar CRM vereist; aanvullende Google-toestemming/activering, eigen gebruikscontrole, gerichte onlinepublicatie en 24/7-serverroute blijven open.
+- **Klaar wanneer:** Alleen na vaste expliciete mappingtoestemming automatische fase-labels; Gmailwijzigingen niet door gewone edits terugdraaien. Conflicten exact bevestigen, bedrijf/verbinding/gespreksbinding controleren. Financiële feiten en overige labels intact, concept behouden. Geen functionele/liveclaim zonder gebruikerscontrole.
 - **Eerst nodig:** Geen aparte stap in dit plan.
-- **Vindplaatsen:** `shared/inquiry-customer.js`, `shared/inquiries.js`, `admin/inquiries/customer-review.js`, `admin/customers/views.js`, `admin/orders/workspace.js`
-
-### Mail grondig herstellen en overzichtelijk maken
-
-- **ID:** `mail-workspace-reform-20261019`
-- **Voor:** Spatlappen en Maatwerkkunststof
-- **Doel:** Duidelijke gesprekken en afzenders, werkende replies, eigen bijlagen en één goede HTML-handtekening.
-- **Omvang / status:** Lokaal gebouwd · gebruikercontrole open
-- **Volgende stap:** Lokale herziening en grenzen vastgelegd in docs/MAIL-HERZIENING.md: PDF-default, context/afzenders, References/Message-ID, bijlagen, één HTML-handtekening en aparte mailstijl. Geen tests/proefzending of publicatie; Philippe controleert zelf. Maillijst: zichtbare sortering aandacht/nieuwste/oudste en filters status/datum/koppeling/bekende bijlagen, alleen geladen mail; gebruikercontrole open. AI-vindbaarheid daarna.
-- **Klaar wanneer:** Replyheaders oorspronkelijke klantmail inclusief websiteformulier; nieuw/reply expliciet; info standaard/facturen alleen factuur en instelbare mailsoorten; PDF standaard Word optioneel; veilige bijlagen uploaden/lezen/bewaren; afbeelding in HTML-handtekening en geen dubbele afsluiting; overzichtelijke Gmailachtige composer en gesprekshiërarchie.
-- **Eerst nodig:** Geen aparte stap in dit plan.
-- **Vindplaatsen:** `admin/mail/`, `admin/mail-workspace.js`, `shared/mail-service.js`, `shared/mail-signature.js`, `shared/document-mail-context.js`, `admin/documents/generated-forms.js`, `docs/MAIL-HERZIENING.md`
-
-### AI-assistent weer vindbaar maken
-
-- **ID:** `assistant-discoverability-20261019`
-- **Voor:** Spatlappen en Maatwerkkunststof
-- **Doel:** Philippe kan de agent vinden en ziet eerlijk welke verbinding beschikbaar is.
-- **Omvang / status:** Ingang gebouwd · online dienst nog niet gekoppeld
-- **Volgende stap:** Cloudknop was hard uitgeschakeld door runtime.mode===local. Nu vaste Agent-ingang op desktop/mobiel en sneltoets; cloudstatus met bestaande AI-export en handmatig kopieerbare vraag. Geen actieve online agentdienst of ChatGPT-login nagebootst. Echte online agentkoppeling blijft vervolgwerk; lokale agent blijft intact.
-- **Klaar wanneer:** Zichtbare vaste ingang, duidelijke status als dienst niet beschikbaar is, geen onopgeslagen invoerverlies of automatische provideracties.
-- **Eerst nodig:** Mail grondig herstellen en overzichtelijk maken
-- **Vindplaatsen:** `admin/app.js`, `admin/assistant.js`, `docs/MAIL-HERZIENING.md`
+- **Vindplaatsen:** `docs/MAAT-FASES-EN-LABELS.md`, `shared/sales-funnel.js`, `shared/gmail-phase-sync.js`, `shared/gmail-phase-auto.js`, `admin/mail/automatic-phase-sync.js`, `docs/GMAIL-FASESYNCHRONISATIE.md`, `admin/mail/phase-label-sync.js`, `cloudflare/gmail.js`
 
 ### 6. Analytics-tabbladen afronden en controleren
 
@@ -74,43 +51,192 @@ Eerst deze basis afmaken voordat we meer functies toevoegen.
 - **Eerst nodig:** Geen aparte stap in dit plan.
 - **Vindplaatsen:** `shared/vat-ledger.js`, `admin/analytics/vat-quarter.js`, `admin/analytics/vat-entry.js`, `shared/state-validation.js`, `docs/BTW-VOORBEREIDING.md`, `tests/vat-ledger.mjs`
 
+### Online AI met het gekozen ChatGPT-abonnement
+
+- **ID:** `chatgpt-cloud-sign-in`
+- **Voor:** Spatlappen en Maatwerkkunststof
+- **Doel:** Gebruiker wil het eigen ChatGPT-abonnement blijven gebruiken en zelf aanmelden; geen API-verbruik als stil alternatief.
+- **Omvang / status:** Afhankelijk van ondersteunde aanmelding
+- **Volgende stap:** Gebruiker kiest online CRM via eigen laptop zonder serverhuur. Browserbridge, aan/uit, beperkte dossiercontext en centrale voorstelreview lokaal gebouwd (docs/LAPTOP-AI.md). Niet getest/gepubliceerd; lokale herstart, eigen browserkoppeling en gerichte onlinepublicatie nog nodig. VM alleen alternatief. Handmatige export/import blijft beschikbaar.
+- **Klaar wanneer:** Geen actieve cloudkoppeling claimen op basis van lokale login of bestaande knop. Geen sleutels/tokens in browser of prompt; providerrechten en kosten vooraf duidelijk.
+- **Eerst nodig:** Geen aparte stap in dit plan.
+- **Vindplaatsen:** `assistant/browser-bridge.mjs`, `admin/assistant/laptop-transport.js`, `cloudflare/assistant.js`, `docs/LAPTOP-AI.md`
+
+### Meerdere producten en ontbrekende gegevens uit aanvraagmail
+
+- **ID:** `request-recognition-next`
+- **Voor:** Spatlappen en Maatwerkkunststof
+- **Doel:** De bestaande herkenning uitbreiden zodat minder gegevens dubbel worden ingevoerd en de AI gericht kan doorvragen.
+- **Omvang / status:** Middel
+- **Volgende stap:** Deelstap lokaal 21 oktober: bedrijfsafzenders behouden, Product/Aantal/Pagina gescheiden, bronpagina bij aanvraag, aantallen in woorden (twee blokken), kleur en postfixdikte; geen tests/publicatie. Philippe controleert zelf. Meerdere producten apart uitwerken en ontbrekende gegevens gericht opvragen blijven open.
+- **Klaar wanneer:** Bestaande klantgegevens niet overschrijven op een gok; preview en bevestiging vóór CRM-overname. Geen automatische mailboxtraining, Gmailmutaties of verzonnen prijs.
+- **Eerst nodig:** Snelle aanvraagherkenning uit e-mail
+- **Vindplaatsen:** `shared/inquiries.js`, `shared/inquiry-quantity.js`, `shared/mail-content.js`, `shared/request-recognition.js`, `admin/inquiry-ui.js`, `admin/inquiries/`, `tests/request-recognition.mjs`, `docs/AANVRAAGHERKENNING.md`
+
 ### De rust van Documenten op meer pagina’s
 
 - **ID:** `consistent-workspace`
 - **Voor:** Spatlappen en Maatwerkkunststof
 - **Doel:** Dezelfde herkenbare opbouw bij orders, inkoop en klanten: hoofdactie bovenaan, duidelijke vakken en overige acties bij Meer.
-- **Volgende stap:** Het klantdossier heeft nu een rustig overzicht met bestaande vervolgstappen. Trek dit door naar het orderoverzicht en Inkoop; behoud zoeken, filters en dossierlinks.
+- **Volgende stap:** 21 oktober lokaal: aanklikbare orderstappen naar eigen onderdelen, aparte verkoopfase/uitvoering, eigen voortgang met CAS en datum/confirm, zonder verplichte gezamenlijke inkoop; Maat zonder ontwerpstappen. Geen tests/publicatie. Aanvulling: Maat-Inkoop direct bij order met leverancier, kosten en factuurfiles; ook bestaande inkoop met precies één klantorder compact bewerken, multiorder gedeeld houden. Bedragpresentatie gedeeld: verkoop/kosten/marge excl. btw primair, betalingen incl. btw apart, lijst/Analytics/formulierlabels gelijkgetrokken; historische leveranciersbasis niet gokken. Gebruikercontrole en verdere werkplekvereenvoudiging blijven open.
 - **Klaar wanneer:** Op desktop en mobiel is de volgende actie duidelijk. Filters, invoer, documentindeling en oude links blijven werken.
 - **Eerst nodig:** Geen aparte stap in dit plan.
-- **Vindplaatsen:** `admin/app.js`, `admin/document-library.js`, `docs/UX-WERKPLEK.md`
-
-### Code per werkonderdeel bij elkaar
-
-- **ID:** `feature-boundaries`
-- **Voor:** Spatlappen en Maatwerkkunststof
-- **Doel:** Een wijziging aan Klanten of Inkoop moet op één herkenbare plek beginnen, zonder de andere onderdelen mee te veranderen.
-- **Volgende stap:** Klantlijst en dossierweergave staan nu in admin/customers/views.js. Haal hierna adresweergave en klantformulieren gericht uit app.js; behoud de bestaande transacties.
-- **Klaar wanneer:** Dezelfde routes en opslagcontracten blijven geldig; tests bewijzen dossier- en bedrijfsafscheiding. Geen massale verplaatsing.
-- **Eerst nodig:** Geen aparte stap in dit plan.
-- **Vindplaatsen:** `admin/app.js`, `admin/customers/`, `admin/workspace/`, `shared/`, `docs/plan/ARCHITECTUUR.md`
+- **Vindplaatsen:** `admin/workspace/money.js`, `admin/orders/money-summary.js`, `docs/BEDRAGEN-EN-BTW.md`, `admin/orders/direct-purchase.js`, `shared/direct-purchase.js`, `admin/orders/progress.js`, `shared/order-progress.js`, `admin/orders/workspace.js`, `docs/INKOOP-BIJ-ORDER.md`, `docs/ORDERVOORTGANG.md`, `docs/UX-WERKPLEK.md`
 
 ### Calculator V2 als complete werkroute
 
 - **ID:** `costing-v2-complete`
 - **Voor:** Maatwerkkunststof
 - **Doel:** Van materiaal en vorm naar kostprijs, marge en een bewuste overname in het juiste CRM-product.
-- **Volgende stap:** Werk materiaalkeuze uit op basis van eigen CRM- of leveranciersgegevens; leg ontbrekende tarieven uit zonder prijzen te verzinnen.
+- **Omvang / status:** Productvelden en kostprijsbasis lokaal verbeterd · gebruiker test zelf
+- **Volgende stap:** 20 oktober: materiaal/dikte in gewone productregels, bewuste V1-offerteovername en terugsturen; aanvraagcontrole per product en oude berekende kostprijs vervalt bij gewijzigde basis. Niet getest/gepubliceerd. 21 oktober: nieuwe V1-berekening in het orderformulier neemt ook expliciet materiaal/dikte en decimale mm-maten mee via een gedeelde beperkte context. Geen prijs of klantinfo, bestaande berekening niet stil overschrijven. Gebruikercontrole, volledige V2-route en V2-onlinevrijgave blijven open.
 - **Klaar wanneer:** Vorm, gaten en import blijven exact bewaard; één stuk hoort bij één product. Meerregelige offertes en releaseverpakking worden apart gecontroleerd. V1 blijft bruikbaar.
 - **Eerst nodig:** Geen aparte stap in dit plan.
-- **Vindplaatsen:** `tools/costing-v2/`, `admin/order-costing.js`, `shared/cost-quote-domain.js`
+- **Vindplaatsen:** `tools/costing-v2/`, `admin/orders/`, `admin/costing-links.js`, `shared/costing-product.js`, `shared/cost-quote-domain.js`
+
+## Gebouwd · jouw controle
+
+De implementatie is aanwezig. Controleer de bediening zelf; publicatie staat apart en open vervolgwerk blijft als eigen taak staan.
+
+### Orderkaart voor productie, leveringen en eigen bezorgroute
+
+- **ID:** `delivery-map-20261021`
+- **Voor:** Spatlappen en Maatwerkkunststof
+- **Doel:** Standaard fysieke productie tonen, een levering en bijbehorende orders selecteren en een bewuste bezorgroute voorbereiden.
+- **Omvang / status:** Lokaal gebouwd · gebruikercontrole open
+- **Volgende stap:** Lokale bron: eigen uitvoering/batchvoortgang, fase-/leverings-/leverwijze-/zoekfilters, volledige orderlijst naast kaart, directe batchkaartlink en optionele routeschets met vertrek, stopselectie/volgorde/retour en Google Maps-routelinks in delen. Geen externe adresopvraag, opslag/status- of kostenwijziging, automatische optimale route of afstandsberekening. Philippe controleert zelf; geen tests/browserQA/build/providerproef/publicatie uitgevoerd.
+- **Klaar wanneer:** Geen ontwerp/offerte als standaard; echte verzending/levering blijft boven batchvoortgang staan. Onbekende locaties en ontbrekende leverafspraken blijven bereikbaar. Geen stil weglaten van routestops of automatische verzending/levering; mobiel bruikbare bediening en actuele controle bij openen routelink.
+- **Eerst nodig:** Geen aparte stap in dit plan.
+- **Vindplaatsen:** `shared/order-map.js`, `admin/orders/map-workspace.js`, `admin/orders/map-route.js`, `admin/orders/delivery-map.js`, `admin/purchases/batch-workspace.js`, `docs/ORDERKAART-EN-BEZORGROUTE.md`
+
+### Betaalstempels en herkenbare facturen per dossier
+
+- **ID:** `invoice-payment-status-20261021`
+- **Voor:** Spatlappen en Maatwerkkunststof
+- **Doel:** Onbetaald, aanbetaling en volledig voldaan duidelijk op factuur en per bestand in Documenten.
+- **Omvang / status:** Lokaal gebouwd · gebruikercontrole open
+- **Volgende stap:** Converter met gecentreerde tweeregelstempels; documentkaart toont betaalstand bij aanmaken, percentage en ontvangen/open incl. btw. PDF/Word blijven samen. Nieuw factuurnummer blijft volledige orderfactuur, met melding bij bestaande facturen. Oude bestanden blijven intact; geen aparte deel-/restfactuuradministratie gebouwd. Philippe controleert zelf, geen tests/renderproef/build/publicatie.
+- **Klaar wanneer:** Stempel past binnen bestaand vak, deelbetaling toont minder dan100% zolang restant bestaat; geen betaalstand raden bij ontbrekende snapshot en geen actuele betaling aan oude bestanden toeschrijven.
+- **Eerst nodig:** Geen aparte stap in dit plan.
+- **Vindplaatsen:** `document-generator.py`, `shared/invoice-payment-status.js`, `admin/documents/invoice-status.js`, `admin/documents/library-workspace.js`, `admin/documents/generated-forms.js`, `docs/FACTUUR-BETAALSTAND.md`
+
+### Dikte op documenten en als bruikbare productdata
+
+- **ID:** `product-thickness-20261021`
+- **Voor:** Maatwerkkunststof
+- **Doel:** Dikte per product numeriek in mm bewaren, zichtbaar op nieuwe klantdocumenten en op materiaal/dikte kunnen analyseren.
+- **Omvang / status:** Lokaal gebouwd · gebruikercontrole open
+- **Volgende stap:** Materiaal/dikte naar publieke documentdetails en gestructureerde snapshot; ontbrekende dikte met terugkeerhulp aanvullen vóór nieuwe documenten. Analytics Materialen & diktes en exacte productfilters gebouwd. Geen tests/build/browser-QA/publicatie; Philippe controleert zelf. Historische documenten en vrije-tekstdata niet gemigreerd.
+- **Klaar wanneer:** Geen gegokte dikte of nul als onbekend; bron is order.items[].thickness in mm. Materiaal/dikte per product, oude documenten/revisiehistorie behouden; telling dossiers/productregels/stuks helder, geen omzet verdubbelen over diktes.
+- **Eerst nodig:** Geen aparte stap in dit plan.
+- **Vindplaatsen:** `shared/product-specifications.js`, `shared/product-metrics.js`, `admin/documents/generation.js`, `admin/documents/generated-forms.js`, `admin/documents/revision-editor.js`, `admin/analytics/product-metrics.js`, `admin/workspace/dossier-search.js`, `docs/DIKTE-EN-PRODUCTDATA.md`
+
+### Handtekeningen per afzender en kopieerbare AI-uitleg
+
+- **ID:** `sender-signature-profiles-20261021`
+- **Voor:** Spatlappen en Maatwerkkunststof
+- **Doel:** Meerdere afbeeldingen expliciet plaatsen, varianten per afzender kiezen en een bruikbaar HTML-contract naar een andere AI kopiëren.
+- **Omvang / status:** Lokaal gebouwd · gebruikercontrole open
+- **Volgende stap:** Lokaal bronwerk: batchvakkeuze, benoemde profielen, adresbinding, conceptoverride, gedeelde server/previewselectie en versiecontrole. Geen tests/build/browserQA/providerproef/publicatie; eigen gebruikerscontrole en gerichte release open.
+- **Klaar wanneer:** Bestaande standaard behouden, geen ongevraagde verzending, geen credentials in AI-uitleg, geen verloren invoer of stale instellingenoverschrijving. Beide bedrijven dezelfde code met eigen configuratie.
+- **Eerst nodig:** Geen aparte stap in dit plan.
+- **Vindplaatsen:** `shared/mail-signature-profiles.js`, `admin/mail/signature-editor.js`, `admin/workspace/ai-help.js`, `docs/MAIL-HANDTEKENINGEN.md`
+
+### Levertijd vanaf ontvangen aanbetaling
+
+- **ID:** `deposit-lead-time-20261021`
+- **Voor:** Spatlappen en Maatwerkkunststof
+- **Doel:** Levertijd in weken starten vanaf het afgesproken percentage werkelijke betaling.
+- **Omvang / status:** Lokaal gebouwd · gebruikercontrole open
+- **Volgende stap:** Lokaal bronwerk: percentagekeuze, cumulatieve ontvangstdatum, pendinghulp, documentdefault en import/export. Geen tests uitgevoerd; eigen gebruikscontrole en gerichte publicatie open.
+- **Klaar wanneer:** Werkelijke betalingen inclusief btw/verzending, geen start bij onbekend bedrag, vaste leverdata voorgaan, historische afspraken behouden.
+- **Eerst nodig:** Geen aparte stap in dit plan.
+- **Vindplaatsen:** `shared/lead-time.js`, `admin/orders/planning.js`, `docs/LEVERTIJD-AANBETALING.md`
+
+### Maat zonder Spatlappen-ontwerp- en drukkleurbediening
+
+- **ID:** `maat-remove-print-workflow-20261021`
+- **Voor:** Maatwerkkunststof
+- **Doel:** Alleen kunststofspecifieke dagelijkse bediening; technische tekeningen en historische data behouden.
+- **Omvang / status:** Lokaal gebouwd · gebruikercontrole open
+- **Volgende stap:** Lokaal bronwerk: bedrijfsstatuskeuze, afbeeldingen/documenten/AI/mailtemplates/vergelijking/inkoop opgeschoond. Geen tests of publicatie; gebruikerscontrole en gerichte release open.
+- **Klaar wanneer:** Maat rendert geen drukwerkcontrols; Spat houdt deze. Geen gegevens wissen, technische productbestanden blijven bruikbaar.
+- **Eerst nodig:** Geen aparte stap in dit plan.
+- **Vindplaatsen:** `shared/companies.js`, `admin/orders/workspace.js`, `admin/products/images.js`, `docs/MAAT-EIGEN-WERKPROCES.md`
+
+### Antwoordhulp per mailgesprek
+
+- **ID:** `reply-assistant-per-thread-20261020`
+- **Voor:** Spatlappen en Maatwerkkunststof
+- **Doel:** Met juiste gespreks- en dossiercontext samen een passend antwoord maken, verfijnen en bewust in het concept overnemen.
+- **Omvang / status:** Lokaal gebouwd · gebruikercontrole open
+- **Volgende stap:** Antwoordhulp in mailwerkplek: eigen sessie/instructies, begrensde geladen mail plus gekozen dossier/notities, lokale toolvrije generatie via bestaande ChatGPT-verbinding. Kopieer/JSON-import als afzonderlijke onlinevoorbereiding; geen directe cloudagent. Alleen eigen werkinstructies expliciet bewaren, AI-historie in tabblad. Geen tests, proefgeneraties, verzendingen of publicatie uitgevoerd.
+- **Klaar wanneer:** Geen contextmenging tussen bedrijven/gesprekken/dossiers; ontbrekende feiten als vraag, geen verzonnen beloften; exacte context zichtbaar; stale-proposalcontrole; alleen body overnemen en bestaande verzendpreview behouden; geen nieuwe scopes of automatische mails.
+- **Eerst nodig:** Mail grondig herstellen en overzichtelijk maken
+- **Vindplaatsen:** `admin/mail/reply-assistant.js`, `admin/mail-workspace.js`, `shared/mail-reply-assistant.js`, `shared/mail-reply-engine.js`, `shared/assistant-engine.js`, `docs/ANTWOORDHULP.md`
+
+### Aanvrager en klantbedrijf bewust koppelen
+
+- **ID:** `inquiry-customer-review-20261019`
+- **Voor:** Spatlappen en Maatwerkkunststof
+- **Doel:** Gedeeld e-mailadres met afwijkende namen of telefoon zichtbaar controleren bij de order.
+- **Omvang / status:** Lokaal gebouwd · gebruikercontrole open
+- **Volgende stap:** Philippe controleert zelf: bestaande klant houden, aparte klant met deze order/mail of extra contactpersoon bij het bedrijf. Oude aanvragen lezen de bewaarde bron; geen stille overschrijving. Geen tests of publicatie uitgevoerd.
+- **Klaar wanneer:** Controle op alle ordertabs, bron naast bestaande gegevens, expliciete keuze en historie, contactpersonen in klantdossier, geen andere orders verplaatsen of oude documenten herschrijven; dubbel mailadres niet automatisch gokken.
+- **Eerst nodig:** Geen aparte stap in dit plan.
+- **Vindplaatsen:** `shared/inquiry-customer.js`, `shared/inquiries.js`, `admin/inquiries/customer-review.js`, `admin/customers/views.js`, `admin/orders/workspace.js`
+
+### Mail grondig herstellen en overzichtelijk maken
+
+- **ID:** `mail-workspace-reform-20261019`
+- **Voor:** Spatlappen en Maatwerkkunststof
+- **Doel:** Duidelijke gesprekken en afzenders, werkende replies, eigen bijlagen en één goede HTML-handtekening.
+- **Omvang / status:** Lokaal gebouwd · gebruikercontrole open
+- **Volgende stap:** Lokale herziening en grenzen vastgelegd in docs/MAIL-HERZIENING.md: PDF-default, context/afzenders, References/Message-ID, bijlagen, één HTML-handtekening en aparte mailstijl. Geen tests/proefzending of publicatie; Philippe controleert zelf. Maillijst: zichtbare sortering aandacht/nieuwste/oudste en filters status/datum/koppeling/bekende bijlagen, alleen geladen mail; gebruikercontrole open. AI-vindbaarheid daarna.
+- **Klaar wanneer:** Replyheaders oorspronkelijke klantmail inclusief websiteformulier; nieuw/reply expliciet; info standaard/facturen alleen factuur en instelbare mailsoorten; PDF standaard Word optioneel; veilige bijlagen uploaden/lezen/bewaren; afbeelding in HTML-handtekening en geen dubbele afsluiting; overzichtelijke Gmailachtige composer en gesprekshiërarchie.
+- **Eerst nodig:** Geen aparte stap in dit plan.
+- **Vindplaatsen:** `admin/mail/`, `admin/mail-workspace.js`, `shared/mail-service.js`, `shared/mail-signature.js`, `shared/document-mail-context.js`, `admin/documents/generated-forms.js`, `docs/MAIL-HERZIENING.md`
+
+### AI-assistent weer vindbaar maken
+
+- **ID:** `assistant-discoverability-20261019`
+- **Voor:** Spatlappen en Maatwerkkunststof
+- **Doel:** Philippe kan de agent vinden en ziet eerlijk welke verbinding beschikbaar is.
+- **Omvang / status:** Ingang gebouwd · online dienst nog niet gekoppeld
+- **Volgende stap:** Cloudknop was hard uitgeschakeld door runtime.mode===local. Nu vaste Agent-ingang op desktop/mobiel en sneltoets; cloudstatus met bestaande AI-export en handmatig kopieerbare vraag. Geen actieve online agentdienst of ChatGPT-login nagebootst. Echte online agentkoppeling blijft vervolgwerk; lokale agent blijft intact.
+- **Klaar wanneer:** Zichtbare vaste ingang, duidelijke status als dienst niet beschikbaar is, geen onopgeslagen invoerverlies of automatische provideracties.
+- **Eerst nodig:** Mail grondig herstellen en overzichtelijk maken
+- **Vindplaatsen:** `admin/app.js`, `admin/assistant.js`, `docs/MAIL-HERZIENING.md`
+
+### Bouwtaken afvinken en overdracht bewaren in het CRM
+
+- **ID:** `build-task-board`
+- **Voor:** Spatlappen en Maatwerkkunststof
+- **Doel:** Philippe en toekomstige AI-bouwers gebruiken dezelfde afvinkbare lijst met opmerkingen en controlebewijs.
+- **Omvang / status:** Lokaal gereed · nog niet live
+- **Volgende stap:** Nieuwe bronlogroute lokaal: scripts/build-task.mjs met append-only shared/planning/source-updates.js. Updates verschijnen zonder handmatig browserinvullen, inclusief AI-export; bestaande gebruikersstatus/opmerkingen blijven leidend. Geen functionele tests; Philippe controleert zelf. Oude opgeslagen taakstatus niet automatisch vervangen.
+- **Klaar wanneer:** Bewaren/herladen, historische opmerkingen, bedrijfsgrens, statusconflicten, verloren ACK, back-up en mobiel gecontroleerd. Geen klant-/order-/mailwijziging door een taakafvinkactie.
+- **Eerst nodig:** Geen aparte stap in dit plan.
+- **Vindplaatsen:** `admin/workspace/development-plan.js`, `admin/workspace/build-task-store.js`, `shared/planning/progress.js`, `tests/build-tasks.mjs`, `docs/BOUWTAKEN.md`
+
+### Code per werkonderdeel bij elkaar
+
+- **ID:** `feature-boundaries`
+- **Voor:** Spatlappen en Maatwerkkunststof
+- **Doel:** Een wijziging aan Klanten of Inkoop moet op één herkenbare plek beginnen, zonder de andere onderdelen mee te veranderen.
+- **Omvang / status:** Lokaal gebouwd · gebruikercontrole open
+- **Volgende stap:** Deze oudere opdracht is inmiddels uitgevoerd binnen crm-feature-source-structure: klantadressen/formulier staan in admin/customers/dossier.js, inkoop en andere features in eigen factories via dezelfde live context. Geen nieuwe verplaatsing nodig; Philippe controleert zelf. Geen tests/build/browserQA/publicatie voor deze registratie uitgevoerd.
+- **Klaar wanneer:** Dezelfde routes en opslagcontracten blijven geldig; tests bewijzen dossier- en bedrijfsafscheiding. Geen massale verplaatsing.
+- **Eerst nodig:** Geen aparte stap in dit plan.
+- **Vindplaatsen:** `admin/app.js`, `admin/customers/`, `admin/workspace/`, `shared/`, `docs/plan/ARCHITECTUUR.md`
 
 ### Eigen complete documentenset
 
 - **ID:** `company-documents`
 - **Voor:** Maatwerkkunststof
 - **Doel:** Offerte, orderbevestiging en factuur laten aansluiten op de Maatwerkkunststof-order en huisstijl.
-- **Omvang / status:** Gebouwd · online activering in uitvoering · gebruiker test zelf
-- **Volgende stap:** Op verzoek dezelfde Spatlappen-templates/opmaak en registratie-/bankgegevens met Maatwerkkunststof-naam/website. Offerte, bevestiging, proforma, factuur en pakbon beschikbaar; gedeelde converter met eigen bedrijfstoken en gescheiden tijdelijke downloads. Render/Cloudflare-activering afronden; geen tests of proefdocumenten uitgevoerd.
+- **Omvang / status:** Gebouwd en gepubliceerd · gebruikercontrole open
+- **Volgende stap:** Op verzoek dezelfde Spatlappen-templates/opmaak en registratie-/bankgegevens met Maatwerkkunststof-naam/website. Offerte, bevestiging, proforma, factuur en pakbon beschikbaar; gedeelde converter met eigen bedrijfstoken en gescheiden tijdelijke downloads. Render/Cloudflare-activering bevestigd op 19 oktober, met eigen afgeleide Maat-token zonder extra Render-invoer. Gebruiker moet documentgeneratie nog bevestigen; geen tests of proefdocumenten uitgevoerd.
 - **Klaar wanneer:** PDF/Word-preview en bedragen kloppen; het document blijft in het bestaande dossier. Aanmaken verstuurt geen mail.
 - **Eerst nodig:** Geen aparte stap in dit plan.
 - **Vindplaatsen:** `document-service/`, `document-generator.py`, `admin/document-library.js`
@@ -195,17 +321,6 @@ Voortbouwen op dezelfde dossiers, bediening en controles.
 - **Klaar wanneer:** Niet actief door alleen deze planning. Geen dubbele ontvangsten bij retries/parallelle checks; alleen bevestigde ontvangst melden, niet iedere controle. Telefoonpush volgt afzonderlijk onderzoek.
 - **Eerst nodig:** Nuttige vervolgstappen na betaling
 - **Vindplaatsen:** `cloudflare/tikkie.js`, `admin/payment-workflow.js`, `docs/plan/AUTOMATISERINGEN.md`
-
-### Meerdere producten en ontbrekende gegevens uit aanvraagmail
-
-- **ID:** `request-recognition-next`
-- **Voor:** Spatlappen en Maatwerkkunststof
-- **Doel:** De bestaande herkenning uitbreiden zodat minder gegevens dubbel worden ingevoerd en de AI gericht kan doorvragen.
-- **Omvang / status:** Middel
-- **Volgende stap:** Werk meerdere productregels, klantmatch en ontbrekende materialen/maten/aantallen uit met geanonimiseerde aanvraagvoorbeelden. Vraag alleen wat echt ontbreekt.
-- **Klaar wanneer:** Bestaande klantgegevens niet overschrijven op een gok; preview en bevestiging vóór CRM-overname. Geen automatische mailboxtraining, Gmailmutaties of verzonnen prijs.
-- **Eerst nodig:** Snelle aanvraagherkenning uit e-mail
-- **Vindplaatsen:** `shared/request-recognition.js`, `admin/inquiries/`, `tests/request-recognition.mjs`, `docs/AANVRAAGHERKENNING.md`
 
 ### Automatiseringen die een voorstel klaarzetten
 
@@ -307,17 +422,6 @@ Nog geen bouwafspraak of actieve koppeling.
 - **Eerst nodig:** Geen aparte stap in dit plan.
 - **Vindplaatsen:** `docs/plan/ARCHITECTUUR.md`, `docs/plan/BESLUITEN.md`
 
-### Online AI met het gekozen ChatGPT-abonnement
-
-- **ID:** `chatgpt-cloud-sign-in`
-- **Voor:** Spatlappen en Maatwerkkunststof
-- **Doel:** Gebruiker wil het eigen ChatGPT-abonnement blijven gebruiken en zelf aanmelden; geen API-verbruik als stil alternatief.
-- **Omvang / status:** Afhankelijk van ondersteunde aanmelding
-- **Volgende stap:** Bepaal een daadwerkelijk ondersteunde online aanmeldroute met registratie. Houd intussen handmatige AI-prompt/import beschikbaar en benoem geïntegreerde AI online als nog niet ingericht.
-- **Klaar wanneer:** Geen actieve cloudkoppeling claimen op basis van lokale login of bestaande knop. Geen sleutels/tokens in browser of prompt; providerrechten en kosten vooraf duidelijk.
-- **Eerst nodig:** Geen aparte stap in dit plan.
-- **Vindplaatsen:** `assistant/chatgpt-auth.mjs`, `assistant/server.mjs`, `admin/assistant.js`, `docs/ASSISTENT.md`
-
 ### Boekhouding koppelen, bijvoorbeeld Exact
 
 - **ID:** `exact-integration`
@@ -362,7 +466,7 @@ Dit vormt de basis. Uitbreidingen blijven apart in het plan staan.
 - **Volgende stap:** Instellingen6tabs en Overzicht3tabs lokaal gebouwd met gemounte formulieren en URL-/toetsenbordnavigatie. Werkplek-, zoek- en analytics-CSS naar admin/style.css; één actief stylesheet met gedeelde palet-/statusparen. Geen tests/contrastmetingen/build/browser-QA/publicatie; gebruiker beoordeelt.
 - **Klaar wanneer:** Geen invoerverlies bij tabwisseling, geen settingsopslag door navigatie, beide bedrijfsprofielen dezelfde UI. Nieuwe CRM-opmaak centraal en leesbare foreground/background bij hover/focus/selected; tools en HTML-mail afgebakend.
 - **Eerst nodig:** Gegroepeerd menu en één ontwikkelplan
-- **Vindplaatsen:** `admin/workspace/overview-settings.js`, `admin/workspace/section-tabs.js`, `admin/style.css`, `admin/index.html`, `docs/UX-WERKPLEK.md`
+- **Vindplaatsen:** `admin/workspace/overview-settings.js?v=maat-cleanup-20261021`, `admin/workspace/section-tabs.js`, `admin/style.css`, `admin/index.html`, `docs/UX-WERKPLEK.md`
 
 ### 49. CRM-hoofdcode opdelen en losse modules ordenen
 
@@ -506,17 +610,6 @@ Dit vormt de basis. Uitbreidingen blijven apart in het plan staan.
 - **Klaar wanneer:** Opmaak gaat als HTML-body naast tekst mee; scripts en actieve inhoud verwijderd. Handtekening in verzendvoorbeeld gelijk aan providerpayload; gewijzigde instellingen blokkeren oude preview. Beide bedrijven gescheiden; geen automatische verzending.
 - **Eerst nodig:** Geen aparte stap in dit plan.
 - **Vindplaatsen:** `shared/mail-signature.js`, `shared/mail-service.js`, `admin/email-service.js`, `admin/app.js`, `tests/mail-signature.mjs`
-
-### Bouwtaken afvinken en overdracht bewaren in het CRM
-
-- **ID:** `build-task-board`
-- **Voor:** Spatlappen en Maatwerkkunststof
-- **Doel:** Philippe en toekomstige AI-bouwers gebruiken dezelfde afvinkbare lijst met opmerkingen en controlebewijs.
-- **Omvang / status:** Lokaal gereed · nog niet live
-- **Volgende stap:** Open Beheer → Bouwtaken. Lees het bestaande log, gebruik je eigen bouwernaam, noteer resultaat/tests/beperkingen en leg publicatie apart vast. Catalogus in broncode; actuele voortgang in de planning-opslag.
-- **Klaar wanneer:** Bewaren/herladen, historische opmerkingen, bedrijfsgrens, statusconflicten, verloren ACK, back-up en mobiel gecontroleerd. Geen klant-/order-/mailwijziging door een taakafvinkactie.
-- **Eerst nodig:** Geen aparte stap in dit plan.
-- **Vindplaatsen:** `admin/workspace/development-plan.js`, `admin/workspace/build-task-store.js`, `shared/planning/progress.js`, `tests/build-tasks.mjs`, `docs/BOUWTAKEN.md`
 
 ### 1. Felpaars CRM-icoon in het browsertabblad
 

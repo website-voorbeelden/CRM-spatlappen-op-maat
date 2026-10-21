@@ -206,6 +206,49 @@ def fill_invoice_text(element, slots):
                 position += 2
 
 
+def invoice_payment_stamp(paid, total):
+    if paid is None:
+        return 'BETAALSTATUS\nONBEKEND'
+    if total == 0:
+        return 'GEEN BEDRAG\nTE VOLDOEN'
+    if paid >= total:
+        return 'VOLDAAN'
+    return 'AANBETALING\nVOLDAAN' if paid > 0 else 'NOG NIET\nVOLDAAN'
+
+
+def prepare_payment_stamp(table):
+    # Only the stamp cell changes. The existing frame/width and all other
+    # invoice styling remain intact; a second line grows the cell naturally.
+    for paragraph in table.findall('.//w:p', NS):
+        if '{{payment_stamp}}' not in ''.join(paragraph.xpath('.//w:t/text()', namespaces=NS)):
+            continue
+        properties = paragraph_properties(paragraph)
+        for name in ['spacing', 'jc']:
+            for child in properties.findall('w:' + name, NS):
+                properties.remove(child)
+        etree.SubElement(properties, TAG('spacing'), {TAG('before'): '0', TAG('after'): '0',
+                                                    TAG('line'): '240', TAG('lineRule'): 'auto'})
+        etree.SubElement(properties, TAG('jc'), {TAG('val'): 'center'})
+        cell = paragraph.xpath('ancestor::w:tc[1]', namespaces=NS)[0]
+        cell_properties = cell.find('w:tcPr', NS)
+        if cell_properties is not None:
+            for child in cell_properties.findall('w:noWrap', NS):
+                cell_properties.remove(child)
+        row = cell.getparent()
+        for height in row.findall('w:trPr/w:trHeight', NS):
+            height.getparent().remove(height)
+        for run in paragraph.findall('w:r', NS):
+            style = run.find('w:rPr', NS)
+            if style is None:
+                style = etree.Element(TAG('rPr'))
+                run.insert(0, style)
+            for name in ['sz', 'szCs']:
+                size = style.find('w:' + name, NS)
+                if size is None:
+                    size = etree.SubElement(style, TAG(name))
+                size.set(TAG('val'), '24')  # 12 pt, including longer two-line stamps.
+
+
 def build_invoice(payload, target, slots, items, package, template_root=TEMPLATE_ROOT):
     from datetime import date
     fields = payload.get('fields', {})
@@ -216,10 +259,10 @@ def build_invoice(payload, target, slots, items, package, template_root=TEMPLATE
         slots['transaction_date'] = date.fromisoformat(slots['transaction_date']).strftime('%d-%m-%Y')
     else:
         slots['date_label'] = ''
-    paid = amount(payload.get('paidAmount', 0))
+    paid = amount(payload['paidAmount']) if 'paidAmount' in payload else None
     total = slots['_grand_total']
     slots.update(invoice_number=payload['number'], invoice_date=slots['document_date'],
-                 vat_rate=slots['vat_percentage'], payment_stamp='VOLDAAN' if total > 0 and paid >= total else '')
+                 vat_rate=slots['vat_percentage'], payment_stamp=invoice_payment_stamp(paid, total))
     # Only an explicitly entered customer note is printed; accounting comments
     # about receipts, shortfalls or overpayments belong in the CRM.
     slots['payment_note'] = slots['invoice_note']
@@ -258,8 +301,7 @@ def build_invoice(payload, target, slots, items, package, template_root=TEMPLATE
                                        item_total='Inbegrepen' if package is not None else money(item['price'] * item['quantity'])))
             # The source row already grows naturally; retain its paragraph rhythm.
             articles.append(row)
-        if not slots['payment_stamp']:
-            body.remove(tables[4])
+        prepare_payment_stamp(tables[4])
         fill_invoice_text(body, slots)
         # Keep totals/payment together on the final page without repeating the
         # company and billing blocks when the article table spans several pages.

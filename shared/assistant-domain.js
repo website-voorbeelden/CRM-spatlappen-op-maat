@@ -1,11 +1,11 @@
 import {markProvenance} from './provenance.js';
-import {companyFor} from './companies.js';
+import {companyFor,orderStagesFor,displayOrderStage} from './companies.js';
 import {validateBusinessState} from './state-validation.js';
 import {ensureCustomerNumbers} from '../admin/customer-numbers.js';
 import {normalizeAssistantPageContext} from './assistant-page-context.js';
 export const customerFields=['company','contact','email','invoiceEmail','phone','vatNumber','country','billingAddress','shippingAddress','notes'];
 export const orderFields=['customerId','description','quantity','width','height','price','vat','date','expectedDate','notes','stage'];
-export const stages=['Ontwerp maken','Wachten op goedkeuring','Ontwerp goedgekeurd','Offerte verstuurd','Wachten op betaling','Productie vrijgegeven','Besteld bij leverancier','In productie','Onderweg naar Nederland','Binnen in Nederland','Verzonden','Afgerond'];
+export const stages=['Ontwerp maken','Wachten op goedkeuring','Ontwerp goedgekeurd','Offerte verstuurd','Wachten op betaling','Productie vrijgegeven','Besteld bij leverancier','In productie','Onderweg naar Nederland','Binnen in Nederland','Verzonden','Afgerond','Nieuwe aanvraag'];
 const object=v=>v&&typeof v==='object'&&!Array.isArray(v);
 const fail=message=>{throw Error(message);};
 const clone=v=>structuredClone(v);
@@ -54,7 +54,7 @@ export function assistantSnapshot(state,companyId){
  companyFor(companyId);validateBusinessState(state);
  // Files, design payloads, provider tokens and activity journals are excluded.
  const customers=state.customers.map(c=>({id:c.id,number:c.number||'',archived:!!c.archived,truncatedFields:customerFields.filter(k=>String(c[k]??'').length>10000),...Object.fromEntries(customerFields.map(k=>[k,String(c[k]??'').slice(0,10000)]))}));
- const orders=state.orders.map(o=>({id:o.id,number:o.sourceNumber||o.number,customerId:o.customerId,date:o.date||'',expectedDate:o.expectedDate||'',stage:o.stage||'',notes:String(o.notes||'').slice(0,10000),archived:!!o.archived,vat:o.vat??null,shippingCharge:o.shippingCharge||0,shippingKnown:o.shippingKnown!==false,inquirySpecs:structuredClone(o.inquirySpecs||{}),packagePrice:o.packagePrice??null,
+ const orders=state.orders.map(o=>({id:o.id,number:o.sourceNumber||o.number,customerId:o.customerId,date:o.date||'',expectedDate:o.expectedDate||'',stage:displayOrderStage(o.stage||'',companyId),notes:String(o.notes||'').slice(0,10000),archived:!!o.archived,vat:o.vat??null,shippingCharge:o.shippingCharge||0,shippingKnown:o.shippingKnown!==false,inquirySpecs:structuredClone(o.inquirySpecs||{}),packagePrice:o.packagePrice??null,
   truncatedFields:String(o.notes||'').length>10000?['notes']:[],items:o.items.map(i=>({id:i.id,description:String(i.description||'').slice(0,10000),quantity:i.quantity,width:i.width??null,height:i.height??null,price:i.price??null})),
   paidInCents:state.payments.filter(p=>p.orderId===o.id).reduce((sum,p)=>sum+p.amount,0)}));
  return {companyId,customers,orders};
@@ -66,6 +66,7 @@ export function prepareAssistantPlan(snapshot,requests,companyId,{uuid=()=>crypt
  for(const req of requests){
   if(!object(req)||!['customer','order'].includes(req.entity)||!['create','update'].includes(req.operation))fail('Onbekende bewerking.');
   const fields=cleanFields(req.fields,req.entity==='customer'?customerFields:orderFields),creating=req.operation==='create';
+  if(req.entity==='order'&&fields.stage&&!orderStagesFor(companyId).includes(fields.stage))fail('Deze orderstatus hoort niet bij dit bedrijf.');
   const id=creating?(preserveCreateIds&&req.id?req.id:uuid()):req.id;if(!validId(id))fail('Record-ID ontbreekt.');
   const key=req.entity+'/'+id;if(seen.has(key))fail('Hetzelfde dossier komt twee keer in het voorstel voor.');seen.add(key);
   if(creating&&recordList(snapshot,req.entity).some(x=>x.id===id))fail('Het nieuwe dossier-ID bestaat al.');
@@ -83,10 +84,10 @@ export function prepareAssistantPlan(snapshot,requests,companyId,{uuid=()=>crypt
    if(fields.vat!==21)fail('Maak een order met afwijkende btw via Nieuwe order of AI-import, zodat je zelf de verplichte btw-reden kunt kiezen.');
    if((fields.width===undefined)!==(fields.height===undefined))fail('Vul beide maten in of laat beide onbekend.');
    if(fields.price!==undefined&&!Number.isSafeInteger(fields.price*fields.quantity))fail('De orderwaarde is te groot.');
-   if(fields.stage&&fields.stage!==stages[0])fail('Een nieuwe order begint bij de eerste status.');
+   if(fields.stage&&fields.stage!==orderStagesFor(companyId)[0])fail('Een nieuwe order begint bij de eerste status.');
   }else{
    if(Object.keys(fields).some(k=>!['notes','stage','date','expectedDate'].includes(k)))fail('De assistent kan bij bestaande orders alleen notities, status en datums voorstellen. Pas producten en bedragen in het CRM-formulier aan.');
-   if(fields.stage&&stages.indexOf(fields.stage)>=stages.indexOf('Productie vrijgegeven')&&fields.stage!==base.stage){
+   if(fields.stage&&['Productie vrijgegeven','Besteld bij leverancier','In productie','Onderweg naar Nederland','Binnen in Nederland','Verzonden','Afgerond'].includes(fields.stage)&&fields.stage!==base.stage){
     if(!base.items.length||base.items.some(i=>i.price==null)&&base.packagePrice==null)fail('Productie vrijgeven kan niet met onbekende verkoopprijzen.');
     const net=(base.packagePrice??base.items.reduce((s,i)=>s+i.quantity*i.price,0))+(base.shippingCharge||0),total=net+Math.round(net*(base.vat||0)/100);
     if(base.paidInCents<total)fail('De order is nog niet volledig betaald. Gebruik de normale productieactie voor een afwijkende afspraak.');
@@ -111,7 +112,7 @@ export function applyAssistantPlan(state,plan,companyId,{approved=false,now=Date
    else Object.assign(next.customers.find(c=>c.id===op.id),op.fields);
   }else if(op.operation==='create'){
    const f=op.fields,number=Math.max(3000,...next.orders.map(o=>Number(o.number)||0))+1;
-   next.orders.push({id:op.id,number,customerId:f.customerId,date:f.date||today(),stage:stages[0],archived:false,vat:f.vat,notes:f.notes||'',expectedDate:f.expectedDate||'',shippingCharge:0,shippingKnown:false,shippingActual:null,shippingExpected:null,extraCosts:null,packagePrice:null,leadTimeMinWeeks:2,leadTimeMaxWeeks:8,leadTimeBasis:'payment',
+   next.orders.push({id:op.id,number,customerId:f.customerId,date:f.date||today(),stage:orderStagesFor(companyId)[0],archived:false,vat:f.vat,notes:f.notes||'',expectedDate:f.expectedDate||'',shippingCharge:0,shippingKnown:false,shippingActual:null,shippingExpected:null,extraCosts:null,packagePrice:null,leadTimeMinWeeks:2,leadTimeMaxWeeks:8,leadTimeBasis:'payment',
     items:[{id:op.itemId,description:f.description,quantity:f.quantity,width:f.width??null,height:f.height??null,price:f.price??null,cost:null,printColors:null,specs:'',productionSource:'supplier'}]});
   }else Object.assign(next.orders.find(o=>o.id===op.id),op.fields);
   const changed=(op.entity==='customer'?next.customers:next.orders).find(r=>r.id===op.id);markProvenance(changed,Object.keys(op.fields).filter(k=>Object.hasOwn(changed,k)),'ai',{at:new Date(now).toISOString()});if(op.entity==='order'&&op.operation==='create')markProvenance(changed.items[0],['description','quantity','width','height','price'],'ai',{at:new Date(now).toISOString()});
@@ -126,7 +127,7 @@ export function executeReadTool(snapshot,name,args){
  if(name==='get_summary'){
   const active=snapshot.orders.filter(o=>!o.archived),known=active.filter(o=>o.packagePrice!=null||o.items.every(i=>i.price!=null));
   const outstanding=known.reduce((sum,o)=>{const net=(o.packagePrice??o.items.reduce((s,i)=>s+i.quantity*i.price,0))+o.shippingCharge;return sum+Math.max(0,net+Math.round(net*(o.vat||0)/100)-o.paidInCents);},0);
-  return {companyId:snapshot.companyId,activeCustomers:snapshot.customers.filter(c=>!c.archived).length,activeOrders:active.length,openOrders:active.filter(o=>o.stage!=='Afgerond').length,ordersByStage:Object.fromEntries(stages.map(stage=>[stage,active.filter(o=>o.stage===stage).length])),outstandingInCents:outstanding,ordersWithUnknownPrice:active.length-known.length,note:'Openstaande bedragen zijn alleen berekend voor orders met bekende verkoopprijzen. Geen omzet-/winstboekhouding.'};
+  return {companyId:snapshot.companyId,activeCustomers:snapshot.customers.filter(c=>!c.archived).length,activeOrders:active.length,openOrders:active.filter(o=>o.stage!=='Afgerond').length,ordersByStage:Object.fromEntries(orderStagesFor(snapshot.companyId).map(stage=>[stage,active.filter(o=>displayOrderStage(o.stage,snapshot.companyId)===stage).length])),outstandingInCents:outstanding,ordersWithUnknownPrice:active.length-known.length,note:'Openstaande bedragen zijn alleen berekend voor orders met bekende verkoopprijzen. Geen omzet-/winstboekhouding.'};
  }
  if(name==='search_customers'){const query=String(args.query||'').toLowerCase();return snapshot.customers.filter(c=>[c.company,c.contact,c.email,c.number].some(v=>String(v||'').toLowerCase().includes(query))).slice(0,30).map(c=>({id:c.id,number:c.number,company:c.company,contact:c.contact,email:c.email,archived:c.archived}));}
  if(name==='search_orders'){const query=String(args.query||'').toLowerCase();return snapshot.orders.filter(o=>(!args.customerId||o.customerId===args.customerId)&&(!args.stage||o.stage===args.stage)&&(!query||String(o.number).toLowerCase().includes(query)||o.items.some(i=>i.description.toLowerCase().includes(query)))).slice(0,30).map(o=>({id:o.id,number:o.number,customerId:o.customerId,stage:o.stage,date:o.date,paidInCents:o.paidInCents}));}
