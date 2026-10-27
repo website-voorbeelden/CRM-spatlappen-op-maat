@@ -1,4 +1,4 @@
-import {fulfilmentMethods,setFulfilmentMethod} from '../../shared/inbound-readiness.js';
+import {fulfilmentMethods,setFulfilmentMethod} from '../../shared/inbound-readiness.js?v=ui-batch234-20261027';
 export function fulfilmentMarkup(o,{esc}){
  const label=fulfilmentMethods.find(([id])=>id===o.fulfilmentMethod)?.[1]||'Nog afspreken';
  return `<section class="order-surface"><div class="section-heading"><div><h2>Leverafspraak</h2><p>${esc(label)}</p></div><button type="button" data-action="fulfilment-method" data-id="${esc(o.id)}">Leverwijze kiezen</button></div><p class="form-help">Afhalen, verzenden of bezorgen spreek je afzonderlijk af. Een verzendbedrag bepaalt de leverwijze niet.</p></section>`;

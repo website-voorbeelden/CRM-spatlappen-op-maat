@@ -1,8 +1,8 @@
-import {salesPhaseSignal,adoptedGmailPhase} from './sales-phase-signal.js';
-import {productionReleaseInfo} from './production-release.js';
-import {mailTemplates,fillMailTemplate,templateContext} from './mail-templates.js?v=sales-funnel-20261015';
+import {salesPhaseSignal,adoptedGmailPhase} from './sales-phase-signal.js?v=open-fixes-20261027';
+import {productionReleaseInfo} from './production-release.js?v=ui-batch234-20261027';
+import {mailTemplates,fillMailTemplate,templateContext} from './mail-templates.js?v=mail-texts-20261027';
 import {companyFor} from './companies.js';
-import {inquiryRequirements} from './inquiries.js?v=workspace-search-20261017';
+import {inquiryRequirements} from './inquiries.js?v=ui-batch234-20261027';
 export const funnelPhases=[['new','Nieuwe aanvragen'],['specs','Specificaties opgevraagd'],['pricing','Prijs berekenen'],['indication','Prijsindicatie verstuurd'],['quote','Offerte verstuurd'],['confirmation','Orderbevestiging · wacht op betaling'],['paid','Betaald'],['released','Productie vrijgegeven'],['production','In productie'],['delivered','Geleverd / gearchiveerd']];
 export const funnelPhasesFor=companyId=>companyFor(companyId).salesPhases||funnelPhases;
 export function funnelDisplayPhase(phase,companyId){return companyId==='maatwerkkunststof'&&['confirmation','paid','released'].includes(phase)?'received':phase;}
@@ -10,7 +10,10 @@ export const funnelPhaseLabel=(phase,companyId)=>funnelPhasesFor(companyId).find
 const phaseIds=new Set([...funnelPhases.map(([id])=>id),'invoice','welcome','received']),day=86400000;
 const timestamp=value=>Number.isFinite(Date.parse(value))?Date.parse(value):0;
 export function funnelPayment(state,o){const known=o.items.length>0&&(o.packagePrice!=null||o.items.every(i=>Number.isSafeInteger(i.price)))&&o.shippingKnown!==false;const net=(o.packagePrice??o.items.reduce((s,i)=>s+i.quantity*(i.price||0),0))+(o.shippingCharge||0),total=net+Math.round(net*(o.vat??21)/100),paid=state.payments.filter(p=>p.orderId===o.id).reduce((n,p)=>n+p.amount,0);return {known,total,paid,fullyPaid:known&&total>0&&paid>=total};}
-export function funnelMailEvents(state,o){return (o.emailDrafts||[]).filter(d=>d.status==='accepted'&&timestamp(d.sentAt)).map(d=>{const doc=state.documents.find(x=>x.id===d.documentId),kind=doc?.generated?.kind||doc?.category;return {id:d.id,phase:({quote:'quote',confirmation:'confirmation',invoice:'invoice'})[kind]||d.funnelPurpose||'',at:d.sentAt,source:'mail',review:d.funnelReview};}).filter(e=>phaseIds.has(e.phase)||e.phase==='followup');}
+function mailPhase(state,draft){const doc=state.documents.find(x=>x.id===draft.documentId),kind=doc?.generated?.kind||doc?.category;return ({quote:'quote',confirmation:'confirmation',invoice:'invoice'})[kind]||draft.funnelPurpose||'';}
+// Require a known acceptance, then use explicit document/mail purposes only.
+export function automaticFunnelMailPhase(state,draft){if(draft.status!=='accepted'||!timestamp(draft.sentAt))return '';const phase=mailPhase(state,draft);return ['specs','indication','quote','confirmation'].includes(phase)?phase:'';}
+export function funnelMailEvents(state,o){return (o.emailDrafts||[]).filter(d=>d.status==='accepted'&&timestamp(d.sentAt)).map(d=>({id:d.id,phase:mailPhase(state,d),at:d.sentAt,source:'mail',review:d.funnelReview})).filter(e=>phaseIds.has(e.phase)||e.phase==='followup');}
 export function salesFunnel(state,o,companyId,{now=Date.now(),followupDays=o.salesFunnel?.followupDays||7}={}){
  const payment=funnelPayment(state,o),requirements=inquiryRequirements(o,companyId),events=[...(o.salesFunnel?.events||[]),...funnelMailEvents(state,o)].sort((a,b)=>timestamp(a.recordedAt||a.at)-timestamp(b.recordedAt||b.at));
  for(const [key,phase] of [['quoteSentDate','quote'],['confirmationSentDate','confirmation'],['invoiceSentDate','invoice']])if(timestamp(o[key])&&!events.some(e=>e.phase===phase))events.push({phase,at:o[key],source:'registration'});
@@ -21,18 +24,30 @@ export function salesFunnel(state,o,companyId,{now=Date.now(),followupDays=o.sal
  if(o.productionReleasedDate||o.stage==='Productie vrijgegeven')phase='released';
  if(['In productie','Onderweg naar Nederland','Binnen in Nederland','Verzonden'].includes(o.stage)||o.productionDate)phase='production';
  if(o.archived||o.deliveredDate||o.stage==='Afgerond')phase='delivered';
- const signal=salesPhaseSignal(state,o,funnelDisplayPhase(phase,companyId),events);
- if(o.salesFunnel?.selection?.basis===signal.basis){signal.phase=o.salesFunnel.selection.phase;phase=signal.phase;}
+ const release=productionReleaseInfo(state,o,companyId,{payment});
+ const calendar=Object.fromEntries(new Intl.DateTimeFormat('en',{timeZone:'Europe/Amsterdam',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date(now)).map(part=>[part.type,part.value])),paymentDay=calendar.year+'-'+calendar.month+'-'+calendar.day;
+ const confirmationPrepared=state.documents.some(d=>d.ownerId===o.id&&(d.generated?.kind||d.category)==='confirmation'&&(/\.pdf$/i.test(d.name||'')||d.type==='application/pdf'));
+ const paymentPrepared=companyId==='spatlappen'&&payment.known&&payment.total>payment.paid&&confirmationPrepared&&(o.paymentLinks||[]).some(link=>Number.isSafeInteger(link.amountInCents)&&link.amountInCents>0&&link.url&&(!link.expiryDate||/^\d{4}-\d{2}-\d{2}$/.test(link.expiryDate)&&link.expiryDate>=paymentDay)&&!['CLOSED','EXPIRED','closed','expired'].includes(link.status));
+ const signal=salesPhaseSignal(state,o,funnelDisplayPhase(phase,companyId),events,{automatic:release.automatic,paymentPrepared});
+ const selected=o.salesFunnel?.selection?.basis===signal.basis;
+ if(selected){signal.phase=o.salesFunnel.selection.phase;phase=signal.phase;}
  const gmail=adoptedGmailPhase(state,o,signal);
  if(gmail)phase=gmail.phase;
+ // A real manual/Gmail choice keeps priority; no historical basis migration.
+ const automaticPricing=!selected&&!gmail&&['new','welcome','specs'].includes(phase)&&!requirements.missing.length;
+ if(automaticPricing){phase='pricing';signal.phase=phase;}
+ // Derived readiness: no dates, payment facts or physical stages are written on render.
+ if(release.automatic){phase='released';signal.phase=phase;}
+ else if(paymentPrepared&&!['released','production','delivered'].includes(phase)&&!o.archived){phase='confirmation';signal.phase=phase;}
  const sent=events.filter(e=>['specs','indication','quote','confirmation','invoice','followup'].includes(e.phase)).at(-1);
  const inbound=(state.incomingEmails||[]).filter(m=>m.orderId===o.id&&m.direction!=='outgoing').reduce((n,m)=>Math.max(n,timestamp(m.receivedAt)),0);
  const waiting=['specs','indication','quote','confirmation','invoice'].includes(phase)&&sent&&inbound<=timestamp(sent.at),days=sent?Math.max(0,Math.floor((now-timestamp(sent.at))/day)):null;
  const followup=Boolean(waiting&&days>=followupDays),invoiceSent=events.some(e=>e.phase==='invoice');
- const invoicePrepared=state.documents.some(d=>d.ownerId===o.id&&(d.generated?.kind||d.category)==='invoice'&&/\.pdf$/i.test(d.name||''));
+ const invoicePrepared=state.documents.some(d=>d.ownerId===o.id&&(d.generated?.kind||d.category)==='invoice'&&(/\.pdf$/i.test(d.name||'')||d.type==='application/pdf'));
  const actions={welcome:['specs','Specificaties controleren'],received:['confirmation','Orderbevestiging voorbereiden'],new:['specs','Specificaties opvragen'],specs:['specs','Specificaties controleren'],pricing:['calculate','Prijs berekenen'],indication:['quote','Offerte voorbereiden'],quote:['confirmation','Orderbevestiging voorbereiden'],confirmation:['payment','Betaling registreren'],invoice:['payment','Betaling registreren'],paid:!payment.fullyPaid?['payment','Betaling controleren']:invoiceSent?['production','Productiestart registreren']:['invoice',invoicePrepared?'Factuur mailen':'Factuur maken'],released:(o.items.some(i=>i.productionSource!=='local')?['purchase','Inkoopbestelling controleren']:['production','Productiestart registreren']),production:['delivery','Levering registreren'],delivered:['view','Dossier bekijken']};
  const next=['new','welcome','specs'].includes(phase)&&!requirements.missing.length?['calculate','Prijs berekenen']:actions[phase]||actions.new;
- return {phase,signal,gmail,displayPhase:funnelDisplayPhase(phase,companyId),label:funnelPhaseLabel(phase,companyId),payment,missing:requirements.missing,fields:requirements.fields,invoicePrepared,invoiceSent,sentAt:sent?.at||'',daysSinceContact:days,hasSavedReply:!!sent&&inbound>timestamp(sent.at),followup,next,events};
+ const automaticMail=!selected&&!gmail&&last?.source==='mail'&&['specs','indication','quote','confirmation'].includes(last.phase)&&phase===last.phase?{id:last.id,phase:last.phase}:null;
+ return {phase,signal,gmail,automaticMail,automaticPricing:automaticPricing&&phase==='pricing'&&!selected&&!gmail,automaticRelease:release.automatic,paymentPrepared,confirmationPrepared,displayPhase:funnelDisplayPhase(phase,companyId),label:funnelPhaseLabel(phase,companyId),payment,missing:requirements.missing,fields:requirements.fields,invoicePrepared,invoiceSent,sentAt:sent?.at||'',daysSinceContact:days,hasSavedReply:!!sent&&inbound>timestamp(sent.at),followup,next,events};
 }
 export function registerFunnel(state,id,{phase,at,note='',expected,followupDays=7},{uuid=()=>crypto.randomUUID(),companyId=''}={}){
  if(!Number.isInteger(followupDays)||followupDays<1||followupDays>365)throw Error('Kies een opvolgtermijn tussen 1 en 365 dagen.');
@@ -41,7 +56,7 @@ export function registerFunnel(state,id,{phase,at,note='',expected,followupDays=
  if(expected!==JSON.stringify(o))throw Error('Dit dossier is intussen gewijzigd. Open de fase opnieuw.');
  const payment=funnelPayment(state,o);
  if(phase==='released'){const info=productionReleaseInfo(state,o,companyId,{payment});if(!info.eligible)throw Error(info.reasons.join(' '));o.productionDepositPercent=info.percentage;}
- const released=companyId==='spatlappen'&&Boolean(o.productionReleasedDate)&&productionReleaseInfo(state,o,companyId,{payment}).eligible;
+ const release=productionReleaseInfo(state,o,companyId,{payment}),released=companyId==='spatlappen'&&release.eligible&&(Boolean(o.productionReleasedDate)||release.automatic);
  if((phase==='paid'||phase==='production'&&!released)&&!payment.fullyPaid)throw Error('Registreer eerst de volledige betaling en controleer prijzen en verzendkosten.');
  if(phase==='production'&&!released&&!o.invoiceSentDate&&!(o.salesFunnel?.events||[]).some(e=>e.phase==='invoice')&&!funnelMailEvents(state,o).some(e=>e.phase==='invoice'))throw Error('Registreer eerst dat de factuur is verstuurd.');
  const event={id:uuid(),phase,at,recordedAt:new Date().toISOString(),note:String(note).slice(0,2000)};o.salesFunnel??={events:[]};o.salesFunnel.events.push(event);o.salesFunnel.followupDays=followupDays;
@@ -60,12 +75,13 @@ export function funnelMail(state,o,companyId,purpose){
  return {templateId,...(thread?{gmailThreadId:thread.gmailThreadId,gmailMailbox:thread.mailbox,replyMessageId:last?.messageHeader||''}:{}),subject:filled?.subject||(purpose==='indication'?'Prijsindicatie':'Even terugkomen op je aanvraag')+' · #'+(o.sourceNumber||o.number),body:filled?.body||greeting+body+'\n\nMet vriendelijke groet,\n'+company};
 }
 
-// New sent messages remain facts, but only explicit approval changes the sales phase.
+// Legacy pending proposals retain their review route. New known acceptances may
+// already be confirmed by the user-selected automatic mail-phase policy.
 export function pendingFunnelMail(state,o,companyId){
  const latest=funnelMailEvents(state,o).filter(e=>['specs','indication','quote','confirmation'].includes(e.phase)).sort((a,b)=>timestamp(a.at)-timestamp(b.at)).at(-1);
  if(!latest||latest.review!=='pending')return null;
  const f=salesFunnel(state,o,companyId);
- if(['paid','production','delivered'].includes(f.phase)||f.phase===latest.phase)return null;
+ if(['paid','released','production','delivered'].includes(f.phase)||f.phase===latest.phase)return null;
  // A later manual registration takes precedence over an older mail suggestion.
  if((o.salesFunnel?.events||[]).some(e=>timestamp(e.recordedAt||e.at)>timestamp(latest.at)))return null;
  return latest;

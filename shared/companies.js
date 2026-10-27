@@ -7,11 +7,12 @@ const profiles = {
 export function companyFor(id='spatlappen') {if(!Object.hasOwn(profiles,id))throw Error('Onbekende bedrijfsversie.');return Object.freeze({...profiles[id]});}
 export function companyFromEnv(env) {return companyFor(env.CRM_COMPANY_ID || 'spatlappen');}
 export function toolUrl(company, order, item, mode='local') {
+ const runtime=typeof mode==='object'?mode:{mode},storageMode=runtime.mode;
  const q=new URLSearchParams({orderId:order.id,itemId:item.id});
  if(company.tool==='costing'&&item.costQuoteLink?.quoteId)q.set('quoteId',item.costQuoteLink.quoteId);
- if(mode==='cloud')q.set('storage','cloud');
+ if(storageMode==='cloud')q.set('storage','cloud');
  if(company.tool==='design') {q.set('unit','cm');if(item.width)q.set('w',String(item.width/10));if(item.height)q.set('h',String(item.height/10));q.set('qty',String(item.quantity));}
- return (company.tool==='costing'&&(mode==='local'||item.costCalculation?.version===2)?'/tools/costing-v2/index.html':company.toolPath)+'?'+q;
+ return (company.tool==='costing'&&(storageMode==='local'||runtime.features?.costingV2===true||item.costCalculation?.version===2)?'/tools/costing-v2/index.html':company.toolPath)+'?'+q;
 }
 
 export function costingV2Url(order,item){return '/tools/costing-v2/index.html?'+new URLSearchParams({orderId:order.id,itemId:item.id});}

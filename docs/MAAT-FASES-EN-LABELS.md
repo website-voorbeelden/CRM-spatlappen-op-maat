@@ -1,3 +1,5 @@
+> Actuele bediening26oktober: Gesprekslabels → Meer → Gmail & fase-instellingen. Gewone CRM-labels blijven gescheiden; conflicten tonen actuele labels zonder antwoord te vervangen. [Batch4](BATCH4-MAIL-EN-CRM-20261026.md) is alleen lokaal bronwerk, geen provideractie of wijziging van scopes. Oudere knoproutes hieronder zijn historisch.
+
 # Maatwerkkunststof: verkoopfases en mail-labels
 
 **Aanvulling 21 oktober:** [Automatische fasesynchronisatie](GMAIL-FASESYNCHRONISATIE.md) is nu als lokale bron toegevoegd na nieuwe gebruikersopdracht. Onderstaande individuele reviewroute blijft beschikbaar, maar is niet meer de enige voorbereide route. Nog geen activering, tests of publicatie.

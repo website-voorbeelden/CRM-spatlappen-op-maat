@@ -1,6 +1,6 @@
 import {inventoryOf,stockCount,pendingCount} from './inventory.js?v=workspace-search-20261017';
 import {companyFor,displayOrderStage} from './companies.js';
-import {normalizeAssistantPageContext} from './assistant-page-context.js';
+import {normalizeAssistantPageContext} from './assistant-page-context.js?v=payments-overview-20261027';
 import {aiOrderDates} from '../admin/ai-import.js?v=maat-cleanup-20261021';
 import {supplierInvoices} from '../admin/supplier-costs.js';
 

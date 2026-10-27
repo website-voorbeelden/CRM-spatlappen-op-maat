@@ -1,7 +1,7 @@
-import {validateTaskProgressList} from '../shared/planning/progress.js?v=build-triage-20261021';
-import {openBrowserDatabase,openDesignDatabase,cloudRequest,uploadCloudFile,readCloudFile,commitCloud,blobDigest,storageRuntime} from './cloud-storage.js';
+import {validateTaskProgressList} from '../shared/planning/progress.js?v=ui-batch4-followup-20261027';
+import {openBrowserDatabase,openDesignDatabase,cloudRequest,uploadCloudFile,readCloudFile,commitCloud,blobDigest,storageRuntime} from './cloud-storage.js?v=crm-code-review-20261027';
 
-import {validateBusinessState} from '../shared/state-validation.js';
+import {validateBusinessState} from '../shared/state-validation.js?v=ui-batch234-20261027';
 import {companyFor} from '../shared/companies.js';
 function read(db,names) {
   return new Promise((resolve,reject)=>{

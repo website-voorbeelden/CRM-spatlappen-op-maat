@@ -1,39 +1,50 @@
+import {orderPaymentStatusLabel} from '../shared/order-payment-status.js?v=ui-batch3-followup-20261027';
+import {orderExtraFilterLabels,extraFilterSummary} from './workspace/list-filters.js?v=ui-batch3-followup-20261027';
+import {createOrderTerms} from './documents/order-terms.js?v=ui-batch234-20261027';
+import {orderListMarkup} from './orders/list.js?v=ui-batch3-followup-20261027';
+import {createMobileNotifications} from './notifications/client.js?v=payment-alerts-20261027';
+import {createPaymentNotifications} from './payments/notifications.js?v=payment-alerts-20261027';
+import {storeTransaction,synchronousTransactionResult} from './workspace/transactions.js?v=crm-code-review-20261027';
+import {copyOrder} from '../shared/order-copy.js?v=crm-code-review-20261027';
+import {createDossierActions} from './workspace/dossier-actions.js?v=crm-code-review-20261027';
+import {createDossierPreferences,orderSortOptions} from './workspace/dossier-preferences.js?v=ui-batch3-followup-20261027';
+import {createWebsiteDossier} from './analytics/dossier.js?v=inquiry-headers-20261023';
 import {orderStagesFor,displayOrderStage} from '../shared/companies.js';
-import {createAutomaticPhaseSync} from './mail/automatic-phase-sync.js?v=phase-auto-20261021';
-import {createPhaseLabelSync} from './mail/phase-label-sync.js?v=feedback-launcher-20261020';
+import {createAutomaticPhaseSync} from './mail/automatic-phase-sync.js?v=ui-batch234-20261027';
+import {createPhaseLabelSync} from './mail/phase-label-sync.js?v=ui-batch234-20261027';
 import {saveOnlineAssistantPlan} from './assistant/online-plan.js?v=feedback-launcher-20261020';
 import {vatProtectedOrder} from '../shared/vat-ledger.js';
-import {createOverviewSettings} from './workspace/overview-settings.js?v=money-basis-20261021';
+import {createOverviewSettings} from './workspace/overview-settings.js?v=mobile-push-20261023';
 import {installSectionTabs,syncSectionTabs} from './workspace/section-tabs.js';
-import {createGeneratedDocumentForms} from './documents/generated-forms.js?v=invoice-payment-status-20261021';
-import {createDocumentWorkspace} from './documents/library-workspace.js?v=invoice-payment-status-20261021';
-import {createCustomerDossier} from './customers/dossier.js?v=customer-review-20261019';
-import {createOrderWorkspace} from './orders/workspace.js?v=product-thickness-20261021';
-import {createOrderPlanning} from './orders/planning.js?v=order-progress-20261021';
-import {createOrderAddresses} from './orders/addresses.js';
-import {createProductImages} from './products/images.js?v=maat-cleanup-20261021';
+import {createGeneratedDocumentForms} from './documents/generated-forms.js?v=ui-batch234-20261027';
+import {createDocumentWorkspace} from './documents/library-workspace.js?v=ui-batch234-20261027';
+import {createCustomerDossier} from './customers/dossier.js?v=crm-code-review-20261027';
+import {createOrderWorkspace} from './orders/workspace.js?v=ui-batch3-followup-20261027';
+import {createOrderPlanning} from './orders/planning.js?v=ui-batch234-20261027';
+import {createOrderAddresses,deliveryEditBasis} from './orders/addresses.js?v=crm-code-review-20261027';
+import {createProductImages} from './products/images.js?v=ui-batch234-20261027';
 import {createPurchaseWorkspace} from './purchases/batch-workspace.js?v=delivery-map-20261021';
 import {createMailAttachments} from './mail/attachments.js';
-import {createMailComposer} from './mail/composer.js?v=signatures-20261021';
-import {createAiImportFlow} from './inquiries/ai-import-flow.js?v=maat-cleanup-20261021';
-import {createAnalyticsWorkspace} from './analytics/workspace.js?v=delivery-map-20261021';
-import {financialChartMarkup,mountFinancialChart} from './analytics/financial-chart.js';
+import {createMailComposer} from './mail/composer.js?v=ui-batch4-followup-20261027';
+import {createAiImportFlow} from './inquiries/ai-import-flow.js?v=central-overview-20261027';
+import {createAnalyticsWorkspace} from './analytics/workspace.js?v=ui-batch234-20261027';
+import {financialChartMarkup,mountFinancialChart} from './analytics/financial-chart.js?v=analytics-workspace-20261024';
 import {invoicePaymentSelection,invoicePaymentNote} from '../shared/invoice-payments.js';
-import {invoicePaymentsMarkup} from './documents/payment-selection.js';
+import {invoicePaymentsMarkup} from './documents/payment-selection.js?v=batch2-payments-20261023';
 import {namedCostSummary} from '../shared/named-costs.js';
 import {namedCostsMarkup,installNamedCosts} from './orders/named-costs.js';
-import {releaseMarkup,createReleaseUI} from './orders/production-release.js?v=money-basis-20261021';
-import {paymentCorrectionHistory,createPaymentCorrectionUI} from './orders/payment-corrections.js?v=money-basis-20261021';
+import {releaseMarkup,createReleaseUI} from './orders/production-release.js?v=ui-batch234-20261027';
+import {paymentCorrectionHistory,createPaymentCorrectionUI} from './orders/payment-corrections.js?v=batch2-payments-20261023';
 import {batchEconomicsMarkup,deliveryScenarioMarkup,installBatchEconomics} from './purchases/economics.js';
 import {installPrimaryImage} from './products/primary-image.js?v=maat-cleanup-20261021';
 import {installCustomerNumberSettings} from './customers/number-settings.js';
-import {batchPackingMarkup,installBatchPacking} from './purchases/packing.js';
-import {arrivalButton,installArrivalMail} from './purchases/arrival.js';
+import {batchPackingMarkup,installBatchPacking} from './purchases/packing.js?v=ui-batch234-20261027';
+import {arrivalButton,installArrivalMail} from './purchases/arrival.js?v=ui-batch234-20261027';
 import {guardPurchaseLink,latePurchase,batchDocumentKinds} from '../shared/purchase-workflow.js';
 import {transitAcknowledgement,installTransitWarning,batchDocumentsMarkup,batchArchiveButton,installPurchaseWorkflow} from './purchases/workflow.js';
 import {htmlSignatureMessage,signatureFrame} from '../shared/mail-signature.js?v=signatures-20261021';
-import {fulfilmentMarkup,installFulfilment} from './orders/fulfilment.js';
-import {replaceBuildTasks} from './workspace/build-task-store.js';
+import {fulfilmentMarkup,installFulfilment} from './orders/fulfilment.js?v=ui-batch234-20261027';
+import {replaceBuildTasks} from './workspace/build-task-store.js?v=ui-batch4-followup-20261027';
 import {preferredOpenPurchase,isOpenPurchase} from '../shared/purchase-default.js';
 import {sampleOrderFields,readSampleFields,sampleOrderSummary} from './products/sample-order.js';
 import {customerExecutionDetails,readExecutionFields} from '../shared/product-specifications.js?v=product-thickness-20261021';
@@ -42,65 +53,70 @@ import {decimalNumber} from '../shared/decimal-input.js';
 import {applyCompanyFavicon} from './branding.js';
 import {isReviewMode,prepareReview,reviewBannerMarkup,installReviewGuard} from './offline/review.js';
 installReviewGuard(message=>toast(message));
-import {mountWebsiteAnalytics,analyticsTabs} from './analytics/website.js?v=maat-analytics-agent-20261020';
-import {mountGoogleAnalytics} from './analytics/google.js?v=maat-analytics-agent-20261020';
-import {orderReadiness} from '../shared/order-readiness.js?v=order-progress-20261021';
+import {mountWebsiteAnalytics,analyticsTabs} from './analytics/website.js?v=weekly-analytics-20261027';
+import {mountGoogleAnalytics} from './analytics/google.js?v=weekly-analytics-20261027';
+import {orderReadiness} from '../shared/order-readiness.js?v=ui-batch234-20261027';
 import {createWorkspaceSearch,searchLauncherMarkup} from './search/workspace-search.js?v=stable-search-20261017';
-import {documentReplyContext,documentReplyChoices} from '../shared/document-mail-context.js';
-import {createCustomerViews} from './customers/views.js?v=customer-review-20261019';
-import {navigationMarkup} from './workspace/navigation.js?v=workspace-plan-20261016';
-import {createBuildTasks} from './workspace/development-plan.js?v=delivery-map-20261021';
-import {markProvenance} from '../shared/provenance.js';
-import {provenanceText,markFormSources,markGeneratedMail,mailFormProvenance,formRecordProvenance} from './provenance-ui.js';
-import {installSidebar,createUsagePreferences} from "./workspace/preferences.js";
-import {createSalesFunnelUI} from './sales-funnel.js?v=order-progress-20261021';
+import {documentReplyContext,documentReplyChoices} from '../shared/document-mail-context.js?v=crm-code-review-20261027';
+import {createCustomerViews} from './customers/views.js?v=ui-batch3-followup-20261027';
+import {navigationMarkup,workspaceContextMarkup} from './workspace/navigation.js?v=ui-batch1-20261027';
+import {createBuildTasks} from './workspace/development-plan.js?v=ui-batch4-followup-20261027';
+import {markProvenance} from '../shared/provenance.js?v=provenance-colors-20261027';
+import {provenanceText,markFormSources,markGeneratedMail,mailFormProvenance,formRecordProvenance} from './provenance-ui.js?v=provenance-colors-20261027';
+import {installSidebar,createUsagePreferences} from "./workspace/preferences.js?v=ui-batch1-20261027";
+import {createSalesFunnelUI} from './sales-funnel.js?v=ui-batch234-20261027';
 import {createInventoryUI} from './inventory.js?v=workspace-search-20261017';
-import {orderCostingMarkup,focusOrderCosting} from "./orders/costing.js?v=direct-actions-20261016";
-import {customerWithSources,inquiryWithSources,reviewSpecsProposal} from '../shared/inquiries.js?v=inquiry-form-20261021';
-import {createInquiryMailUI} from './inquiry-mail.js?v=workspace-search-20261017';
-import {createInquiryUI} from './inquiry-ui.js?v=inquiry-form-20261021';
-import {installMobileUI} from './mobile-ui.js';
+import {orderCostingMarkup,focusOrderCosting} from "./orders/costing.js?v=analytics-workspace-20261024";
+import {customerWithSources,inquiryWithSources,reviewSpecsProposal} from '../shared/inquiries.js?v=ui-batch234-20261027';
+import {createInquiryMailUI} from './inquiry-mail.js?v=ui-batch234-20261027';
+import {createInquiryUI} from './inquiry-ui.js?v=ui-batch2-resume-20261027';
+import {installMobileUI} from './mobile-ui.js?v=batch1-mobile-20261023';
 import {reviewAssistantMail} from '../shared/assistant-mail.js';
 import {runGuidedAction,showGuidance,guidanceMarkup,installGuidedActions} from './guided-actions.js';
-import {openInlineFormTask} from './inline-tasks.js?v=build-triage-20261021';
-import {costingPickerMarkup,installCostingPickers,readCostingLink,validateCostingSources,finishCostingItem,purchaseCalculationMarkup,installPurchaseCalculation} from './costing-links.js?v=build-triage-20261021b';
-import {formProblem,focusFormField,showFormProblem,textFormValues,changedFormValues,restoreFormValues,validateForm,installFormGuidance,hasActiveFormEdits,installFormEditProtection} from './form-guidance.js?v=form-protection-20261019';
-import {documentRemovalInfo,removeDocument} from '../shared/document-removal.js';
+import {openInlineFormTask} from './inline-tasks.js?v=crm-code-review-20261027';
+import {costingPickerMarkup,installCostingPickers,readCostingLink,validateCostingSources,finishCostingItem,purchaseCalculationMarkup,installPurchaseCalculation} from './costing-links.js?v=provenance-colors-20261027';
+import {formProblem,focusFormField,showFormProblem,textFormValues,changedFormValues,restoreFormValues,validateForm,installFormGuidance,hasActiveFormEdits,installFormEditProtection} from './form-guidance.js?v=crm-code-review-20261027';
+import {documentRemovalInfo,removeDocument} from '../shared/document-removal.js?v=crm-code-review-20261027';
 import {documentBundles,documentFormat,documentVersionGroups} from "./documents/library.js?v=workspace-search-20261017";
-import {canReviseDocument,appendDocumentRevision,documentVersion,documentVersionLabel} from '../shared/document-revisions.js';
-import {openDocumentRevision} from './documents/revision-editor.js?v=product-thickness-20261021';
+import {canReviseDocument,appendDocumentRevision,documentVersion,documentVersionLabel,documentDownloadName} from '../shared/document-revisions.js?v=batch4-editor-20261023';
+import {openDocumentRevision} from './documents/revision-editor.js?v=crm-code-review-20261027';
 import {createCategoryPreferences,installCategoryReorder,documentLayoutToolbar,documentLayoutAttributes} from "./documents/layout.js?v=workflow-ux-20261015";
-import {previewDocument,createDocumentPreview} from "./documents/preview.js";
+import {previewDocument,createDocumentPreview} from "./documents/preview.js?v=batch2-payments-20261023";
 import {loading} from './loading.js';
-import {createAiExportUI} from './ai-export.js?v=ai-export-20261014';
-import {applyShippingPrice,shippingPriceSignature} from '../shared/order-repairs.js';
+import {createAiExportUI} from './ai-export.js?v=payments-overview-20261027';
+import {applyShippingPrice,shippingPriceSignature} from '../shared/order-repairs.js?v=crm-code-review-20261027';
 import {emailDocuments,emailSender,documentMail,mailStatusLabel,emailIsFullyPaid} from '../shared/mail-workflow.js';
-import {prepareQuickReplyDraft,saveQuickReplyDraft} from '../shared/mail-drafts.js?v=signatures-20261021';
-import {mailOwner,mailOwnerSignature,assertMailStorage} from '../shared/mail-inbox.js?v=workspace-search-20261017';
-import {standardTemplateMail,templateContext,checkMailText} from '../shared/mail-templates.js?v=workflow-ux-20261015';
-import {createMailTemplatesUI} from "./mail/templates.js?v=maat-cleanup-20261021";
-import {createMailInboxUI,request as gmailRequest} from './mail-inbox.js?v=signatures-20261021';
-import {emailAvailable,emailRequest,emailSettingsMarkup,installEmailSettings,openInlineEmailSettings,pdfEmailAttachment} from './email-service.js?v=signatures-20261021';
-import {installAssistant} from './assistant.js?v=delivery-map-20261021';
-import {assistantPageContext} from '../shared/assistant-page-context.js?v=delivery-map-20261021';
-import {applyAssistantPlan,assistantSnapshot} from '../shared/assistant-domain.js?v=vat-quarter-20261019';
+import {prepareQuickReplyDraft,saveQuickReplyDraft} from '../shared/mail-drafts.js?v=provenance-colors-20261027';
+import {mailOwner,mailOwnerSignature,assertMailStorage} from '../shared/mail-inbox.js?v=crm-code-review-20261027';
+import {standardTemplateMail,templateContext,checkMailText} from '../shared/mail-templates.js?v=mail-texts-20261027';
+import {createMailTemplatesUI} from "./mail/templates.js?v=provenance-colors-20261027";
+import {createMailInboxUI,request as gmailRequest} from './mail-inbox.js?v=ui-batch234-20261027';
+import {emailAvailable,emailRequest,emailSettingsMarkup,installEmailSettings,openInlineEmailSettings,pdfEmailAttachment} from './email-service.js?v=crm-code-review-20261027';
+import {installAssistant} from './assistant.js?v=ui-batch234-20261027';
+import {assistantPageContext} from '../shared/assistant-page-context.js?v=payments-overview-20261027';
+import {applyAssistantPlan,assistantSnapshot} from '../shared/assistant-domain.js?v=ui-batch234-20261027';
 import {createSessionUndo} from './session-undo.js';
-import {companyFor,toolUrl} from '../shared/companies.js?v=online-integrations-20261016';
-import {openCrmDatabase,storageRuntime,startCloudRefresh} from './cloud-storage.js';
-import {migrationPanel,installMigration,backupBlob,parseBackup,readCloudPackage,replaceDesigns,readBrowserPackage} from './cloud-migration.js?v=build-triage-20261021';
+import {companyFor,toolUrl} from '../shared/companies.js?v=analytics-workspace-20261024';
+import {openCrmDatabase,storageRuntime,startCloudRefresh} from './cloud-storage.js?v=crm-code-review-20261027';
+import {migrationPanel,installMigration,backupBlob,parseBackup,readCloudPackage,replaceDesigns,readBrowserPackage} from './cloud-migration.js?v=ui-batch4-followup-20261027';
 import {ensureCustomerNumbers} from "./customers/numbers.js?v=documents-flexible-20261010";
-import {defaultOrderSearch,defaultCustomerSearch,searchOrderItems,orderDossierLabel,searchCustomers,orderFilterError,quoteOutcomeOptions} from "./workspace/dossier-search.js?v=product-thickness-20261021";
-import {installFeedback} from './feedback.js?v=feedback-launcher-20261020';
+import {defaultOrderSearch,defaultCustomerSearch,searchOrderItems,orderDossierLabel,searchCustomers,orderFilterError,quoteOutcomeOptions} from "./workspace/dossier-search.js?v=ui-batch3-followup-20261027";
+import {installFeedback} from './feedback.js?v=crm-code-review-20261027';
 import { renderDeliveryMap, renderOrdersMap } from "./orders/delivery-map.js?v=delivery-map-20261021";
 import { importLocalOrders } from './local-import.js?v=documents-types-20261010';
 import {supplierInvoices,invoiceFinance,supplierFinance,physicalQuantity,syncSupplierInvoiceCosts,itemCostTotal} from "./purchases/costs.js?v=invoices-20261009-2";
 import {customerAiPrompt,orderAiPrompt,supplierAiPrompt,parseAiAnswer,normalizeAiOrder,normalizeAiSupplier,aiOrderDates,aiSupplierKeys} from './ai-import.js?v=maat-cleanup-20261021';
 import {documentTypes,nextDocumentNumber,addressParts,renderConfirmation,customerDocumentItems,packingSlipItems} from "./documents/generation.js?v=product-thickness-20261021";
-import {paymentBasis,requestedAmount,applyTikkiePayments} from "./orders/payment-workflow.js?v=documents-types-20261010";
+import {paymentBasis,requestedAmount,applyTikkiePayments} from "./orders/payment-workflow.js?v=mobile-push-20261023";
+import {createPaymentsWorkspace} from './payments/workspace.js?v=ui-batch3-followup-20261027';
 
 // Live getters preserve state replacement and route changes across asynchronous feature actions.
 const appContext={
+ get orderTerms(){return orderTerms;},
+ get emailDraftForm(){return emailDraftForm;},
+ get refreshExternalState(){return refreshExternalState;},
  get $(){return $;},
+ get websiteDossier(){return websiteDossier;},
  get acceptedImageTypes(){return acceptedImageTypes;},
  get addDocuments(){return addDocuments;},
  get saveMailAttachment(){return mailAttachments.save;},
@@ -143,6 +159,7 @@ const appContext={
  get customerKeys(){return customerKeys;},
  get customerOrders(){return customerOrders;},
  get customerPrompt(){return customerPrompt;},
+ get mobileNotifications(){return mobileNotifications;},
  get customerSearch(){return customerSearch;}, set customerSearch(value){customerSearch=value;},
  get customerViews(){return customerViews;},
  get customerWithSources(){return customerWithSources;},
@@ -305,7 +322,6 @@ const appContext={
  get safePaymentUrl(){return safePaymentUrl;},
  get sampleOrderFields(){return sampleOrderFields;},
  get sampleOrderSummary(){return sampleOrderSummary;},
- get save(){return save;},
  get saveQuickReplyDraft(){return saveQuickReplyDraft;},
  get shell(){return shell;},
  get shippingPriceSignature(){return shippingPriceSignature;},
@@ -345,6 +361,8 @@ const appContext={
  get validateCostingSources(){return validateCostingSources;},
  get validateForm(){return validateForm;},
 };
+const websiteDossier=createWebsiteDossier(appContext);
+const paymentsWorkspace=createPaymentsWorkspace(appContext);
 const {renderSettings,renderDashboard}=createOverviewSettings(appContext);
 const {shippingPriceForm,editGeneratedDocument,confirmationSignature,confirmationForm,packingSlipForm}=createGeneratedDocumentForms(appContext);
 const {orderedDocumentCategories,documentsForOwner,documentSource,documentPreviewButton,documentFile,documentDeleteButton,deleteDocumentForm,documentBundleCard,documentCreateButton,documentCreationForm,documents,addDocuments,upload,clearDropHighlights,downloadBlob}=createDocumentWorkspace(appContext);
@@ -354,6 +372,7 @@ const {elapsed,paidDate,compactWorkflow,orderSummaryRows,addCalendarDays,calenda
 const {deliveryDetails,billingDetails,orderContactBlock,billingBlock,billingForm,deliveryValues,deliveryBlock,deliveryForm,updateDeliveryDraft}=createOrderAddresses(appContext);
 const {isDocumentImage,productImages,imageTag,renderDocumentImages,productImageActions,productImageCard,uploadProductImage,viewProductImage,markProductImage}=createProductImages(appContext);
 const {purchase,supplierItems,purchaseOrders,dutyAmount,dutyFields,readDuty,updateDutyPreview,purchaseInfo,allocationWeight,allocatedAmount,allocatedCost,freightShareDescription,purchaseSelect,linkPurchaseForm,renderPurchases,renderPurchase,invoiceButton,supplierInvoiceView,invoiceLineFields,updateInvoiceTotal,persistSupplierInvoice,supplierInvoiceForm,supplierPaymentForm,purchaseForm}=createPurchaseWorkspace(appContext);
+const orderTerms=createOrderTerms(appContext);
 const mailAttachments=createMailAttachments(appContext);
 const {saveQuickEmailDraft,quickEmailPreview,newInboxMail,analyseInquiry,startInvoiceMail,openAssistantMail,emailDraftForm,prepareEmailPreview}=createMailComposer(appContext);
 const {aiCustomerForm,aiImportDialog,aiOrderForm,aiPaymentFields,readAiPayments,reviewAiOrder,updateAiOrderCosts,aiAttachmentFields,aiSupplierForm,supplierLineChoices,aiSupplierLineFields,updateAiSupplierChoices,reviewAiSupplier}=createAiImportFlow(appContext);
@@ -379,9 +398,11 @@ if(runtime.mode==='cloud'&&navigator.serviceWorker)void navigator.serviceWorker.
 const rawDb=await openCrmDatabase().catch(error=>{finishStartup({error:true});document.querySelector('#app').textContent='Opslag openen mislukt: '+error.message;throw error;});
 const sessionUndo=createSessionUndo(rawDb,{onChange:refreshUndoButton,getRoute:()=>location.hash});
 const db=sessionUndo.db;
-function store(name,mode,fn){if(name==='state'&&mode==='readwrite')beginLocalStateChange();return new Promise((resolve,reject)=>{const tx=db.transaction(name,mode);let result;const r=fn(tx.objectStore(name));if(r)r.onsuccess=()=>result=r.result;tx.oncomplete=()=>{if(name==='state'&&mode==='readwrite')notifyDataChanged();resolve(result);};tx.onerror=()=>reject(tx.error);tx.onabort=()=>reject(tx.error);});}
+const dossierActions=createDossierActions(appContext);
+function store(name,mode,fn){if(name==='state'&&mode==='readwrite')beginLocalStateChange();return storeTransaction(db,name,mode,fn,{onCommitted:()=>{if(name==='state'&&mode==='readwrite')notifyDataChanged();}});}
 let state = await store('state','readonly',s=>s.get('main')).catch(error=>{finishStartup({error:true});document.querySelector('#app').textContent='Gegevens laden mislukt: '+error.message;throw error;}) || {customers:[],orders:[],payments:[],documents:[],activities:[]};
 state.purchases ??= [];
+const paymentNotifications=createPaymentNotifications({company,getState:()=>state,euro:value=>euro(value),toast:message=>toast(message)});
 let analyticsPeriod='all';
 let orderMapFilter='production',orderMapPurchase='';
 let orderView={id:'',tab:'overview'};
@@ -392,7 +413,7 @@ const deliveryDrafts=new Map();
 const dataChannel=typeof BroadcastChannel==='function'?new BroadcastChannel(company.id+'-crm-changes'):null;
 let externalRefreshSeq=0,pendingExternalRefresh=false;
 function beginLocalStateChange(){if(pendingExternalRefresh)throw Error('Gegevens zijn bijgewerkt in een ander CRM-tabblad. Annuleer je bewerking en open deze opnieuw om met de nieuwste gegevens te werken.');externalRefreshSeq++;}
-function notifyDataChanged(){dataChannel?.postMessage('changed');document.dispatchEvent(new Event('crm-data-changed'));}
+function notifyDataChanged(){paymentNotifications.observe(state);dataChannel?.postMessage('changed');document.dispatchEvent(new Event('crm-data-changed'));}
 // The callback must be synchronous: read and merge in one IndexedDB transaction.
 async function mergeStoredState(mutate){
  externalRefreshSeq++;
@@ -401,7 +422,7 @@ async function mergeStoredState(mutate){
   const tx=db.transaction('state','readwrite'),ss=tx.objectStore('state'),r=ss.get('main');
   r.onsuccess=()=>{try{
    next=r.result||{customers:[],orders:[],payments:[],documents:[],activities:[]};next.purchases??=[];
-   result=mutate(next);ensureCustomerNumbers(next);ss.put(next,'main');
+   result=synchronousTransactionResult(mutate(next));ensureCustomerNumbers(next);ss.put(next,'main');
   }catch(error){tx.abort();reject(error);}};
   tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error);tx.onabort=()=>reject(tx.error||Error('Opslaan afgebroken. Probeer opnieuw.'));
  });
@@ -409,23 +430,26 @@ async function mergeStoredState(mutate){
 }
 installFormEditProtection(document);
 function editingLocally(){return deliveryDrafts.size>0||Boolean(document.querySelector('dialog[open]'))||hasActiveFormEdits(document);}
-async function refreshExternalState(){
- if(editingLocally())return;
+async function refreshExternalState({throwOnError=false}={}){
+ if(editingLocally())return {updated:false,reason:'Sla je openstaande bewerking eerst op of sluit deze.'};
  const seq=++externalRefreshSeq;
  try{
   const latest=await store('state','readonly',s=>s.get('main'));
-  if(seq!==externalRefreshSeq)return;
-  if(editingLocally())return;
-  if(latest){sessionUndo.observe(latest);state=latest;state.purchases??=[];state.orders.forEach(syncSingleOrderDelivery);render();}
+  if(seq!==externalRefreshSeq)return {updated:false,reason:'Er is intussen een andere wijziging verwerkt. Probeer bijwerken opnieuw.'};
+  if(editingLocally())return {updated:false,reason:'Je openstaande invoer is behouden. Werk na het opslaan opnieuw bij.'};
+  if(latest){sessionUndo.observe(latest);state=latest;state.purchases??=[];state.orders.forEach(syncSingleOrderDelivery);paymentNotifications.observe(state);render();}
   pendingExternalRefresh=false;
- }catch{/* A failed focus refresh is not evidence of a change in another tab. */}
+  return {updated:!!latest,reason:latest?'':'Er zijn nog geen opgeslagen CRM-gegevens gevonden.'};
+ }catch(error){if(throwOnError)throw error;/* A failed focus refresh is not evidence of a change in another tab. */}
 }
 dataChannel?.addEventListener('message',()=>{pendingExternalRefresh=true;refreshExternalState();});
 window.addEventListener('focus',()=>refreshExternalState());
 document.addEventListener('close',()=>{if(pendingExternalRefresh)refreshExternalState();},true);
-let search='', filter='', sort='number', ascending=false;
-let orderSearch=defaultOrderSearch(),customerSearch=defaultCustomerSearch();
-async function save(message){ensureCustomerNumbers(state);state.orders.forEach(syncSingleOrderDelivery);if(message)state.activities.unshift({id:uid(),message,time:new Date().toISOString()});await store('state','readwrite',s=>s.put(state,'main'));render();if(message)toast(message);}
+const mobileNotifications=createMobileNotifications({company,runtime});
+const dossierPreferences=createDossierPreferences(company.id);
+const initialOrderSort=dossierPreferences.orderSort().split(':');
+let search='', filter='', sort=initialOrderSort[0], ascending=initialOrderSort[1]==='asc';
+let orderSearch=defaultOrderSearch(),customerSearch=defaultCustomerSearch(dossierPreferences.customerSort());
 let toastTimer=null,toastSequence=0;
 function toast(text){
  toastSequence++;clearTimeout(toastTimer);const box=$('#toast');box.textContent=text;box.style.display='block';
@@ -441,7 +465,7 @@ const inboxUI=createMailInboxUI({saveAttachment:mailAttachments.save,getState:()
 const openProductionRelease=createReleaseUI({getState:()=>state,company,openForm,mergeStoredState,render,toast,euro,esc,today});
 const automaticPhaseSync=createAutomaticPhaseSync({company,runtime,getState:()=>state,loadState:()=>store('state','readonly',s=>s.get('main')),mergeStoredState,request:gmailRequest,openForm,toast,render,isEditing:editingLocally});
 const phaseLabelSync=createPhaseLabelSync({company,getState:()=>state,request:gmailRequest,openForm,toast});
-const funnelUI=createSalesFunnelUI({isAutoPhaseSync:()=>automaticPhaseSync.active,syncGmailPhase:phaseLabelSync.open,releaseProduction:openProductionRelease,getState:()=>state,company,openForm,mergeStoredState,render,toast,compose:emailDraftForm,requestSpecs:inquiryMailUI.open,calculate:id=>{const o=order(id);if(company.tool==='costing'&&o?.items.length===1)location.href=toolUrl(company,o,o.items[0],runtime.mode);else orderForm(id);},documentMail:async(id,kind)=>{if(kind==='invoice')return startInvoiceMail(id);const doc=emailDocuments(state.documents,id).find(d=>(d.generated?.kind||d.category)===kind);if(doc)return emailDraftForm(id,doc.id,'','',{newMail:true,documentId:doc.id});confirmationForm(id,kind,{}, {download:false,afterSave:pdfId=>emailDraftForm(id,pdfId,'','',{newMail:true,documentId:pdfId}).catch(e=>toast(e.message))});},payment:paymentForm,editOrder:orderForm});
+const funnelUI=createSalesFunnelUI({isAutoPhaseSync:()=>automaticPhaseSync.active,syncGmailPhase:phaseLabelSync.open,releaseProduction:openProductionRelease,getState:()=>state,company,openForm,mergeStoredState,render,toast,compose:emailDraftForm,requestSpecs:inquiryMailUI.open,calculate:id=>{const o=order(id);if(company.tool==='costing'&&o?.items.length===1)location.href=toolUrl(company,o,o.items[0],runtime);else orderForm(id);},documentMail:async(id,kind)=>{if(kind==='invoice')return startInvoiceMail(id);const doc=emailDocuments(state.documents,id).find(d=>(d.generated?.kind||d.category)===kind);if(doc)return emailDraftForm(id,doc.id,'','',{newMail:true,documentId:doc.id});confirmationForm(id,kind,{}, {download:false,afterSave:pdfId=>emailDraftForm(id,pdfId,'','',{newMail:true,documentId:pdfId}).catch(e=>toast(e.message))});},payment:paymentForm,editOrder:orderForm});
 const inventoryUI=createInventoryUI({getState:()=>state,mergeStoredState,openForm,render,toast});
 const feedback=installFeedback({downloadBlob,today,toast});
 document.addEventListener('click',event=>{const button=event.target.closest('[data-gmail-phase-sync]');if(button)phaseLabelSync.open(button.dataset.gmailPhaseSync).catch(error=>toast(error.message));});
@@ -469,7 +493,7 @@ function productRevenue(o){return o.packagePrice!=null?o.packagePrice:o.items.re
 document.addEventListener('input',e=>{if(e.target.name==='packagePrice')updatePackagePricing(e.target.form);});
 
 function totals(o){const priceKnown=o.items.length>0&&(o.packagePrice!=null||o.items.every(i=>i.price!=null));const net=productRevenue(o)+(o.shippingCharge||0);const tax=Math.round(net*o.vat/100);const total=net+tax;const paid=state.payments.filter(p=>p.orderId===o.id).reduce((s,p)=>s+p.amount,0);return {net,tax,total,paid,balance:total-paid,priceKnown};}
-function paymentStatus(o){const t=totals(o);if(!t.priceKnown)return 'Prijs nog onbekend';return t.total===0&&t.paid===0?'Geen bedrag':t.balance<0?'Te veel ontvangen':t.balance===0?'Betaald':t.paid>0?'Deels betaald':'Onbetaald';}
+function paymentStatus(o){return orderPaymentStatusLabel(o,totals(o));}
 const badge = (text,color='') => `<span class="badge ${color}">${esc(text)}</span>`;
 const options=(list,value)=>list.map(v=>`<option ${v===value?'selected':''}>${esc(v)}</option>`).join('');
 const field=(name,label,value='',type='text',extra='')=>`<label>${esc(label)}<input name="${name}" type="${type}" value="${esc(value)}" ${extra}></label>`;
@@ -479,11 +503,12 @@ function shell(content,page,details={}){
  globalSearch.invalidate();
  const [,id,requestedSection]=route();
  const record=page==='orders'&&id?state.orders.find(o=>o.id===id):page==='customers'&&id?state.customers.find(c=>c.id===id):null;
+ dossierPreferences.visit(page,record?.id);
  const reference=page==='purchases'&&id?state.purchases.find(p=>p.id===id):null;
  const section=details.section||(record?requestedSection||(page==='orders'?orderView.tab:'details'):reference?requestedSection||'orders':page==='orders'?orderSearch.mode==='prices'?'prices':'list':['customers','purchases'].includes(page)?'list':'');
  const filters=details.filters||(!id&&page==='orders'?{...orderSearch,sort,direction:ascending?'asc':'desc'}:!id&&page==='customers'?customerSearch:page==='order-map'?{stage:orderMapFilter}:{});
  currentAssistantPageContext=assistantPageContext({companyId:company.id,page,section,filters,facts:details.facts||{},visible:details.visible,selected:record?{entity:page==='orders'?'order':'customer',id:record.id,label:page==='orders'?'Order #'+(record.sourceNumber||record.number):record.company}:undefined,reference:reference?{id:reference.id,label:reference.name}:undefined});
- inboxUI.beforeRender?.();feedback.beforeRender();assistant.beforeRender();$('#app').innerHTML=`<div class="shell"><header class="crm-mobile-header"><button type="button" data-mobile-menu aria-controls="crm-navigation" aria-expanded="false">☰ Menu</button><strong>${esc(company.name)}</strong><div data-ai-mobile-launcher-slot></div><div data-feedback-mobile-launcher-slot></div></header><button type="button" class="crm-mobile-backdrop" data-mobile-backdrop aria-label="Menu sluiten"></button><aside id="crm-navigation"><button type="button" data-sidebar-toggle aria-controls="crm-navigation" title="Zijbalk inklappen">«</button><button type="button" class="crm-mobile-close" data-mobile-close>← Menu sluiten</button><div class="brand">${esc(company.brand)}<span class="brand-dot">.</span><small>CRM / ORDERBEHEER</small><small>Versie ${esc(runtime.release || "2.0.0")}</small></div>${assistant.enabled?'<div class="crm-sidebar-tools"><div data-ai-launcher-slot></div><div data-ai-feedback-slot></div></div>':''}<nav aria-label="Hoofdnavigatie">${navigationMarkup({company,page,ordersNavigation:page==='orders'&&!record?funnelUI.navigation():''})}</nav><div class="session-undo"><button type="button" data-action="session-undo" disabled>↶ Stap terug</button><small data-undo-label></small><small data-undo-help></small></div><div class="local">${runtime.mode==='cloud'?(runtime.local?'Cloudflare · lokaal testen':'Centrale CRM-opslag')+'<br>D1 + privébestanden in R2':'Lokale ontwikkelversie<br>Opslag in deze browser'}<br>Maak regelmatig een back-up${runtime.mode==='cloud'?'<br><button class="offline-entry" type="button" data-offline-review>Offline-modus</button><br><a href="/admin/offline/">Klanten offline invullen</a>':''}</div>${runtime.authEnabled?'<div class="session-undo"><button type="button" data-action="logout">Uitloggen</button></div>':''}</aside><main class="${page==='orders'&&section==='mail'?'mail-focused-page':['orders','customers'].includes(page)&&section==='documents'?'document-focused-page':''}"><div class="workspace-toolbar">${searchLauncherMarkup()}${page==='development'?'':'<div class="ai-export-toolbar"><button type="button" data-action="ai-export" title="Kopieer opgeslagen pagina- of dossiergegevens voor een AI">Exporteren voor AI ↗</button></div>'}</div>${runtime.offlineReview?reviewBannerMarkup(runtime):''}${content}</main></div>`;installMobileUI($('#app'));installSidebar($('#app'),company.id);installGuidedActions($('#app'),{'create-order':()=>orderForm(null,route()[0]==='customers'?route()[1]:undefined),'create-customer':()=>customerForm(),'reset-orders':()=>{funnelUI.reset();const mode=orderSearch.mode;orderSearch=defaultOrderSearch();orderSearch.mode=mode;if(mode==='prices'){orderSearch.visibility='all';orderSearch.expanded=true;}renderOrdersList();},'reset-customers':()=>{customerSearch=defaultCustomerSearch();renderCustomersList();}},{onError:e=>toast(e.message)});refreshUndoButton();renderDocumentImages();assistant.mount($('#app'),page);feedback.mount($('#app'));inboxUI.install($('#app'));inventoryUI.install($('#app'));funnelUI.install($('#app'));automaticPhaseSync.mount();if(page==='settings'){installEmailSettings($('#app'),company);templatesUI.installSettings($('#app'));usageUI.install($('#app'));inboxUI.installSettings($('#app'));}}
+ inboxUI.beforeRender?.();feedback.beforeRender();assistant.beforeRender();$('#app').innerHTML=`<div class="shell"><header class="crm-mobile-header"><button type="button" data-mobile-menu aria-controls="crm-navigation" aria-expanded="false">☰ Menu</button><strong>${esc(company.name)}</strong><div data-ai-mobile-launcher-slot></div><div data-feedback-mobile-launcher-slot></div></header><button type="button" class="crm-mobile-backdrop" data-mobile-backdrop aria-label="Menu sluiten"></button><aside id="crm-navigation"><button type="button" data-sidebar-toggle aria-controls="crm-navigation" title="Zijbalk inklappen">«</button><button type="button" class="crm-mobile-close" data-mobile-close>← Menu sluiten</button><div class="brand">${esc(company.brand)}<span class="brand-dot">.</span><small>CRM / ORDERBEHEER</small><small>Versie ${esc(runtime.release || "2.0.0")}</small></div><div class="crm-sidebar-tools">${assistant.enabled?'<div data-ai-launcher-slot></div>':''}<div data-ai-feedback-slot></div></div><nav aria-label="Hoofdnavigatie">${navigationMarkup({company,page,ordersNavigation:page==='orders'&&!record?funnelUI.navigation():''})}</nav><div class="session-undo"><button type="button" data-action="session-undo" disabled>↶ Stap terug</button><small data-undo-label></small><small data-undo-help></small></div><div class="local">${runtime.mode==='cloud'?(runtime.local?'Cloudflare · lokaal testen':'Centrale CRM-opslag')+'<br>D1 + privébestanden in R2':'Lokale ontwikkelversie<br>Opslag in deze browser'}<br>Maak regelmatig een back-up${runtime.mode==='cloud'?'<br><button class="offline-entry" type="button" data-offline-review>Offline-modus</button><br><a href="/admin/offline/">Klanten offline invullen</a>':''}</div>${runtime.authEnabled?'<div class="session-undo"><button type="button" data-action="logout">Uitloggen</button></div>':''}</aside><main class="${page==='orders'&&section==='mail'?'mail-focused-page':['orders','customers'].includes(page)&&section==='documents'?'document-focused-page':''}"><div class="workspace-toolbar">${workspaceContextMarkup({company,page})}${searchLauncherMarkup()}${page==='development'?'':'<div class="ai-export-toolbar"><button type="button" data-action="ai-export" title="Kopieer opgeslagen pagina- of dossiergegevens voor een AI">Exporteren voor AI ↗</button></div>'}</div>${runtime.offlineReview?reviewBannerMarkup(runtime):''}${content}</main></div>`;installMobileUI($('#app'));installSidebar($('#app'),company.id);installGuidedActions($('#app'),{'create-order':()=>orderForm(null,route()[0]==='customers'?route()[1]:undefined),'create-customer':()=>customerForm(),'reset-orders':()=>{funnelUI.reset();const mode=orderSearch.mode;orderSearch=defaultOrderSearch();orderSearch.mode=mode;if(mode==='prices'){orderSearch.visibility='all';orderSearch.expanded=true;}renderOrdersList();},'reset-customers':()=>{customerSearch=defaultCustomerSearch(dossierPreferences.customerSort());renderCustomersList();}},{onError:e=>toast(e.message)});orderTerms.install($('#app'));refreshUndoButton();renderDocumentImages();assistant.mount($('#app'),page);feedback.mount($('#app'));inboxUI.install($('#app'));inventoryUI.install($('#app'));funnelUI.install($('#app'));automaticPhaseSync.mount();if(page==='settings'){mobileNotifications.install($('#app'));installEmailSettings($('#app'),company);templatesUI.installSettings($('#app'));usageUI.install($('#app'));inboxUI.installSettings($('#app'));}}
 function refreshUndoButton(){
  const control=$('[data-action=session-undo]');if(!control)return;
  const info=sessionUndo.status();control.disabled=info.busy||!info.count;
@@ -509,8 +534,13 @@ document.addEventListener('click',async e=>{
 });
 const heading=(title,sub,buttons='')=>`<div class="top"><div><h1>${title}</h1><span class="muted">${sub}</span></div><div class="actions">${buttons}</div></div>`;
 const button=(action,text,id='',primary=false)=>`<button type="button" data-action="${action}" data-id="${esc(id)}" class="${primary?'primary':''}">${text}</button>`;
-function ordersTable(list){return `<div class="tablewrap order-list-wrap"><table class="order-list"><thead><tr>${[['number','Dossier & klant'],['stage','Status'],['date','Planning'],['net','Verkoop excl. btw']].map(([key,title])=>`<th><button type="button" data-action="sort" data-id="${key}">${title} ${sort===key?(ascending?'↑':'↓'):''}</button></th>`).join('')}<th>Inkoop</th></tr></thead><tbody>${list.map(o=>{const t=totals(o),p=purchase(o.purchaseId);return `<tr><td data-label="Dossier & klant"><a class="order-list-link" href="#orders/${o.id}"><strong>${esc(customer(o.customerId)?.company||'Onbekend')} · #${esc(o.sourceNumber||o.number)}</strong><small>${o.inquiryName&&o.inquiryName!==customer(o.customerId)?.company?'Ingediend als: '+esc(o.inquiryName)+' · ':''}${esc(o.items.length?o.items.map(i=>`${i.quantity}× ${i.description}`).join(' · '):(o.inquiryProduct||'Aanvraag · productgegevens nog aanvullen'))}</small></a></td><td data-label="Status">${badge(orderDossierLabel(o,t.paid),o.inquiryDraft?'orange':'blue')} ${company.id==='maatwerkkunststof'?'':badge(o.stage,'blue')}${funnelUI.row(o)}<small class="${t.balance>0?'amount-outstanding':''}">${paymentStatus(o)}</small></td><td data-label="Planning">${planningSummary(o)}</td><td data-label="Verkoop excl. btw"><strong class="amount">${t.priceKnown?euro(t.net)+(o.shippingKnown===true?'':' · voorlopig'):'Nog te bepalen'}</strong><small>${t.priceKnown?euro(t.total)+' incl. btw'+(!o.shippingKnown?' · voorlopig':''):''}</small><small class="${t.balance>0?'amount-outstanding':''}">${!t.priceKnown?'Nog geen prijsafspraak':o.shippingKnown!==true?'Saldo volgt na verzendprijs':t.balance>0?`${euro(t.balance)} open incl. btw`:t.balance<0?`${euro(-t.balance)} te veel ontvangen incl. btw`:'Orderbedrag voldaan'}${!o.shippingKnown?' · verzending volgt':''}</small></td><td data-label="Inkoop">${p?`<a href="#purchases/${p.id}">${esc(p.name)}</a>`:'Nog niet gekoppeld'}</td></tr>`;}).join('')||'<tr><td colspan="5" class="empty">'+guidanceMarkup({title:'Geen aanvragen of orders gevonden',message:'Maak een order aan of pas je filters aan.',actions:[{id:'create-order',label:'Order aanmaken',primary:true},...(route()[0]==='orders'?[{id:'reset-orders',label:'Filters wissen'}]:[])]})+'</td></tr>'}</tbody></table></div>`;}
-function sortedOrders(list){const value=o=>sort==='number'?o.sourceNumber||o.number:sort==='customer'?customer(o.customerId)?.company||'':sort in totals(o)?totals(o)[sort]:o[sort];return [...list].sort((a,b)=>{const x=value(a),y=value(b);return (typeof x==='number'?x-y:String(x).localeCompare(String(y),'nl',{numeric:true}))*(ascending?1:-1);});}
+function ordersTable(list){return orderListMarkup({esc,badge,euro,totals,purchase,customer,company,funnelUI,planningSummary,paymentStatus,orderDossierLabel,guidanceMarkup,route},list,{sort,ascending});}
+function sortedOrders(list){
+ const byNumber=(a,b)=>String(b.sourceNumber||b.number||'').localeCompare(String(a.sourceNumber||a.number||''),'nl',{numeric:true})||String(a.id).localeCompare(String(b.id));
+ if(sort==='opened')return [...list].sort((a,b)=>dossierPreferences.openedAt('orders',b.id)-dossierPreferences.openedAt('orders',a.id)||String(b.date||'').localeCompare(String(a.date||''))||byNumber(a,b));
+ const value=o=>sort==='number'?o.sourceNumber||o.number:sort==='customer'?customer(o.customerId)?.company||'':sort in totals(o)?totals(o)[sort]:o[sort];
+ return [...list].sort((a,b)=>{const x=value(a),y=value(b);return (typeof x==='number'?x-y:String(x??'').localeCompare(String(y??''),'nl',{numeric:true}))*(ascending?1:-1)||byNumber(a,b);});
+}
 const searchSelect=(group,key,label,entries,value)=>`<label>${label}<select data-${group}-search="${key}">${entries.map(([v,text])=>`<option value="${esc(v)}" ${v===value?'selected':''}>${esc(text)}</option>`).join('')}</select></label>`;
 const searchInput=(group,key,label,type,value,extra='')=>`<label>${esc(label)}<input type="${type}" data-${group}-search="${key}" value="${esc(value)}" ${extra}></label>`;
 function quoteOutcomeFields(o){return searchSelect('quote','outcome','Offerte-uitkomst',quoteOutcomeOptions,o.quoteOutcome||'').replace('data-quote-search="outcome"','name="quoteOutcome"');}
@@ -519,25 +549,36 @@ function priceComparison(rows){
  return `<div class="price-comparisons">${rows.map(({o,item,c,result})=>`<article class="price-comparison"><div class="price-comparison-customer"><a href="#orders/${o.id}"><strong>${esc(c?.company||'Onbekende klant')}</strong><span>Order #${esc(o.sourceNumber||o.number)} · ${date(o.date)}</span></a>${o.archived?badge('Gearchiveerd'):''}</div><div><strong>${esc(item.description)}</strong><p>${item.width&&item.height?`${cm(item.width)} × ${cm(item.height)} cm`:'Maten onbekend'} · ${item.quantity} stuks<br>${company.tool==='design'?(item.printColors==null?'Drukkleuren onbekend':item.printColors===0?'Onbedrukt':`${item.printColors} drukkleur${item.printColors===1?'':'en'}`):[item.material,item.thickness?item.thickness+' mm dik':''].filter(Boolean).map(esc).join(' · ')}</p>${item.specs?`<small>${esc(item.specs)}</small>`:''}</div><div class="comparison-price">${o.packagePrice!=null?`<strong>${euro(o.packagePrice)}</strong><span>Pakketprijs voor alle ${o.items.reduce((s,i)=>s+i.quantity,0)} stuks in deze order</span>`:item.price==null?'<strong>Prijs onbekend</strong>':`<strong>${euro(item.price)} / stuk</strong><span>${euro(item.price*item.quantity)} voor deze productregel</span>`}<small>Excl. btw en verzending</small></div><div class="comparison-outcome">${badge(result.label,result.key==='accepted'?'green':result.key==='declined'?'orange':'')}<span>${esc(displayOrderStage(o.stage,company.id))}</span><a href="#orders/${o.id}/documents">Documenten bekijken →</a></div></article>`).join('')||'<p class="empty">Geen passende producten gevonden. Maak je filters ruimer of wis ze.</p>'}</div>`;
 }
 function renderOrdersList(){
+ dossierPreferences.refresh();
  const f=orderSearch,selection=funnelUI.filter&&funnelUI.filter!=='followup'?{...f,visibility:'all'}:f,rows=searchOrderItems(state,selection,{includeIncomplete:true}).filter(r=>funnelUI.matches(r.o)),error=orderFilterError(f),ids=new Set(rows.map(r=>r.o.id)),list=state.orders.filter(o=>ids.has(o.id));
- const controls=`<div class="search-main"><input id="search" type="search" aria-label="Zoek aanvragen en orders" placeholder="Zoek klant, order, product of specificatie…" value="${esc(f.text)}">${searchSelect('order','stage','Status',[['','Alle statussen'],...(company.id==='maatwerkkunststof'?[]:stages.map(v=>[v,v])),...['Onbetaald','Deels betaald','Betaald','Te veel ontvangen','Prijs nog onbekend','Geen bedrag'].map(v=>[v,v])],f.stage)}${button('clear-order-search','Filters wissen')}</div><details class="search-details" data-search-details="orders" ${f.expanded?'open':''}><summary>Meer filters · maat, aantal${company.id==='spatlappen'?', drukkleuren':''} en periode</summary><div class="search-fields">${searchSelect('order','visibility','Orders',[['active','Niet-gearchiveerd'],['all','Alles, inclusief archief'],['archived','Alleen gearchiveerd']],f.visibility)}${searchSelect('order','customerId','Klant',[['','Alle klanten'],...state.customers.map(c=>[c.id,c.company+(c.archived?' · archief':'')])],f.customerId)}${searchInput('order','width','Breedte (cm)','number',f.width,'min="0.1" step="0.1" placeholder="Bijv. 60"')}${searchInput('order','height','Hoogte (cm)','number',f.height,'min="0.1" step="0.1" placeholder="Bijv. 35"')}${company.id==='maatwerkkunststof'?searchInput('order','material','Materiaal','text',f.material||'','placeholder="Bijv. POM"')+searchInput('order','thickness','Dikte (mm)','number',f.thickness||'','min="0.001" max="1000000" step="any"'):''}${searchInput('order','quantity','Aantal stuks per productregel','number',f.quantity,'min="1" step="1"')}${company.id==='spatlappen'?searchInput('order','printColors','Aantal drukkleuren','number',f.printColors,'min="0" max="99" step="1" placeholder="Alle / onbekend"'):''}${searchSelect('order','tolerance','Vergelijken op maat en aantal',[['0','Exact'],['10','Tot 10% verschil'],['20','Tot 20% verschil']],f.tolerance)}${searchSelect('order','outcome','Offerte / akkoord',[['','Alle uitkomsten'],['accepted','Akkoord / betaling / uitvoering'],['pending','Nog geen akkoord'],['declined','Afgewezen'],['no_response','Geen reactie'],['unknown','Uitkomst onbekend']],f.outcome)}${searchInput('order','from','Besteld vanaf','date',f.from)}${searchInput('order','to','Besteld t/m','date',f.to)}</div><p class="form-help">Maten in cm; aantallen zijn fysieke stuks per productregel. De filters moeten samen op hetzelfde product passen. Speling geldt voor maat en aantal${company.tool==='design'?'; drukkleuren blijven exact':''}. Leeg = geen filter; 0 drukkleuren = onbedrukt.</p></details>`;
- shell(heading('Aanvragen & orders','Alle aanvragen en orders, ook als aantallen of prijzen nog ontbreken.',button('ai-order','AI prompt')+button('new-order','Nieuwe klantorder','',true))+`<div class="search-view-toggle" aria-label="Orderweergave"><button type="button" data-action="order-list-mode" data-id="orders" aria-pressed="${f.mode==='orders'}">Aanvragen & orders</button><button type="button" data-action="order-list-mode" data-id="prices" aria-pressed="${f.mode==='prices'}">Prijzen vergelijken</button></div><div class="panel">${funnelUI.summary()}${controls}${f.sourceOrderId?`<p class="form-help">Vergelijken met <a href="#orders/${esc(f.sourceOrderId)}">order #${esc(order(f.sourceOrderId)?.sourceNumber||order(f.sourceOrderId)?.number||'—')}</a>. Deze order zelf staat niet tussen de resultaten.</p>`:''}${f.selectionLabel?`<p class="form-help">${esc(f.selectionLabel)} · ${f.orderIds.length} geselecteerde dossiers. Filters wissen toont weer alle dossiers.</p>`:''}<p class="search-result-count" role="status">${error?esc(error):`${list.length} aanvragen / orders · ${rows.filter(r=>r.item).length} passende productregels${Number(f.tolerance)>0?' · beste overeenkomsten eerst':''}`}</p>${f.mode==='prices'?'<p class="form-help">Dit zijn de bewaarde orderprijzen, geen actuele prijslijst. Kijk bij Documenten voor het oorspronkelijke prijsvoorstel. Pakketprijzen worden niet verdeeld over producten. De uitkomst volgt geregistreerd akkoord, ontvangen betaling of voortgang; afwijzingen kun je bij Order bewerken vastleggen.</p>'+priceComparison(rows):ordersTable(sortedOrders(list))}</div>`,'orders',{facts:{orderCount:list.length,productMatchCount:rows.length},visible:{entity:'order',ids:(f.mode==='prices'?[...ids]:sortedOrders(list).map(o=>o.id)).slice(0,20),total:list.length}});
+ const extraFilters=orderExtraFilterLabels(f,company.id);
+ const controls=`<div class="search-main dossier-search-main"><input id="search" type="search" aria-label="Zoek aanvragen en orders" placeholder="Zoek klant, order, product of specificatie…" value="${esc(f.text)}">${searchSelect('order','stage','Status',[['','Alle statussen'],...(company.id==='maatwerkkunststof'?[]:stages.map(v=>[v,v])),...['Onbetaald','Deels betaald','Betaald','Te veel ontvangen','Prijs nog onbekend','Verzendprijs nog onbekend','Geen bedrag'].map(v=>[v,v])],f.stage)}${f.mode==='prices'?'':searchSelect('order','sort','Sorteren',orderSortOptions,sort+':'+(ascending?'asc':'desc'))}</div><details class="search-details" data-search-details="orders" ${f.expanded?'open':''}><summary>${esc(extraFilterSummary(extraFilters,'Meer filters · maat, aantal en periode'))}</summary>${extraFilters.length?'<p class="form-help">Actief: '+esc(extraFilters.join(', '))+'</p>':''}<div class="search-fields">${searchSelect('order','visibility','Orders',[['active','Niet-gearchiveerd'],['all','Alles, inclusief archief'],['archived','Alleen gearchiveerd']],f.visibility)}${searchSelect('order','customerId','Klant',[['','Alle klanten'],...state.customers.map(c=>[c.id,c.company+(c.archived?' · archief':'')])],f.customerId)}${searchInput('order','width','Breedte (cm)','number',f.width,'min="0.1" step="0.1" placeholder="Bijv. 60"')}${searchInput('order','height','Hoogte (cm)','number',f.height,'min="0.1" step="0.1" placeholder="Bijv. 35"')}${company.id==='maatwerkkunststof'?searchInput('order','material','Materiaal','text',f.material||'','placeholder="Bijv. POM"')+searchInput('order','thickness','Dikte (mm)','number',f.thickness||'','min="0.001" max="1000000" step="any"'):''}${searchInput('order','quantity','Aantal stuks per productregel','number',f.quantity,'min="1" step="1"')}${company.id==='spatlappen'?searchInput('order','printColors','Aantal drukkleuren','number',f.printColors,'min="0" max="99" step="1" placeholder="Alle / onbekend"'):''}${searchSelect('order','tolerance','Vergelijken op maat en aantal',[['0','Exact'],['10','Tot 10% verschil'],['20','Tot 20% verschil']],f.tolerance)}${searchSelect('order','outcome','Offerte / akkoord',[['','Alle uitkomsten'],['accepted','Akkoord / betaling / uitvoering'],['pending','Nog geen akkoord'],['declined','Afgewezen'],['no_response','Geen reactie'],['unknown','Uitkomst onbekend']],f.outcome)}${searchInput('order','from','Aangevraagd vanaf','date',f.from)}${searchInput('order','to','Aangevraagd t/m','date',f.to)}</div>${button('clear-order-search','Filters wissen')}<p class="form-help">Maten in cm; aantallen zijn fysieke stuks per productregel. De filters moeten samen op hetzelfde product passen. Speling geldt voor maat en aantal${company.tool==='design'?'; drukkleuren blijven exact':''}. Leeg = geen filter; 0 drukkleuren = onbedrukt.</p></details>`;
+ shell(heading('Aanvragen & orders','Alle aanvragen en orders, ook als aantallen of prijzen nog ontbreken.',button('new-order','Nieuwe klantorder','',true)+'<details class="quiet-menu"><summary>Meer</summary><div>'+button('ai-order','AI prompt')+'</div></details>')+`<div class="search-view-toggle" aria-label="Orderweergave"><button type="button" data-action="order-list-mode" data-id="orders" aria-pressed="${f.mode==='orders'}">Aanvragen & orders</button><button type="button" data-action="order-list-mode" data-id="prices" aria-pressed="${f.mode==='prices'}">Prijzen vergelijken</button></div><div class="panel">${funnelUI.summary()}${controls}${selection.visibility!==f.visibility?'<p class="form-help">De gekozen fase toont ook gearchiveerde dossiers.</p>':''}${f.sourceOrderId?`<p class="form-help">Vergelijken met <a href="#orders/${esc(f.sourceOrderId)}">order #${esc(order(f.sourceOrderId)?.sourceNumber||order(f.sourceOrderId)?.number||'—')}</a>. Deze order zelf staat niet tussen de resultaten.</p>`:''}${f.selectionLabel?`<p class="form-help">${esc(f.selectionLabel)} · ${f.orderIds.length} geselecteerde dossiers. Filters wissen toont weer alle dossiers.</p>`:''}<p class="search-result-count" role="status">${error?esc(error):`${list.length} aanvragen / orders · ${rows.filter(r=>r.item).length} passende productregels${f.mode==='prices'&&Number(f.tolerance)>0?' · beste overeenkomsten eerst':''}`}</p>${f.mode==='prices'?'<p class="form-help">Dit zijn de bewaarde orderprijzen, geen actuele prijslijst. Kijk bij Documenten voor het oorspronkelijke prijsvoorstel. Pakketprijzen worden niet verdeeld over producten. De uitkomst volgt geregistreerd akkoord, ontvangen betaling of voortgang; afwijzingen kun je bij Order bewerken vastleggen.</p>'+priceComparison(rows):'<p class="form-help">'+esc(dossierPreferences.help('orders',sort+':'+(ascending?'asc':'desc')))+'</p>'+ordersTable(sortedOrders(list))}</div>`,'orders',{facts:{orderCount:list.length,productMatchCount:rows.length},visible:{entity:'order',ids:(f.mode==='prices'?[...ids]:sortedOrders(list).map(o=>o.id)).slice(0,20),total:list.length}});
 }
 
 document.addEventListener('click',e=>{
  const b=e.target.closest('[data-action]');if(!b)return;
  if(b.dataset.action==='clear-order-search'){funnelUI.reset();const mode=orderSearch.mode;orderSearch=defaultOrderSearch();orderSearch.mode=mode;if(mode==='prices'){orderSearch.visibility='all';orderSearch.expanded=true;}renderOrdersList();}
- else if(b.dataset.action==='clear-customer-search'){customerSearch=defaultCustomerSearch();renderCustomersList();}
+ else if(b.dataset.action==='clear-customer-search'){customerSearch=defaultCustomerSearch(dossierPreferences.customerSort());renderCustomersList();}
  else if(b.dataset.action==='compare-product'){const o=order(b.dataset.order),i=o?.items.find(i=>i.id===b.dataset.id);if(i){orderSearch={...defaultOrderSearch(),mode:'prices',visibility:'all',expanded:true,tolerance:'10',width:i.width?String(i.width/10):'',height:i.height?String(i.height/10):'',quantity:String(i.quantity),printColors:company.tool==='design'&&i.printColors!=null?String(i.printColors):'',...(company.id==='maatwerkkunststof'?{material:i.material||'',thickness:i.thickness>0?String(i.thickness):''}:{}),sourceOrderId:o.id};location.hash='orders';}}
  else if(b.dataset.action==='order-list-mode'){orderSearch.mode=b.dataset.id;if(orderSearch.mode==='prices'){orderSearch.visibility='all';orderSearch.expanded=true;}renderOrdersList();}
 });
 document.addEventListener('change',e=>{
- if(e.target.dataset.orderSearch){orderSearch[e.target.dataset.orderSearch]=e.target.value;renderOrdersList();}
- else if(e.target.dataset.customerSearch){customerSearch[e.target.dataset.customerSearch]=e.target.value;renderCustomersList();}
+ if(e.target.dataset.orderSearch){
+  if(e.target.dataset.orderSearch==='sort'){
+   if(!dossierPreferences.setOrderSort(e.target.value))return;
+   const [key,direction]=e.target.value.split(':');sort=key;ascending=direction==='asc';
+  }else orderSearch[e.target.dataset.orderSearch]=e.target.value;
+  renderOrdersList();
+ }
+ else if(e.target.dataset.customerSearch){
+  if(e.target.dataset.customerSearch==='sort'&&!dossierPreferences.setCustomerSort(e.target.value))return;
+  customerSearch[e.target.dataset.customerSearch]=e.target.value;renderCustomersList();
+ }
 });
 document.addEventListener('toggle',e=>{if(e.target.dataset.searchDetails==='orders')orderSearch.expanded=e.target.open;else if(e.target.dataset.searchDetails==='customers')customerSearch.expanded=e.target.open;},true);
 
-function render(){const [page='dashboard',id]=route();if(page==='feedback'){shell('<div data-feedback-page><p>Feedback laden…</p></div>','feedback');void feedback.refresh();return;}if(page==='development'){shell(buildTasks.markup(),'development');buildTasks.mount($('#app'));return;}if(page==='order-map')return renderOrderMap();if(page==='analytics')return renderAnalytics();if(page==='inventory'){shell(inventoryUI.markup(),'inventory',{facts:inventoryUI.facts()});return;}if(page==='purchases')return renderPurchases(id);if(page==='orders'&&id)return renderOrder(id);if(page==='customers'&&id)return renderCustomer(id);
+function render(){const [page='dashboard',id]=route();if(page==='feedback'){shell('<div data-feedback-page><p>Feedback laden…</p></div>','feedback');void feedback.refresh();return;}if(page==='development'){shell(buildTasks.markup(),'development');buildTasks.mount($('#app'));return;}if(page==='order-map')return renderOrderMap();if(page==='analytics')return renderAnalytics();if(page==='payments')return paymentsWorkspace.render();if(page==='inventory'){shell(inventoryUI.markup(),'inventory',{facts:inventoryUI.facts()});return;}if(page==='purchases')return renderPurchases(id);if(page==='orders'&&id)return renderOrder(id);if(page==='customers'&&id)return renderCustomer(id);
 if(page==='dashboard')renderDashboard();
 else if(page==='orders')renderOrdersList();
 else if(page==='customers')renderCustomersList();
@@ -573,7 +614,7 @@ function revealSearchResult(){
  const selectors=result.target.documentId?['[data-document-id="'+CSS.escape(result.target.documentId)+'"]']:result.target.paymentId?['[data-payment-id="'+CSS.escape(result.target.paymentId)+'"]']:result.target.stockId?['[data-stock-row="'+CSS.escape(result.target.stockId)+'"]']:[];
  const node=selectors.map(s=>document.querySelector(s)).find(Boolean);if(node){node.tabIndex=-1;node.classList.add('search-target');node.scrollIntoView({block:'center'});node.focus({preventScroll:true});}else document.querySelector('main h1')?.scrollIntoView({block:'start'});
 }
-const customerViews=createCustomerViews({company,esc,button,badge,euro,date,heading,searchSelect,guidanceMarkup,documentVersionGroups,customerWithSources,provenanceText,ordersTable,sortedOrders,customerAddressSummary,customerAddresses,documents,documentsForOwner,inboxUI});
+const customerViews=createCustomerViews({dossierPreferences,company,esc,button,badge,euro,date,heading,searchSelect,guidanceMarkup,documentVersionGroups,customerWithSources,provenanceText,ordersTable,sortedOrders,customerAddressSummary,customerAddresses,documents,documentsForOwner,inboxUI});
 
 document.addEventListener('click',e=>{const b=e.target.closest('[data-action=customer-tab]');if(b)selectCustomerTab(b.dataset.id);});
 
@@ -608,26 +649,29 @@ async function createRelated(form,kind){
 function openForm(title,html,onSubmit,options={}){
  const d=$('#dialog');d.innerHTML=`<form><div class="dialog-heading"><h2>${title}</h2><button type="button" class="feedback-form-button" data-feedback-action="start">Feedback melden</button></div><div class="dialog-body"><p id="form-status" class="form-status" role="status" hidden></p>${html}</div><p id="form-error" class="danger" role="alert" tabindex="-1"></p><div class="dialog-footer actions"><button type="button" id="cancel">Annuleren</button><button class="primary" type="submit">Opslaan</button></div></form>`;
  const form=d.querySelector('form');installFormGuidance(form);let dirty=false,busy=false;form.addEventListener('input',()=>{if(options.trackChanges!==false)dirty=true;});form.addEventListener('change',()=>{if(options.trackChanges!==false)dirty=true;});
- const canClose=()=>!busy&&(!dirty||confirm('Je wijzigingen zijn nog niet opgeslagen. Wil je ze weggooien?'));
+ // Feature actions such as attachment uploads share the same modal boundary.
+ const formBusy=()=>busy||form.inert||form.getAttribute('aria-busy')==='true';
+ const canClose=()=>!formBusy()&&(!dirty||confirm('Je wijzigingen zijn nog niet opgeslagen. Wil je ze weggooien?'));
  const cancelForm=()=>{if(canClose()){d.close();options.afterCancel?.();}};$('#cancel').onclick=cancelForm;d.oncancel=e=>{e.preventDefault();cancelForm();};
- function showError(problem){showFormProblem(form,problem,{toast,isBusy:()=>busy});}
+ function showError(problem){showFormProblem(form,problem,{toast,isBusy:formBusy});}
  form.onsubmit=async event=>{
-  event.preventDefault();if(busy)return;
+  event.preventDefault();if(formBusy())return;
   const status=form.querySelector('#form-status');status.hidden=true;form.querySelector('#form-error').textContent='';
-  if(!validateForm(form,{toast,isBusy:()=>busy}))return;
+  if(!validateForm(form,{toast,isBusy:formBusy}))return;
   const b=form.querySelector('[type=submit]'),cancel=form.querySelector('#cancel'),submitLabel=b.textContent,previousToast=toastSequence;
-  let completed=false,failed=false;busy=true;b.disabled=true;b.textContent=form.dataset.busyLabel||'Bezig met opslaan…';cancel.disabled=true;
+  const previousInert=form.inert;
+  let completed=false,failed=false;busy=true;form.inert=true;b.disabled=true;b.textContent=form.dataset.busyLabel||'Bezig met opslaan…';cancel.disabled=true;
   const finishLoading=loading.begin(b.textContent);
   status.textContent=b.textContent;status.hidden=false;form.setAttribute('aria-busy','true');
   try{
    const result=await onSubmit(new FormData(form));
    if(result!==false){completed=true;dirty=false;d.close();if(toastSequence===previousToast&&/opslaan|bewaren|aanmaken/i.test(submitLabel))toast('Opgeslagen');}
-  }catch(error){failed=true;showError(error);}
-  finally{finishLoading({error:failed});busy=false;b.disabled=false;b.textContent=submitLabel;cancel.disabled=false;status.hidden=true;form.removeAttribute('aria-busy');}
+  }catch(error){failed=true;form.inert=previousInert;showError(error);}
+  finally{finishLoading({error:failed});busy=false;form.inert=previousInert;b.disabled=false;b.textContent=submitLabel;cancel.disabled=false;status.hidden=true;form.removeAttribute('aria-busy');}
   if(completed)options.afterSave?.();
  };
  for(const box of form.querySelectorAll('[data-inline-customer],[data-inline-purchase]'))for(const input of box.querySelectorAll('input'))input.disabled=box.hidden;
- for(const button of form.querySelectorAll('[data-create-related]'))button.onclick=()=>runGuidedAction(button,()=>createRelated(form,button.dataset.createRelated),{isBusy:()=>busy,pendingLabel:'Maakvenster openen…',onError:showError});
+ for(const button of form.querySelectorAll('[data-create-related]'))button.onclick=()=>runGuidedAction(button,()=>createRelated(form,button.dataset.createRelated),{isBusy:formBusy,pendingLabel:'Maakvenster openen…',onError:showError});
  if(form.querySelector('[name=packagePrice]'))updatePackagePricing(form);d.showModal();if(options.focus)focusFormField(form,options.focus,{invalid:false});
 }
 
@@ -661,9 +705,11 @@ document.addEventListener('change',async e=>{
  const id=e.target.dataset.documentCategory;if(!id)return;
  const d=state.documents.find(d=>d.id===id),category=e.target.value;
  if(!d||!documentCategories.some(([key])=>key===category))return;
- const previous=d.category;d.category=category;
- try{await save('Document verplaatst naar '+documentCategories.find(([key])=>key===category)[1].toLowerCase());}
- catch(error){d.category=previous;render();toast('Verplaatsen mislukt: '+error.message);}
+ const basis=JSON.stringify(d),select=e.target,message='Document verplaatst naar '+documentCategories.find(([key])=>key===category)[1].toLowerCase();select.disabled=true;
+ try{
+  await mergeStoredState(next=>{const current=next.documents.find(document=>document.id===id);if(JSON.stringify(current)!==basis)throw Error('Dit document is intussen gewijzigd. Open het opnieuw voordat je het verplaatst.');current.category=category;next.activities.unshift({id:uid(),message,time:new Date().toISOString()});});
+  render();toast(message);
+ }catch(error){select.value=d.category;toast('Verplaatsen mislukt: '+error.message);}finally{select.disabled=false;}
 });
 
 function orderInvoiceLinks(data,o){
@@ -681,9 +727,10 @@ function orderMailHistory(o){
  return `<details class="mail-order-history"><summary>Mailhistorie · ${drafts.length} bericht${drafts.length===1?'':'en'}</summary>${drafts.map(d=>`<article class="mail-history-row"><div><strong>${esc(d.subject)}</strong><small>${esc(d.to)} · ${esc(mailStatusLabel(d.status))}${d.sentAt?' · '+esc(new Date(d.sentAt).toLocaleString('nl-NL',{timeZone:CRM_TIME_ZONE})):''}</small>${d.lastError?`<small>${esc(d.lastError)}</small>`:''}</div><button type="button" data-action="email-draft" data-id="${esc(o.id)}" data-draft="${esc(d.id)}">${d.status==='accepted'?'Bekijken / hergebruiken':'Concept openen'}</button></article>`).join('')}</details>`;
 }
 function paymentLinksPanel(o){
- const links=o.paymentLinks||[],drafts=o.emailDrafts||[],invoice=emailDocuments(state.documents,o.id).find(d=>documentCategory(d)==='invoice');
- return `<section class="order-surface payment-links-panel"><div class="section-heading"><div><h2>Betaallink & e-mail</h2><p>Vraag een volledige betaling, aanbetaling of restant aan.</p></div></div><div class="actions">${button('make-payment-link','Betaallink maken',o.id,true)}${links.length?button('check-tikkie-payments','Betalingen controleren',o.id):''}${button('email-draft',drafts.length?'E-mailconcept openen':'E-mail voorbereiden',o.id)}<button type="button" data-action="email-draft" data-id="${esc(o.id)}" data-new-mail>Nieuwe mail / gegevens opvragen</button>${invoice?`<button type="button" data-action="email-draft" data-id="${esc(o.id)}" data-document="${esc(invoice.id)}">Factuur mailen</button>`:button('make-invoice','Factuur maken',o.id)}</div>${links.map(l=>`<article class="saved-payment-link"><div><strong>${euro(l.amountInCents)} incl. btw</strong><span>${esc(l.description)}</span>${paymentLinkReceipt(l)}<small>Gemaakt ${date(l.createdAt.slice(0,10))} · geldig t/m ${date(l.expiryDate)}${l.expiryDate<today()?' · verlopen':''}</small></div><div class="actions"><a class="download-button" href="${esc(safePaymentUrl(l.url))}" target="_blank" rel="noopener">Link openen ↗</a><button type="button" data-action="copy-payment-link" data-id="${o.id}" data-link="${esc(l.id)}">Kopiëren</button><button type="button" data-action="email-draft" data-id="${o.id}" data-link="${esc(l.id)}" data-document="${esc(l.documentId||'')}">E-mail voorbereiden</button></div></article>`).join('')}${orderMailHistory(o)}<p class="form-help">Met Betalingen controleren halen we ontvangen Tikkie-betalingen op en voegen ze één keer toe aan deze order. Gewone overboekingen registreer je zelf. Facturen mail je via E-mail voorbereiden en Voorbeeld & versturen. Tikkie controleer je met de knop; er worden geen mails automatisch verstuurd.</p></section>`;
+ const links=o.paymentLinks||[];
+ return `<section class="order-surface payment-links-panel"><div class="section-heading"><div><h2>Betaallinks</h2><p>Een aanbetaling of restant aanvragen.</p></div></div><div class="actions">${button('make-payment-link','Betaallink maken',o.id,true)}${links.length?button('check-tikkie-payments','Betalingen controleren',o.id):''}</div>${links.map(l=>`<article class="saved-payment-link"><div><strong>${euro(l.amountInCents)} incl. btw</strong><span>${esc(l.description)}</span>${paymentLinkReceipt(l)}<small>Gemaakt ${date(l.createdAt.slice(0,10))} · geldig t/m ${date(l.expiryDate)}${l.expiryDate<today()?' · verlopen':''}</small></div><div class="actions"><a class="download-button" href="${esc(safePaymentUrl(l.url))}" target="_blank" rel="noopener">Link openen ↗</a><button type="button" data-action="copy-payment-link" data-id="${o.id}" data-link="${esc(l.id)}">Kopiëren</button><button type="button" data-action="email-draft" data-id="${o.id}" data-link="${esc(l.id)}" data-document="${esc(l.documentId||'')}">E-mail voorbereiden</button></div></article>`).join('')}<details class="form-details"><summary>E-mail & eerdere verzendingen</summary><div class="actions">${button('email-draft','E-mail openen',o.id)}<button type="button" data-action="email-draft" data-id="${esc(o.id)}" data-new-mail>Nieuwe mail / gegevens opvragen</button>${button('invoice-mail-start','Factuurmail voorbereiden',o.id)}</div>${orderMailHistory(o)}</details><p class="form-help">Gewone bankoverboekingen registreer je zelf. Met een actieve online Tikkie-koppeling kan de server elke vijftien minuten automatisch controleren. Betalingen controleren haalt de laatste stand direct op. Controleer de automatische status bij Instellingen → Telefoon & meldingen. Er wordt geen mail automatisch verstuurd.</p></section>`;
 }
+
 function safePaymentUrl(value){try{const u=new URL(value);return u.protocol==='https:'&&u.hostname==='tikkie.me'?u.href:'#';}catch{return '#';}}
 function paymentLinkReceipt(link){
  if(!link.checkedAt)return '<small>Nog niet gecontroleerd bij Tikkie</small>';
@@ -788,6 +835,7 @@ document.addEventListener('click',async event=>{
  try{
   if(action==='make-payment-link')await preparePaymentLink(id,documentId);
   if(action==='check-tikkie-payments')await checkTikkiePayments(id,b);
+  if(action==='invoice-mail-start')await startInvoiceMail(id);
   if(action==='email-draft')await emailDraftForm(id,documentId,linkId,b.dataset.draft||'',b.hasAttribute('data-new-mail')?{newMail:true}:{});
   if(action==='copy-payment-link'){const link=order(id)?.paymentLinks?.find(l=>l.id===linkId);if(link)await copyCommunication(link.url);}
  }catch(error){failed=true;toast(error.message);}finally{finishLoading?.({error:failed});}
@@ -841,10 +889,17 @@ async function importBackup(){
   });
   if(runtime.mode==='local'){if(b.planning!==undefined)await replaceBuildTasks(company.id,b.planning);await feedback.replaceAll(b.feedback);await replaceDesigns(b.designs);for(let n=localStorage.length-1;n>=0;n--){const key=localStorage.key(n);if(key.startsWith(company.localPrefix))localStorage.removeItem(key);}}
   for(const promise of documentImageUrls.values())promise.then(url=>URL.revokeObjectURL(url)).catch(()=>{});documentImageUrls.clear();
-  state=b.state;state.orders.forEach(syncSingleOrderDelivery);notifyDataChanged();render();toast('Back-up teruggezet');
+ state=b.state;paymentNotifications.remember(state);state.orders.forEach(syncSingleOrderDelivery);notifyDataChanged();render();toast('Back-up teruggezet');
  }catch(error){failed=true;toast('Import mislukt: '+error.message);}finally{finishLoading({error:failed});}};input.click();
 }
-document.addEventListener('click',async e=>{const b=e.target.closest('[data-action]');if(!b)return;const {action,id}=b.dataset,label=({logout:'Uitloggen…',download:'Bestand ophalen…',export:'Back-up maken…',duplicate:'Order dupliceren…','archive-customer':'Klant archiveren…','archive-order':'Order archiveren…','restore-customer':'Klant herstellen…','restore-order':'Order herstellen…'})[action],key='action:'+action+':'+id;if(label&&loading.isBusy(key))return;const finishLoading=label?loading.begin(label,{key,button:b}):null;let failed=false;try{if(action==='logout'){const offline=await import('./offline/store.js');const pack=await offline.readPack();if(pack&&(pack.uncertain||JSON.stringify(pack.base)!==JSON.stringify(pack.local)))throw Error('Er staan nog offline wijzigingen op dit apparaat. Open Offline werken en synchroniseer die eerst.');if(pack)await offline.updatePack(pack.version,p=>({...p,locked:true}));const response=await fetch('/auth/logout',{method:'POST'});if(!response.ok)throw Error('Uitloggen lukt niet. Probeer opnieuw.');await (await import('./offline/review-store.js')).lockReview();location.replace('/login.html');}else if(action==='delivery-address')deliveryForm(id);else if(action==='order-notes')noteForm(id);else if(action==='costs')costForm(id);else if(action==='planning')planningForm(id);else if(action==='ai-order')aiOrderForm();else if(action==='ai-customer')aiCustomerForm();else if(action==='new-customer')customerForm();else if(action==='edit-customer')customerForm(id);else if(action==='new-order')orderForm(null,id);else if(action==='edit-order')orderForm(id);else if(action==='payment')paymentForm(id);else if(action==='edit-payment'){const p=state.payments.find(x=>x.id===id);paymentForm(p.orderId,id);}else if(action==='add-item'){$('#items').insertAdjacentHTML('beforeend',itemFields(undefined,!b.form?.querySelector('#ai-product-costs')));if(b.form?.querySelector('[name=packagePrice]'))updatePackagePricing(b.form);installOrderCosting(b.form||$('#dialog form'));}else if(action==='remove-item'){if($('#items').children.length===1)toast('Een bestelling heeft minimaal één orderregel.');else b.closest('.item').remove();}else if(action==='sort'){ascending=sort===id?!ascending:true;sort=id;render();}else if(action==='upload')upload(id,b.dataset.category);else if(action==='download'){if(runtime.mode==='cloud'){await downloadBlob(null,state.documents.find(d=>d.id===id).name,'/api/crm/files/'+encodeURIComponent(id)+'?name='+encodeURIComponent(state.documents.find(d=>d.id===id).name));return;}const f=await store('files','readonly',s=>s.get(id));if(!f)throw Error('Bestand ontbreekt.');await downloadBlob(f.blob,state.documents.find(d=>d.id===id).name);}else if(action==='export')await exportBackup();else if(action==='import')await importBackup();else if(action==='duplicate'){const original=order(id);const copy=structuredClone(original);copy.id=uid();copy.number=Math.max(3000,...state.orders.map(o=>o.number))+1;copy.date=today();copy.stage=stages[0];copy.archived=false;for(const k of ['quoteAcceptedDate','productionReleasedDate','expectedDateFrom','expectedDateTo','leadTimeStartDate','approvedDate','supplierOrderedDate','arrivedDate','shippedDate','deliveredDate','supplierPaidDate','expectedDate','supplierOrderReference'])copy[k]='';copy.supplierPaidAmount=null;copy.purchaseId='';copy.quoteDraft=null;copy.quoteOutcome='';copy.paymentLinks=[];copy.emailDrafts=[];delete copy.websiteLeadId;delete copy.salesFunnel;delete copy.gmailSalesPhase;delete copy.confirmationSentDate;delete copy.invoiceSentDate;copy.sourceNumber='';copy.statusHistory=[];for(const k of ['designSentDate','quoteSentDate','paymentRequestedDate','productionDate','transitDate'])copy[k]='';copy.items.forEach(i=>{i.id=uid();delete i.costSource;for(const key of ['primaryImageId','designId','designDocumentId','designPreviewId','designUpdatedAt','costCalculation','calculatedCostTotal','costQuoteLink'])delete i[key];});state.orders.push(copy);location.hash=`orders/${copy.id}`;await save(`Order #${original.number} gedupliceerd zonder betalingen en bijlagen`);}else if(action==='archive-customer'){if(state.orders.some(o=>o.customerId===id&&!o.archived&&o.stage!=='Afgerond'))throw Error('Deze klant heeft nog lopende bestellingen. Rond die eerst af of archiveer ze.');customer(id).archived=true;location.hash='customers';await save('Klant gearchiveerd');}else if(action==='archive-order'){order(id).archived=true;location.hash='orders';await save('Bestelling gearchiveerd; betalingen en bestanden blijven bewaard');}else if(action==='restore-customer'){customer(id).archived=false;await save('Klant hersteld');}else if(action==='restore-order'){order(id).archived=false;await save('Bestelling hersteld');}}catch(error){failed=true;toast(error.message);}finally{finishLoading?.({error:failed});}});
+document.addEventListener('click',async e=>{const b=e.target.closest('[data-action]');if(!b)return;const {action,id}=b.dataset,label=({logout:'Uitloggen…',download:'Bestand ophalen…',export:'Back-up maken…',duplicate:'Order dupliceren…','archive-customer':'Klant archiveren…','archive-order':'Order archiveren…','restore-customer':'Klant herstellen…','restore-order':'Order herstellen…'})[action],key='action:'+action+':'+id;if(label&&loading.isBusy(key))return;const finishLoading=label?loading.begin(label,{key,button:b}):null;let failed=false;try{if(action==='logout'){const offline=await import('./offline/store.js');const pack=await offline.readPack();if(pack&&(pack.uncertain||JSON.stringify(pack.base)!==JSON.stringify(pack.local)))throw Error('Er staan nog offline wijzigingen op dit apparaat. Open Offline werken en synchroniseer die eerst.');if(pack)await offline.updatePack(pack.version,p=>({...p,locked:true}));const response=await fetch('/auth/logout',{method:'POST'});if(!response.ok)throw Error('Uitloggen lukt niet. Probeer opnieuw.');await (await import('./offline/review-store.js')).lockReview();location.replace('/login.html');}else if(action==='delivery-address')deliveryForm(id);else if(action==='order-notes')noteForm(id);else if(action==='costs')costForm(id);else if(action==='planning')planningForm(id);else if(action==='ai-order')aiOrderForm();else if(action==='ai-customer')aiCustomerForm();else if(action==='new-customer')customerForm();else if(action==='edit-customer')customerForm(id);else if(action==='new-order')orderForm(null,id);else if(action==='edit-order')orderForm(id);else if(action==='payment')paymentForm(id);else if(action==='edit-payment'){const p=state.payments.find(x=>x.id===id);paymentForm(p.orderId,id);}else if(action==='add-item'){$('#items').insertAdjacentHTML('beforeend',itemFields(undefined,!b.form?.querySelector('#ai-product-costs')));if(b.form?.querySelector('[name=packagePrice]'))updatePackagePricing(b.form);installOrderCosting(b.form||$('#dialog form'));}else if(action==='remove-item'){if($('#items').children.length===1)toast('Een bestelling heeft minimaal één orderregel.');else b.closest('.item').remove();}else if(action==='sort'){ascending=sort===id?!ascending:true;sort=id;dossierPreferences.setOrderSort(sort+':'+(ascending?'asc':'desc'));render();}else if(action==='upload')upload(id,b.dataset.category);else if(action==='download'){const document=state.documents.find(d=>d.id===id);if(!document)throw Error('Dit document bestaat niet meer.');const name=documentDownloadName(state.documents,document);if(runtime.mode==='cloud'){await downloadBlob(null,name,'/api/crm/files/'+encodeURIComponent(id)+'?name='+encodeURIComponent(name));return;}const f=await store('files','readonly',s=>s.get(id));if(!f)throw Error('Bestand ontbreekt.');await downloadBlob(f.blob,name);}else if(action==='export')await exportBackup();else if(action==='import')await importBackup();else if(action==='duplicate'){
+ const original=order(id);if(!original)throw Error('Deze order bestaat niet meer.');const basis=JSON.stringify(original);let copy;
+ await mergeStoredState(next=>{
+  const current=next.orders.find(order=>order.id===id);if(JSON.stringify(current)!==basis)throw Error('Deze order is intussen gewijzigd. Open haar opnieuw voordat je een kopie maakt.');
+  const number=next.orders.reduce((highest,order)=>Math.max(highest,order.number||0),3000)+1;
+  copy=copyOrder(current,{number,date:today(),stage:stages[0],newId:uid});next.orders.push(copy);next.activities.unshift({id:uid(),message:`Order #${original.number} gedupliceerd zonder betalingen en bijlagen`,time:new Date().toISOString()});
+ });location.hash=`orders/${copy.id}`;render();toast(`Order #${original.number} gedupliceerd zonder betalingen en bijlagen`);
+ }else if(['archive-customer','archive-order','restore-customer','restore-order'].includes(action))await dossierActions.archive(action,id);}catch(error){failed=true;toast(error.message);}finally{finishLoading?.({error:failed});}});
 document.addEventListener('input',e=>{if(e.target.id==='search'){const pos=e.target.selectionStart,[page]=route();if(page==='orders')orderSearch.text=e.target.value;else if(page==='customers')customerSearch.text=e.target.value;render();const input=$('#search');if(input){input.focus();input.setSelectionRange(pos,pos);}}});
 document.addEventListener('change',async e=>{if(e.target.id==='filter'){filter=e.target.value;render();}if(e.target.id==='stage'){const o=order(e.target.dataset.id),stage=e.target.value;e.target.value=o.stage;if(stage!==o.stage)registerOrderProgress(o,stage);}});
 installSectionTabs();
@@ -906,8 +961,11 @@ document.addEventListener('click',async e=>{
  const b=e.target.closest('[data-action]');if(!b)return;
  if(b.dataset.action==='billing-address'){billingForm(b.dataset.id);return;}
  if(b.dataset.action!=='billing-use-delivery')return;
- const o=order(b.dataset.id);if(!o)return;const previous=o.billing;o.billing={source:'delivery'};
- try{await save('Factuuradres volgt het afleveradres');}catch(error){o.billing=previous;render();toast('Opslaan mislukt: '+error.message);}
+ const o=order(b.dataset.id);if(!o||b.disabled)return;const basis=JSON.stringify([o.customerId,o.billing]);b.disabled=true;
+ try{
+  await mergeStoredState(next=>{const current=next.orders.find(order=>order.id===o.id);if(!current||JSON.stringify([current.customerId,current.billing])!==basis)throw Error('Deze order of het factuuradres is intussen gewijzigd. Open het adres opnieuw met de actuele gegevens.');current.billing={source:'delivery'};next.activities.unshift({id:uid(),message:'Factuuradres volgt het afleveradres',time:new Date().toISOString()});});
+  render();toast('Factuuradres volgt het afleveradres');
+ }catch(error){toast('Opslaan mislukt: '+error.message);}finally{b.disabled=false;}
 });
 
 installFulfilment({getState:()=>state,openForm,mergeStoredState,render,toast,esc});
@@ -917,18 +975,23 @@ document.addEventListener('submit',async e=>{
  const form=e.target;if(form.id!=='delivery-address-form')return;e.preventDefault();
  const key='delivery:'+form.dataset.orderId;if(loading.isBusy(key))return;
  const o=order(form.dataset.orderId);if(!o)return;
- const fields=Object.fromEntries(new FormData(form)),previous=o.delivery;
+ const fields=Object.fromEntries(new FormData(form)),basis=form.dataset.deliveryBasis;
  const activity={id:uid(),message:'Afleveradres van order bijgewerkt',time:new Date().toISOString()};
- const controls=[...form.querySelectorAll('button,input,textarea')];controls.forEach(control=>control.disabled=true);
- o.delivery={source:'custom',...Object.fromEntries(['recipient','country','address','instructions'].map(key=>[key,String(fields[key]||'').trim()]))};
- const undoCustomerSync=syncSingleOrderDelivery(o);
+ const previousInert=form.inert;form.inert=true;form.setAttribute('aria-busy','true');
+ const delivery={source:'custom',...Object.fromEntries(['recipient','country','address','instructions'].map(key=>[key,String(fields[key]||'').trim()]))};
  const finishLoading=loading.begin('Afleveradres opslaan…',{key});let failed=false;
  try{
   // Commit before changing the card or its map, keeping failed edits available.
-  await store('state','readwrite',s=>s.put({...state,activities:[activity,...state.activities]},'main'));
-  state.activities.unshift(activity);
+  await mergeStoredState(next=>{
+   const current=next.orders.find(order=>order.id===o.id);
+   if(!current||!basis||deliveryEditBasis(next,current)!==basis)throw Error('Deze order, klant of adreskoppeling is intussen gewijzigd. Je invoer blijft staan; open het adres opnieuw met de actuele gegevens.');
+   current.delivery=delivery;
+   const client=next.customers.find(client=>client.id===current.customerId);
+   if(client&&next.orders.filter(order=>order.customerId===client.id).length===1)Object.assign(client,{shippingAddress:delivery.address,shippingRecipient:delivery.recipient,shippingCountry:delivery.country,shippingAddressOrderId:current.id});
+   next.activities.unshift(activity);
+  });
   deliveryDrafts.delete(o.id);render();toast(customerOrders(o.customerId).length===1?'Afleveradres opgeslagen bij klant en order':'Afleveradres opgeslagen voor deze order');
- }catch(error){failed=true;o.delivery=previous;undoCustomerSync();controls.forEach(control=>control.disabled=false);updateDeliveryDraft(form);form.querySelector('[data-delivery-error]').textContent='Opslaan mislukt: '+error.message;}finally{finishLoading({error:failed});}
+ }catch(error){failed=true;form.inert=previousInert;updateDeliveryDraft(form);form.querySelector('[data-delivery-error]').textContent='Opslaan mislukt: '+error.message;}finally{form.inert=previousInert;form.removeAttribute('aria-busy');finishLoading({error:failed});}
 });
 document.addEventListener('click',e=>{
  const b=e.target.closest('[data-action]');if(!b||!['delivery-use-customer','delivery-cancel'].includes(b.dataset.action))return;
@@ -947,7 +1010,7 @@ document.addEventListener('change',e=>{if(e.target.id==='analytics-period'){anal
 // Local imports run once per page load; active edits are never replaced.
 try{
  const imported=runtime.mode==='cloud'?null:await importLocalOrders({db,stages,companyId:company.id,today:today(),beforeCommit:()=>{if(editingLocally())throw Error('Herlaad na het opslaan om de lokale import over te nemen.');beginLocalStateChange();}});
- if(imported){state=imported.state;state.orders.forEach(syncSingleOrderDelivery);notifyDataChanged();location.hash=imported.route||`orders/${imported.ids.at(-1)}`;render();toast('Lokale gegevens toegevoegd, inclusief documenten en betalingen');}
+ if(imported){state=imported.state;paymentNotifications.remember(state);state.orders.forEach(syncSingleOrderDelivery);notifyDataChanged();location.hash=imported.route||`orders/${imported.ids.at(-1)}`;render();toast('Lokale gegevens toegevoegd, inclusief documenten en betalingen');}
 }catch(error){toast('Lokale import: '+error.message);}
 
 // Startup migrations are not user actions. History starts after they finish.
@@ -955,7 +1018,7 @@ sessionUndo.enable();refreshUndoButton();finishStartup();
 
 document.addEventListener('click',event=>{const button=event.target.closest('[data-action="order-costing"]');if(!button)return;try{if(company.tool!=='costing')return;if(!order(button.dataset.id))throw Error('Deze order bestaat niet meer.');orderForm(button.dataset.id,undefined,{}, {focusCosting:true,costingItemId:button.dataset.item||''});}catch(error){toast(error.message);}});
 
-document.addEventListener('click',event=>{const b=event.target.closest('[data-action="choose-order-calculator"]');if(!b||company.tool!=='costing')return;try{const o=order(b.dataset.id);if(!o)throw Error('Deze order bestaat niet meer.');openForm('Voor welk product wil je rekenen?',`<p>Je opent de calculator die bij het gekozen product hoort.</p><div class="actions">${o.items.map(i=>`<a class="download-button" href="${esc(toolUrl(company,o,i,runtime.mode))}">${esc(i.description)} · ${i.quantity} stuks →</a>`).join('')}</div>`,async()=>{});$('#dialog [type=submit]').hidden=true;$('#cancel').textContent='Terug naar order';}catch(e){toast(e.message);}});
+document.addEventListener('click',event=>{const b=event.target.closest('[data-action="choose-order-calculator"]');if(!b||company.tool!=='costing')return;try{const o=order(b.dataset.id);if(!o)throw Error('Deze order bestaat niet meer.');openForm('Voor welk product wil je rekenen?',`<p>Je opent de calculator die bij het gekozen product hoort.</p><div class="actions">${o.items.map(i=>`<a class="download-button" href="${esc(toolUrl(company,o,i,runtime))}">${esc(i.description)} · ${i.quantity} stuks →</a>`).join('')}</div>`,async()=>{});$('#dialog [type=submit]').hidden=true;$('#cancel').textContent='Terug naar order';}catch(e){toast(e.message);}});
 
 // Explicit preparation keeps the normal cloud transaction contract unchanged.
 document.addEventListener('click',async event=>{const b=event.target.closest('[data-offline-review]');if(!b)return;event.preventDefault();if(runtime.offlineReview){toast('Je gebruikt de offline-modus al. Feedback kun je hier gewoon bewaren.');return;}if(document.querySelector('dialog[open]')){toast('Bewaar of sluit eerst je open formulier.');return;}b.disabled=true;b.textContent='Offline kopie klaarmaken…';try{await prepareReview(runtime);location.assign('/admin/?offline=review'+(location.hash||'#dashboard'));}catch(error){toast(error.message);b.disabled=false;b.textContent='Offline-modus';}});

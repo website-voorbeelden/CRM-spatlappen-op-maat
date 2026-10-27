@@ -1,4 +1,30 @@
+> Batch4vervolg27oktober: openForm gebruikt één formBusy-guard voor interne submitbusy én feature-inert/aria-busy (close/cancel/submit/aanvulactie). Geen extra cancelsystemen. Composer start op huidig open formulier, vroege per-file/aggregategrens, foutfocus na vrijgeven. shared/mail-attachments private naam/typeallowlisthelper, pre-readsizeguard plus bestaande post-readvalidatie. Geen nieuwe state/store/providerroute/CSSlaag. Zie docs/BATCHES2-4-OPMAAK-20261027.md; bronreview/local, eigen controle open.
+
+> Batch3vervolg27oktober: list-filters.js pure zichtbaarheid van actieve criteria, geen filterengine/statekopie. shared/order-payment-status.js labelt bestaande totalen voor screen en dossier-search op dezelfde unknownregel; geen tweede bedragengine of workflowwijziging. payments/list-focus.js bewaart alleen tijdelijke rijfocus tijdens synchronous repaint; geen listener/store/timer/provideractie. Sortkeys blijven. Zie docs/BATCHES2-4-OPMAAK-20261027.md; bronreview/local, eigen controle open.
+
+> Batch2vervolg27oktober: shared/inquiry-edit.js heeft pure product-/aanvraagbasis en changedInquiryValues. inquiry-ui bewaart alleen eigen velddelta in tabgeheugen tijdens producteditor, herleest productbasis bij terugkeer en bewaakt oorspronkelijke aanvraag-/klantbasis in bestaande merge. Geen extra store/draftstorage of automatische specs-/productmigratie. Zie docs/BATCHES2-4-OPMAAK-20261027.md; bronreview/local, geen tests/browsercontrole/publicatie.
+
+> Vervolg27oktober: orders/list.js pure tabelpresentatie met actuele coordinatorprojecties, geen tweede state/sortering. products/design-variants.js composeert bestaande variant-/approvalprojecties; inquiryUI ook op ordertabs geïnstalleerd. documents/order-terms.js via luie context, vaste shared/company-documents allowlist alleen Maat; bestaande state/files-transactie en optionele companyAssetvalidatie, geen nieuwe store. Mail drop/paste gebruikt bestaande bijlage-/previewroute; inline→composer leest actuele gemounte seed na afzenderawait. CSS centraal, oude mailfocus-/hover-/filemenueigenaarsregels verwijderd. Zie docs/BATCHES2-4-OPMAAK-20261027.md en ALGEMENE-VOORWAARDEN-BIJ-ORDER.md; bronreview/local, geen tests/publicatie.
+
+> Opmaakbatch1,27oktober: workspace/action-menus.js is de enige generieke controller voor native quiet-menu/order-more; preferences.installSidebar beheert installatie/cleanup en houdt dezelfde voorkeurskey. Geen tweede state/API/timers of app.js-featurecode. Navigationcontext blijft pure markup. Centrale type/spacing/control/nav/menu-eigenaarsregels in admin/style.css; mobiele geometrieregels behouden. Zie docs/VIER-OPMAAKBATCHES-20261027.md; alleen bron, gebruikerscontrole/publicatie open.
+
+> Vervolg27oktober: orders/header.js bevat pure gedeelde dossierkop en beperkte horizontale tabstriponthulling; orders/workspace.js composeert dezelfde context/projecties, geen tweede state/opslag. orders/overview.js groepeert primaire actie/producten en aanvullend dossiergedeelte; sales-funnel behoudt dezelfde readiness/handlers. Centrale CSS heeft één actuele producteigenaar en begrensde .shell>aside-geometrie. Bron lokaal; geen browser-/functionele validatie. Zie docs/DOSSIER-INDELING-20261027.md.
+
+> Nieuw27oktober: admin/payments/notifications.js observeert gecommitte state/externe refresh met sessie-IDset; bestaande workspacequeue/controls, geen nieuwe poll/storage/provideractie. shared/payment-notifications.js deelt bestaande server/clientreceiptregels. cloudflare/payment-delivery-status.js leest alleen eigen huidige device/eventbezorgstatus via bestaande beveiligde statusroute, geen transportwijziging. Beginhistorie/import stil, telefoonoorzaak niet bewezen. Alleen bron lokaal; zie MOBIELE-MELDINGEN.md en OVERDRACHT.
+
+> Nieuw27oktober: payments/workspace.js beheert de nieuwe menuwerkplek #payments via context.state en bestaande refreshExternalState. Pure join/filter/som in shared/payment-overview.js, DOM/filters/paginering in feature, geen businesswrites of eigen kopie. Bestaande zoekvelden/details behouden bij refresh; foutstatus expliciet. appContext nieuw luie refreshgetter, geen constructor-TDZ of importcirkel. Navigatie en centrale CSS gedeeld; bron lokaal, eigen controle/publicatie open.
+
+> Vervolg27oktober: analyticsworkspace geeft route[2] als reportId aan reportfeature. URL/knop opent exacte bewaarde editie, onbekend blijft expliciet; geen stille latestfallback. Meldingenstatus toont alleen aantallen/capability en acceptatie, geen devicegeheimen. Nieuwe bron gebruikt bestaande knop-/editbescherming, geen nieuwe CSS of appContextstatus. report-device.js handshake alleen tijdens expliciete telefoon-koppelactie, geen providerproef/permissionprompt op lezen. Zie VRIJDAGRAPPORTEN.md; bron lokaal, eigen controle en publicatie open.
+
+> Nieuw27oktober: analytics/workspace.js delegeert tab reports naar analytics/weekly-report.js. Geen nieuwe appContextglobale status of app.js-featurecode; tijdelijke schermstatus, DOMinvoer behouden bij fout en settings-CAS, bronrapporten via beveiligde eigen serverroute. Eigen rapportrecord in bestaande versleutelde integrationsopslag, geen klant-/orderstate. Centrale CSS hergebruikt analyticsgrafiek/table-controls. Zie docs/VRIJDAGRAPPORTEN.md; ontvangstkeuze/bezorging, eigen controle en publicatie open.
+
+> Laatste27oktober: workspace/notifications.js is één gedeelde sessiemanager per bedrijf voor inkomende mail/aanvragen en fasewijziging. mail-notifications.js compatibiliteitsexport; één centraal CSSblok. notifyMailPhase toont Bekijken/Terugdraaien; shared/funnel-phase-undo.js gebruikt tijdelijk smal token en actuele-basisguard binnen bestaande merge, wijzigt uitsluitend salesFunnel.selection + activiteit. Geen algemene sessionUndo, false verzenddatum, data-/bestands-/providersnapshot of extra store. Open/onbewaarde invoer blokkeert alleen meldingacties, niet de bekende faseafleiding. Geen tests/checks/build/browsercontrole/publicatie. Zie COMPACT-ORDEROVERZICHT.md.
+
+> Nieuwste27oktober: centrale CRM-opmaak inclusief mail in admin/style.css, één :root, gemeenschappelijke tokens/controls, oude CSSpaden lege compatibiliteit. Zie docs/CRM-CSS.md (vanuit admin ../../docs/CRM-CSS.md). orderOverviewMarkup in admin/orders/overview.js is presentatie via live context; checklist/planning hebben optionele compactweergave. Pure salesFunnel projecteert onbesliste complete aanvraag naar pricing zonder historische basis-/gegevensmigratie. workspace/phase-notice-preference.js bewaart uitsluitend per bedrijf/browser de popupweergave, geen actieautorisatie. Nieuwe bekende mailfasen worden confirmed binnen dezelfde acceptatietransactie; prefs/popup blokkeren afleiding niet. automaticFunnelMailPhase deelt type-/doelherkenning, notifyMailPhase is alleen uitleg, oude pending/dismissed/herstel behouden eerdere guarded review. Meer → Fase-meldingen beheert uitsluitend weergave. docs/COMPACT-ORDEROVERZICHT.md bevat grenzen. Alleen bronwerk, geen tests/checks/build/browsercontrole/publicatie.
+
 # CRM-samenstelling en featuregrenzen
+
+26 oktober 2026: orders/route-costs.js hangt onder de bestaande map-route-factory. Alleen vluchtige tabbladwaarden en een basisvergelijking via de actuele routegetter; geen eigen businessstate of opslag. Bestaande shared/batch-economics.deliveryScenario rekent de kosten. Routebasiswijziging vereist expliciete herbevestiging met invoerbehoud. Geen tests/checks/build/browser-QA/publicatie uitgevoerd.
 
 admin/app.js blijft de ingang voor beide bedrijven. Het houdt opstart, centrale status, routes, transacties, shell, opslagverversing, algemene dialoogbediening en gebeurtenisroutering bij elkaar. De grote schermen en formulieren staan onder hun eigen featuremap.
 
@@ -147,3 +173,111 @@ workspace/money.js bevat vaste presentatiebetekenissen, orders/money-summary.js 
 ## Maat-productdikte door de documentketen — 21 oktober 2026
 
 shared/product-specifications levert publieke allowlist material/thickness en vaste details; geen interne vrije specs/leveranciersdata. generation.js accepteert companyId en bewaart numerieke snapshot plus leesbare details; bestaande Pythonconverter/template-rijen blijven werken. Generated forms bieden verplichte Maat-diktecontrole en order-returnhulp; pakbon bewaart gewijzigde invoer bij terugkeer. Revisie behoudt historische payload en technische metadata, expliciet currentProducts voor actuele gegevens. Geen automatische oude-filemigratie. Pure thicknessUsage telt huidige productregels, geen financiële allocatie; analytics/product-metrics wordt via bestaande factory/context in Maat-Financiën gemonteerd. Dossierfilters werken per item. Zie docs/DIKTE-EN-PRODUCTDATA.md; geen tests/build/browserQA/publicatie.
+
+## Websitegegevens en ontvangen contact — 21 oktober 2026
+
+analytics/dossier.js factory via live appContext, pas bij mount getters gebruiken. orders/workspace en customers/views leveren slots; dossiercontrollers mounten na shell. Handmatig contact en exacte leadrelatie via bestaande mergeStoredState met veld-CAS; geen tweede zakelijke store, geen automatische anonieme matching. cloudflare/website-journey route leest eigen orderstate/binding, weigert vrije lead/visitzoekvragen; oude v1-bezoekdetails blijven aggregate-only. Pure validatie/projectie in shared/website-dossier. Website blijft apart project; eigen optionele migratie/flags niet uitgevoerd. Zie docs/WEBSITE-DOSSIER.md; geen tests of publicatie.
+
+## 23 oktober — formuliermetadata buiten de body
+
+shared/inquiry-mail-metadata is een pure beperkte decoder/validator voor hetzelfde headercontract in de aparte websitebron. gmailMessage projecteert de toegestane velden, beide bestaande Gmail-diensten vragen die mee in dezelfde metadata-call. inquiries consumeert pas binnen bestaande formulier-/afzendergrenzen en bewaart de compacte bron bij de bestaande order; bodyfallback en dedup/CAS blijven. analytics/dossier toont alleen bewaarde bron, geen nieuwe providerstate. Appwijziging beperkt tot cacheketen en wissen bron bij orderduplicatie. Geen nieuwe AI-acties, scopes of providerstatusstore. Zie docs/FORMULIERMAIL-EN-SPAM.md; lokaal, geen tests/publicatie.
+
+## Persoonlijke dossierlijsten — 23 oktober 2026
+
+workspace/dossier-preferences.js houdt alleen bedrijfsspecifieke browservoorkeuren en begrensde ID/tijdstiprecents bij, buiten zakelijke state. app.shell registreert een geldig getoond dossier; dezelfde actieve entiteit wordt bij tabwissel/save/refresh niet opnieuw geraakt. App behoudt bestaande centrale orderkolomsortering en composeert zichtbare dropdown; customers/views leest dezelfde helper en geeft alleen openedAt aan de pure zoekprojectie. Geen provideractie/nieuwe recordvelden/migratie; prijsvergelijkingsregels blijven intact. Opslagfouten behouden de tabkeuze in geheugen met melding. Zie docs/DOSSIER-SORTERING.md. Lokaal, geen tests of publicatie.
+
+## Mobiele meldingen — 23 oktober 2026
+
+notifications/client.js via luie appContext in instellingen; alleen apparaatabonnement/UI, geen businessstate. Manifest canoniek shared/mobile-app.js; scripts/build-pages levert bedrijfsicons/manifest en breidt bestaande offlineworker-template uit. Geen tweede SW, APIcache of offline-writeomweg.
+
+cloudflare/notifications.js houdt private sessiegebonden subscriptions, dedup/outbox/lease/retentie in additive migratie0005, met uitsluitend specifieke jobauth in middleware en bestaande auth voor browserroutes. Canonieke snapshot/commitcallbacks vanuit api.js; geen aparte statepersistenceroute. Background ontvangt providerbewijs via bestaande Tikkieadapter en gebruikt gedeelde pure shared/tikkie-payments.js; admin/orders/payment-workflow re-export blijft compatibel. Geen automatische factuur/mail/Gmailexecutor. workers/notifications is afzonderlijke Cron-Worker zonder DB/providercredentials, alleen een eigen Pages-jobkey. web-push.js gebruikt native WebCrypto/RFCs, vaste pushhostallowlist en redirectverbod. Secrets alleen runtime; niets gegenereerd/geopend/geactiveerd. Activering/checks open, zie docs/MOBIELE-MELDINGEN.md.
+
+## Vier feedbackbatches — 23 oktober 2026
+
+workspace/viewport.js is de gedeelde eenmalige schermtoetsenbord-/focushelper voor mobile-ui en standalone feedback; DOM pas bij install. orders/addresses houdt nieuw contactvenster met veldsignature en actuele merge, behoudt leverdrafts. orders/workspace registreert nieuwe ontvangst transactioneel met stabiele ID en paars percentagevoorstel; geen globale premutatie.
+
+documents/manual-delivery is luie featurefactory naast library-workspace; concrete PDFmetadata {kind,sentOn,recordedAt,source:user} gevalideerd in shared/state-validation. Alleen nieuwste documentsoort vult dossierdatum aan; metadata blijft bij verplaatsen geldig en bundelstatus leest PDF. Aanmaken document is geen verzending. generated-forms composeert bestaande prijs-/fulfilmenthelpers binnen dezelfde merge met aparte signatures; voorstel wordt pas na save afspraak. preview bezit resizeobserver/fitmode en ruimt die met bestaande abort/dispose op.
+
+Pushregistratie seedt baseline onder de controllease vóór het toestel wordt opgeslagen. Drain beperkt selectie tot actueel geldige sessieapparaten, status geeft algemene leverissues. Geen nieuwe providerscopes of businessmutaties door status. Bron niet getest/geactiveerd; zie vier-batchdoc.
+
+## Batch1 vervolg — 23 oktober 2026
+
+notifications/client houdt alleen vluchtige status/browserabonnement, geen endpoints in eigen opslag. Statusfetchvolgorde voorkomt overschrijven door oude requests; voortgang blijft lokaal in het paneel. Browserrevocatie pas na bevestigde serverrevocatie; bij fout endpoint behouden om opnieuw te proberen. Serverstatus geeft uitsluitend booleans voor reconnect/heartbeat, geen deviceenumeratie. notifications.js staat unsubscribe ook bij feature-uit toe, onder bestaande echte bedrijfsaccountauth en Origin. Huidige single-allowed-accountarchitectuur expliciet gedocumenteerd, multiuser-eigenaarschap later apart. Herlees actuele sessie/device/key direct vóór transport, niet alleen aan begin job. Geen nieuwe store/migratie/scopes. Standalone editorfeedback volgt dezelfde viewportvariabelen met eigen afgebakende CSS. Geen tests/publicatie.
+
+## Batch2 — 23 oktober 2026
+
+orders/payment-entry factory uit workspace gehaald, uitsluitend luie context. shared/manual-receipt bevat veldbasis/kalenderdag/zelfde-ID-/mogelijke-dubbelcontrole en append binnen bestaande merge. UI gebruikt bestaande totals, geen tweede saldoengine. Expliciet Actueel saldo ophalen leest centrale opslag en vervangt alleen appstatus/basis, behoudt formulierinvoer; save blijft basis-CAS. payment-corrections hergebruikt kalenderdagcheck.
+
+documents/payment-selection bezit optionele DOMinstaller voor telling/totaal/alles/niets, na resume toegepast; formchange wist bestaande preview. documents/preview houdt eigen retrytask bij lees- en paginafouten. orders/cost-composition leest alleen bestaande economics/allocatedAmount/itemCost/namedCosts; directe perproductregels zijn geen alternatieve volledige kostprijs. app.js alleen noodzakelijke klikrouterfix invoice-mail-start, compacter bestaand betaallinkpanel en importcache; startInvoiceMail gebruikt bestaande generator bij beide bedrijven. Geen providerexecutor, nieuwe opslag, fiscale bronmutatie of publicatie. Details docs/BETALINGEN-EN-DOCUMENTEN.md.
+
+## Batch3 — 23 oktober 2026
+
+customers/contact-editor composeert dezelfde begrensde primaire contactvelden voor ordermodal en inline mailherstel. shared/customer-contact past alleen gewijzigde velden toe met individuele basisvergelijking en optionele order-klantrelatiecontrole; contactenlijst/ordercontactkeuze blijven apart. Mail past ontvanger uitsluitend na expliciete Gebruik adres aan.
+
+mail/templates kiest inline-task wanneer een terugkeercallback bestaat; volledige composer refresh alleen templatekeuze/variabelen, geen nieuw parentformulier/resume/route-/conceptopslag. Inline save returnfalse houdt het kindvenster open (bijvoorbeeld naamconflict), met bestaande dirty/busy/confirmafhandeling. Bestaande gewone instellingeneditor blijft.
+
+mail/composer houdt replylabel/hulp en Nieuw bericht-knop als vaste DOM, herbouwt alleen keuzelijst op ontvanger. Huidig antwoordanker niet uitwissen bij alleen body-/templatebeheer of latere bewaarde mail; directe ontvanger-/semantische onderwerpwijziging wist alle antwoordmetadata. Geen nieuwe providerrequest/scopes. Manual-delivery checkt ordercustomer opnieuw en gebruikt invoegvolgorde bij gelijke documentdatum. Details docs/KLANT-EN-MAILWERKPROCES.md; bron niet getest/gepubliceerd.
+
+Batch3 template-subjectcontract: installComposer krijgt luie keepReplySubject-callback. In antwoordmodus bevestigt/vervangt apply alleen body, behoudt onderwerp/anker. Nieuwe berichten mogen templateonderwerp overnemen. Expliciete ontvanger-/onderwerpwijzigingen blijven metadata wissen.
+
+## Vervolg 24 oktober 2026
+
+shared/request-products is een pure begrensde bloksplitsing; request-recognition hergebruikt dezelfde herkenner per blok zonder recursief splitsen. Handmatige productsave via bestaande createInquiry in één transactie, geen extra bronstore. request-intake bezit de herhaalde DOMvelden, dirty/busy/confirm via bestaande openForm. inquiry-mail bewaart productID-gebonden selecties en controleert dezelfde actuele productbasis.
+
+site-analytics scheidt all_visits, pagina-gefilterde visits en aantoonbaar gekoppelde leads binnen dezelfde uitsluitings-CTE; geen nieuwe meettabellen. laptop-origins is een gedeelde exacte allowlist voor server en browser, geen configureerbare wildcard. V2 hergebruikt cloud-storage-facade en bestaande berekeningsguards; runtimecapability volgt expliciete publicatieassetkeuze. Operatoractivering is een los expliciet script, nooit startup/CI, zie VERVOLGWERK-2026-10-24.md. Geen tests uitgevoerd.
+
+## Analytics-overzicht — 24 oktober 2026
+
+analytics/workspace routeert default naar overview; analytics/website projecteert bestaande eigen rapportresponse en inquirySummary zonder nieuwe store. Loadingstatus staat buiten het rapport en bewaart laatste context bij fouten; uitsluitingen wissen eerst de oude weergave. financial-chart gebruikt dezelfde financialGroups met meterweergave en bestaande dossierdrilldown; dubbele statische chart niet meer in hoofdscherm. websiteCohort erkent orderId én ownerId voor quote-documentbewijs. CSS centraal, cijfers/bedrijfsgrenzen ongewijzigd. Zie docs/ANALYTICS-WERKPLEK.md; geen functionele tests uitgevoerd.
+
+## Automatische Tikkiecontrole — 24 oktober
+
+notifications.pollProvider gebruikt vijfminutenvensters in bestaande job/cursor, bekende receipt/correction-ID’s uitsluitend als filter voor herverificatie van gesloten journal-links na onderbroken commit. Cached bedragen worden nooit als nieuw bewijs direct geïmporteerd: bestaande provider-GET/validatie en centrale CAS blijven leidend. Status-API voegt expliciete pollingflag/interval/laatste afgeronde ronde toe, browser toont toestand zonder extra mutatieknop of globale loader. Operatorconfigure-payment-polling behoudt verse productievars/bindingen/secrets, geen providerproef. Zie docs/AUTOMATISCHE-TIKKIECONTROLE.md; geen functionele tests uitgevoerd.
+
+## Achtergrondinterval en kosten — 24 oktober
+
+shared/notification-schedule is de gedeelde bron van kwartierinterval, cron en heartbeatmarge. Backend bewaakt dezelfde vensters, browser leest statusinterval met gedeelde fallback. Bestaande operator configure-payment-polling publiceert Pages en eigen Worker zonder secrets te vervangen; source/cron samen zodat een codepublicatie niet alleen de uitlegteks verandert. Geen nieuw periodiek rapport, usagecollector of provideractie toegevoegd. Zie docs/CLOUDFLARE-KOSTEN.md.
+
+## Cloudflare-providertransport — 24 oktober
+
+Workers ondersteunt geen redirect:error. Marketingprovider, web-push en cronworker gebruiken manual, behandelen3xx als fout en volgen geen Location met auth. Marketingcacheversie2 is een readerreleasegrens, geen credentialmigratie. Geen token of providerpayload loggen. Zie docs/GOOGLE-VERBINDING-HERSTEL.md; geen functionele tests/providerproef.
+
+## Formulier-MIME en klantvelden — 26 oktober
+
+mail-content.decodeMailHeader is passieve RFC2047B/Qdecodering met charset/foutfallback en CR/LF/NULsanering, gebruikt voor subjects in gmailMessage en formulierkandidaten. inquiryText normaliseert gemengde literal-newlines alleen bij meerdere veldgrenzen. recognizeRequest hergebruikt parseFormInquiry voor bekende formulierkandidaat, zonder ontvangerbeleid te verruimen; websiteafzender nooit als klantfallback. Mailworkspace kiest oorspronkelijke kandidaat naast huidige reactie. Publicatieoperator heeft afzonderlijke websitebasisguard; geen providerread/echte dossiermutatie als QA. Zie docs/FORMULIERHERKENNING-20261026.md.
+
+## Productvarianten en feedback26oktober
+
+Shared product-design-variants bevat uitsluitend metadataprojectie, finalebasis en validatie; artwork blijft bestaande files. Productsave één state/files-transactie, append-only versies en klant-/productsignature, geen nieuwe store/migratie. Finalekeuze via bestaande merge en confirm; readiness/progress/production-release lezen dezelfde projectie. PDFdefault vraagt actuele finale; voorstelvariant expliciet in query. Editorvoorbeelden zijn alleen vluchtige renderprojecties, niet in opgeslagen state. Fontbytes bounded in ui.customFonts met dezelfde bytes voor FontFace en OpenType, portable allowlist/dedup en gedeelde historystrings. Nieuwe helpers behouden klassieke laadvolgorde; mailwijzigingen alleen bestaande afgebakende stylesheet/UI. Cacheimportketen tekstueel bijgewerkt. Geen automatische tests/checks/builds/browserQA of publicatie.
+
+## Batch1 ontwerpvarianten — 26 oktober
+
+Variantmetadata heeft optionele sourceBasis uit de feitelijke JSON; nieuwe saves geven die altijd mee. currentFinalVariant vereist passende bronmaat/aantal naast de exacte versie/productbasis. UI leest immutable JSON/PNG via de bestaande bedrijfsopslag buiten de mutatietransactie; selectFinalVariant vergelijkt daarna opnieuw de volledige actuele keuzehandtekening en metadata. Geen async callback in mergeStoredState. Legacybronbasis wordt vóór de save opgehaald, met herhaalde guard binnen de gezamenlijke state/files-transactie. Alleen expliciete legacyversies mogen ontbrekend historisch PNG/tijdstip behouden; geen ontbrekende originele JSON verzinnen. Oude imageapproval gebruikt ook mergeStoredState en weigert managedvarianten, orderstatus vervangt geen finale keuze. Geen nieuwe datastore, provideractie of test/build/browserQA; docs/BATCH1-ONTWERPVARIANTEN-20261026.md.
+
+## Batch4 mail en labels — 26 oktober
+
+mail/thread-labels houdt uitsluitend een vluchtige weergave-/vergelijkingsbasis per gemounte strook. shared/mail-thread-labels levert bij afgewezen CAS actuele labels op het Errorobject; geen statewijziging bij conflict. Opnieuw kiezen vergelijkt de nieuwe basis in dezelfde centrale transactie. Eigen controls blijven onafhankelijk van Gmailreviewbusy; late oude mounts niet schilderen. Mailrefresh leest na await de actuele formseed en bewaakt DOM/selectie/dialog/busy; seed herbeoordeelt replyvoorwaarden, bewaard anker blijft bij heropbouw. Bestaande composer/provider-/opslagroutes behouden, geen tweede zakelijke store of nieuwe rechten. Opmaak alleen in bestaande afgebakende mail.css. Geen tests/build/browserQA/publicatie; docs/BATCH4-MAIL-EN-CRM-20261026.md.
+
+## Open feedbackpunten — 27 oktober
+
+Automatische Spatlappen-vrijgave is een read-only projectie via productionReleaseInfo/salesFunnel, gedeeld door readiness/werkvoorraad/voortgang. Geen nieuwe datums op render. Workflowbasis uitsluitend toevoegen wanneer nieuwe automatische voorwaarden actief zijn; gewone bestaande Maat-/Gmailbasissen behouden. Percentage apart transactioneel aanpassen. Voorbereid document/link anders dan verzending. Google Routes-serverengine in cloudflare/google-routes-provider.js wordt zowel door cloudflarehandler/integrationStore als lokale assistantadapter gebruikt; fixed host, eigen bedrijf/secretopslag en CAS, nooit browserimport. Browserroute houdt alleen een tabbladraming/signatuur/voorstel bij; bestaande kostenprojectie en actuele mapcontext blijven leidend. Bij heropbouw blijft onbewaard configformulier als DOM behouden, geen secretbrowserdraft. Nieuwe lokale servercode moet nog worden geladen, onlinepublicatie apart. Geen tests/providerproef.
+
+## Algemene codelezing — 27 oktober 2026
+
+workspace/transactions.js bewaakt synchrone callbacks en breekt af bij opbouwfouten; store() gebruikt dezelfde hulp en mergeStoredState weigert thenables. Centrale state verandert bij de overgezette klant-/order-/adres-/categorie-/archiefacties pas na commit. Oude generieke save() en contextgetter verwijderd. workspace/dossier-actions factory via actuele context; shared/order-copy pure kopieregels, bedrijfsbeginfase via caller. Geen variant-/definitief-/fileverwijzing of afgeleide inkooptoerekening in nieuwe order. Nummer uit actuele merge, oorspronkelijke order ongewijzigd. Adresdraft bewaart eigen beginbasis in tabgeheugen/DOM, geen nieuwe businessstore.
+
+CloudTransaction scheidt requestcallbacks voor wachtrijopbouw van tx.oncomplete na commit. Callbackfout na commit mag geen transactieabort simuleren; aparte browserfoutmelding. Abort bewaakt uploadgrenzen; na start commit geen terugdraaiing beloven. Stale delete controleert waargenomen beginbasis; eigen writes/clear zijn geen externe wijzigingen. Volledige vervanging en globale observed-map blijven een bredere conflictgrens, geen nieuwe per-recordversies. Refreshdisposer verwijdert listeners en negeert late antwoorden; browserDB ruimt verlaten late opens op en sluit bij versie-upgrade. Geen data-opruiming.
+
+Open: lokale back-upherstelcoördinatie over losse databases/diensten, login naast actieve invoer bij401, bredere feature-/offlineconflicten en context-/geldhulpen. Zie docs/ALGEMENE-CODELEZING-20261027.md. Geen tests/checks/build/browserQA/publicatie.
+
+## Werkbladen in Excel-stijl — 27 oktober 2026
+
+Centrale stijlblok in admin/style.css voor neutralere tokens, lichte zijbalk, vaste rasterlijnen/rijen, compacte tabs/forms en vlakke vlakken. Mail volgt de expliciet toegestane mail/mail.css met breed register boven detail; bestaande order-/mobiele picker-visibility blijft leidend. Alleen presentatiemarkup in mail-workspace, customers/views en workspace/task-list: vaste kolomkoppen, native rijbuttons en berichtmetadata. Geen ARIA-grid/bewerkbare cellen, extra appstatus of opslagcontract. MailSeed/handlerattributen en gegevens/reply/export gescheiden van de visuele schil. Losse tools en geproduceerde documenten behouden hun eigen opmaak. CSS/importcache excel-style-20261027. Geen tests/browseruitlezing/build/publicatie; EXCEL-STIJL-20261027.md.
+
+## Opmaakreferentie en navigatiepresentatie — 27 oktober 2026
+
+Exact Online vervangt de te breed toegepaste Excelrichting. De laatste centrale stijlsectie is vervangen, niet nog een centrale override toegevoegd. Thema in admin/style.css, toegestane mailuitzondering mail/mail.css. navigation-icons.js levert statische eigen SVG-lijniconen, navigation.js behoudt bestaande groepen/routeIDs/labels en levert tekstuele bedrijf-/modulecontext. app.js injecteert alleen die presentatie bij de bestaande zoek-/exporttoolbar; geen nieuwe opslag/bediening/module-/bedrijfsswitch of globale state. Bestaande sidebar/mobile slots, inklapvoorkeur en formulier-/mailSeed-/CASbescherming behouden. Losse canvas/calculator/PDF/mailinhoud ongemoeid. Openbare Exactreferentie is brononderzoek, geen eigen CRM-QA. Zie docs/EXACT-REFERENTIE-20261027.md; lokaal, eigen controle open.
+
+## Compacte dossierpresentatie — 27 oktober 2026
+
+orders/progress rendert dezelfde pure orderProgress-projectie met native details rond de volledige bediening; huidige fase/actuele uitvoering blijft compact. money-summary voegt alleen een gesloten detailsshell en korte tekst over bestaande t.net/t.balance toe; geen herberekening of opgeslagen UIstate. orders/workspace vraagt compact:true bij sales-funnel.panel. Die optionele presentatieroute gebruikt dezelfde readiness-/nextprojectie en bestaande handlers, bewaart waarschuwinghook/review; algemene panelroute blijft. CSS centraal, hoverkleuren gekoppeld aan lichte sidebarvariabelen corrigeren. Geen nieuwe formulieren/storage/eventhandlers/regels, geen browser-QA/tests/publicatie.

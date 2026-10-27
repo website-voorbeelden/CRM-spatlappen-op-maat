@@ -1,9 +1,11 @@
+import {gmailBody} from './gmail-body.js?v=footer-inline-20261027';
 // Called only with the currently authenticated mailbox. All provider operations are reads.
 export async function gmailAttachment(auth,input,api){
  if(input.mailbox!==auth.mailbox||!/^[a-f0-9]{1,100}$/i.test(input.messageId||'')||!/^(?:root|\d+(?:\.\d+)*)$/.test(input.partId||''))throw Error('Deze bijlage hoort niet bij de huidige mailbox. Werk het gesprek bij.');
  const message=await api(auth,'messages/'+input.messageId+'?format=full');
  if(message.id!==input.messageId||message.labelIds?.some(label=>['SPAM','TRASH'].includes(label)))throw Error('Dit bericht is niet beschikbaar.');
- let part;function find(node,depth=0){if(!node||depth>20)return;if((node?.partId||'root')===input.partId)part=node;for(const child of node?.parts||[])find(child,depth+1);}find(message.payload);
+ const part=gmailBody(message.payload).attachments.find(node=>(node.partId||'root')===input.partId);
+ if(!part)throw Error('Dit onderdeel is geen losse bijlage of is niet meer beschikbaar. Werk het gesprek bij; handtekeningafbeeldingen worden niet als dossierbestand bewaard.');
  if(!part?.filename||part.body?.size>4_000_000)throw Error('Deze bijlage ontbreekt of is groter dan 4 MB. Open hem in Gmail.');
  const body=part.body?.attachmentId?await api(auth,'messages/'+input.messageId+'/attachments/'+encodeURIComponent(part.body.attachmentId)):part.body;
  if(typeof body?.data!=='string'||body.data.length>5_340_000||!/^[a-zA-Z0-9_=\-]*$/.test(body.data))throw Error('Google gaf geen bruikbare bijlage terug.');

@@ -1,5 +1,5 @@
 import {validateCostQuote,quoteSignature} from '../shared/cost-quote-domain.js';
-import {openBrowserDatabase,storageRuntime} from './cloud-storage.js';
+import {openBrowserDatabase,storageRuntime} from './cloud-storage.js?v=crm-code-review-20261027';
 async function database(){const runtime=await storageRuntime();if(runtime.companyId!=='maatwerkkunststof')throw Error('Deze offertewerkplek hoort bij Maatwerkkunststof.');return openBrowserDatabase('maatwerkkunststof-cost-quotes',['quotes']);}
 export async function listCostQuotes(){const db=await database();try{return await new Promise((resolve,reject)=>{const tx=db.transaction('quotes'),r=tx.objectStore('quotes').getAll();r.onsuccess=()=>{try{resolve(r.result.map(validateCostQuote).sort((a,b)=>b.updatedAt.localeCompare(a.updatedAt)));}catch(e){reject(e);}};tx.onerror=()=>reject(tx.error);});}finally{db.close();}}
 export async function readCostQuote(id){const all=await listCostQuotes();const q=all.find(q=>q.id===id);if(!q)throw Error('Deze offerteberekening bestaat niet in deze browser. Open de offertewerkplek of importeer je export.');return q;}

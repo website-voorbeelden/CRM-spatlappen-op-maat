@@ -1,3 +1,7 @@
+## Vervolg 24 oktober 2026
+
+Actuele bronwijzigingen en grenzen: docs/VERVOLGWERK-2026-10-24.md (vanaf projectroot). Nieuwste publicatiestatus staat bovenaan OVERDRACHT.md. Oudere uitspraken over alleen lokaal/ontbrekende customdomeinen zijn hieronder historische momentopnamen. Geen functionele tests door Codex uitgevoerd; Philippe controleert zelf.
+
 ## Dagelijkse invoer & CRM — 16 oktober 2026
 
 Rechthoek zonder gaten is de standaard voor nieuwe stukken. Naam/aantal/materiaal/dikte/maten direct zichtbaar; andere vorm, pakking en X/Y-gaten bij Extra opties. Leveranciersnaam/kostprijsbasis/plaatmaten/materiaalprijs en bewerkingskosten direct invulbaar. Snijlengte, valuta en bijkomende kosten ingeklapt. DXF en SVG zonder een-item-menu onder preview. Nesting na alle leveranciers, onderaan. Rekenformules, opgeslagen geometrie en tarieven behouden.

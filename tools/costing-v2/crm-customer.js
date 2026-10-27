@@ -1,4 +1,4 @@
-import {openCrmDatabase,storageRuntime} from '../../admin/cloud-storage.js';
+import {openCrmDatabase,storageRuntime} from '../../admin/cloud-storage.js?v=crm-code-review-20261027';
 import {saveCustomerCalculation,customerCalculationFiles,readCustomerCalculation} from './crm-customer-domain.js';
 const g=window,esc=g.GasketV2Geometry.esc,money=n=>new Intl.NumberFormat('nl-NL',{style:'currency',currency:'EUR'}).format(n);
 const read=db=>new Promise((resolve,reject)=>{const tx=db.transaction('state'),r=tx.objectStore('state').get('main');r.onsuccess=()=>resolve(r.result);tx.onerror=()=>reject(tx.error);});
@@ -14,7 +14,7 @@ async function openCustomer(mode='save'){
  function close(){if(busy)return;closed=true;d.close();d.remove();db?.close();}
  d.querySelector('[data-close]').onclick=close;d.addEventListener('cancel',e=>{e.preventDefault();close();});
  try{
- const runtime=await storageRuntime();if(runtime.companyId!=='maatwerkkunststof'||runtime.mode==='cloud')throw Error('Deze koppeling werkt met het lokale Maatwerkkunststof-CRM.');
+ const runtime=await storageRuntime();if(runtime.companyId!=='maatwerkkunststof'||runtime.offlineReview||runtime.mode==='cloud'&&runtime.features?.costingV2!==true)throw Error('Deze koppeling vereist Maatwerkkunststof en een expliciet meegeleverde V2-versie; offline alleen lezen is hier niet ondersteund.');
  if(closed)return;db=await openCrmDatabase();const state=await read(db);if(closed){db.close();return;}
  const customers=(state?.customers||[]).filter(c=>mode==='open'||!c.archived).sort((a,b)=>String(a.company).localeCompare(String(b.company),'nl'));
  if(!customers.length)throw Error('Er zijn nog geen klanten. Maak eerst een klant aan in het CRM.');

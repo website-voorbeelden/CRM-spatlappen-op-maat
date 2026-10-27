@@ -30,6 +30,8 @@ $('toggleVectorParts').onclick=()=>{
     render();syncSelectionControls();
   }catch(error){$('vectorPieceStatus').textContent=error.message||'Dit vectorlogo kon niet worden geopend.';}
 };
+$('shrinkVectorPart').onclick=()=>mutateVectorPiece(api=>api.scaleBy(.9),true);
+$('growVectorPart').onclick=()=>mutateVectorPiece(api=>api.scaleBy(1.1),true);
 $('wholeLogoColor').addEventListener('input',()=>{$('wholeLogoColorHex').value=normalizeHex($('wholeLogoColor').value);});
 $('wholeLogoColorHex').addEventListener('change',()=>{
   if(/^#?(?:[0-9a-f]{3}|[0-9a-f]{6})$/i.test($('wholeLogoColorHex').value.trim())){
@@ -130,7 +132,7 @@ previewPanWrap.addEventListener('click',event=>{
   event.preventDefault();event.stopImmediatePropagation();
 },true);
 
-window.addEventListener('keydown',event=>{
+window.addEventListener('keydown',event=>{if(savedDesignExportMode)return;
   if(event.code!=='Space'&&event.key!==' '&&event.key!=='Spacebar')return;
   if(event.ctrlKey||event.metaKey||event.altKey||isTypingForPan(event.target))return;
   if($('pdfViewer').classList.contains('open')||$('vectorExportDialog').classList.contains('open'))return;
@@ -193,7 +195,8 @@ $('replacementLogoFile').addEventListener('change',async event=>{
     if(itemById(target.id,'logo')!==target)throw new Error('Dit logo is intussen gewijzigd. Selecteer het opnieuw om het bestand te vervangen.');
     // Preserve the physical frame, including its aspect ratio. Drop backups from the old file.
     const replacement={id:target.id,name:data.name,src:data.src,svgMarkup:data.svgMarkup||null,vector:!!data.vector,
-      w:target.w,h:target.h,ratio:target.w/target.h,x:target.x,y:target.y};
+      w:target.w,h:target.h,ratio:target.w/target.h,x:target.x,y:target.y,
+      ...(target.rotation!==undefined?{rotation:target.rotation}:{}),...(target.flipX!==undefined?{flipX:target.flipX}:{}),...(target.outline?{outline:{...target.outline}}:{})};
     pushHistory();state.logos[state.logos.indexOf(target)]=replacement;
     clearVectorEditing();clearMultiSelection();state.selected=replacement.id;state.selectedType='logo';
     $('vectorStatus').textContent='';$('vectorPieceStatus').textContent='';
@@ -210,7 +213,7 @@ $('file').addEventListener('change',async e=>{
   e.target.value='';
 });
 
-document.addEventListener('paste',async e=>{
+document.addEventListener('paste',async e=>{if(savedDesignExportMode)return;
   if(e.target instanceof Element&&e.target.closest('input,textarea,[contenteditable="true"]'))return;
   if(designTransferTools?.handlePaste(e))return;
   if(document.querySelector('dialog[open]')||document.querySelector('.app')?.inert)return;
@@ -218,7 +221,7 @@ document.addEventListener('paste',async e=>{
     .filter(item=>/^image\/(png|jpeg|webp|svg\+xml)$/i.test(item.type))
     .map(item=>item.getAsFile()).filter(Boolean);
   if(!files.length){
-    if(internalClipboard.length&&!e.clipboardData?.getData('text/plain')){e.preventDefault();pasteInternalClipboard();}
+    if(internalClipboard.length&&!e.clipboardData?.getData('text/plain')){e.preventDefault();try{pasteInternalClipboard();}catch(error){toast(error.message);}}
     return;
   }
   e.preventDefault();
@@ -245,7 +248,7 @@ $('pasteLogo').onclick=async()=>{
   }
 };
 
-let vectorPreviewTimer,vectorPreviewToken=0,vectorPreviewLogoId=null,vectorPreviewSource=null,vectorPreviewSettings='';
+let vectorPreviewTimer,vectorPreviewToken=0,vectorPreviewLogoId=null,vectorPreviewSource=null,vectorPreviewSettings='',vectorPreviewPaused=false,vectorApplyBusy=false,vectorQuickBusy=false;
 
 ['vectorLightThreshold','vectorAlphaThreshold','vectorColorCount','vectorSingleColor','vectorWhiteCutout','vectorEdgeStyle'].forEach(id=>{
   $(id).addEventListener('input',scheduleVectorPreview);
@@ -254,7 +257,8 @@ let vectorPreviewTimer,vectorPreviewToken=0,vectorPreviewLogoId=null,vectorPrevi
 
 $('whitePngVector').onclick=async()=>{
   const logo=state.selectedType==='logo'?itemById(state.selected,'logo'):null;
-  if(!logo||logo.svgMarkup&&!logo.originalRasterSrc)return;
+  if(!logo||logo.svgMarkup&&!logo.originalRasterSrc||vectorApplyBusy||vectorQuickBusy)return;
+  const signature=JSON.stringify([logo,state.flap]);vectorQuickBusy=true;
   const btn=$('whitePngVector');btn.disabled=true;
   try{
     const img=new Image();img.src=logo.originalRasterSrc||logo.src;await img.decode();
@@ -270,6 +274,7 @@ $('whitePngVector').onclick=async()=>{
       const corners=[0,canvas.width-1,(canvas.height-1)*canvas.width,canvas.width*canvas.height-1];
       const brightness=corners.reduce((sum,index)=>sum+(pixels[index*4]*.2126+pixels[index*4+1]*.7152+pixels[index*4+2]*.0722),0)/4;keepDark=brightness>127;
     }
+    if(state.selectedType!=='logo'||state.selected!==logo.id||itemById(logo.id,'logo')!==logo||JSON.stringify([logo,state.flap])!==signature||vectorApplyBusy)throw Error('Logo of selectie gewijzigd. Start de snelle omzetting opnieuw.');
     $('vectorColorCount').value='1';
     $('vectorSingleColor').value='#ffffff';
     $('vectorAlphaThreshold').value=String(maskThreshold??64);
@@ -277,11 +282,14 @@ $('whitePngVector').onclick=async()=>{
     scheduleVectorPreview();
     await $('vectorizeLogo').onclick({maxSide:1000,keepDark});
   }catch(err){$('vectorStatus').textContent=`PNG openen lukte niet: ${err.message||'probeer opnieuw'}`;}
-  finally{btn.disabled=false;}
+  finally{vectorQuickBusy=false;syncSelectionControls();}
 };
 
+$('colorTools').addEventListener('toggle',()=>{if($('colorTools').open){vectorPreviewPaused=false;scheduleVectorPreview();}else stopVectorExperiment();});
+$('stopVectorExperiment').onclick=stopVectorExperiment;
 $('vectorizeLogo').onclick=async(options={})=>{
-  const logo=itemById(state.selected,'logo');
+  if(vectorApplyBusy)return;
+  const logo=state.selectedType==='logo'?itemById(state.selected,'logo'):null;
   if(!logo){$('vectorStatus').textContent='Selecteer eerst een logo.';return;}
   if(logo.svgMarkup&&!logo.originalRasterSrc){$('vectorStatus').textContent='Dit SVG-logo is al vector. Upload de originele PNG/JPG om kleuren te beperken.';return;}
   const count=Math.max(1,Math.min(8,Math.round(Number($('vectorColorCount').value)||1)));
@@ -290,30 +298,21 @@ $('vectorizeLogo').onclick=async(options={})=>{
   const edgeStyle=$('vectorEdgeStyle').value;
   const lightThreshold=Math.max(0,Math.min(255,Math.round(Number($('vectorLightThreshold').value)||0)));
   const alphaThreshold=Math.max(1,Math.min(255,Math.round(Number($('vectorAlphaThreshold').value)||1)));
+  const signature=JSON.stringify([logo,state.flap]),settings=vectorSettingsSignature();
+  vectorApplyBusy=true;vectorPreviewPaused=false;vectorPreviewToken++;clearTimeout(vectorPreviewTimer);vectorExperiment=null;render();
   const activity=beginPreviewActivity('Logo naar vector omzetten…',['vectorizeLogo']);
   const btn=$('vectorizeLogo');btn.disabled=true;$('vectorStatus').textContent='Logo omzetten...';
   try{
     await previewPaintTick();
     const result=await vectorizeRasterLogo(logo,count,singleColor,whiteCutout,edgeStyle,lightThreshold,alphaThreshold,options.maxSide,options.keepDark===true);
-    pushHistory();
-    if(!logo.originalRasterSrc)logo.originalRasterSrc=logo.src;
-    const old=logo.vectorCrop||{x:0,y:0,w:1,h:1};
-    const next={x:result.crop.x/result.sourceW,y:result.crop.y/result.sourceH,w:result.crop.w/result.sourceW,h:result.crop.h/result.sourceH};
-    const oldW=logo.w,oldH=logo.h,oldLeft=logo.x*state.flap.w-oldW/2,oldTop=logo.y*state.flap.h-oldH/2;
-    const newW=oldW*next.w/old.w,newH=oldH*next.h/old.h;
-    const newLeft=oldLeft+oldW*(next.x-old.x)/old.w;
-    const newTop=oldTop+oldH*(next.y-old.y)/old.h;
-    logo.w=newW;logo.h=newH;logo.ratio=newW/newH;
-    logo.x=(newLeft+newW/2)/state.flap.w;logo.y=(newTop+newH/2)/state.flap.h;
-    logo.vectorCrop=next;
-    logo.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(result.markup);
-    discardVectorEditBackup(logo);
-    logo.svgMarkup=result.markup;logo.vector=true;logo.printColors=result.colors;
+    if(vectorPreviewPaused){$('vectorStatus').textContent='Omzetten gestopt; het oorspronkelijke artwork is behouden.';activity.cancel('Omzetten gestopt; het oorspronkelijke artwork is behouden.');return;}
+    if(state.selectedType!=='logo'||state.selected!==logo.id||itemById(logo.id,'logo')!==logo||JSON.stringify([logo,state.flap])!==signature||vectorSettingsSignature()!==settings)throw Error('Logo, selectie of instellingen zijn gewijzigd. Het oorspronkelijke artwork is behouden.');
+    pushHistory();const next=traceLogoObject(logo,result);if(!next.originalRasterSrc)next.originalRasterSrc=logo.src;Object.assign(logo,next);vectorExperiment=null;vectorPreviewPaused=true;discardVectorEditBackup(logo);
     $('vectorStatus').textContent=`Vectorlogo gemaakt met ${result.colors.length} kleuren: ${result.colors.join(', ')}. Controleer de preview.`;
     syncSelectionControls();
     render();activity.success('Vectorlogo gemaakt. Controleer de preview.');
   }catch(err){activity.error(err);console.error(err);$('vectorStatus').textContent=`Omzetten lukte niet: ${err.message||'probeer een andere PNG of JPG'}`;}
-  finally{btn.disabled=false;}
+  finally{vectorApplyBusy=false;syncSelectionControls();}
 };
 $('restoreRasterLogo').onclick=()=>{
   const logo=itemById(state.selected,'logo');
@@ -321,10 +320,8 @@ $('restoreRasterLogo').onclick=()=>{
   pushHistory();
   const crop=logo.vectorCrop||{x:0,y:0,w:1,h:1};
   const fullW=logo.w/crop.w,fullH=logo.h/crop.h;
-  const left=logo.x*state.flap.w-logo.w/2-fullW*crop.x;
-  const top=logo.y*state.flap.h-logo.h/2-fullH*crop.y;
+  offsetArtworkCenter(logo,fullW*(.5-crop.x)-logo.w/2,fullH*(.5-crop.y)-logo.h/2);
   logo.w=fullW;logo.h=fullH;logo.ratio=fullW/fullH;
-  logo.x=(left+fullW/2)/state.flap.w;logo.y=(top+fullH/2)/state.flap.h;
   logo.src=logo.originalRasterSrc;
   delete logo.originalRasterSrc;delete logo.vectorCrop;
   discardVectorEditBackup(logo);
@@ -356,14 +353,14 @@ $('logoLeft').addEventListener('change',()=>{
   const x=itemById(state.selected,'logo');if(!x)return;
   pushHistory();
   const left=Number($('logoLeft').value)||0;
-  x.x=(left+x.w/2)/state.flap.w;
+  x.x=(left+logoFootprint(x).w/2)/state.flap.w;
   syncSelectionControls();render();
 });
 $('logoTop').addEventListener('change',()=>{
   const x=itemById(state.selected,'logo');if(!x)return;
   pushHistory();
   const top=Number($('logoTop').value)||0;
-  x.y=(top+x.h/2)/state.flap.h;
+  x.y=(top+logoFootprint(x).h/2)/state.flap.h;
   syncSelectionControls();render();
 });
 
@@ -379,9 +376,9 @@ $('centerItem').onclick=()=>{
 $('fitItem').onclick=()=>{
   const x=itemById(state.selected,'logo');if(!x)return;pushHistory();
   if(!x.ratio || !isFinite(x.ratio) || x.ratio<=0) x.ratio=(x.w/x.h)||1;
-  const ratio=x.ratio;let w=state.flap.w*.28,h=w/ratio;
+  const footprint=logoFootprint(x),ratio=footprint.w/footprint.h;let w=state.flap.w*.28,h=w/ratio;
   if(h>state.flap.h*.55){h=state.flap.h*.55;w=h*ratio;}
-  x.w=w;x.h=h;x.x=.5;x.y=verticalPlacement(h,'middle');syncSelectionControls();render();
+  if(artworkRotation(x)%180){x.w=h;x.h=w;}else{x.w=w;x.h=h;}x.ratio=x.w/x.h;x.x=.5;x.y=verticalPlacement(h,'middle');syncSelectionControls();render();
 };
 $('deleteItem').onclick=deleteSelectedObject;
 
@@ -394,32 +391,36 @@ setCustomColor('textColor','#FFFFFF',false);
 
 $('textValue').addEventListener('input',updateFontPreviews);
 $('textFont').addEventListener('change',updateFontPreviews);
-$('editText').addEventListener('input',updateFontPreviews);
+$('editText').addEventListener('blur',()=>{editingTextHistoryId=null;});
+$('editText').addEventListener('input',()=>{const text=itemById(state.selected,'text');if(text){if(editingTextHistoryId!==text.id){pushHistory();editingTextHistoryId=text.id;}text.text=$('editText').value;scheduleTextArtwork(text);}resizeTextField($('editText'));updateFontPreviews();});
+$('textValue').addEventListener('input',()=>resizeTextField($('textValue')));
 $('editTextFont').addEventListener('change',updateFontPreviews);
 ['textTracking','textWeight','textSize','editTextTracking','editTextWeight','editTextSize'].forEach(id=>$(id).addEventListener('input',updateFontPreviews));
+installFontGalleries();installFontTools();installOutlineTools();installPlacementTools();
 updateFontPreviews();
 
 $('addText').onclick=()=>{
   const v=$('textValue').value.trim();if(!v)return;pushHistory();
   const size=Math.max(.5,Number($('textSize').value)||5);
   const obj={id:'t'+Date.now()+Math.random(),text:v,size,color:normalizeHex($('textColorHex').value),font:$('textFont').value||'Arimo, sans-serif',tracking:textTracking($('textTracking').value),weight:textWeight($('textWeight').value),x:.5,y:verticalPlacement(size,'middle'),align:'center'};
-  state.texts.push(obj);state.selected=obj.id;state.selectedType='text';$('textValue').value='';
+  state.texts.push(obj);clearMultiSelection();state.selected=obj.id;state.selectedType='text';$('textValue').value='';
   syncSelectionControls();render();
 };
 ['editText','editTextSize','editTextAlign','editTextFont','editTextTracking','editTextWeight'].forEach(id=>{
   $(id).addEventListener('change',()=>{
+    if(id==='editText')return;
     const t=itemById(state.selected,'text');if(!t)return;pushHistory();
     t.text=$('editText').value;t.size=Math.max(.5,Number($('editTextSize').value)||1);
     t.color=normalizeHex($('editTextColorHex').value);t.align=$('editTextAlign').value;t.font=$('editTextFont').value||'Arial, sans-serif';
     t.tracking=textTracking($('editTextTracking').value);t.weight=textWeight($('editTextWeight').value);render();
   });
 });
-$('centerText').onclick=()=>{const t=itemById(state.selected,'text');if(!t)return;pushHistory();t.x=.5;t.y=verticalPlacement(t.size,'middle');syncSelectionControls();render();};
+$('centerText').onclick=()=>{const t=itemById(state.selected,'text');if(!t)return;pushHistory();t.x=.5;placeTextVertically(t,'middle');syncSelectionControls();render();};
 ['top','middle','bottom'].forEach(position=>{
   const id='alignText'+position[0].toUpperCase()+position.slice(1);
   $(id).onclick=()=>{
     const t=itemById(state.selected,'text');if(!t)return;
-    pushHistory();t.y=verticalPlacement(t.size,position);syncSelectionControls();render();
+    pushHistory();placeTextVertically(t,position);syncSelectionControls();render();
   };
 });
 
@@ -433,13 +434,13 @@ document.addEventListener('click',event=>{
 },true);
 
 $('selectionMoveMode').onclick=finishSelectionSizing;
-document.addEventListener('keydown',event=>{
+document.addEventListener('keydown',event=>{if(savedDesignExportMode)return;
   if(event.key!=='Escape'||document.querySelector('dialog[open],.modal-backdrop.open')||document.body.classList.contains('selection-pipette-active'))return;
   const sizing=['selectionWidth','selectionHeight','logoW','logoH','editTextSize'].includes(document.activeElement?.id);
   if(event.repeat){event.preventDefault();event.stopImmediatePropagation();return;}
   if(sizing){event.preventDefault();event.stopImmediatePropagation();finishSelectionSizing();}
 },true);
-document.addEventListener('keydown',e=>{
+document.addEventListener('keydown',e=>{if(savedDesignExportMode)return;
   if(document.querySelector('dialog[open]')||document.body.classList.contains('selection-pipette-active'))return;
   if($('vectorExportDialog').classList.contains('open')){if(e.key==='Escape')closeVectorExportDialog();return;}
   if($('pdfViewer').classList.contains('open')){
@@ -606,7 +607,7 @@ $('quickAddText').onclick=()=>{const section=$('textValue').closest('details');i
 $('trimSelectedVector').onclick=trimSelectedVector;
 $('shrinkSelected').onclick=()=>scaleSelectedObjects(.9);$('growSelected').onclick=()=>scaleSelectedObjects(1.1);
 
-try{const mode=localStorage.getItem('spatlap-height-match-mode-v1');if(['ink','cap'].includes(mode))$('heightMatchMode').value=mode;}catch{}
+try{const mode=localStorage.getItem('spatlap-height-match-mode-v1');if(['ink','cap','style'].includes(mode))$('heightMatchMode').value=mode;}catch{}
 $('heightMatchMode').onchange=()=>{const mode=$('heightMatchMode').value;if(pendingHeightMatch)pendingHeightMatch.mode=mode;try{localStorage.setItem('spatlap-height-match-mode-v1',mode);}catch{toast('Meetwijze geldt nu; onthouden in deze browser lukt niet.');}};
 $('matchVectorHeight').onclick=()=>{
   if(pendingHeightMatch){cancelVectorHeightMatch();toast('Hoogte overnemen geannuleerd');return;}
@@ -623,22 +624,10 @@ $('flap').addEventListener('pointerdown',event=>{
 
 $('quickCenterSelection').onclick=()=>{openPlacementSettings();$('layoutReference').value='flap';alignLayoutSelection('centerX');toast('Horizontaal gecentreerd op de spatlap');};
 $('quickBottomSide').onclick=()=>{openPlacementSettings();alignLayoutSelection('bottomSide');};
-$('quickBalanceSelection').onclick=()=>{
-  openPlacementSettings();if(vectorEditingLogoId){toast('Rond eerst de onderdeelbewerking af.');return;}
-  const refs=allSelectedRefs(),box=SpatlapLayout.union(refs.map(layoutBox).filter(Boolean));if(!box)return;
-  const center=(box.left+box.right)/2,width=box.right-box.left;let left=0,right=state.flap.w;
-  for(const ref of layoutRefs()){
-    if(refs.some(r=>r.id===ref.id&&r.type===ref.type))continue;
-    const other=layoutBox(ref);if(!other)continue;
-    const midpoint=(other.left+other.right)/2;
-    if(midpoint<center)left=Math.max(left,other.right);else if(midpoint>center)right=Math.min(right,other.left);
-  }
-  if(right-left<width){toast('Te weinig ruimte tussen deze randen. Maak de selectie kleiner of verplaats haar eerst.');return;}
-  const dx=(left+right-box.left-box.right)/2;pushHistory();
-  for(const ref of refs){const obj=itemById(ref.id,ref.type);obj.x+=dx/state.flap.w;}
-  syncSelectionControls();render();const message='Gecentreerd tussen twee randen; beide ruimtes '+Number(((right-left-width)/2).toFixed(2))+' cm.';$('layoutPlacementStatus').textContent=message;toast(message);
-};
-
+$('quickBalanceSelection').onclick=()=>balanceArtwork('x');
+$('quickBalanceVertical').onclick=()=>balanceArtwork('y');
+$('mirrorArtwork').onclick=()=>transformArtwork('mirror');
+$('rotateArtwork').onclick=()=>transformArtwork('rotate');
 document.querySelectorAll('[data-layout-align]').forEach(button=>button.onclick=()=>alignLayoutSelection(button.dataset.layoutAlign));
 
 $('previewWrap').addEventListener('pointerdown',e=>{
@@ -662,14 +651,14 @@ $('previewWrap').addEventListener('pointermove',e=>{
 $('previewWrap').addEventListener('pointerup',()=>finishMarquee());
 $('previewWrap').addEventListener('pointercancel',()=>finishMarquee(true));
 $('previewWrap').addEventListener('lostpointercapture',()=>finishMarquee(true));
-document.addEventListener('keydown',e=>{if(e.key!=='Escape')return;if(marquee){e.preventDefault();finishMarquee(true);}if(drag?.entries){e.preventDefault();const cancelled=drag;drag=null;cancelled.entries.forEach(entry=>{entry.obj.x=entry.x;entry.obj.y=entry.y;});clearLayoutGuides();suppressLayoutClick();syncSelectionControls();render();}});
+document.addEventListener('keydown',e=>{if(savedDesignExportMode)return;if(e.key!=='Escape')return;if(marquee){e.preventDefault();finishMarquee(true);}if(drag?.entries){e.preventDefault();const cancelled=drag;drag=null;cancelled.entries.forEach(entry=>{entry.obj.x=entry.x;entry.obj.y=entry.y;});clearLayoutGuides();suppressLayoutClick();syncSelectionControls();render();}});
 
 $('previewWrap').addEventListener('click',event=>{
   if(suppressClickAfterDrag||spacePanHeld||suppressPanClick||document.body.classList.contains('selection-pipette-active')||document.body.classList.contains('feedback-picking'))return;
   if(event.target.closest('[data-layout-id],button,input,select,textarea,a'))return;
   deselectArtwork();
 });
-document.addEventListener('keydown',event=>{
+document.addEventListener('keydown',event=>{if(savedDesignExportMode)return;
   if(event.key!=='Escape'||document.querySelector('dialog[open],.modal-backdrop.open')||document.body.classList.contains('selection-pipette-active'))return;
   if(event.target.closest?.('input,textarea,select,[contenteditable="true"]'))return;
   if(allSelectedRefs().length||vectorEditingLogoId){event.preventDefault();deselectArtwork();}
@@ -856,29 +845,21 @@ $('copyLocalUrl').onclick=async()=>{
     toast('Korte link gekopieerd');
   }catch(err){showLocalLink(id,'Ontwerp bewaard, maar kopiëren lukte niet.');}
 };
-$('openCopy').onclick=()=>{
-  try{
-    const url=currentShareUrl();
-    if(url.length>180000){
-      $('shareStatus').textContent='Deelbare link te groot door de logo-bestanden. Gebruik kleinere logo’s om een kopie te openen.';
-      return;
-    }
-    const status=$('shareStatus');
-    status.replaceChildren();
-    const link=document.createElement('a');
-    link.href=url;
-    link.target='_blank';
-    link.rel='noopener';
-    link.textContent='Open deelbare kopie in een nieuw tabblad';
-    status.append(link);
-    const opened=window.open(url,'_blank');
-    if(opened){opened.opener=null;toast('Kopie geopend in nieuw tabblad');}
-    else toast('Klik op de link om de kopie te openen');
-  }catch(e){
-    $('shareStatus').textContent='Openen lukte niet. Probeer de deelbare link te kopiëren.';
-  }
+$('openCopy').onclick=async()=>{
+ const popup=window.open('about:blank','_blank');if(popup)popup.opener=null;
+ const activity=beginPreviewActivity('Losse kopie maken…',['openCopy']);
+ try{
+  clearArtworkFontPreview();
+  const id=crypto.randomUUID(),record={id,name:('Kopie van '+($('localDesignName').value||'ontwerp')).slice(0,200),updatedAt:Date.now(),payload:JSON.parse(JSON.stringify(compactDesignState())),context:normalizeIntegrationContext({})};
+  assertDurableLogoSources(record.payload.l);await writeLocalDesign(record);
+  const url=new URL(location.href),mode=url.searchParams.get('storage');url.search='';url.hash='local='+encodeURIComponent(id);if(mode==='cloud')url.searchParams.set('storage','cloud');
+  const link=document.createElement('a');link.href=url.href;link.target='_blank';link.rel='noopener';link.textContent='Open de nieuwe ontwerpkopie';$('shareStatus').replaceChildren(document.createTextNode('Losse kopie bewaard. '),link);
+  // Closing or navigating the new tab while storage is busy must not turn a
+  // successful save into an error, or replace a page the user opened there.
+  try{if(popup&&!popup.closed&&popup.location.href==='about:blank')popup.location.replace(url.href);}catch{}
+  activity.success('Losse kopie bewaard; het oorspronkelijke ontwerp is behouden.');
+ }catch(error){try{if(popup&&!popup.closed&&popup.location.href==='about:blank')popup.close();}catch{}activity.error(error);}
 };
-
 $('copyUrl').onclick=async()=>{
   try{
     const url=currentShareUrl();
@@ -922,7 +903,8 @@ document.addEventListener('wheel',e=>{
 
 window.addEventListener('resize',render);
 
-const previewReady=initDesign();
+const savedDesignExportMode=['png','pdf'].includes(new URLSearchParams(location.search).get('designExport'));
+const previewReady=savedDesignExportMode?Promise.resolve():initDesign();
 window.SpatlapPreview=Object.freeze({
   ready:previewReady,
   format:designFormat,

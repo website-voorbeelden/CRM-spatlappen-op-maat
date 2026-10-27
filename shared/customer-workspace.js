@@ -1,5 +1,5 @@
-import {funnelPayment} from './sales-funnel.js?v=workspace-search-20261017';
-import {workQueue} from './work-queue.js?v=workspace-search-20261017';
+import {funnelPayment} from './sales-funnel.js?v=ui-batch234-20261027';
+import {workQueue} from './work-queue.js?v=ui-batch234-20261027';
 
 // Read-only views of the existing dossier. No second task list or stored totals.
 export function customerFinancials(state,orders){

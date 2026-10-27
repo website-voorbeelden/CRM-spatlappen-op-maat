@@ -1,4 +1,4 @@
-import {installFormGuidance,validateForm,showFormProblem} from './form-guidance.js';
+import {installFormGuidance,validateForm,showFormProblem} from './form-guidance.js?v=crm-code-review-20261027';
 import {loading} from './loading.js';
 import {costingInlineProduct} from '../shared/costing-inline-context.js';
 let active=null;
@@ -21,7 +21,7 @@ export function openInlineFormTask({title,html,submitLabel='Opslaan & terug',onS
  const form=d.querySelector('form'),submit=form.querySelector('[type=submit]'),cancel=form.querySelector('[data-task-cancel]');installFormGuidance(form);
  form.addEventListener('input',()=>task.setDirty(true));form.addEventListener('change',()=>task.setDirty(true));cancel.onclick=task.cancel;
  form.onsubmit=async event=>{event.preventDefault();if(task.isBusy()||!validateForm(form))return;task.setBusy(true);submit.disabled=cancel.disabled=true;const label=submit.textContent;submit.textContent='Opslaan…';let result;
-  try{result=await loading.run('Opslaan & terug naar je formulier…',()=>onSubmit(new FormData(form),form,result=>{task.setDirty(false);task.complete(result);}));if(result===undefined)throw Error('Opslaan gaf geen resultaat terug.');task.setDirty(false);task.complete(result);}
+  try{result=await loading.run('Opslaan & terug naar je formulier…',()=>onSubmit(new FormData(form),form,result=>{task.setDirty(false);task.complete(result);}));if(result===false)return;if(result===undefined)throw Error('Opslaan gaf geen resultaat terug.');task.setDirty(false);task.complete(result);}
   catch(e){showFormProblem(form,e);}
   finally{task.setBusy(false);submit.disabled=cancel.disabled=false;submit.textContent=label;}
  };

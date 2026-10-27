@@ -17,12 +17,12 @@ export function fieldValidationMessage(input){
  return input.validationMessage||'Controleer de invoer.';
 }
 export function clearFieldProblem(input){
- const previous=errors.get(input);if(!previous)return;previous.note?.remove();previous.label?.classList.remove('field-needs-attention');input.removeAttribute('aria-invalid');if(previous.describedBy)input.setAttribute('aria-describedby',previous.describedBy);else input.removeAttribute('aria-describedby');errors.delete(input);
+ const previous=errors.get(input);if(!previous)return;input.removeEventListener('input',previous.clear);input.removeEventListener('change',previous.clear);previous.note?.remove();previous.label?.classList.remove('field-needs-attention');input.removeAttribute('aria-invalid');if(previous.describedBy)input.setAttribute('aria-describedby',previous.describedBy);else input.removeAttribute('aria-describedby');errors.delete(input);
 }
 function markFieldProblem(input,message){
  clearFieldProblem(input);const label=input.closest?.('label')||input,describedBy=input.getAttribute?.('aria-describedby')||'',note=document.createElement('small');note.id='field-error-'+(++errorSequence);note.className='form-field-error';note.textContent=message;
- label.append?.(note);label.classList.add('field-needs-attention');input.setAttribute('aria-invalid','true');input.setAttribute('aria-describedby',[describedBy,note.id].filter(Boolean).join(' '));errors.set(input,{label,note,describedBy});
- input.addEventListener('input',()=>clearFieldProblem(input),{once:true});input.addEventListener('change',()=>clearFieldProblem(input),{once:true});
+ if(label===input)input.after(note);else label.append(note);label.classList.add('field-needs-attention');input.setAttribute('aria-invalid','true');input.setAttribute('aria-describedby',[describedBy,note.id].filter(Boolean).join(' '));const clear=()=>clearFieldProblem(input);errors.set(input,{label,note,describedBy,clear});
+ input.addEventListener('input',clear);input.addEventListener('change',clear);
 }
 export function focusFormField(form,field,{invalid=true}={}){
  let target=typeof field==='string'?form.elements.namedItem(field):field;if(target&&typeof target.focus!=='function'&&target.length)target=[...target].find(input=>input.value==='')||target[0];if(!target||typeof target.focus!=='function')return false;
@@ -30,7 +30,9 @@ export function focusFormField(form,field,{invalid=true}={}){
  if(invalid&&!errors.has(target))markFieldProblem(target,'Controleer dit veld.');target.focus();target.scrollIntoView?.({block:'center',behavior:'instant'});return true;
 }
 export function showFormProblem(form,problem,{toast=()=>{},isBusy=()=>false}={}){
- const box=form.querySelector('[data-form-error]')||form.querySelector('#form-error');box.replaceChildren();const text=document.createElement('span');text.textContent='Niet opgeslagen: '+(problem.message||'Controleer je gegevens.');box.append(text);
+ let box=form.querySelector('[data-form-error]')||form.querySelector('#form-error');
+ if(!box){box=document.createElement('div');box.dataset.formError='';box.className='form-error-box';box.setAttribute('role','alert');box.tabIndex=-1;form.prepend(box);}
+ box.replaceChildren();const text=document.createElement('span');text.textContent='Niet opgeslagen: '+(problem.message||'Controleer je gegevens.');box.append(text);
  if(problem.action?.label&&typeof problem.action.run==='function'){const action=document.createElement('button');action.type='button';action.className='form-error-action';action.textContent=problem.action.label;action.onclick=()=>runGuidedAction(action,problem.action.run,{isBusy,pendingLabel:'Invulhulp openen…',onError:error=>{if(box.isConnected)showFormProblem(form,error,{toast,isBusy});else toast(error.message);}});box.append(action);}
  const issues=problem.issues||[];if(issues.length){const list=document.createElement('div');list.className='form-error-list';for(const issue of issues){markFieldProblem(issue.field,issue.message);const button=document.createElement('button');button.type='button';button.textContent=fieldTitle(issue.field)+': '+issue.message;button.onclick=()=>focusFormField(form,issue.field);list.append(button);}box.append(list);}
  else if(problem.field){const target=typeof problem.field==='string'?form.elements.namedItem(problem.field):problem.field;if(target?.focus)markFieldProblem(target,problem.message);}

@@ -1,8 +1,8 @@
 import {batchPackingRows} from './batch-packing.js';
-import {productionReleaseInfo} from './production-release.js';
-import {orderReadiness} from './order-readiness.js';
-import {salesFunnel,pendingFunnelMail} from './sales-funnel.js?v=maat-cleanup-20261021';
-import {orderMailThreads} from './mail-inbox.js?v=workspace-search-20261017';
+import {productionReleaseInfo} from './production-release.js?v=ui-batch234-20261027';
+import {orderReadiness} from './order-readiness.js?v=ui-batch234-20261027';
+import {salesFunnel,pendingFunnelMail} from './sales-funnel.js?v=ui-batch234-20261027';
+import {orderMailThreads} from './mail-inbox.js?v=crm-code-review-20261027';
 import {mailAttention,compareMailAttention} from './mail-attention.js?v=mail-priority-20261016-2';
 const day=86400000,time=v=>Number.isFinite(Date.parse(v))?Date.parse(v):0;
 // Pure projection of saved records. Rendering never sends mail or changes a dossier.
@@ -29,7 +29,7 @@ export function workQueue(state,companyId,{now=Date.now()}={}){
   if(attention?.waitingFor==='check'){add('mail-check','Verzending controleren',attention.reason,'mail','Gesprek openen',6,'hoog','Verzendresultaat controleren');continue;}
   if(readiness.inbound){const next=readiness.next;if(next)add('inbound-check','Levering voorbereiden · '+next.label.toLowerCase(),next.reason,next.action,next.cta,9,'hoog','Leverafspraak nog onvolledig');else waiting.push({...task,reason:'Belangrijke levergegevens zijn aanwezig. Registreer levering pas wanneer die werkelijk heeft plaatsgevonden.',action:'view',label:'Dossier openen'});continue;}
   const release=productionReleaseInfo(state,o,companyId,{payment:f.payment});
-  if(!f.payment.fullyPaid&&!o.productionReleasedDate&&release.eligible){add('production-release',release.sampleZero?'Teststuk · vrijgave controleren':`${release.percentage}% ontvangen · vrijgave controleren`,'Controleer de afgesproken aanbetaling en ontwerpgoedkeuring. Vrijgave en fysieke productiestart zijn aparte stappen.','production-release','Vrijgave controleren',10,'hoog','Aanbetalingsvoorwaarden aanwezig');continue;}
+  if(!f.payment.fullyPaid&&!o.productionReleasedDate&&!release.automatic&&release.eligible){add('production-release',release.sampleZero?'Teststuk · vrijgave controleren':`${release.percentage}% ontvangen · vrijgave controleren`,'Controleer de afgesproken aanbetaling en ontwerpgoedkeuring. Vrijgave en fysieke productiestart zijn aparte stappen.','production-release','Vrijgave controleren',10,'hoog','Aanbetalingsvoorwaarden aanwezig');continue;}
   if(f.phase==='released'){const next=readiness.next;add('released',release.eligible?'Productie vrijgegeven · volgende stap':'Vrijgavevoorwaarden opnieuw controleren',next?.reason||release.reasons.join(' '),next?.action||f.next[0],next?.cta||f.next[1],12,release.eligible?'normaal':'hoog',release.eligible?'':'Vrijgavevoorwaarden gewijzigd');continue;}
   if(f.phase==='paid'&&!f.payment.fullyPaid){add('payment-check','Gmail-betaalfase controleren','Het label is geen betaalbewijs. Controleer of de betaling werkelijk is ontvangen.','payment','Betaling controleren',10,'hoog','Betaling nog niet vastgesteld');continue;}
   if(f.phase==='paid'){

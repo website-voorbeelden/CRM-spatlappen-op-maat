@@ -1,5 +1,5 @@
 import {signatureEditorMarkup,installSignatureEditor} from './mail/signature-editor.js';
-import {validateForm,installFormGuidance,showFormProblem,markFormClean} from './form-guidance.js?v=form-protection-20261019';
+import {validateForm,installFormGuidance,showFormProblem,markFormClean} from './form-guidance.js?v=crm-code-review-20261027';
 import {mailStatusLabel} from '../shared/mail-workflow.js';
 import {loading} from './loading.js';
 const escape=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));

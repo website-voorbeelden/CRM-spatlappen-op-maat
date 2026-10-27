@@ -1,3 +1,5 @@
+> 27oktober: crm-polish-batch2/3/4-20261027 en crm-order-terms-20261027 bronreview/local via scripts/build-task.mjs. Batches2–4 lokaal uitgewerkt; eigen controle beide bedrijven/mobiel en publicatie apart. consistent-workspace doing/local wegens bredere scope. Zie BATCHES2-4-OPMAAK-20261027.md en ALGEMENE-VOORWAARDEN-BIJ-ORDER.md. Geen tests/checks/build/browsercontrole of feedbackresolve.
+
 # Bouwtaken in het CRM
 
 De vroegere pagina Ontwikkelplan is nu **Beheer → Bouwtaken**, met dezelfde route `#development`. Dit zijn ontwikkeltaken voor Philippe en AI-bouwers; dagelijkse klant-/ordertaken blijven op Overzicht.
@@ -66,3 +68,71 @@ De broncatalogus heeft nu een aparte reviewfase. Negen reeds gebouwde opdrachten
 Maat telde na de registratie14 te bouwen /9 controle /23 afgerond; Spat24 /7 /47. Dit is een momentopname van de lokale omgeving, geen hardcoded teller of online status. Calculator V2 blijft Mee bezig: de nieuwe inline-V1-overdracht van materiaal/dikte/decimale maten is een deelstap, niet de hele V2-vrijgave.
 
 review wordt door dezelfde gedeelde validator gebruikt voor lokale opslag, cloudrecords en back-ups. Bij een gerichte online release frontend/backend samen bijwerken; oude geopende tabs daarna herladen. Deze run publiceert niets en doet geen functionele tests/build/browserQA. Browser gebruikt voor de gevraagde bouwadministratie en leesbevestiging van opgeslagen notities, niet voor onderzoek naar klantgegevens of providerproeven.
+
+## Aangeleverde online feedback — 23 oktober 2026
+
+De gebruiker levert een Markdown-export met35meldingen aan. Via `scripts/feedback.mjs import spatlappen` zijn29ontbrekende IDs aan de vaste privéfeedback toegevoegd (38totaal), zonder bestaande statuswijziging. De sourcecatalogus bevat alleen de bouwscope/voortgang, niet de private meldingen of klantnamen. Het aparte privé-uitvoerplan staat naast de actuele FEEDBACK.md. Geen automatische resolve: meerledige punten en gebruikerscontrole blijven open. Gebruiker vraagt verder bouwen, niet om stil tests/publicaties of oude bedrijfskeuzes opnieuw uit te voeren.
+
+## Feedbackexport26oktober
+
+44meldingen vergeleken met vaste privéwerklijst:35bekend met gelijke tekst,9nieuw via CLI toegevoegd,3oudere niet in export behouden;47totaal privé. Nieuwe4bronbouwtaken varianten/editor/kleuren/CRM, status review/local met concrete grenzen; geen feedbackresolve of opgeslagen statuswijziging. Details VIER-DELEN-20261026.md; originele export/ID-matrix blijven privé.
+
+## Batch3 — 26 oktober 2026
+
+Lokale bronnotities bij feedback4-colors-20261026 en preview-spacing-layout, status review/local. Paletalpha, conservatieve losse eilanden, vectorpreview-/applyguards, randveiligheid en geometrievoorkeuren verder uitgewerkt. Volledige topologische segmentatie/automatisch leren en gebruikerscontrole blijven open. Geen tests/checks/build/browserQA/publicatie; zie BATCH3-LOGO-KLEUR-PLAATSING-20261026.md. Opgeslagen status/feedbackhistorie behouden.
+
+## Batch4 — 26 oktober 2026
+
+Hervat na reset bij batch3: cacheketen batch3 afgemaakt en bestaande notities teruggelezen. Batch4bronnotitie bij feedback4-crm-20261026 review/local voor beide bedrijven. Mailkaders/inline Meer, eigen labelbusy, CASconflictweergave, Gmailreadguards, refresh met actuele invoer/focus en bewaard antwoordanker. Overige feedback traceerbaar; automatische50%-fase, documentmaken als verzendbewijs, routeberekening en complexe editorpunten niet als volledig opgelost claimen. Zie BATCH4-MAIL-EN-CRM-20261026.md. Geen tests/checks/build/browserQA/publicatie; geen feedbackresolve of opgeslagen status veranderd.
+
+## Open punten vervolg — 27 oktober 2026
+
+Nieuwe bronnotities via CLI bij feedback4-colors-20261026, preview-placement-learning, deposit-production-rule, delivery-map-20261021 en feedback4-crm-20261026, review/local. Topologische vectorgebieden voor ondersteunde gevulde geometrie, opt-in leren na save, automatische50%-vrijgave op actuele voorwaarden en documentgereedfase, Google Maps-routeadapter met sleutelconfig en kostenovername. Eigen controle, Google-activering/sleutel en fysieke uitvoer apart; geen tests/checks/build/browserQA/providerproef/herstart/publicatie. Geen feedbackresolve of opgeslagen gebruikersstatus aangepast. Details OPEN-PUNTEN-VERVOLG-20261027.md.
+
+## Algemene codelezing — 27 oktober 2026
+
+Via scripts/build-task.mjs bronnotities bij crm-general-review-20261027 en feedback4-variants-20261026 review/local, concurrent-work doing/local. Concrete opslag-/formulierfouten en oude dossieracties hersteld, orderkopie wist geleende varianten/goedkeuring. Bredere back-up-/login-/conflict-/structuurscope en gebruikerscontrole open; geen volledige audit of feedbackresolve. Alleen bronlezing/bewerking en bouwadministratie, geen tests/checks/build/browserQA/publicatie. Zie ALGEMENE-CODELEZING-20261027.md.
+
+## Klikmelding aanvragen/orders — 27 oktober 2026
+
+Gerichte broncorrectie f.phase → funnel.phase in order-progress, via CLI bij consistent-workspace doing/local en crm-general-review-20261027 review/local. Bredere werkplek-/reviewgrenzen en bestaande gebruikersstatus behouden. Geen browseruitlezing/QA/tests/checks/build/publicatie, Philippe beoordeelt zelf openen en tabbediening na eigen herladen. Zie ORDERVOORTGANG.md en nieuwste OVERDRACHT.md.
+
+## Excel-stijl — 27 oktober 2026
+
+Nieuwe afgebakende stijltaak crm-excel-style-20261027 review/local, feedback4-crm-20261026 review/local en consistent-workspace doing/local via scripts/build-task.mjs. Gedeelde vlakke kopregels/rijen, brede mailbox en metadataregels, klant-/takenkolommen. Bredere scope en gebruikerscontrole open, geen opgeslagen gebruikersstatus/feedbackresolve. Alleen bron/docs/bouwadministratie; geen tests/checks/build/browseruitlezing/QA/publicatie. EXCEL-STIJL-20261027.md.
+
+## Standaardmails — 27 oktober 2026
+
+mail-workspace-reform-20261019 krijgt een append-only bronnotitie review/local via scripts/build-task.mjs. Factuurontvangst alleen volledig betaald na gebruikersakkoord; bevestiging70%/volledig en neutrale linkbasisfallback; eigen templates/concepten behouden. Geen tests/browsercontrole/publicatie. Eigen tekst-/voorbeeld-/variabele-/handtekeningcontrole bij beide bedrijven open; geen opgeslagen gebruikersstatus afgevinkt.
+
+## Footer/Gmail — 27 oktober 2026
+
+mail-workspace-reform-20261019 krijgt append-only doing/local-bronnotitie via scripts/build-task.mjs. Gedeelde MIMEclassificatie hersteld voor Gmailbericht/gesprek/bijlage; native Gmail of CRM-melding nog verduidelijken, concrete aflevering niet beoordeeld. Geen herstart/tests/browsercontrole/publicatie of opschoning oude data. Eigen controle en laden nieuwe dienstcode open; oude status/feedback behouden.
+
+## Verduidelijking footer — 27 oktober 2026
+
+Philippe bevestigt CRM-mailoverzicht. Nieuwe append-only bronnotitie review/local bij mail-workspace-reform-20261019: geen bestanden nodig, eigen lokale Spatdienst herstart en nieuwe bron geladen. Geen functionele controle/browser-/provideractie. Gebruiker beoordeelt zelf vers opgehaald gesprek en echte bijlagen; snapshots/files behouden.
+
+## Exactreferentie — correctie27oktober2026
+
+Historisch crm-excel-style-20261027-ID behouden, titel/scope gecorrigeerd naar Exact als opmaakreferentie; oude notities behouden. Lokale opmaakreview en aparte exact-fit-gap-20261027-vergelijking review/local via scripts/build-task.mjs. Nieuwe functies zijn voorstellen, geen afgeronde/begonnen implementaties. consistent-workspace doing met bredere restscope. Geen eigen status/feedback overschrijven, geen tests/CRM-browsercontrole/publicatie. Philippe beoordeelt beide bedrijven na zelf herladen met bewaarde invoer.
+
+## Compacte orderbovenkant — 27 oktober 2026
+
+Append-only via scripts/build-task.mjs: stijltaak crm-excel-style-20261027 review/local voor compactere fase-/bedragsregels, gesloten stappen/details, compacte hoofdactie en donker-op-lichtkleuren; consistent-workspace doing/local met bredere restscope. Geen automatische checks/tests/browser-/contrastcontrole/publicatie, eigen beoordeling beide bedrijven/mobiel open. Geen opgeslagen gebruikersstatus of feedback wijzigen.
+
+## Herkomstkleur — 27 oktober 2026
+
+Append-only CLI-notities bij provenance-colors-20261027 en historische stijltaak review/local; consistent-workspace doing/local met brede restscope. Heel lichtpaars automatisch, donkerpaars AI/interpretatie, gewone UI blauw/neutraal. Bronbinding opgeruimd en originele mode/tijd bewaard. Geen tests/checks/build/browsercontrole/publicatie, eigen beoordeling open. Geen opgeslagen gebruikersstatus/feedback gewijzigd; zie HERKOMST.md en nieuwste OVERDRACHT.
+
+## Centrale CSS en compact overzicht — 27 oktober 2026
+
+Nieuwe begrensde taken crm-central-css-20261027 en crm-compact-overview-20261027 review/local via scripts/build-task.mjs. Eén actieve centrale stylesheet/thema incl. mail, compacte details, direct rekenen en kortere mailfasepopup met lokale weergavevoorkeur. consistent-workspace doing met brede restscope en gebruikerscontrole. Geen opgeslagen status/feedback overschreven, geen tests/checks/build/browsercontrole/publicatie. Zie CRM-CSS, COMPACT-ORDEROVERZICHT en nieuwste OVERDRACHT.
+
+## Verduidelijking fasemelding — 27 oktober 2026
+
+Gebruiker kiest melding verbergen terwijl bekende fase automatisch volgt. Append-only bij crm-compact-overview-20261027 review/local en consistent-workspace doing/local: nieuwe bekende mailfasen confirmed bij werkelijke acceptatie, popup alleen uitleg, Meer → Fase-meldingen. Oude pending/dismissed en herstel behouden; geen historische migratie. Alleen bron/docs, geen tests/checks/build/browsercontrole/provideractie/publicatie. Eigen controle open.
+
+## Klein fasemeldingsvak met undo — 27 oktober 2026
+
+Append-only bij crm-compact-overview-20261027 review/local en consistent-workspace doing/local: gedeeld klein meldingsvak voor aanvragen/fase, Bekijken/Terugdraaien, gerichte actuele-basis-/bron-/klantguard zonder mail/ontvangst/snapshotrollback. Alle stijl centraal en invoer beschermd. Geen tests/checks/build/browsercontrole/publicatie; eigen beoordeling open. Zie nieuwste OVERDRACHT en COMPACT-ORDEROVERZICHT.

@@ -1,3 +1,5 @@
+> Batch3vervolg27oktober: gewone betaalstatus en orderstatusfilter delen shared/order-payment-status.js op bestaande bedragen. Geen bekende productprijs = Prijs nog onbekend; geen expliciet bekende verzending = Verzendprijs nog onbekend, inclusief historische ontbrekende flag. Geen definitief Betaald/overbetalinglabel of groene betaald-badge uit die onvolledige prijs. Geen wijziging aan werkelijke ontvangsten/sommen/BTW/sales-funnel-/mail-/productievrijgaveregels of migratie. Lokaal bronwerk; eigen controle open, geen tests/publicatie.
+
 # Bedragen herkennen: excl. en incl. btw
 
 Lokale presentatieverbetering voor beide bedrijven, 21 oktober 2026. Geen opgeslagen bedragen, berekeningen, btw-tarieven, documenten of betalingen gewijzigd. Geen tests, syntaxchecks, builds, browser-QA, providerproeven of publicatie; Philippe test zelf.

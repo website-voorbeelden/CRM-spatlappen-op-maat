@@ -1,8 +1,9 @@
+import {installViewport} from './workspace/viewport.js?v=batch1-mobile-20261023';
 import {saveFeedbackDraft,readFeedbackDraft,clearFeedbackDraft} from './offline/review-store.js';
 import {isReviewMode} from './offline/review.js';
 import {pendingFeedback,reviewReports,addOfflineFeedback,syncOfflineFeedback,appendFeedbackReport} from './offline/feedback-outbox.js';
 import {dictationMarkup,installFieldDictation} from './field-dictation.js';
-import {openFeedbackDatabase,storageRuntime} from './cloud-storage.js';
+import {openFeedbackDatabase,storageRuntime} from './cloud-storage.js?v=crm-code-review-20261027';
 const escapeHtml=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const kinds={bug:'Werkt niet',improvement:'Verbetering',unnecessary:'Overbodig'};
 const statusLabels={open:'Open',resolved:'Afgehandeld'};
@@ -10,6 +11,7 @@ const plain=(value,max=250)=>String(value??'').replace(/\s+/g,' ').trim().slice(
 
 // Separate from business data: reporting a problem must never replace an active order edit.
 export function installFeedback({downloadBlob,today,toast,launcherHost=null,contextOverride=null}){
+ installViewport();
  const database=openFeedbackDatabase();database.catch(()=>{});
  const channel=typeof BroadcastChannel==='function'?new BroadcastChannel('crm-feedback-changes-'+location.host):null;
  let fileBacked=false,migration,runtime={mode:'cloud',companyId:''},speech=null;

@@ -1,4 +1,4 @@
-import {assistantTransportState,assistantContext,assistantSnapshot} from './assistant-domain.js';
+import {assistantTransportState,assistantContext,assistantSnapshot} from './assistant-domain.js?v=ui-batch234-20261027';
 // The default is one explicitly selected dossier. Company-wide access is an explicit choice.
 export function laptopContext(state,companyId,context,{companyAccess=false}={}){
  const clean=assistantTransportState(state);if(companyAccess)return {state:clean,context};

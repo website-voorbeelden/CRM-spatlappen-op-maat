@@ -2,7 +2,7 @@
 (() => {
   'use strict';
   const NS='http://www.w3.org/2000/svg';
-  const families=['Arimo','Anton','Bebas Neue','Black Ops One','Grenze Gotisch','New Rocker','Oswald','Pirata One','Rajdhani','Russo One','Teko','UnifrakturMaguntia'];
+  const families=['Arimo','Anton','Bebas Neue','Black Ops One','Grenze Gotisch','New Rocker','Oswald','Pirata One','Rajdhani','Russo One','Teko','UnifrakturMaguntia','Metal Mania','Rye','Germania One','Bungee','Fredericka the Great','Ewert'];
   const supported=new Set(families);
   const scripts=new Map(),fonts=new Map();
   let manifestPromise;
@@ -28,12 +28,45 @@
     }).catch(error=>{scripts.delete(path);throw error;});
     scripts.set(path,promise);return promise;
   }
-  async function loadFont(family,weight){
-    const key=family+':'+weight;
+  const customFaces=new Map();
+  function fontBytes(data){const raw=atob(data.split(',')[1]),bytes=new Uint8Array(raw.length);for(let i=0;i<raw.length;i++)bytes[i]=raw.charCodeAt(i);return bytes.buffer;}
+  async function ensureCustomFonts(descriptors=[]){
+    if(!Array.isArray(descriptors)||descriptors.length>5)throw new ExportError('Maximaal vijf eigen lettertypen per ontwerp.');
+    for(const descriptor of descriptors){
+      if(!descriptor||!/^CRMFont_[a-z0-9]{32}$/.test(descriptor.family)||typeof descriptor.data!=='string'||descriptor.data.length>2900000||!/^data:font\/(?:ttf|otf);base64,[A-Za-z0-9+/=]+$/.test(descriptor.data))throw new ExportError('Een eigen lettertype is ongeldig.');
+      let entry=customFaces.get(descriptor.family);
+      if(entry&&entry.data!==descriptor.data)throw new ExportError('Een font-ID verwijst naar verschillende bestanden. Importeer het font opnieuw.');
+      if(!entry){
+        entry={data:descriptor.data,faces:[]};customFaces.set(descriptor.family,entry);
+        entry.ready=(async()=>{
+          const bytes=fontBytes(descriptor.data),faces=await Promise.all([400,700].map(async weight=>{const face=new FontFace(descriptor.family,bytes,{weight:String(weight)});await face.load();return face;}));
+          // A different design may have removed this pending entry already.
+          if(customFaces.get(descriptor.family)===entry){entry.faces=faces;for(const face of faces)document.fonts.add(face);}
+        })().catch(error=>{if(customFaces.get(descriptor.family)===entry)customFaces.delete(descriptor.family);throw new ExportError('Het eigen lettertype kon niet worden geladen. Importeer het bestand opnieuw.');});
+      }
+      await entry.ready;
+    }
+  }
+  function discardUnusedCustomFonts(descriptors=[]){const keep=new Set(descriptors.map(f=>f.family));for(const [family,entry]of customFaces)if(!keep.has(family)){for(const face of entry.faces)document.fonts.delete(face);customFaces.delete(family);for(const key of fonts.keys())if(key.startsWith(family+':'))fonts.delete(key);}}
+  async function importFontFile(file){
+    if(!/\.(ttf|otf)$/i.test(file.name)||!file.size||file.size>2*1024*1024)throw new ExportError('Kies een TTF- of OTF-bestand van maximaal 2 MB.');
+    await loadScript('print-assets/opentype.min.js',()=>!!window.opentype);
+    const bytes=await file.arrayBuffer(),font=window.opentype.parse(bytes);
+    if(font.tables.fvar||font.tables.colr||font.tables.cpal||font.tables.cbdt||font.tables.sbix)throw new ExportError('Kies een statisch TTF/OTF-font met gewone lettercontouren; variabele en kleurenfonts worden niet geïmporteerd.');
+    if(!font.numGlyphs||font.numGlyphs>100000)throw new ExportError('Dit font heeft geen ondersteunde lettercontouren.');
+    let raw='';const array=new Uint8Array(bytes);for(let i=0;i<array.length;i+=16384)raw+=String.fromCharCode(...array.subarray(i,i+16384));
+    const descriptor={family:'CRMFont_'+crypto.randomUUID().replace(/-/g,''),name:String(font.names.fontFamily?.en||file.name).slice(0,100),data:'data:font/'+(/\.otf$/i.test(file.name)?'otf':'ttf')+';base64,'+btoa(raw)};
+    // Validate browser readability without registering a font that the user may
+    // no longer be importing into the current design.
+    try{await new FontFace(descriptor.family,bytes,{weight:'400'}).load();}catch{throw new ExportError('Dit font kan niet in de browser worden geopend. Kies een ander statisch TTF/OTF-bestand.');}return descriptor;
+  }
+  async function loadFont(family,weight,custom){
+    const key=custom?family+':'+custom.data:family+':'+weight;
     if(fonts.has(key))return fonts.get(key);
     const promise=(async()=>{
       await loadScript('print-assets/opentype.min.js',()=>!!window.opentype);
-      manifestPromise??=fetchLocal('print-assets/fonts.json').then(bytes=>JSON.parse(new TextDecoder().decode(bytes))).catch(error=>{manifestPromise=null;throw error;});
+      if(custom){await ensureCustomFonts([custom]);return window.opentype.parse(fontBytes(custom.data));}
+      manifestPromise??=fetchLocal('print-assets/fonts.json?v=four-parts-20261026').then(bytes=>JSON.parse(new TextDecoder().decode(bytes))).catch(error=>{manifestPromise=null;throw error;});
       const manifest=await manifestPromise,file=manifest[family]?.[weight];
       if(!file)throw new ExportError(`Lettertype ${family} is niet beschikbaar voor vector-export.`);
       const font=window.opentype.parse(await fetchLocal('print-assets/'+file));
@@ -43,6 +76,14 @@
       return font;
     })().catch(error=>{fonts.delete(key);throw error;});
     fonts.set(key,promise);return promise;
+  }
+  async function validateCustomTextFonts(texts,descriptors=[]){
+    for(const text of texts){
+      const family=firstFamily(text.font);if(!/^CRMFont_/.test(family))continue;
+      const custom=descriptors.find(entry=>entry.family===family);if(!custom)throw new ExportError('Het eigen lettertype ontbreekt bij deze tekst.');
+      const font=await loadFont(family,400,custom),lines=String(text.text||'').split(/\r?\n/);
+      if(lines.some(line=>font.stringToGlyphs(line).some(glyph=>glyph.index===0)))throw new ExportError('De tekst bevat tekens die het eigen lettertype niet ondersteunt. Kies een passend lettertype; er is niets vervangen.',[{id:text.id,type:'text',message:'Dit eigen lettertype mist één of meer gebruikte tekens.'}]);
+    }
   }
   function parseLogo(markup){
     const doc=new DOMParser().parseFromString(markup,'image/svg+xml');
@@ -71,17 +112,48 @@
     }
     return doc.documentElement;
   }
+  const outlineRatioCache=new WeakMap();
+  function outlineOpacity(value){return parseFloat(value)/(String(value).endsWith('%')?100:1);}
+  function outlineAlpha(value){const match=String(value).match(/(?:,|\/)\s*([\d.]+%?)\s*\)$/);return match&&(/^rgba\(/i.test(value)||String(value).includes('/'))?outlineOpacity(match[1]):1;}
+  function makeLogoOutline(root,logo){
+    if(root.querySelector('svg'))throw new ExportError('Deze SVG heeft geneste tekenvlakken. Verwijder de randlijn of gebruik een SVG met één tekenvlak voor een betrouwbare vectorrand.');
+    const box=root.getAttribute('viewBox').split(/[\s,]+/).map(Number),extra=2*logo.outline.width*box[2]/logo.w;
+    for(const shape of [...root.querySelectorAll('path,rect,circle,ellipse,line,polyline,polygon')]){
+      if(shape.closest('defs,clipPath'))continue;
+      const fill=shape.getAttribute('fill')||'#000000',stroke=shape.getAttribute('stroke')||'none',parents=[];let opacity=1,scale=1;
+      for(let parent=shape;parent;parent=parent.parentElement){parents.push(parent);opacity*=outlineOpacity(parent.getAttribute('opacity')||'1');if(parent===root)break;}
+      const filled=shape.localName!=='line'&&!['none','transparent'].includes(fill)&&outlineAlpha(fill)>0&&outlineOpacity(shape.getAttribute('fill-opacity')||'1')>0;
+      const stroked=!['none','transparent'].includes(stroke)&&outlineAlpha(stroke)>0&&outlineOpacity(shape.getAttribute('stroke-opacity')||'1')>0&&parseFloat(shape.getAttribute('stroke-width')||'1')>0;
+      if(shape.closest('[display="none"],[visibility="hidden"]')||opacity===0||!filled&&!stroked){shape.remove();continue;}
+      for(const parent of parents){
+        const matrix=parent.transform?.baseVal?.consolidate()?.matrix;
+        if(matrix){const x=Math.hypot(matrix.a,matrix.b),y=Math.hypot(matrix.c,matrix.d),dot=matrix.a*matrix.c+matrix.b*matrix.d;if(!Number.isFinite(x)||!Number.isFinite(y)||x<=0||y<=0||Math.abs(x-y)>Math.max(x,y)*1e-7||Math.abs(dot)>x*y*1e-7)throw new ExportError('Deze SVG bevat uitgerekte of scheve onderdelen. Verwijder de randlijn of gebruik onuitgerekte contouren voor een betrouwbare vectorrand.');scale*=x;}
+        if((parent.getAttribute('clip-path')||'none')!=='none')throw new ExportError('Deze SVG gebruikt uitsnedes. Verwijder de randlijn of gebruik uitgesneden contouren voor een betrouwbare vectorrand.');
+      }
+      if(stroked)throw new ExportError('Deze SVG bevat zichtbare lijnen. Voor een betrouwbare vectorrand zijn gevulde contouren nodig; zet lijnen om naar contouren of verwijder de randlijn.');
+      if(fill.includes('url(')||Math.abs(opacity-1)>1e-8||Math.abs(outlineAlpha(fill)-1)>1e-8||Math.abs(outlineOpacity(shape.getAttribute('fill-opacity')||'1')-1)>1e-8)throw new ExportError('Deze SVG heeft transparantie of kleurverlopen. Verwijder de randlijn voor vector-PDF of gebruik ondoorzichtige contouren.');
+      shape.setAttribute('fill',logo.outline.color);shape.setAttribute('stroke',logo.outline.color);shape.setAttribute('fill-opacity','1');shape.setAttribute('stroke-opacity','1');shape.setAttribute('stroke-width',String(extra/scale));shape.setAttribute('stroke-linejoin','round');shape.setAttribute('stroke-dasharray','none');shape.setAttribute('stroke-dashoffset','0');shape.setAttribute('vector-effect','none');
+    }
+    root.setAttribute('overflow','visible');return root;
+  }
+  function outlineSourceInfo(logo){
+    const prior=outlineRatioCache.get(logo);if(prior?.markup===logo.svgMarkup)return prior;
+    const root=normalizeLogo(logo.svgMarkup,'sp-border-check-'),box=root.getAttribute('viewBox').split(/[\s,]+/).map(Number),entry={markup:logo.svgMarkup,ratio:box[2]/box[3],error:''};
+    try{makeLogoOutline(root,logo);}catch(error){entry.error=error.message;}outlineRatioCache.set(logo,entry);return entry;
+  }
   function issuesFor(design,contour){
     const issues=[];
     const w=Number(design.flap.w),h=Number(design.flap.h);
     if(!Number.isFinite(w)||!Number.isFinite(h)||w<=0||h<=0||w>508||h>508)issues.push({message:'Het PDF-formaat moet groter dan 0 en maximaal 508 × 508 cm zijn. De export schaalt je ontwerp niet automatisch.'});
+    for(const object of [...design.logos,...design.texts])if(object.outline&&(!/^#[0-9a-f]{6}$/i.test(object.outline.color)||!Number.isFinite(object.outline.width)||object.outline.width<.01||object.outline.width>2))issues.push({message:'Een randlijn is ongeldig. Kies opnieuw 0,1–20 mm.',id:object.id,type:design.logos.includes(object)?'logo':'text'});
     for(const logo of design.logos){
       if(!logo.svgMarkup){issues.push({message:`${logo.name||'Logo'} is nog een afbeelding. Zet dit logo eerst naar vector om.`,id:logo.id,type:'logo'});continue;}
+      if(logo.outline){try{const info=outlineSourceInfo(logo);if(info.error)issues.push({message:info.error,id:logo.id,type:'logo'});if(Math.abs(logo.w/logo.h-info.ratio)>1e-5)issues.push({message:'Dit logo is uitgerekt. Herstel de oorspronkelijke verhouding of verwijder de randlijn voor een betrouwbare vector-randbreedte.',id:logo.id,type:'logo'});}catch(error){issues.push({message:error.message,id:logo.id,type:'logo'});}}
       try{parseLogo(logo.svgMarkup);}catch(error){issues.push({message:`${logo.name||'Logo'}: ${error.message}`,id:logo.id,type:'logo'});}
       if(![logo.x,logo.y,logo.w,logo.h].every(Number.isFinite)||logo.w<=0||logo.h<=0)issues.push({message:`${logo.name||'Logo'} heeft een ongeldig formaat.`,id:logo.id,type:'logo'});
     }
     for(const text of design.texts){
-      if(!supported.has(firstFamily(text.font)))issues.push({message:`Tekst “${String(text.text).slice(0,45)}” gebruikt ${firstFamily(text.font)}. Kies een van de beschikbare vectorlettertypen, bijvoorbeeld Arimo, Anton of Bebas Neue.`,id:text.id,type:'text'});
+      if(!supported.has(firstFamily(text.font))&&!(design.ui?.customFonts||[]).some(entry=>entry.family===firstFamily(text.font)))issues.push({message:`Tekst “${String(text.text).slice(0,45)}” gebruikt ${firstFamily(text.font)}. Kies een van de beschikbare vectorlettertypen, bijvoorbeeld Arimo, Anton of Bebas Neue.`,id:text.id,type:'text'});
       if(![text.x,text.y,text.size].every(Number.isFinite)||text.size<=0)issues.push({message:'Een tekst heeft een ongeldig formaat.',id:text.id,type:'text'});
     }
     if(design.ui?.contour?.on&&!contour)issues.push({message:'De contourlijn past niet binnen de spatlap. Maak de afstand of lijndikte kleiner.'});
@@ -137,21 +209,21 @@
     const entries=[...design.logos.map(obj=>({type:'logo',obj})),...design.texts.map(obj=>({type:'text',obj}))],order=new Map((design.ui?.layerOrder||[]).map((key,index)=>[key,index]));
     return entries.map((entry,index)=>({...entry,rank:order.get(entry.type+':'+entry.obj.id)??order.size+index})).sort((a,b)=>a.rank-b.rank);
   }
-  async function outlineText(text,w,h){
-    const family=firstFamily(text.font),weight=Number(text.weight)===400?400:700;
-    const font=await loadFont(family,weight),value=String(text.text||'');
-    const tracking=Math.max(-.5,Math.min(2,Number(text.tracking)||0));
-    const options={kerning:!tracking,letterSpacing:tracking/text.size,features:{liga:!tracking,rlig:true}};
-    if(font.stringToGlyphs(value).some(glyph=>glyph.index===0))throw new ExportError(`Tekst “${value.slice(0,45)}” bevat tekens die ${family} niet ondersteunt. Er wordt geen vervangend teken gebruikt.`,[{id:text.id,type:'text',message:'Kies een lettertype dat alle tekens ondersteunt, of voeg de tekst toe als SVG met contouren.'}]);
-    const width=font.getAdvanceWidth(value,text.size,options);
-    const ctx=document.createElement('canvas').getContext('2d');ctx.font=`${weight} 1000px ${cssFont(text.font)}`;
-    const metrics=ctx.measureText(value);
-    const ascent=metrics.fontBoundingBoxAscent??font.ascender/font.unitsPerEm*1000;
-    const descent=metrics.fontBoundingBoxDescent??-font.descender/font.unitsPerEm*1000;
-    // Text in the editor is a centred, single-line CSS box (line-height: 1).
-    const baseline=text.y*h+(ascent-descent)/2000*text.size;
-    const path=font.getPath(value,text.x*w-width/2,baseline,text.size,options);
-    return node('path',{d:path.toPathData(5),fill:text.color||'#FFFFFF'});
+  function transformed(obj,element,w,h){
+    if(obj.rotation!==undefined&&![0,90,180,270].includes(obj.rotation)||obj.flipX!==undefined&&typeof obj.flipX!=='boolean')throw new ExportError('Een onderdeel heeft een ongeldige transformatie.');
+    if(!obj.rotation&&!obj.flipX)return element;
+    const x=obj.x*w,y=obj.y*h,group=node('g',{transform:`translate(${x} ${y}) rotate(${obj.rotation||0}) scale(${obj.flipX?-1:1} 1) translate(${-x} ${-y})`});group.append(element);return group;
+  }
+  async function outlineText(text,w,h,customFonts=[]){
+    const family=firstFamily(text.font),weight=Number(text.weight)===400?400:700,font=await loadFont(family,weight,customFonts.find(entry=>entry.family===family)),lines=String(text.text||'').split(/\r?\n/);
+    const tracking=Math.max(-.5,Math.min(2,Number(text.tracking)||0)),options={kerning:!tracking,letterSpacing:tracking/text.size,features:{liga:!tracking,rlig:true}};
+    if(lines.some(value=>font.stringToGlyphs(value).some(glyph=>glyph.index===0)))throw new ExportError('De tekst bevat tekens die dit lettertype niet ondersteunt. Er wordt geen vervangend teken gebruikt.',[{id:text.id,type:'text',message:'Kies een lettertype dat alle tekens ondersteunt.'}]);
+    const widths=lines.map(value=>font.getAdvanceWidth(value,text.size,options)),maxWidth=Math.max(0,...widths),ctx=document.createElement('canvas').getContext('2d');ctx.font=`${weight} 1000px ${cssFont(text.font)}`;
+    const metrics=ctx.measureText(lines.join(' ')),ascent=metrics.fontBoundingBoxAscent??font.ascender/font.unitsPerEm*1000,descent=metrics.fontBoundingBoxDescent??-font.descender/font.unitsPerEm*1000,group=node('g');
+    const outlines=node('g');group.append(outlines);
+    lines.forEach((value,index)=>{const width=widths[index],x=text.x*w+(text.align==='left'?-maxWidth/2:text.align==='right'?maxWidth/2-width:-width/2),baseline=text.y*h+(index-(lines.length-1)/2)*text.size+(ascent-descent)/2000*text.size;
+      const path=font.getPath(value,x,baseline,text.size,options),d=path.toPathData(5);if(text.outline){const border=node('path',{d,fill:'none',stroke:text.outline.color,'stroke-width':2*text.outline.width,'stroke-linejoin':'round'});outlines.append(border);}group.append(node('path',{d,fill:text.color||'#FFFFFF'}));
+    });return transformed(text,group,w,h);
   }
   async function artwork(design,{background=null,contour='',flapPath='',holes=[]}={}){
     const issues=issuesFor(design,contour);
@@ -164,10 +236,11 @@
     const group=node('g',{'clip-path':'url(#spatlap-print-boundary)'});root.append(group);
     if(background)group.append(node('path',{d:flapPath||`M0 0H${w}V${h}H0Z`,fill:background}));
     for(const [i,entry] of orderedItems(design).entries()){
-      if(entry.type==='text'){group.append(await outlineText(entry.obj,w,h));continue;}
+      if(entry.type==='text'){group.append(await outlineText(entry.obj,w,h,design.ui?.customFonts||[]));continue;}
       const logo=entry.obj;const svg=normalizeLogo(logo.svgMarkup,`sp-logo-${i}-`);
       for(const [key,value] of Object.entries({x:logo.x*w-logo.w/2,y:logo.y*h-logo.h/2,width:logo.w,height:logo.h}))svg.setAttribute(key,String(value));
-      group.append(svg);
+      if(logo.outline){const border=makeLogoOutline(normalizeLogo(logo.svgMarkup,`sp-outline-${i}-`),logo);for(const key of ['x','y','width','height'])border.setAttribute(key,svg.getAttribute(key));group.append(transformed(logo,border,w,h));}
+      group.append(transformed(logo,svg,w,h));
     }
     if(contour){const wrapper=new DOMParser().parseFromString(`<svg xmlns="${NS}">${contour}</svg>`,'image/svg+xml');group.append(document.importNode(wrapper.documentElement.firstElementChild,true));}
     if(background)for(const hole of holes)group.append(node('rect',{x:hole.x,y:hole.y,width:hole.w,height:hole.h,rx:hole.h/2,fill:'#FFFFFF'}));
@@ -192,5 +265,5 @@
     if(/\/Subtype\s*\/Image\b/.test(new TextDecoder('latin1').decode(buffer)))throw new ExportError('De PDF bevat een rasterafbeelding. De export is gestopt.');
     return new Blob([buffer],{type:'application/pdf'});
   }
-  window.SpatlapVectorExport={orderedItems,cssFont,firstFamily,families,issuesFor,parseLogo,normalizeLogo,artwork,createPdf,ExportError};
+  window.SpatlapVectorExport={validateCustomTextFonts,discardUnusedCustomFonts,ensureCustomFonts,importFontFile,orderedItems,cssFont,firstFamily,families,issuesFor,parseLogo,normalizeLogo,artwork,createPdf,ExportError};
 })();

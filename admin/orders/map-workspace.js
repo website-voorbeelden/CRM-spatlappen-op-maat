@@ -1,12 +1,12 @@
-import {orderMapEntries,filterOrderMap,mapPhases} from '../../shared/order-map.js?v=delivery-map-20261021';
-import {fulfilmentMethods} from '../../shared/inbound-readiness.js';
-import {createMapRoutePlanner} from './map-route.js?v=delivery-map-20261021';
+import {orderMapEntries,filterOrderMap,mapPhases} from '../../shared/order-map.js?v=ui-batch234-20261027';
+import {fulfilmentMethods} from '../../shared/inbound-readiness.js?v=ui-batch234-20261027';
+import {createMapRoutePlanner} from './map-route.js?v=ui-batch234-20261027';
 
 export function createOrderMapWorkspace(context){
  let method='',search='',paintRevision=0,filtersOpen=false;
  const filters=()=>({phase:context.orderMapFilter,purchaseId:context.orderMapPurchase,method,search});
  const currentEntries=()=>filterOrderMap(orderMapEntries(context.state),filters());
- const planner=createMapRoutePlanner({getEntries:currentEntries,esc:value=>context.esc(value),totals:order=>context.totals(order),toast:message=>context.toast(message)});
+ const planner=createMapRoutePlanner({getEntries:currentEntries,esc:value=>context.esc(value),euro:value=>context.euro(value),totals:order=>context.totals(order),toast:message=>context.toast(message)});
  function rowsFor(entries){return entries.map(row=>{
   const {order:o,customer:c,progress,purchase}=row,t=context.totals(o),amountKnown=t.priceKnown&&o.shippingKnown===true;
   return {id:o.id,number:o.sourceNumber||o.number,customer:c?.company||'Onbekende klant',stage:progress.label,phase:progress.key,color:progress.color,

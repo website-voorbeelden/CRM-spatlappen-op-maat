@@ -1,3 +1,7 @@
+> Ontvangstantwoord27oktober: CRM met telefoonmelding en Rapport bekijken. Nu lokaal gerealiseerde report-push na duurzaam rapport; eigen registry/outbox/CAS/checkpoint, maximaal8aanbiedingen/24uur per vooraf geschikt gekoppeld apparaat. Config en toestelcapability apart, geen geactiveerde liveplanning. Geen e-mail/Codex-appschema of rapportcijfers in push. Oude ontvangst-onbekendnotitie hieronder is historisch; zie VRIJDAGRAPPORTEN.md. Gebruikerscontrole/appupdate/publicatie open.
+
+> Nieuw27oktober: [Vrijdagrapporten](../VRIJDAGRAPPORTEN.md) lokaal voorbereid. Trigger: bestaande kwartierjob op vrijdag vanaf09.00 Europe/Amsterdam, uitsluitend als de eigen rapportconfig bewust aanstaat. Gevolg: geaggregeerde editie in CRM, geen klant-/betaalmutatie of automatische mail/push. Eén editie/bedrijf/week, lease/CAS, max3 pogingen met uurpauze; onbekende/partiële bron en uitsluitingswijzigingen zichtbaar. Ontvangstwijze (CRM/telefoon/e-mail) nog gevraagd; niet activeren/publiceren of als bezorgd claimen. Geen Codex-appschema voor deze productfunctie gemaakt.
+
 # Automatiseringen — eerst de werkstap helder
 
 Dit is een ontwerp voor vervolgstappen, geen ingeschakelde automatiseringsdienst. Hergebruik eerst de bestaande verkoopfunnel, `shared/work-queue.js`, inline invulhulp en AI-voorstellen. Vermijd een tweede takenlijst die dezelfde order anders beoordeelt.

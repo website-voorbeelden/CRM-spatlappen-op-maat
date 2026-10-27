@@ -1,10 +1,16 @@
-import {assistantTransport} from '../assistant/laptop-transport.js?v=laptop-bridge-20261021';
-import {mailReplyContext,manualReplyPrompt,parseMailReplySuggestion,mailReplyHistory} from '../../shared/mail-reply-assistant.js';
+import {provenanceTip} from '../../shared/provenance.js?v=provenance-colors-20261027';
+import {assistantTransport} from '../assistant/laptop-transport.js?v=ui-batch234-20261027';
+import {mailReplyContext,manualReplyPrompt,parseMailReplySuggestion,mailReplyHistory} from '../../shared/mail-reply-assistant.js?v=ui-batch234-20261027';
 
 const esc=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
 const signature=value=>JSON.stringify(value);
-// Provenance is regenerated with a fresh timestamp by mailSeed; compare the
-// actual envelope/concept fields, not that incidental read-time metadata.
+function markAIOutput(element){
+ element.classList.add('source-mark','source-inferred');element.dataset.sourceKind='ai';
+ element.dataset.provenanceTip=provenanceTip({source:'ai',mode:'assisted'});
+ element.title=element.dataset.provenanceTip;element.tabIndex=0;
+}
+// Compare the actual envelope/concept fields; provenance is ancillary metadata.
+// Keep the guard independent of source bookkeeping.
 const seedSignature=value=>{const {provenance,...fields}=value;return signature(fields);};
 
 // Conversation sessions live in this tab. Only explicitly saved working notes
@@ -31,9 +37,9 @@ export function createReplyAssistant({company,runtime,getState,mergeStoredState,
    const stop=element('[data-reply-stop]');if(stop){stop.hidden=!session.job;stop.disabled=!session.job||session.job.stopping;}
    const result=session.result;element('[data-reply-result]').hidden=!result;
    element('[data-reply-save-guidance]').disabled=!!session.job||!ownerId;element('[data-reply-save-guidance]').title=ownerId?'':'Koppel dit gesprek eerst aan een klant om instructies blijvend te bewaren';
-   if(result){element('[data-reply-body]').textContent=result.reply;element('[data-reply-use]').disabled=!!session.job||!result.reply||!ownerId;element('[data-reply-use]').title=ownerId?'':'Koppel het gesprek eerst aan een klant om hier een concept te gebruiken';element('[data-reply-copy-answer]').disabled=!!session.job||!result.reply;const points=element('[data-reply-points]');points.replaceChildren();for(const [title,values] of [['Let op',result.notes],['Nog aan jou te vragen',result.questions]])if(values.length){const heading=document.createElement('strong'),list=document.createElement('ul');heading.textContent=title;for(const value of values){const item=document.createElement('li');item.textContent=value;list.append(item);}points.append(heading,list);}}
+   if(result){element('[data-reply-body]').textContent=result.reply;markAIOutput(element('[data-reply-body]'));element('[data-reply-use]').disabled=!!session.job||!result.reply||!ownerId;element('[data-reply-use]').title=ownerId?'':'Koppel het gesprek eerst aan een klant om hier een concept te gebruiken';element('[data-reply-copy-answer]').disabled=!!session.job||!result.reply;const points=element('[data-reply-points]');points.replaceChildren();for(const [title,values] of [['Let op',result.notes],['Nog aan jou te vragen',result.questions]])if(values.length){const heading=document.createElement('strong'),list=document.createElement('ul');heading.textContent=title;for(const value of values){const item=document.createElement('li');item.textContent=value;markAIOutput(item);list.append(item);}points.append(heading,list);}}
    const log=element('[data-reply-history-content]');log.replaceChildren();element('[data-reply-history-label]').textContent='Vragen in dit gesprek ('+session.history.filter(entry=>entry.role==='user').length+')';
-   for(const entry of session.history){const card=document.createElement('p');card.textContent=(entry.role==='user'?'Jij: ':'Antwoordhulp: ')+(entry.display||entry.content);log.append(card);}
+   for(const entry of session.history){const card=document.createElement('p');card.textContent=(entry.role==='user'?'Jij: ':'Antwoordhulp: ')+(entry.display||entry.content);if(entry.role==='assistant')markAIOutput(card);log.append(card);}
    try{const current=context();element('[data-reply-context-summary]').textContent=current.messages.length+' geladen berichten'+(current.limits.omitted?' · '+current.limits.omitted+' oudere berichten weggelaten':'')+(current.limits.truncated?' · tekst ingekort':'')+' · '+company.name+(current.customer?' · '+current.customer.company:' · geen klantgegevens')+(current.order?' · order #'+(current.order.sourceNumber||current.order.number):'');}
    catch(error){element('[data-reply-context-summary]').textContent=error.message;}
   }

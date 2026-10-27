@@ -1,6 +1,10 @@
 // Classic editor helpers; loaded before runtime.js. See README.md for the shared state contract.
+let editingTextHistoryId=null;
+
 function cloneState(){
-  return JSON.parse(JSON.stringify(state));
+  const fonts=state.ui?.customFonts,ui={...(state.ui||{})};delete ui.customFonts;
+  const copy=JSON.parse(JSON.stringify({...state,ui}));
+  if(fonts)copy.ui.customFonts=fonts.map(font=>({...font}));return copy;
 }
 
 function updateHistoryButtons(){
@@ -9,6 +13,8 @@ function updateHistoryButtons(){
 }
 
 function pushHistory(){
+  clearArtworkFontPreview();
+  editingTextHistoryId=null;
   if(suppressHistory)return;
   history.push(cloneState());
   if(history.length>50)history.shift();
@@ -17,27 +23,31 @@ function pushHistory(){
 }
 
 function undo(){
+  editingTextHistoryId=null;
   if(!history.length)return;
-  suppressHistory=true;
   redoHistory.push(cloneState());
-  state=history.pop();
-  syncUIFromState();
-  render();
-  suppressHistory=false;
-  updateHistoryButtons();
+  restoreHistoryState(history.pop());
   toast('Wijziging ongedaan gemaakt');
 }
 
 function redo(){
+  editingTextHistoryId=null;
   if(!redoHistory.length)return;
-  suppressHistory=true;
   history.push(cloneState());
-  state=redoHistory.pop();
-  syncUIFromState();
-  render();
-  suppressHistory=false;
-  updateHistoryButtons();
+  restoreHistoryState(redoHistory.pop());
   toast('Wijziging opnieuw uitgevoerd');
+}
+
+function restoreHistoryState(snapshot){
+  suppressHistory=true;
+  try{
+    clearArtworkFontPreview();vectorExperiment=null;vectorPreviewPaused=true;vectorPreviewToken++;clearTimeout(vectorPreviewTimer);
+    state=snapshot;
+    // These selections belong to the replaced object instances, not the snapshot.
+    clearMultiSelection();clearVectorEditing();
+    if(pendingHeightMatch)cancelVectorHeightMatch();
+    syncUIFromState();render();void restoreDesignFonts();
+  }finally{suppressHistory=false;updateHistoryButtons();}
 }
 
 function previewPaintTick(){return new Promise(resolve=>requestAnimationFrame(()=>setTimeout(resolve,0)));}

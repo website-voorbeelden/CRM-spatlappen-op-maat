@@ -79,7 +79,7 @@ async function trimRasterLogo(logo){
     if(left===0&&top===0&&right===w&&bottom===h){operation.cancel('Geen lege transparante randen gevonden. Een witte achtergrond is geen transparantie.');return;}
     const result=document.createElement('canvas');result.width=right-left;result.height=bottom-top;result.getContext('2d').drawImage(canvas,left,top,result.width,result.height,0,0,result.width,result.height);const src=result.toDataURL('image/png');
     if(itemById(logo.id,'logo')!==logo||JSON.stringify(logo)!==signature)throw Error('Logo is intussen gewijzigd; probeer opnieuw.');
-    pushHistory();logo.x+=((left+result.width/2)/w-.5)*logo.w/state.flap.w;logo.y+=((top+result.height/2)/h-.5)*logo.h/state.flap.h;logo.w*=result.width/w;logo.h*=result.height/h;logo.ratio=logo.w/logo.h;logo.src=src;logo.name=(logo.name||'Logo').replace(/\.[^.]+$/,'')+'.png';
+    pushHistory();offsetArtworkCenter(logo,((left+result.width/2)/w-.5)*logo.w,((top+result.height/2)/h-.5)*logo.h);logo.w*=result.width/w;logo.h*=result.height/h;logo.ratio=logo.w/logo.h;logo.src=src;logo.name=(logo.name||'Logo').replace(/\.[^.]+$/,'')+'.png';
     syncSelectionControls();render();operation.success('Transparante randen weggehaald; zichtbare pixels op dezelfde plek.');
   }catch(error){operation.error(error);}
 }
@@ -100,7 +100,7 @@ async function trimSelectedVector(){
     const result=await tightSvgFrame(logo.svgMarkup);if(!result)throw Error('Geen zichtbare vectorgrenzen gevonden.');
     if(itemById(logo.id,'logo')!==logo||JSON.stringify(logo)!==signature)throw Error('Logo is intussen gewijzigd; probeer opnieuw.');
     pushHistory();const oldW=logo.w,oldH=logo.h,c=result.crop;
-    logo.x+=(c.x+c.w/2-.5)*oldW/state.flap.w;logo.y+=(c.y+c.h/2-.5)*oldH/state.flap.h;
+    offsetArtworkCenter(logo,(c.x+c.w/2-.5)*oldW,(c.y+c.h/2-.5)*oldH);
     logo.w=oldW*c.w;logo.h=oldH*c.h;logo.ratio=logo.w/logo.h;
     if(logo.vectorCrop){const previous=logo.vectorCrop;logo.vectorCrop={x:previous.x+c.x*previous.w,y:previous.y+c.y*previous.h,w:previous.w*c.w,h:previous.h*c.h};}
     discardVectorEditBackup(logo);updateVectorSource(logo,result.markup);syncSelectionControls();render();toast('Selectiekader aangesnoeid; zichtbare tekening op dezelfde plek.');activity.success('Lege vectorranden weggehaald; positie behouden.');
@@ -212,7 +212,7 @@ async function addLogoFiles(files){
       const placement=SpatlapLayout.initialLogo(state.flap,d.ratio,state.logos.length),lw=placement.w,lh=placement.h;
       const obj={id:'l'+Date.now()+Math.random(),name:d.name,src:d.src,svgMarkup:d.svgMarkup||null,vector:!!d.vector,w:lw,h:lh,ratio:(d.ratio||lw/lh||1),x:placement.x,y:placement.y};
       if(!added)pushHistory();
-      state.logos.push(obj);state.selected=obj.id;state.selectedType='logo';
+      state.logos.push(obj);clearMultiSelection();state.selected=obj.id;state.selectedType='logo';
       added++;
     }catch(err){console.error('Logo toevoegen mislukt',err);errors.push(`${f.name}: ${err.message||'openen mislukt'}`);}
   }
@@ -384,41 +384,28 @@ function pngMaskThreshold(rgba){
   return threshold;
 }
 
-function scheduleVectorPreview(){
-  $('vectorLightValue').textContent=$('vectorLightThreshold').value;
-  $('vectorAlphaValue').textContent=$('vectorAlphaThreshold').value;
-  const logo=state.selectedType==='logo'?itemById(state.selected,'logo'):null;
-  const source=logo?.originalRasterSrc||logo?.src||null;
-  const canTrace=!!logo&&(!logo.svgMarkup||!!logo.originalRasterSrc);
-  const settings=[
-    $('vectorColorCount').value,$('vectorSingleColor').value,$('vectorWhiteCutout').checked,
-    $('vectorEdgeStyle').value,$('vectorLightThreshold').value,$('vectorAlphaThreshold').value
-  ].join('|');
-  if(logo?.id===vectorPreviewLogoId&&source===vectorPreviewSource&&settings===vectorPreviewSettings)return;
-  vectorPreviewLogoId=logo?.id||null;vectorPreviewSource=source;vectorPreviewSettings=settings;
-  const token=++vectorPreviewToken;
-  clearTimeout(vectorPreviewTimer);
-  const original=$('vectorOriginalPreview'),resultImage=$('vectorResultPreview'),status=$('vectorPreviewStatus');
-  if(!canTrace){
-    original.removeAttribute('src');resultImage.removeAttribute('src');
-    status.textContent=logo?'Dit SVG-bestand is al vector.':'Selecteer een afbeelding om het resultaat te bekijken.';
-    return;
-  }
-  original.src=source;resultImage.removeAttribute('src');
-  status.textContent='Voorbeeld wordt bijgewerkt...';
-  vectorPreviewTimer=setTimeout(async()=>{
-    try{
-      const count=Math.max(1,Math.min(8,Math.round(Number($('vectorColorCount').value)||1)));
-      const light=Math.max(0,Math.min(255,Number($('vectorLightThreshold').value)||0));
-      const alpha=Math.max(1,Math.min(255,Number($('vectorAlphaThreshold').value)||1));
-      const traced=await vectorizeRasterLogo(logo,count,normalizeHex($('vectorSingleColor').value),$('vectorWhiteCutout').checked,$('vectorEdgeStyle').value,light,alpha);
-      if(token!==vectorPreviewToken)return;
-      resultImage.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(traced.markup);
-      status.textContent=`Live vectorvoorbeeld: ${traced.colors.length} kleur${traced.colors.length===1?'':'en'}. Klik op ‘Zet afbeelding om naar vector’ om dit toe te passen.`;
-    }catch(err){
-      if(token!==vectorPreviewToken)return;
-      resultImage.removeAttribute('src');
-      status.textContent=err.message||'Voorbeeld maken lukte niet.';
-    }
-  },220);
+function vectorSettingsSignature(){return JSON.stringify(['vectorColorCount','vectorSingleColor','vectorWhiteCutout','vectorEdgeStyle','vectorLightThreshold','vectorAlphaThreshold'].map(id=>$(id).type==='checkbox'?$(id).checked:$(id).value));}
+function scheduleVectorPreview(event){
+ $('vectorLightValue').textContent=$('vectorLightThreshold').value;$('vectorAlphaValue').textContent=$('vectorAlphaThreshold').value;
+ const logo=state.selectedType==='logo'?itemById(state.selected,'logo'):null,source=logo?.originalRasterSrc||logo?.src||null;
+ if(event?.target?.id?.startsWith('vector')||logo?.id!==vectorPreviewLogoId&&!suppressHistory)vectorPreviewPaused=false;
+ const canTrace=!!logo&&(!logo.svgMarkup||!!logo.originalRasterSrc)&&$('colorTools').open&&!vectorEditingLogoId&&!vectorPreviewPaused&&!vectorApplyBusy;
+ const signature=JSON.stringify([logo,state.flap]),settings=vectorSettingsSignature()+'|'+canTrace+'|'+signature;
+ if(logo?.id===vectorPreviewLogoId&&source===vectorPreviewSource&&settings===vectorPreviewSettings)return;
+ vectorPreviewLogoId=logo?.id||null;vectorPreviewSource=source;vectorPreviewSettings=settings;const token=++vectorPreviewToken;clearTimeout(vectorPreviewTimer);
+ const original=$('vectorOriginalPreview'),resultImage=$('vectorResultPreview'),status=$('vectorPreviewStatus'),wasPreview=!!vectorExperiment;vectorExperiment=null;
+ if(!canTrace){
+  original.removeAttribute('src');resultImage.removeAttribute('src');
+  status.textContent=vectorApplyBusy?'Vector wordt toegepast; een tijdelijk voorbeeld wordt niet tegelijk gemaakt.':vectorPreviewPaused?'Voorbeeld gestopt. Pas een instelling aan of open dit onderdeel opnieuw om verder te experimenteren.':logo?.svgMarkup&&!logo.originalRasterSrc?'Dit SVG-bestand is al vector.':logo?'Open Vector & klantpreview om tijdelijk op de spatlap te experimenteren.':'Selecteer een afbeelding om het resultaat te bekijken.';
+  if(wasPreview)render();return;
+ }
+ original.src=source;resultImage.removeAttribute('src');status.textContent='Tijdelijk voorbeeld wordt bijgewerkt; nog niet toegepast.';if(wasPreview)render();
+ const count=Math.max(1,Math.min(8,Math.round(Number($('vectorColorCount').value)||1))),light=Math.max(0,Math.min(255,Number($('vectorLightThreshold').value)||0)),alpha=Math.max(1,Math.min(255,Number($('vectorAlphaThreshold').value)||1)),single=normalizeHex($('vectorSingleColor').value),cutout=$('vectorWhiteCutout').checked,edges=$('vectorEdgeStyle').value;
+ vectorPreviewTimer=setTimeout(async()=>{
+  try{
+   const traced=await vectorizeRasterLogo(logo,count,single,cutout,edges,light,alpha,400);
+   if(token!==vectorPreviewToken||vectorApplyBusy||vectorPreviewPaused||!$('colorTools').open||state.selectedType!=='logo'||state.selected!==logo.id||itemById(logo.id,'logo')!==logo||JSON.stringify([logo,state.flap])!==signature)return;
+   vectorExperiment={id:logo.id,signature,result:traced};render();resultImage.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(traced.markup);status.textContent=`Tijdelijk vectorvoorbeeld: ${traced.colors.length} kleur${traced.colors.length===1?'':'en'}. Klik op Toepassen als vector om dit te gebruiken.`;
+  }catch(error){if(token!==vectorPreviewToken)return;vectorExperiment=null;resultImage.removeAttribute('src');status.textContent=error.message||'Voorbeeld maken lukte niet.';render();}
+ },350);
 }

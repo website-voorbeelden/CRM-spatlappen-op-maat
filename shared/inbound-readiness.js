@@ -1,4 +1,4 @@
-import {funnelPayment} from './sales-funnel.js';
+import {funnelPayment} from './sales-funnel.js?v=ui-batch234-20261027';
 // Only saved delivery agreements determine requirements; prices never imply a method.
 export const fulfilmentMethods=[['','Nog afspreken'],['pickup','Afhalen'],['shipping','Verzenden'],['delivery','Bezorgen']];
 export const validFulfilmentMethod=value=>fulfilmentMethods.some(([id])=>id===value);

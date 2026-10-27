@@ -1,4 +1,28 @@
+> Nieuwste27oktober: automatische mailfasemelding nu in gedeeld niet-modaal vak met Bekijken en gericht Terugdraaien, geen aparte popup met Verder/Fase aanpassen. Undo gebruikt actuele fase/bron/klant-/workflowbasis en herstelt geen betaal-/mail-/fysieke feiten of hele snapshot. Alleen sessiegeheugen; invoer beschermd. Zie COMPACT-ORDEROVERZICHT.md. Lokaal, geen tests/browsercontrole/publicatie; eigen controle open.
+
+# Verduidelijking27oktober: melding en automatische fase staan los
+
+Philippe kiest expliciet: melding verbergen, fase blijft automatisch uit bekende gegevens volgen. Nieuwe werkelijk door SMTP2GO aangeboden mails met expliciet doel Specificaties, Prijsindicatie, Offerte of Orderbevestiging krijgen hun bestaande fase-event direct als confirmed in dezelfde communicatieopslag. confirmed betekent hier dus ook: automatisch toegelaten op grond van een bekende verzendregistratie, niet altijd een aparte bevestigingsklik. De popup is achteraf uitleg en blokkeert deze afleiding niet. Geen extra fase-event of verzonnen handmatige verzenddatum.
+
+Alleen expliciet documenttype/maildoel, geen tekstinterpretatie. Concept, preview, onzekere/afgewezen verzending of gewone mail geven geen nieuwe verkoopfase. Factuur-/opvolgmail houden hun bestaande betekenis. Bij Herstel verzendstatus of een inmiddels door een andere tab opgeslagen acceptatie blijft bestaande reviewkeuze behouden; oude pending/dismissed records niet migreren of stil bevestigen. Bestaande betaald/vrijgave/fysieke status en nieuwere bewuste fasekeuze blijven volgens de bestaande regels leidend. Geen betaling/productiestart/levering uit een offerte- of bevestigingsmail afleiden.
+
+De nieuwe melding toont Fase automatisch bijgewerkt met Verder, Sluiten en Fase aanpassen (bestaande editor met actuele basis). Niet meer automatisch tonen bewaart alleen een boolean per bedrijf/browser; Meer → Fase-meldingen zet de melding weer aan. De voorkeur wordt niet geraadpleegd bij het opslaan of afleiden van de fase. Een nieuwere fase of open editor krijgt geen verouderde/vervangende popup. Voor oude pendingvoorstellen blijft de eerdere handmatige reviewroute beschikbaar. Automatische herkomst van de bekende mailfase lichtpaars met uitleg, geen claim van aflevering of betaling.
+
+Alleen lokale bron; geen echte mail-/Gmail-/klant-/provideractie, tests/checks/builds/browser-/DOMcontrole of publicatie. Philippe beoordeelt zelf nieuwe verzending met meldingen aan/uit, Verder/Sluiten/aanpassen, weer aanzetten, acceptatieherstel/retry, ouder pending/dismissed record, gelijktijdige fasekeuze en betaald/fysiek later stadium. Opgeslagen historische klant-/orderdata en schema/bedrijfs-/CASgrenzen behouden.
+
+# Laatste27oktober — compact vervolg
+
+Aanvraag-/planning-/klantdetails en prijsopbouw ook standaard dicht, producten en hoofdactie zichtbaar. Complete onbesliste vroege aanvraag afgeleid naar Prijs berekenen; bewuste fase-/Gmailkeuze behouden. Direct rekenen zonder registratieformulier. Mailfasepopup heeft Niet meer tonen als lokale weergavevoorkeur, geen automatische bevestiging. Zie COMPACT-ORDEROVERZICHT.md; alleen lokale bron, eigen controle open.
+
+# Compacte weergave — 27 oktober 2026
+
+Nieuwste UIafspraak: de huidige verkoopfase en eventueel geregistreerde uitvoering staan in één compacte regel. Fases & voortgang opent dezelfde volledige fase-/uitvoeringskeuze en aanklikbare stappen, standaard dicht. Bedragen & marge opent dezelfde vier cijferkolommen; netto bedrag en bekend bruto saldo blijven kort zichtbaar, inclusief voorlopig/onbekend/te veel ontvangen. Geen berekeningen of registraties wijzigen door openen/sluiten. Op overzicht compact volgende-actiepaneel, actieve review-/Gmailconflictwaarschuwing behouden. Onderstaande oudere beschrijving van een altijd zichtbare volledige stappenbalk is historisch. Geen tests/browsercontrole/publicatie, Philippe beoordeelt zelf.
+
 # Ordervoortgang en losse bestellingen
+
+## Reparatie27oktober: dossier openen
+
+De nieuwe uitvoeringsregel verwees naar f.phase zonder lokale f-binding. Bij een order zonder fysieke uitvoeringsstatus brak renderOrder daardoor af voordat de pagina werd vervangen; een klik uit de lijst kon alleen de URL veranderen. Nu wordt de bestaande funnel.phase gebruikt. Rechtstreeks openen wordt door dezelfde pure projectie geraakt; bestaande vrijgave-/uitvoeringsbetekenis behouden, geen gegevensmutatie of globale fallback. Gebruiker heeft ook browseruitlezing geweigerd: uitsluitend bron gelezen/bewerkt, geen tests/checks/build/browserQA. Philippe herlaadt zelf na behoud van eventuele invoer en beoordeelt dossieropenen en tabs voor beide bedrijven, met/zonder uitvoeringsstatus.
 
 Lokaal aangepast op21oktober2026. Philippe controleert zelf: geen tests, syntaxchecks, builds of functionele browser-QA uitgevoerd. Geen echte orderdata gewijzigd of online gepubliceerd.
 

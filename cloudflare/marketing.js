@@ -23,7 +23,8 @@ export async function validateMarketingConfig(input,company,old){
 }
 async function signingKey(pem){const text=pem.replace(/-----BEGIN PRIVATE KEY-----|-----END PRIVATE KEY-----|\s/g,'');if(!/^[A-Za-z0-9+/]+=*$/.test(text))throw Error('Invalid key');return crypto.subtle.importKey('pkcs8',Uint8Array.from(atob(text),c=>c.charCodeAt(0)),{name:'RSASSA-PKCS1-v1_5',hash:'SHA-256'},false,['sign']);}
 async function provider(url,options,fetcher){
- let r;try{r=await fetcher(url,{...options,redirect:'error',signal:AbortSignal.timeout(18000)});}catch{throw fail('Google is nu niet bereikbaar. Probeer later opnieuw.',503);}
+ let r;try{r=await fetcher(url,{...options,redirect:'manual',signal:AbortSignal.timeout(18000)});}catch{throw fail('Google is nu niet bereikbaar. Probeer later opnieuw.',503);}
+ if(r.status>=300&&r.status<400){await r.body?.cancel();throw fail('Google gaf een onverwachte doorverwijzing. Er zijn geen sleutel- of rapportgegevens doorgestuurd.',502);}
  if(!r.ok)throw fail(r.status===403?'Geen leestoegang bij Google. Controleer API-activering en de rechten van het serviceaccount.':r.status===429?'Google vraagt om even te wachten. Probeer later opnieuw.':'Google kon dit rapport niet leveren. Controleer de property en de serviceaccountsleutel.',r.status===429?429:502);
  let data;try{data=await r.json();}catch{throw fail('Google gaf een onleesbaar rapport.',502);}return data;
 }
@@ -39,22 +40,40 @@ export function normalizeSearch(data,dimension){
  if(!data||typeof data!=='object'||data.rows!==undefined&&!Array.isArray(data.rows))throw fail('Google gaf een onleesbaar zoekrapport.',502);
  return (data.rows||[]).map(r=>{const impressions=number(r.impressions),clicks=number(r.clicks);if(clicks>impressions)throw fail('Google gaf ongeldige zoekcijfers.',502);const key=dimension?String(r.keys?.[0]||'').slice(0,1000):'total';return {key,clicks,impressions,ctr:impressions?clicks/impressions:0,position:number(r.position)};});
 }
-export async function searchReport(config,{token,days,now,fetcher}){
+export async function searchReport(config,{token,days,now,fetcher,ranges:requestedRanges,includeDaily=false}){
  // Final data only; keep a three-day buffer and compare equal complete weeks/windows.
  const end=Date.UTC(new Date(now).getUTCFullYear(),new Date(now).getUTCMonth(),new Date(now).getUTCDate())-3*day,start=end-(days-1)*day,previousEnd=start-day,previousStart=start-days*day;
- const ranges=[{start:date(start),end:date(end)},{start:date(previousStart),end:date(previousEnd)}],url='https://www.googleapis.com/webmasters/v3/sites/'+encodeURIComponent(config.site)+'/searchAnalytics/query';
+ const ranges=requestedRanges||[{start:date(start),end:date(end)},{start:date(previousStart),end:date(previousEnd)}],url='https://www.googleapis.com/webmasters/v3/sites/'+encodeURIComponent(config.site)+'/searchAnalytics/query';
  const query=async(range,dimension)=>{const data=await provider(url,{method:'POST',headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},body:JSON.stringify({startDate:range.start,endDate:range.end,dataState:'final',type:'web',aggregationType:'auto',...(dimension?{dimensions:[dimension]}:{}),rowLimit:dimension?500:1,startRow:0})},fetcher);return normalizeSearch(data,dimension);};
  const reports=await Promise.all(ranges.flatMap(range=>[query(range),query(range,'query'),query(range,'page')]));
+ const daily=includeDaily?await Promise.all(ranges.map(range=>query(range,'date'))):undefined;
+ const dailyComplete=includeDaily&&ranges.every((range,index)=>Array.from({length:7},(_,i)=>date(Date.parse(range.start+'T00:00:00Z')+i*day)).every(key=>daily[index].some(row=>row.key===key)));
  const current=reports[0][0]||{clicks:0,impressions:0,ctr:0,position:null},previous=reports[3][0]||{clicks:0,impressions:0,ctr:0,position:null};
  const clicks=changeMetric(current.clicks,previous.clicks,{minimum:20,relative:.3,absolute:10});
- return {status:'ready',site:config.site,ranges,current,previous,queries:reports[1],previousQueries:reports[4],pages:reports[2],signals:[...(clicks?[{key:'Google totaal',label:'Klikken',metric:'clicks',...clicks}]:[]),...querySignals(reports[1],reports[4])],limited:reports[1].length===500||reports[4].length===500||reports[2].length===500,completeDays:true};
+ return {status:'ready',site:config.site,ranges,current,previous,queries:reports[1],previousQueries:reports[4],pages:reports[2],...(includeDaily?{daily,dailyComplete,previousPages:reports[5]}:{}),signals:[...(clicks?[{key:'Google totaal',label:'Klikken',metric:'clicks',...clicks}]:[]),...querySignals(reports[1],reports[4])],limited:reports[1].length===500||reports[4].length===500||reports[2].length===500||reports[5].length===500,completeDays:true};
 }
-export async function gaReport(config,{token,days,now,fetcher,company}){
- const end=date(now-day),start=date(now-days*day),url='https://analyticsdata.googleapis.com/v1beta/properties/'+config.property+':runReport';
+export async function gaReport(config,{token,days,now,fetcher,company,range}){
+ const end=range?.end||date(now-day),start=range?.start||date(now-days*day),url='https://analyticsdata.googleapis.com/v1beta/properties/'+config.property+':runReport';
  const metricNames=['activeUsers','sessions','screenPageViews','engagedSessions','userEngagementDuration'];
  const query=async dimension=>{const data=await provider(url,{method:'POST',headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},body:JSON.stringify({dateRanges:[{startDate:start,endDate:end}],metrics:metricNames.map(name=>({name})),...(dimension?{dimensions:[{name:dimension}]}:{}),dimensionFilter:{filter:{fieldName:'hostName',inListFilter:{values:[company.website.toLowerCase(),'www.'+company.website.toLowerCase()]}}},limit:20,returnPropertyQuota:true})},fetcher);if(!data||data.rows!==undefined&&!Array.isArray(data.rows))throw fail('Onleesbaar GA4-rapport.',502);return {rows:(data.rows||[]).map(r=>({key:String(r.dimensionValues?.[0]?.value||'total').slice(0,1000),...Object.fromEntries(metricNames.map((name,n)=>[name,number(r.metricValues?.[n]?.value)]))})),thresholded:!!data.metadata?.subjectToThresholding};};
  const [total,sources,pages]=await Promise.all([query(),query('sessionDefaultChannelGroup'),query('pagePath')]);
  return {status:'ready',property:config.property,start,end,total:total.rows[0]||Object.fromEntries(metricNames.map(k=>[k,0])),sources:sources.rows,pages:pages.rows,thresholded:total.thresholded||sources.thresholded||pages.thresholded};
+}
+// A weekly snapshot uses explicit completed calendar weeks, separate from the
+// rolling on-open cache. Reuse the same credentials, readonly scopes and filters.
+export async function weeklyGoogleReport(env,{ranges,now=Date.now(),fetcher=fetch}={}){
+ const store=integrationStore(env),company=companyFromEnv(env);
+ return store.exclusive('marketing',async()=>{
+  const record=await store.read('marketing'),config=record.value;
+  if(!config)return {configVersion:record.version,search:{status:'not-configured'},ga:{status:'not-configured'}};
+  let token;try{token=await access(config,{fetcher,now});}catch(error){return {configVersion:record.version,search:{status:config.site?'unavailable':'not-configured',error:error.message},ga:{status:config.property?'unavailable':'not-configured',error:error.message}};}
+  const result=async fn=>{try{return await fn();}catch(error){return {status:'unavailable',error:error.status?error.message:'Google kon het weekrapport niet leveren.'};}};
+  const [search,ga]=await Promise.all([
+   config.site?result(()=>searchReport(config,{token,days:7,now,fetcher,ranges,includeDaily:true})):Promise.resolve({status:'not-configured'}),
+   config.property?result(async()=>{const [current,previous]=await Promise.all(ranges.map(range=>gaReport(config,{token,days:7,now,fetcher,company,range})));return {status:'ready',current,previous,thresholded:current.thresholded||previous.thresholded};}):Promise.resolve({status:'not-configured'})
+  ]);
+  return {configVersion:record.version,search,ga};
+ });
 }
 function status(record,company){const c=record.value;return {status:c?'configured':'not-configured',version:record.version,site:c?.site||'',property:c?.property||'',account:c?.account.email||'',website:company.website.toLowerCase(),checkMode:'on-open',cacheMinutes:15};}
 export async function handleMarketing({request,env},{fetcher=fetch,now=Date.now(),storeFactory=integrationStore}={}){
@@ -68,10 +87,10 @@ export async function handleMarketing({request,env},{fetcher=fetch,now=Date.now(
   if(request.method==='GET'&&path==='report'){
    const days=Number(url.searchParams.get('days')||28);if(![7,28,90].includes(days))throw fail('Kies 7, 28 of 90 dagen.');
    const record=await store.read('marketing');if(!record.value)return json({status:'not-configured',website:company.website.toLowerCase()});
-   return await store.exclusive('marketing',async()=>{const latest=await store.read('marketing');if(latest.version!==record.version)throw fail('De koppeling is veranderd. Vernieuw eerst.',409);const config=latest.value,cache=await store.read('marketing-report-'+days);if(cache.value?.configVersion===record.version&&cache.value.checkedAt>now-15*60000)return json({...cache.value.report,cached:true});
+   return await store.exclusive('marketing',async()=>{const latest=await store.read('marketing');if(latest.version!==record.version)throw fail('De koppeling is veranderd. Vernieuw eerst.',409);const config=latest.value,cache=await store.read('marketing-report-'+days);if(cache.value?.transportVersion===2&&cache.value.configVersion===record.version&&cache.value.checkedAt>now-15*60000)return json({...cache.value.report,cached:true});
     const token=await access(config,{fetcher,now});const [search,ga]=await Promise.allSettled([config.site?searchReport(config,{token,days,now,fetcher}):Promise.resolve({status:'not-configured'}),config.property?gaReport(config,{token,days,now,fetcher,company}):Promise.resolve({status:'not-configured'})]);
     const result=r=>r.status==='fulfilled'?r.value:{status:'unavailable',error:r.reason?.message||'Google niet bereikbaar.'};const report={status:'ready',checkedAt:now,days,website:company.website.toLowerCase(),search:result(search),ga:result(ga),checkMode:'on-open'};
-    await store.write('marketing-report-'+days,{configVersion:record.version,checkedAt:now,report},cache.version);return json(report);
+    await store.write('marketing-report-'+days,{transportVersion:2,configVersion:record.version,checkedAt:now,report},cache.version);return json(report);
    });
   }
   return json({error:'Onbekend rapportverzoek.'},404);

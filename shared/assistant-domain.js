@@ -1,8 +1,8 @@
-import {markProvenance} from './provenance.js';
+import {markProvenance} from './provenance.js?v=provenance-colors-20261027';
 import {companyFor,orderStagesFor,displayOrderStage} from './companies.js';
-import {validateBusinessState} from './state-validation.js';
+import {validateBusinessState} from './state-validation.js?v=ui-batch234-20261027';
 import {ensureCustomerNumbers} from '../admin/customer-numbers.js';
-import {normalizeAssistantPageContext} from './assistant-page-context.js';
+import {normalizeAssistantPageContext} from './assistant-page-context.js?v=payments-overview-20261027';
 export const customerFields=['company','contact','email','invoiceEmail','phone','vatNumber','country','billingAddress','shippingAddress','notes'];
 export const orderFields=['customerId','description','quantity','width','height','price','vat','date','expectedDate','notes','stage'];
 export const stages=['Ontwerp maken','Wachten op goedkeuring','Ontwerp goedgekeurd','Offerte verstuurd','Wachten op betaling','Productie vrijgegeven','Besteld bij leverancier','In productie','Onderweg naar Nederland','Binnen in Nederland','Verzonden','Afgerond','Nieuwe aanvraag'];

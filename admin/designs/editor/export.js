@@ -73,24 +73,27 @@ function shoulderRoundedPath(ctx,w,h,inset,topH,r){
   ctx.closePath();
 }
 
+function drawDesignLogo(ctx,img,obj,cx,cy,width,height){ctx.save();try{ctx.translate(cx,cy);ctx.rotate(artworkRotation(obj)*Math.PI/180);ctx.scale(obj.flipX===true?-1:1,1);const outline=outlineStyle(obj);if(outline){const radius=outline.width*width/obj.w,ratio=Math.min(1,4096/Math.max(width,height)),mask=document.createElement('canvas');mask.width=Math.max(1,Math.ceil(width*ratio));mask.height=Math.max(1,Math.ceil(height*ratio));const paint=mask.getContext('2d');paint.drawImage(img,0,0,mask.width,mask.height);paint.globalCompositeOperation='source-in';paint.fillStyle=outline.color;paint.fillRect(0,0,mask.width,mask.height);for(let step=0;step<48;step++){const angle=step/48*Math.PI*2;ctx.drawImage(mask,-width/2+Math.cos(angle)*radius,-height/2+Math.sin(angle)*radius,width,height);}}ctx.drawImage(img,-width/2,-height/2,width,height);}finally{ctx.restore();}}
 function drawDesignText(ctx,t,centerX,y,pxPerCm){
-  const value=String(t.text||'');
-  ctx.font=`${textWeight(t.weight)} ${t.size*pxPerCm}px ${printFontFamily(t.font)}`;
-  ctx.fillStyle=t.color;
-  ctx.textBaseline='middle';
-  const spacing=textTracking(t.tracking)*pxPerCm;
-  if(!spacing){ctx.textAlign='center';ctx.fillText(value,centerX,y);return;}
-  const chars=typeof Intl.Segmenter==='function'
-    ? [...new Intl.Segmenter(undefined,{granularity:'grapheme'}).segment(value)].map(part=>part.segment)
-    : Array.from(value);
-  const widths=chars.map(char=>ctx.measureText(char).width);
-  const total=widths.reduce((sum,width)=>sum+width,0)+spacing*Math.max(0,chars.length-1);
-  let x=centerX-total/2;
-  ctx.textAlign='left';
-  chars.forEach((char,i)=>{ctx.fillText(char,x,y);x+=widths[i]+spacing;});
+ ctx.save();try{
+  ctx.translate(centerX,y);ctx.rotate(artworkRotation(t)*Math.PI/180);ctx.scale(t.flipX===true?-1:1,1);
+  const lines=String(t.text||'').split(/\r?\n/),spacing=textTracking(t.tracking)*pxPerCm,lineHeight=t.size*pxPerCm;
+  ctx.font=`${textWeight(t.weight)} ${lineHeight}px ${printFontFamily(t.font)}`;ctx.fillStyle=t.color;ctx.textBaseline='middle';
+  const glyphs=value=>typeof Intl.Segmenter==='function'?[...new Intl.Segmenter(undefined,{granularity:'grapheme'}).segment(value)].map(p=>p.segment):Array.from(value);
+  const width=value=>spacing?glyphs(value).reduce((sum,c)=>sum+ctx.measureText(c).width,0)+Math.max(0,glyphs(value).length-1)*spacing:ctx.measureText(value).width;
+  const maxWidth=Math.max(0,...lines.map(width));
+  lines.forEach((value,index)=>{const lineWidth=width(value),left=t.align==='left'?-maxWidth/2:t.align==='right'?maxWidth/2-lineWidth:-lineWidth/2,baseline=(index-(lines.length-1)/2)*lineHeight;
+   const outline=outlineStyle(t);ctx.textAlign='left';if(outline){ctx.strokeStyle=outline.color;ctx.lineWidth=2*outline.width*pxPerCm;ctx.lineJoin='round';if(!spacing)ctx.strokeText(value,left,baseline);else{let x=left;for(const char of glyphs(value)){ctx.strokeText(char,x,baseline);x+=ctx.measureText(char).width+spacing;}}}if(!spacing){ctx.fillText(value,left,baseline);return;}let x=left;for(const char of glyphs(value)){ctx.fillText(char,x,baseline);x+=ctx.measureText(char).width+spacing;}
+  });
+ }finally{ctx.restore();}
 }
 
+function artworkExportSignature(){return JSON.stringify([state.flap,state.holes,state.logos,state.texts,state.ui]);}
+function assertArtworkExportCurrent(expected){if(artworkExportSignature()!==expected)throw Error('Het ontwerp is gewijzigd tijdens het maken van de afbeelding. Je invoer is behouden; start de export opnieuw.');}
+
 async function createPreviewPngBlob(){
+  const expected=artworkExportSignature();
+  await requireDesignFonts();
   if(document.fonts?.ready){try{await document.fonts.ready;}catch(e){}}
   // Draw the preview at its fitted size; screen zoom and scroll never affect downloads.
   const wrap=$('previewWrap');
@@ -194,17 +197,16 @@ async function createPreviewPngBlob(){
   // Logos.
   for(const entry of SpatlapVectorExport.orderedItems(state)){
     if(entry.type==='text'){const t=entry.obj;drawDesignText(ctx,t,ox+t.x*fw,oy+t.y*fh,pxPerCmY);continue;}
-    const x=entry.obj;await new Promise(res=>{
-      const img=new Image();
+    const x=entry.obj;await new Promise((resolve,reject)=>{
+      const img=new Image(),timer=setTimeout(()=>reject(new Error('Logo '+(x.name||'')+' kon niet op tijd worden geladen.')),20000);
       img.onload=()=>{
-        const iw=x.w*pxPerCmX;
-        const ih=x.h*pxPerCmY;
-        const ix=ox+x.x*fw-iw/2;
-        const iy=oy+x.y*fh-ih/2;
-        ctx.drawImage(img,ix,iy,iw,ih);
-        res();
+        clearTimeout(timer);
+        try{
+          const iw=x.w*pxPerCmX,ih=x.h*pxPerCmY,ix=ox+x.x*fw-iw/2,iy=oy+x.y*fh-ih/2;
+          drawDesignLogo(ctx,img,x,ix+iw/2,iy+ih/2,iw,ih);resolve();
+        }catch(error){reject(error);}
       };
-      img.onerror=res;
+      img.onerror=()=>{clearTimeout(timer);reject(new Error('Logo '+(x.name||'')+' kan niet worden gelezen; er is geen onvolledige preview gedownload.'));};
       img.src=x.src;
     });
   }
@@ -245,6 +247,7 @@ async function createPreviewPngBlob(){
 
   const blob=await new Promise(resolve=>c.toBlob(resolve,'image/png'));
   if(!blob)throw new Error('PNG-preview maken mislukt');
+  assertArtworkExportCurrent(expected);
   return blob;
 }
 
@@ -288,6 +291,8 @@ async function exportPNG(){
 }
 
 async function buildArtworkCanvas(scale=14,background=null){
+  const expected=artworkExportSignature();
+  await requireDesignFonts();
   if(document.fonts?.ready){try{await document.fonts.ready;}catch(e){}}
   const W=Math.max(1,Math.round(state.flap.w*scale));
   const H=Math.max(1,Math.round(state.flap.h*scale));
@@ -300,7 +305,7 @@ async function buildArtworkCanvas(scale=14,background=null){
     const x=entry.obj;await new Promise((resolve,reject)=>{
       const img=new Image();
       img.onload=()=>{
-        try{ctx.drawImage(img,x.x*W-x.w*scale/2,x.y*H-x.h*scale/2,x.w*scale,x.h*scale);resolve();}
+        try{drawDesignLogo(ctx,img,x,x.x*W,x.y*H,x.w*scale,x.h*scale);resolve();}
         catch(err){reject(err);}
       };
       img.onerror=()=>reject(new Error(`Logo ${x.name||''} kon niet worden geladen`));
@@ -310,6 +315,7 @@ async function buildArtworkCanvas(scale=14,background=null){
 
 
   drawContour(ctx,0,0,scale);
+  assertArtworkExportCurrent(expected);
   return c;
 }
 
@@ -377,6 +383,7 @@ function addPdfColourInfo(pdf,design){
   line('Zonder achtergrond. Tekst is omgezet naar contouren.');
   for(const logo of design.logos)line(logo.printColors?`${logo.name}: ${logo.printColors.join(', ')}`:`${logo.name}: kleuren volgens het SVG-logo; geen automatische kleurmeting.`);
   for(const t of design.texts)line(`Tekst: ${t.color||'#FFFFFF'}`);
+  for(const obj of [...design.logos,...design.texts])if(outlineStyle(obj))line(`Randlijn: ${obj.outline.color} · ${obj.outline.width*10} mm`);
   if(design.ui?.contour?.on)line('Contourlijn: #FFFFFF');
   pdf.setFontSize(9);line('Kleuren zijn RGB / HEX. Er zijn geen Pantone- of steunkleuren ingesteld. Deze informatiepagina hoort niet bij het te printen artwork.');
 }

@@ -1,8 +1,9 @@
+import {orderPaymentStatusLabel} from '../../shared/order-payment-status.js?v=ui-batch3-followup-20261027';
 import {materialKey} from '../../shared/product-metrics.js?v=product-thickness-20261021';
-import {customerFinancials} from "../../shared/customer-workspace.js?v=mail-priority-20261016-2";
+import {customerFinancials} from "../../shared/customer-workspace.js?v=ui-batch234-20261027";
 export const normalizeSearch=value=>String(value??'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[×✕]/g,'x').replace(/\s+/g,' ').trim();
 export const defaultOrderSearch=()=>({text:'',visibility:'active',customerId:'',stage:'',outcome:'',width:'',height:'',quantity:'',printColors:'',material:'',thickness:'',tolerance:'0',from:'',to:'',expanded:false,mode:'orders',sourceOrderId:'',orderIds:[],selectionLabel:''});
-export const defaultCustomerSearch=()=>({text:'',visibility:'active',activity:'',country:'',sort:'name',expanded:false});
+export const defaultCustomerSearch=(sort='opened')=>({text:'',visibility:'active',activity:'',country:'',sort,expanded:false});
 export const quoteOutcomeOptions=[['','Automatisch uit akkoord / betaling'],['accepted','Akkoord'],['pending','Wacht op antwoord'],['declined','Afgewezen'],['no_response','Geen reactie']];
 function localPhone(value){
  const digits=String(value??'').replace(/\D/g,'');
@@ -26,7 +27,7 @@ function paymentsByOrder(data){const paid=new Map();for(const p of data.payments
 function orderPaymentStatus(o,paid){
  if(!o.items.length||o.packagePrice==null&&o.items.some(i=>i.price==null))return 'Prijs nog onbekend';
  const net=(o.packagePrice??o.items.reduce((sum,i)=>sum+i.quantity*(i.price??0),0))+(o.shippingCharge||0),total=net+Math.round(net*o.vat/100);
- return total===0&&paid===0?'Geen bedrag':paid>total?'Te veel ontvangen':paid===total?'Betaald':paid>0?'Deels betaald':'Onbetaald';
+ return orderPaymentStatusLabel(o,{priceKnown:true,total,paid});
 }
 function inScope(record,scope){return scope==='all'||(scope==='archived'?record.archived:!record.archived);}
 export function orderFilterError(f){
@@ -61,7 +62,7 @@ export function searchOrderItems(data,f,{includeIncomplete=false}={}){
  }
  return rows.sort((a,b)=>a.distance-b.distance||String(b.o.date).localeCompare(String(a.o.date))||Number(b.o.number)-Number(a.o.number));
 }
-export function searchCustomers(data,f){
+export function searchCustomers(data,f,{openedAt=()=>0}={}){
  const rows=[];
  for(const c of data.customers){
   if(!inScope(c,f.visibility)||f.country&&c.country!==f.country)continue;
@@ -72,7 +73,7 @@ export function searchCustomers(data,f){
   if(!textMatches(haystack,f.text))continue;
   rows.push({c,orders,open,balance,provisional,lastDate:orders.map(o=>o.date||'').sort().at(-1)||''});
  }
- return rows.sort((a,b)=>f.sort==='recent'?b.lastDate.localeCompare(a.lastDate)||a.c.company.localeCompare(b.c.company,'nl'):f.sort==='outstanding'?b.balance-a.balance||a.c.company.localeCompare(b.c.company,'nl'):a.c.company.localeCompare(b.c.company,'nl'));
+ return rows.sort((a,b)=>f.sort==='opened'?openedAt(b.c.id)-openedAt(a.c.id)||b.lastDate.localeCompare(a.lastDate)||a.c.company.localeCompare(b.c.company,'nl')||String(a.c.id).localeCompare(String(b.c.id)):f.sort==='recent'?b.lastDate.localeCompare(a.lastDate)||a.c.company.localeCompare(b.c.company,'nl'):f.sort==='outstanding'?b.balance-a.balance||a.c.company.localeCompare(b.c.company,'nl'):a.c.company.localeCompare(b.c.company,'nl'));
 }
 
 export function orderDossierLabel(order,paid=0){if(quoteResult(order,paid).key==='accepted')return 'Order';if(order.quoteSentDate||order.quoteDraft||order.stage==='Offerte verstuurd')return 'Offerte';return order.inquiryDraft||!order.items.length?'Aanvraag':'Order';}

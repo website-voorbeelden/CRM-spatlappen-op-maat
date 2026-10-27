@@ -1,3 +1,7 @@
+# Actuele aanvulling — 26 oktober 2026: ontwerpvarianten
+
+De hieronder genoemde grens van één actief ontwerp is historisch. Meerdere benoemde varianten en append-only revisies bij dezelfde productregel zijn lokaal uitgewerkt; nog geen tests, builds, browser-QA of publicatie. Zie docs/BATCH1-ONTWERPVARIANTEN-20261026.md en nieuwste OVERDRACHT.md. Eén product houdt maat/aantal/prijs. Nieuwe varianten, kopieën en eerdere revisies als nieuwe variant hebben een eigen ontwerp-ID; JSON/PNG worden samen bewaard via dezelfde opslagfacade. Definitief kiezen vereist de feitelijk opgeslagen maat/aantalbasis, het bijbehorende voorbeeld en actuele product/variantmetadata. Een gewijzigd gekozen ontwerp of gewijzigde productbasis vraagt opnieuw akkoord; een afwijkend oud ontwerp eerst openen/controleren/bewaren. Oude gegevens blijven zonder opstartmigratie leesbaar en eerdere bestanden blijven behouden. Gebruikerscontrole en eventuele latere expliciete publicatie blijven afzonderlijk open.
+
 # Actuele CRM-koppeling — 17 oktober 2026
 
 De preview is al gekoppeld aan CRM-producten. De historische beschrijving hieronder van een later in te vullen generieke adapter betekent niet dat productopslag nog ontbreekt. De huidige automatische productroute gebruikt `admin/product-designs.js` via de bestaande `admin/cloud-storage.js`-facade.

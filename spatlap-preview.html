@@ -5,15 +5,15 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Spatlap Preview Tool</title>
 <link rel="icon" type="image/svg+xml" href="spatlap-preview-favicon.svg?v=1">
-<link rel="stylesheet" href="print-assets/fonts.css">
+<link rel="stylesheet" href="print-assets/fonts.css?v=four-parts-20261026">
 
-<link rel="stylesheet" href="admin/designs/editor/editor.css?v=20261018-split-1">
+<link rel="stylesheet" href="admin/designs/editor/editor.css?v=batch2-editor-20261026">
 <script src="number-inputs.js?v=save-status-20261010" defer></script>
 </head>
 <body>
 <div id="previewBoot" role="status" aria-live="polite"><span id="previewBootSpinner" aria-hidden="true"></span><strong>Ontwerp laden…</strong><p id="previewBootMessage">Je werkplek wordt klaargezet.</p><button id="previewBootContinue" type="button" hidden>Werkgebied tonen</button></div>
 <noscript><style>.preview-booting .app{visibility:visible}#previewBoot{display:none}</style><p>Schakel JavaScript in om de ontwerptool te gebruiken.</p></noscript>
-<script src="admin/designs/editor/boot.js?v=20261018-split-1"></script>
+<script src="admin/designs/editor/boot.js?v=four-parts-20261026"></script>
 <div id="previewActivity" class="preview-activity" role="status" aria-live="polite" aria-atomic="true" hidden><span class="preview-activity-symbol" aria-hidden="true"></span><span id="previewActivityText"></span><button id="previewActivityBackup" type="button">Ontwerpkopie</button><button id="previewActivityClose" type="button" aria-label="Melding sluiten">×</button></div>
 <div class="app">
   <header class="app-header">
@@ -52,6 +52,7 @@
           <p><strong>⌘⇧S:</strong> bewaren · <strong>⌘⇧E:</strong> klantpreview-PNG · <strong>⌘⇧T:</strong> drukbestand-PDF. Ook met Ctrl op Windows. Als de browser een combinatie zelf gebruikt, blijft de downloadknop beschikbaar.</p>
           <p><strong>Esc na maat invoeren:</strong> terug naar verplaatsen met pijltjes. Nogmaals Esc deselecteert.</p>
           <p><strong>⌘⇧[ / ⌘⇧]:</strong> selectie één laag omlaag / omhoog. Ook Ctrl+Shift op Windows.</p>
+          <p><strong>Cmd/Ctrl+Shift+klik op een selectieactie:</strong> een eigen sneltoets instellen. Bladeren door lettertypen is tijdelijk; klikken kiest het font.</p>
           <p><strong>Alt + slepen:</strong> tijdelijk vrij bewegen, zonder vast te klikken aan hulplijnen.</p>
           <p><strong>Spatie + slepen:</strong> door de ingezoomde preview bewegen, zonder een logo te verplaatsen.</p>
         </div></details>
@@ -169,7 +170,7 @@
             <div id="replaceLogoStatus" class="field-help" role="status"></div>
             <label style="display:flex;align-items:center;gap:8px;margin:9px 0"><input id="selectedLogoVectorCheck" type="checkbox" disabled style="width:auto"><span id="selectedLogoVectorLabel">Vectorbestand</span></label>
             <div class="field-help">Dit vinkje wordt automatisch gezet voor een SVG of na omzetting. Het is geen handmatige instelling.</div>
-            <div id="vectorPieceControls" class="vector-piece-controls" style="display:none">
+            <div id="vectorPieceControls" class="vector-piece-controls" style="display:none"><div id="logoPalette"></div><details id="vectorAdvanced" class="subdetails"><summary>Meer: hele logo en losse SVG-vormen</summary>
               <label for="wholeLogoColor">Kleur van het hele logo</label>
               <div class="color-row">
                 <input id="wholeLogoColor" class="color-native" type="color" value="#ffffff" title="Nieuwe kleur voor het hele logo">
@@ -193,12 +194,12 @@
                     <div><label for="vectorPartY">Verschuiving Y (cm)</label><input id="vectorPartY" type="number" step="0.1"></div>
                   </div>
                   <div class="field-help">Sleep dit onderdeel in de preview. Pijltjes: 1 mm; Shift + pijltjes: 1 cm.</div>
-                  <div class="mini-actions"><button id="resetVectorPartPosition" type="button">Positie herstellen</button><button id="duplicateVectorPart" type="button">Dupliceren</button><button id="deleteVectorPart" class="danger" type="button">Onderdeel verwijderen</button></div>
+                  <div class="mini-actions"><button id="shrinkVectorPart" type="button">Onderdeel −10%</button><button id="growVectorPart" type="button">Onderdeel +10%</button><button id="resetVectorPartPosition" type="button">Positie herstellen</button><button id="duplicateVectorPart" type="button">Dupliceren</button><button id="deleteVectorPart" class="danger" type="button">Onderdeel verwijderen</button></div>
                 </div>
                 <div class="field-help">Eén SVG-pad blijft één onderdeel, ook als daarin meerdere letters of vormen staan. Gaten in een vorm blijven behouden.</div>
               </div>
               <div class="mini-actions"><button id="restoreVectorOriginal" type="button" disabled>Oorspronkelijk vectorlogo herstellen</button></div>
-              <div id="vectorPieceStatus" class="field-help" role="status"></div>
+              <div id="vectorPieceStatus" class="field-help" role="status"></div></details>
             </div>
 
             <details class="subdetails" open>
@@ -253,36 +254,12 @@
       </div>
     </details>
 
-        <details class="section" id="placementSettings"><summary>Plaatsing &amp; hulplijnen</summary>
-          <div class="section-body">
-            <p class="field-help"><strong>↔ Tussen:</strong> selecteer een onderdeel en klik op Tussen. Het komt midden tussen de twee dichtstbijzijnde randen. Zonder buur gebruikt hij de spatlaprand.</p>
-            <p class="field-help"><strong>Onder = zij:</strong> maakt de ruimte onder het onderdeel even groot als de ruimte tot de dichtstbijzijnde zijkant. Dat past alleen als er genoeg hoogte overblijft.</p>
-            <details class="subdetails"><summary>Handmatig uitlijnen &amp; referentie kiezen</summary><div class="subdetails-body">
-            <label>Uitlijnen op <select id="layoutReference"><option value="flap">Spatlap</option></select></label>
-            <div class="mini-actions"><button type="button" data-layout-align="left">Links gelijk</button><button type="button" data-layout-align="right">Rechts gelijk</button><button type="button" data-layout-align="centerX">Horizontaal midden</button><button type="button" data-layout-align="top">Bovenkant gelijk</button><button type="button" data-layout-align="centerY">Hoogte gelijk</button><button type="button" data-layout-align="bottom">Onderkant gelijk</button></div>
-            <label>Ruimte meten tot <select id="layoutSpacingEdge"><option value="edge">Rand van referentielogo</option><option value="center">Midden van referentielogo</option></select></label>
-            <div class="mini-actions"><button type="button" data-layout-align="balanceLeft">Links gelijke witruimte</button><button type="button" data-layout-align="balanceRight">Rechts gelijke witruimte</button><button type="button" data-layout-align="bottomSide">Onderruimte = zijruimte</button></div>
-            </div></details>
-            <details><summary>Onderdelen uitsluiten van snappen</summary><p class="field-help">Uitgevinkte onderdelen trekken andere logo’s niet aan. Ze blijven zelf verplaatsbaar.</p><div id="snapReferenceOptions"></div></details>
-            <p id="layoutPlacementStatus" class="field-help" role="status">Kies voor gelijke witruimte eerst een ander logo als referentie.</p>
-          </div>
-        </details>
-
-    <details id="heightMatchSettings" class="section" hidden>
-      <summary>Hoogte overnemen — meetwijze</summary>
-      <div class="section-body"><label for="heightMatchMode">Teksthoogte meten</label><select id="heightMatchMode" aria-label="Hoogte meten voor overnemen" title="Bij tekst: alle zichtbare letters, of hoofdletterlijn tot basislijn zonder ronde uitstulpingen" style="width:100%"><option value="ink">Volledige letterhoogte</option><option value="cap">Hoofdletterlijn (H)</option></select>
-        <p class="field-help">Volledige letterhoogte meet alle zichtbare letters, inclusief ronde uitstulpingen en onderhangende delen.</p>
-        <p class="field-help">Hoofdletterlijn (H) meet van de basislijn tot de bovenkant van H in hetzelfde lettertype. Ronde letters zoals S mogen daar iets buiten vallen.</p>
-        <p class="field-help">Een SVG gebruikt de hoogte van het logokader. Het eerste onderdeel schaalt met behoud van verhouding en positie; de referentie verandert niet.</p>
-        <p class="field-help">Kies nu in de preview het referentielogo of de tekst. Esc annuleert. Je laatste meetwijze wordt in deze browser onthouden.</p>
-      </div>
-    </details>
-
-    <details class="section">
+    <details class="section" id="textSection">
       <summary><span class="section-num">4</span> Tekst</summary>
       <div class="section-body">
+        <details id="textCreate" class="subdetails" open><summary>+ Tekst toevoegen</summary><div class="subdetails-body">
         <label>Nieuwe tekst</label>
-        <input id="textValue" type="text" placeholder="Bijv. TRUCK SERVICE JAGER">
+        <textarea id="textValue" rows="2" placeholder="Bijv. TRUCK SERVICE JAGER"></textarea>
         <div class="row" style="margin-top:9px">
           <div><label>Grootte (cm)</label><input id="textSize" type="number" value="5" min="0.5" step="0.5"></div>
           <div>
@@ -297,7 +274,8 @@
         </div>
         <div style="margin-bottom:9px">
           <label>Lettertype</label>
-          <select id="textFont">
+          <div id="textFontPreview" class="font-preview">Voorbeeld</div>
+<select id="textFont">
             <option value="Arimo, sans-serif" selected>Arimo · vector</option>
             <option value="Arial, sans-serif">Arial · alleen preview</option>
             <option value="'Arial Black', Arial, sans-serif">Arial Black · alleen preview</option>
@@ -317,7 +295,7 @@
               <option value="'Grenze Gotisch', Georgia, serif">Grenze Gotisch</option>
               <option value="'New Rocker', Georgia, serif">New Rocker</option>
             </optgroup>
-            <option value="'Arial Narrow', Arial, sans-serif">Arial Narrow · alleen preview</option>
+            <option value="'Metal Mania', serif">Metal Mania · vector</option><option value="'Rye', serif">Rye · vector</option><option value="'Germania One', serif">Germania One · vector</option><option value="Bungee">Bungee · vector</option><option value="Fredericka the Great">Fredericka the Great · vector</option><option value="Ewert">Ewert · vector</option><option value="'Arial Narrow', Arial, sans-serif">Arial Narrow · alleen preview</option>
             <option value="'Franklin Gothic Medium', Arial, sans-serif">Franklin Gothic · alleen preview</option>
             <option value="Rockwell, 'Rockwell Extra Bold', serif">Rockwell · alleen preview</option>
             <option value="Copperplate, 'Copperplate Gothic Light', serif">Copperplate · alleen preview</option>
@@ -332,7 +310,7 @@
             <option value="'Times New Roman', serif">Times New Roman · alleen preview</option>
             <option value="'Courier New', monospace">Courier New · alleen preview</option>
           </select>
-          <div id="textFontPreview" class="font-preview">Voorbeeld</div>
+          
           <div class="field-help">Arimo en de Truck / Motorsport- en Gothic / Tattoo-lettertypen worden als contouren geëxporteerd. Lettertypen met “alleen preview” moeten vóór PDF-export worden vervangen of als SVG-contouren worden toegevoegd.</div>
         </div>
         <div class="row">
@@ -341,12 +319,13 @@
         </div>
         <button id="addText" style="width:100%">+ Tekst toevoegen</button>
 
+        </div></details>
         <div id="textList" class="list"></div>
         <details id="textControls" class="subdetails" open style="display:none">
           <summary>Geselecteerde tekst aanpassen</summary>
           <div class="subdetails-body">
             <div class="row">
-              <div><label>Tekst</label><input id="editText" type="text"></div>
+              <div><label>Tekst</label><textarea id="editText" rows="2"></textarea></div>
               <div><label>Grootte (cm)</label><input id="editTextSize" type="number" min="0.5" step="0.5"></div>
             </div>
             <div class="row">
@@ -369,7 +348,8 @@
             </div>
             <div style="margin-bottom:9px">
               <label>Lettertype</label>
-              <select id="editTextFont">
+              <div id="editTextFontPreview" class="font-preview">Voorbeeld</div>
+<select id="editTextFont">
             <option value="Arimo, sans-serif" selected>Arimo · vector</option>
             <option value="Arial, sans-serif">Arial · alleen preview</option>
             <option value="'Arial Black', Arial, sans-serif">Arial Black · alleen preview</option>
@@ -389,7 +369,7 @@
               <option value="'Grenze Gotisch', Georgia, serif">Grenze Gotisch</option>
               <option value="'New Rocker', Georgia, serif">New Rocker</option>
             </optgroup>
-            <option value="'Arial Narrow', Arial, sans-serif">Arial Narrow · alleen preview</option>
+            <option value="'Metal Mania', serif">Metal Mania · vector</option><option value="'Rye', serif">Rye · vector</option><option value="'Germania One', serif">Germania One · vector</option><option value="Bungee">Bungee · vector</option><option value="Fredericka the Great">Fredericka the Great · vector</option><option value="Ewert">Ewert · vector</option><option value="'Arial Narrow', Arial, sans-serif">Arial Narrow · alleen preview</option>
             <option value="'Franklin Gothic Medium', Arial, sans-serif">Franklin Gothic · alleen preview</option>
             <option value="Rockwell, 'Rockwell Extra Bold', serif">Rockwell · alleen preview</option>
             <option value="Copperplate, 'Copperplate Gothic Light', serif">Copperplate · alleen preview</option>
@@ -404,7 +384,7 @@
             <option value="'Times New Roman', serif">Times New Roman · alleen preview</option>
             <option value="'Courier New', monospace">Courier New · alleen preview</option>
               </select>
-              <div id="editTextFontPreview" class="font-preview">Voorbeeld</div>
+              
             </div>
             <div class="row">
               <div><label for="editTextTracking">Letterafstand / tracking (cm)</label><input id="editTextTracking" type="number" min="-0.5" max="2" step="0.05"></div>
@@ -422,6 +402,31 @@
             </div>
           </div>
         </details>
+      </div>
+    </details>
+
+        <details class="section" id="placementSettings"><summary>Plaatsing &amp; hulplijnen</summary>
+          <div class="section-body">
+            <p class="field-help"><strong>↔ Tussen:</strong> selecteer een onderdeel en klik op Tussen. Het komt midden tussen de twee dichtstbijzijnde randen. Zonder buur gebruikt hij de spatlaprand.</p>
+            <p class="field-help"><strong>Onder = zij:</strong> maakt de ruimte onder het onderdeel even groot als de ruimte tot de dichtstbijzijnde zijkant. Dat past alleen als er genoeg hoogte overblijft.</p>
+            <details class="subdetails"><summary>Handmatig uitlijnen &amp; referentie kiezen</summary><div class="subdetails-body">
+            <label>Uitlijnen op <select id="layoutReference"><option value="flap">Spatlap</option></select></label>
+            <div class="mini-actions"><button type="button" data-layout-align="left">Links gelijk</button><button type="button" data-layout-align="right">Rechts gelijk</button><button type="button" data-layout-align="centerX">Horizontaal midden</button><button type="button" data-layout-align="top">Bovenkant gelijk</button><button type="button" data-layout-align="centerY">Hoogte gelijk</button><button type="button" data-layout-align="bottom">Onderkant gelijk</button></div>
+            <label>Ruimte meten tot <select id="layoutSpacingEdge"><option value="edge">Rand van referentielogo</option><option value="center">Midden van referentielogo</option></select></label>
+            <div class="mini-actions"><button type="button" data-layout-align="balanceLeft">Links gelijke witruimte</button><button type="button" data-layout-align="balanceRight">Rechts gelijke witruimte</button><button type="button" data-layout-align="bottomSide">Onderruimte = zijruimte</button></div>
+            </div></details>
+            <details><summary>Onderdelen uitsluiten van snappen</summary><p class="field-help">Uitgevinkte onderdelen trekken andere logo’s niet aan. Ze blijven zelf verplaatsbaar.</p><div id="snapReferenceOptions"></div></details>
+            <p id="layoutPlacementStatus" class="field-help" role="status">Kies voor gelijke witruimte eerst een ander logo als referentie.</p>
+          </div>
+        </details>
+
+    <details id="heightMatchSettings" class="section" hidden>
+      <summary>Hoogte overnemen — meetwijze</summary>
+      <div class="section-body"><label for="heightMatchMode">Teksthoogte meten</label><select id="heightMatchMode" aria-label="Hoogte meten voor overnemen" title="Bij tekst: alle zichtbare letters, of hoofdletterlijn tot basislijn zonder ronde uitstulpingen" style="width:100%"><option value="ink">Volledige letterhoogte</option><option value="style">Tekstopmaak: font, grootte, dikte, kleur en afstand</option><option value="cap">Hoofdletterlijn (H)</option></select>
+        <p class="field-help">Volledige letterhoogte meet alle zichtbare letters, inclusief ronde uitstulpingen en onderhangende delen.</p>
+        <p class="field-help">Hoofdletterlijn (H) meet van de basislijn tot de bovenkant van H in hetzelfde lettertype. Ronde letters zoals S mogen daar iets buiten vallen.</p>
+        <p class="field-help">Een SVG gebruikt de hoogte van het logokader. Het eerste onderdeel schaalt met behoud van verhouding en positie; de referentie verandert niet.</p>
+        <p class="field-help">Kies nu in de preview het referentielogo of de tekst. Esc annuleert. Je laatste meetwijze wordt in deze browser onthouden.</p>
       </div>
     </details>
 
@@ -486,12 +491,12 @@
 
   <main class="main">
     <div class="canvas-card">
-      <div class="preview-shell">
+      <div class="preview-fixed"><div class="preview-shell">
         <div class="preview-wrap" id="previewWrap">
           <div id="stage">
             <div class="dim top" id="dimTop">190 cm</div>
             <div class="dim left" id="dimLeft">25 cm</div>
-            <div class="preview-badges"><div class="color-badge" id="colorBadge"></div><div class="qty" id="qtyBadge"></div></div>
+            <div class="preview-badges"><div id="experimentBadge" class="experiment-badge" hidden></div><div class="color-badge" id="colorBadge"></div><div class="qty" id="qtyBadge"></div></div>
             <div id="flap"></div>
           </div>
         </div>
@@ -517,6 +522,7 @@
         <button id="matchVectorHeight" type="button" title="Selecteer logo of tekst, klik hier en kies daarna de hoogtereferentie">↕ Hoogte</button>
         <button id="quickCenterSelection" type="button" title="Horizontaal midden op de spatlap">Midden</button>
         <button id="quickBalanceSelection" type="button" title="Centreer tussen de dichtstbijzijnde linker- en rechterrand van andere onderdelen of de spatlap">↔ Tussen</button>
+        <button id="quickBalanceVertical" type="button" title="Verticaal centreren tussen de dichtstbijzijnde boven- en onderrand">↕ Tussen</button><button id="mirrorArtwork" type="button" title="Horizontaal spiegelen op dezelfde plek">⇋ Spiegel</button><button id="rotateArtwork" type="button" title="90 graden draaien rond het eigen midden">↻ Draai</button>
         <button id="quickBottomSide" type="button" title="Onderruimte gelijk aan de dichtstbijzijnde zijruimte">Onder = zij</button>
         <button id="quickAddLogo" type="button" title="Logo toevoegen">＋Logo</button><button id="quickAddText" type="button" title="Tekst toevoegen">＋T</button>
         <button id="trimSelectedVector" type="button" title="Lege transparante randen verwijderen, voor SVG of afbeelding" aria-label="Lege logo- of tekstranden aansnijden">⌗</button>
@@ -525,7 +531,7 @@
       </div>
 
       <p id="selectionHelp" class="field-help" style="margin:10px 0">Klik op een logo of tekst voor <strong>Kleiner, Groter, Kleur, Pipet en Dupliceren naar andere zijde</strong>. De knoppen verschijnen direct onder deze preview.</p>
-      <details class="subdetails" id="colorTools">
+      </div><div class="editor-extra-scroll"><details class="subdetails" id="colorTools">
         <summary>Vector & klantpreview</summary>
         <div class="subdetails-body">
           <div class="subcard">
@@ -535,12 +541,12 @@
               <div><label for="vectorLightThreshold">Lichtgrens <output id="vectorLightValue">170</output></label><input id="vectorLightThreshold" type="range" min="0" max="255" value="170"></div>
               <div><label for="vectorAlphaThreshold">Transparantiegrens <output id="vectorAlphaValue">64</output></label><input id="vectorAlphaThreshold" type="range" min="1" max="255" value="64"></div>
             </div>
-            <div class="field-help">Schuif en bekijk direct het resultaat hieronder. Een lagere lichtgrens behoudt meer lichte details; een lagere transparantiegrens behoudt zachtere randen.</div>
-            <div id="vectorLivePreview" class="vector-live-preview" aria-live="polite">
+            <div class="field-help">Schuif en bekijk het tijdelijke resultaat op de spatlap. Pas na Toepassen wordt het bewaard in het artwork. Het snelle voorbeeld is minder gedetailleerd dan de toegepaste vector; controleer na toepassen. Een lagere lichtgrens behoudt meer lichte details; een lagere transparantiegrens behoudt zachtere randen.</div>
+            <details class="subdetails"><summary>Origineel en resultaat naast elkaar</summary><div id="vectorLivePreview" class="vector-live-preview" aria-live="polite">
               <div><strong>Origineel</strong><div class="vector-preview-tile"><img id="vectorOriginalPreview" alt="Originele afbeelding"></div></div>
               <div><strong>Resultaat</strong><div class="vector-preview-tile"><img id="vectorResultPreview" alt="Voorbeeld van vectoromzetting"></div></div>
             </div>
-            <div id="vectorPreviewStatus" class="field-help">Selecteer een afbeelding om het resultaat te bekijken.</div>
+            </details><div id="vectorPreviewStatus" class="field-help">Selecteer een afbeelding om het resultaat te bekijken.</div>
             <div class="mini-actions" style="margin-top:10px"><button id="whitePngVector" class="primary" type="button" disabled>⚡ Zichtbare PNG-pixels → witte vector</button></div>
             <div class="field-help">Deze knop gebruikt de transparantie van de PNG als masker en maakt alleen het zichtbare logo wit. Een bijna onzichtbare achtergrond wordt automatisch weggelaten. Je kunt de transparantiegrens daarna zelf bijstellen.</div>
             <div class="row" style="margin-top:9px">
@@ -555,7 +561,7 @@
             </select>
             <label style="display:flex;align-items:center;gap:8px;margin:9px 0"><input id="vectorWhiteCutout" type="checkbox" checked style="width:auto"> Lichte delen behouden, donkere achtergrond weglaten</label>
             <div class="field-help">Bij een transparante PNG gebruikt de tool de transparantie. Bij een afbeelding zonder transparantie kun je hiermee de donkere achtergrond weglaten, ook bij meer kleuren.</div>
-            <div class="mini-actions" style="margin-top:9px"><button id="vectorizeLogo" type="button">Zet afbeelding om naar vector</button><button id="restoreRasterLogo" type="button" disabled>Origineel herstellen</button></div>
+            <div class="mini-actions" style="margin-top:9px"><button id="vectorizeLogo" type="button">Toepassen als vector</button><button id="stopVectorExperiment" type="button">Voorbeeld stoppen</button><button id="restoreRasterLogo" type="button" disabled>Origineel herstellen</button></div>
             <div id="vectorStatus" class="field-help">Voor een wit logo kies je 1 kleur. Controleer het resultaat in de preview.</div>
           </div>
           <div class="subcard">
@@ -595,7 +601,7 @@
         <label style="margin-top:9px">Aantal voor klant (leeg = automatisch)</label>
         <input id="manualColorCount" type="number" min="1" max="99" placeholder="Automatisch">
       </div>
-    </div>
+    </div></div>
   </main>
 </div>
 
@@ -681,19 +687,24 @@
 <div id="selectionWholeLogo"><p>Kleur van het hele logo</p><button id="selectionApplyWholeLogo" type="button">Toepassen op hele logo</button><p class="field-help">Alle vormen en lijnen krijgen de gekozen kleur. Transparante delen blijven transparant.</p></div><p role="alert"></p><div class="mini-actions"><button type="button" data-color-cancel>Annuleren</button><button type="submit" class="primary">Kleur toepassen</button></div></form></dialog>
 <script src="shared/spatlap-layout.js?v=20261018-shoulder-default-7"></script>
 <script src="spatlap-preview-imagetracer.js"></script>
-<script src="spatlap-preview-vector-export.js?v=20261018-layer-order-1"></script>
+<script src="spatlap-preview-vector-export.js?v=batch3-colors-20261026"></script>
 <!-- Bump this version when the editor API changes so saved tabs load matching code. -->
-<script src="spatlap-preview-vector-editor.js?v=20261009-whole-logo-colour-1"></script>
-<script src="admin/designs/editor/vector-editing.js?v=20261018-split-1"></script>
-<script src="admin/designs/editor/history-and-feedback.js?v=20261018-split-1"></script>
-<script src="admin/designs/editor/selection-and-controls.js?v=20261018-split-1"></script>
-<script src="admin/designs/editor/import-and-vectorize.js?v=20261018-split-1"></script>
-<script src="admin/designs/editor/text-and-objects.js?v=20261018-split-1"></script>
-<script src="admin/designs/editor/layout-and-preview.js?v=20261018-split-1"></script>
-<script src="admin/designs/editor/export.js?v=20261018-split-1"></script>
-<script src="admin/designs/editor/storage-and-integration.js?v=20261018-split-1"></script>
-<script src="admin/designs/editor/runtime.js?v=20261018-split-1"></script>
+<script src="spatlap-preview-vector-editor.js?v=batch3-colors-20261026"></script>
+<script src="admin/designs/editor/vector-editing.js?v=open-fixes-20261027"></script>
+<script src="admin/designs/editor/history-and-feedback.js?v=batch3-colors-20261026"></script>
+<script src="admin/designs/editor/selection-and-controls.js?v=batch3-colors-20261026"></script>
+<script src="admin/designs/editor/import-and-vectorize.js?v=batch3-colors-20261026"></script>
+<script src="admin/designs/editor/text-and-objects.js?v=batch2-editor-20261026"></script>
+<script src="admin/designs/editor/layout-and-preview.js?v=batch3-colors-20261026"></script>
+<script src="admin/designs/editor/export.js?v=batch2-editor-20261026"></script>
+<script src="admin/designs/editor/storage-and-integration.js?v=crm-code-review-20261027"></script>
+<script src="admin/designs/editor/font-tools.js?v=batch2-editor-20261026"></script>
+<script src="admin/designs/editor/vector-islands.js?v=open-fixes-20261027"></script>
+<script src="admin/designs/editor/logo-colors.js?v=open-fixes-20261027"></script>
+<script src="admin/designs/editor/outline-tools.js?v=batch3-colors-20261026"></script>
+<script src="admin/designs/editor/placement-tools.js?v=open-fixes-20261027"></script>
+<script src="admin/designs/editor/runtime.js?v=batch3-colors-20261026"></script>
 
-<script type="module" src="admin/designs/editor/bootstrap.js?v=20261018-split-1"></script>
+<script type="module" src="admin/designs/editor/bootstrap.js?v=crm-code-review-20261027"></script>
 </body>
 </html>

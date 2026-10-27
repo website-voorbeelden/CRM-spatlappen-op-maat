@@ -5,8 +5,8 @@ import {salesFunnel} from '../shared/sales-funnel.js?v=maat-cleanup-20261021';
 import {createGmailPhaseSync,gmailModifyScope} from '../shared/gmail-phase-sync.js';
 import {gmailLabels} from '../shared/gmail-labels.js';
 import {parseGoogleWebClient} from '../shared/google-oauth-client.js';
-import {gmailAttachment} from '../shared/gmail-attachment.js';
-import {gmailMessage} from '../shared/gmail-message.js';
+import {gmailAttachment} from '../shared/gmail-attachment.js?v=footer-inline-20261027';
+import {gmailMessage} from '../shared/gmail-message.js?v=footer-inline-20261027';
 import {integrationStore,integrationError as fail,random,sha256} from './integration-store.js';
 import {sessionFingerprint} from './auth.js';
 const scope='https://www.googleapis.com/auth/gmail.readonly';
@@ -90,7 +90,7 @@ export function createCloudGmail(env,{fetcher=fetch,now=Date.now}={}){
    if(input.pageToken&&(typeof input.pageToken!=='string'||input.pageToken.length>1000||!/^[a-zA-Z0-9_+=\/-]+$/.test(input.pageToken)))throw fail('Ongeldige volgende pagina.');
    const auth=await access(),query=new URLSearchParams({q:'newer_than:'+days+'d -in:spam -in:trash -in:drafts'+(folder==='inbox'?' in:inbox':folder==='sent'?' in:sent':''),maxResults:'20',...(input.pageToken?{pageToken:input.pageToken}:{})}),listed=await api(auth,'messages?'+query),ids=listed.messages||[];
    if(!Array.isArray(ids)||ids.length>20||ids.some(m=>!googleId(m.id)))throw fail('Google gaf geen geldige berichtenlijst.',502);
-   const messages=[];for(let i=0;i<ids.length;i+=4){const batch=await Promise.all(ids.slice(i,i+4).map(m=>api(auth,'messages/'+m.id+'?format=metadata&metadataHeaders=From&metadataHeaders=To&metadataHeaders=Reply-To&metadataHeaders=Subject&metadataHeaders=Message-ID&metadataHeaders=References&metadataHeaders=In-Reply-To&metadataHeaders=Authentication-Results')));if(batch.some((data,n)=>data.id!==ids[i+n].id))throw fail('Google gaf een ander bericht terug.',502);messages.push(...batch.map(data=>gmailMessage(data,auth.mailbox)));}return {mailbox:auth.mailbox,messages,nextPageToken:listed.nextPageToken||''};
+   const messages=[];for(let i=0;i<ids.length;i+=4){const batch=await Promise.all(ids.slice(i,i+4).map(m=>api(auth,'messages/'+m.id+'?format=metadata&metadataHeaders=From&metadataHeaders=To&metadataHeaders=Reply-To&metadataHeaders=Subject&metadataHeaders=Message-ID&metadataHeaders=References&metadataHeaders=In-Reply-To&metadataHeaders=Authentication-Results&metadataHeaders=X-CRM-Form-Version&metadataHeaders=X-CRM-Lead-ID&metadataHeaders=X-CRM-Source&metadataHeaders=X-CRM-Internal&metadataHeaders=X-CRM-UTM-Source&metadataHeaders=X-CRM-UTM-Medium&metadataHeaders=X-CRM-UTM-Campaign')));if(batch.some((data,n)=>data.id!==ids[i+n].id))throw fail('Google gaf een ander bericht terug.',502);messages.push(...batch.map(data=>gmailMessage(data,auth.mailbox)));}return {mailbox:auth.mailbox,messages,nextPageToken:listed.nextPageToken||''};
   },
   async message(input){if(!googleId(input.messageId))throw fail('Ongeldig bericht.');const auth=await access();if(input.mailbox!==auth.mailbox)throw fail('Het gekoppelde Gmail-account is gewijzigd. Werk de lijst bij.');const data=await api(auth,'messages/'+input.messageId+'?format=full');if(data.id!==input.messageId)throw fail('Google gaf een ander bericht terug.',502);return gmailMessage(data,auth.mailbox,{full:true});},
   async attachment(input){try{return await gmailAttachment(await access(),input,api);}catch(error){if(error.status)throw error;throw fail(error.message,400);}},

@@ -23,7 +23,7 @@ function currentShareUrl(){
   return location.href.split(/[?#]/)[0]+'#design='+encoded;
 }
 
-async function storageModule(){return designStorageModule??=await import('../../cloud-storage.js');}
+async function storageModule(){return designStorageModule??=await import('../../cloud-storage.js?v=crm-code-review-20261027');}
 
 function openLocalDb(){
   return localDbPromise??=(async()=>{const storage=await storageModule();return storage.openDesignDatabase();})();
@@ -95,9 +95,11 @@ function showLocalLink(id,message){
   status.append(link);
 }
 
+function setLocalDesignName(name){$('localDesignName').value=name;const variantName=$('productVariantName');if(variantName)variantName.value=name;}
+
 function compactDesignState(){return {f:state.flap,h:state.holes,l:state.logos,t:state.texts,u:state.ui};}
 
-async function productModule(){return productDesignModule??=await import('../../product-designs.js?v=20261018-optional-qty');}
+async function productModule(){return productDesignModule??=await import('../../product-designs.js?v=crm-code-review-20261027');}
 
 function normalizeIntegrationContext(value={}){
   const result={};
@@ -203,12 +205,14 @@ async function performDesignSave(){
       state.flap.w=measurements.width/10;state.flap.h=measurements.height/10;state.flap.qty=measurements.quantity===null?'':String(measurements.quantity);syncUIFromState();render();
     }
     const id=crmBinding?.designId||currentLocalDesignId||(crypto.randomUUID?.()||('d'+Date.now().toString(36)+Math.random().toString(36).slice(2)));
-    const name=$('localDesignName').value.trim()||(crmBinding?crmBinding.description:`Ontwerp ${new Date().toLocaleString('nl-NL')}`);
+    const name=$('localDesignName').value.trim()||(crmBinding?crmBinding.variantName:`Ontwerp ${new Date().toLocaleString('nl-NL')}`);
     assertDurableLogoSources(state.logos);
     const record={id,name,updatedAt:Date.now(),payload:JSON.parse(JSON.stringify(compactDesignState())),context:{...integrationContext}};
     if(crmBinding)await (await productModule()).saveProductDesign(crmBinding,record,await createPreviewPngBlob());
     else await writeLocalDesign(record);
-    currentLocalDesignId=id;$('localDesignName').value=name;
+    rememberPlacementAfterSave(record.payload);
+    currentLocalDesignId=id;setLocalDesignName(name);
+    if(crmBinding){const url=new URL(location.href);url.searchParams.set('variant',crmBinding.variantId);url.searchParams.delete('copyVariant');url.searchParams.delete('revision');window.history.replaceState(null,'',url.href);}
     location.hash='local='+encodeURIComponent(id);
     if(!crmBinding)await renderSavedDesigns();
     return id;
@@ -219,12 +223,15 @@ async function renderSavedDesigns(){
   const box=$('savedDesigns');box.replaceChildren();
   const designs=await allLocalDesigns();
   if(!designs.length){box.textContent='Nog geen lokaal bewaarde ontwerpen.';return;}
+  const {savedDesignExportUrl}=await import('../download-links.js?v=four-parts-20261026'),mode=await usesCloudDesigns()?'cloud':'local';
   for(const record of designs){
     const row=document.createElement('div');row.className='list-item';
     const label=document.createElement('span');label.textContent=`${record.name} · ${new Date(record.updatedAt).toLocaleString('nl-NL')}`;
     const button=document.createElement('button');button.type='button';button.textContent='Openen';
     button.onclick=async()=>{try{await openSavedDesign(record.id);}catch(error){$('shareStatus').textContent=error.message||'Ontwerp openen mislukt.';}};
-    row.append(label,button);box.append(row);
+    const actions=document.createElement('div');actions.className='saved-design-actions';actions.append(button);
+    for(const [kind,title] of [['png','Preview PNG'],['pdf','Vector-PDF']]){const link=document.createElement('a');link.href=savedDesignExportUrl(record.id,kind,mode);link.target='_blank';link.rel='noopener';link.textContent=title;link.setAttribute('aria-label',title+' van '+record.name+' downloaden');actions.append(link);}
+    row.append(label,actions);box.append(row);
   }
 }
 
@@ -238,7 +245,7 @@ async function openSavedDesign(id){
   currentLocalDesignId=id;
   integrationContext=normalizeIntegrationContext(crmBinding||record.context);
   if(crmBinding){state.flap.w=crmBinding.width?crmBinding.width/10:state.flap.w;state.flap.h=crmBinding.height?crmBinding.height/10:state.flap.h;if(!crmBinding.record||String(state.flap.qty??'').trim()!=='')state.flap.qty=String(crmBinding.quantity??'');if(state.flap.radiusAuto===true)state.flap.radius=SpatlapLayout.defaultRadius(state.flap.w,state.flap.h);syncUIFromState();render();}
-  $('localDesignName').value=record.name||'';
+  setLocalDesignName(record.name||'');
   location.hash='local='+encodeURIComponent(id);
   $('shareStatus').textContent=await usesCloudDesigns()?'Ontwerp uit centrale opslag geopend.':'Lokaal ontwerp geopend.';
   activity.success('Ontwerp geopend.');return true;
@@ -312,8 +319,8 @@ function loadFromQuery(){
 }
 
 function applyCompactState(x){
-  clearVectorEditing();
   if(!x||!x.f||!x.h||!Array.isArray(x.l||[])||!Array.isArray(x.t||[]))return false;
+  clearArtworkFontPreview();clearVectorEditing();
   state.flap=x.f;
   if(state.flap.shape==='tapered')state.flap.shape='shoulder';
   if(state.flap.shoulderInset==null)state.flap.shoulderInset=5;
@@ -328,7 +335,7 @@ function applyCompactState(x){
   if(state.ui.zoneSide==null)state.ui.zoneSide=15;
   state.selected=null;state.selectedType=null;clearMultiSelection();
   history=[];redoHistory=[];updateHistoryButtons();
-  syncUIFromState();render();return true;
+  syncUIFromState();render();void restoreDesignFonts();return true;
 }
 
 function loadFromHash(){
@@ -349,20 +356,23 @@ async function initDesign(){
   if(hasProduct){
     try{
       if(!query.get('orderId')||!query.get('itemId'))throw Error('De productkoppeling is onvolledig. Open de tool vanuit de productregel.');
-      crmBinding=await (await productModule()).loadProductDesign(query.get('orderId'),query.get('itemId'));
+      crmBinding=await (await productModule()).loadProductDesign(query.get('orderId'),query.get('itemId'),{variantId:query.get('variant')||'',copyVariantId:query.get('copyVariant')||'',revisionDocumentId:query.get('revision')||''});
       if(crmBinding.record){
         if(!applyCompactState(crmBinding.record.payload))throw Error('Het opgeslagen ontwerp kan niet worden geopend.');
         currentLocalDesignId=crmBinding.record.id;$('localDesignName').value=crmBinding.record.name;loaded=true;
       }else loadFromQuery();
+      if(!$('localDesignName').value)$('localDesignName').value=crmBinding.variantName;
       integrationContext=normalizeIntegrationContext(crmBinding);
       if(crmBinding.width)state.flap.w=crmBinding.width/10;
       if(crmBinding.height)state.flap.h=crmBinding.height/10;
       if(!crmBinding.record||String(state.flap.qty??'').trim()!=='')state.flap.qty=String(crmBinding.quantity??'');if(state.flap.radiusAuto===true)state.flap.radius=SpatlapLayout.defaultRadius(state.flap.w,state.flap.h);syncUIFromState();render();loaded=true;
       $('saveLocal').textContent='Bewaren bij product';$('copyLocalUrl').textContent='Korte productlink';
+      const variantLabel=document.createElement('label');variantLabel.className='variant-name-label';variantLabel.textContent='Naam ontwerpvariant';const variantName=document.createElement('input');variantName.id='productVariantName';variantName.type='text';variantName.maxLength=100;variantName.value=$('localDesignName').value;variantName.oninput=()=>{$('localDesignName').value=variantName.value;};$('localDesignName').addEventListener('input',()=>{variantName.value=$('localDesignName').value;});variantLabel.append(variantName);document.querySelector('.sidebar').prepend(variantLabel);
+
       const info=document.createElement('div');info.className='field-help';info.style.marginBottom='12px';
-      info.textContent=`Order #${crmBinding.number} · ${crmBinding.company} · ${crmBinding.description}. Bewaren werkt dit product bij, inclusief afbeelding, afmetingen en aantal.`;
+      info.textContent=`Order #${crmBinding.number} · ${crmBinding.company} · ${crmBinding.description}. Variant: ${crmBinding.variantName}. Bewaren bewaart deze variant; andere ontwerpen en eerdere versies blijven behouden. Varianten delen de productmaat en het aantal.`;
       $('saveLocal').closest('.share-bar').before(info);
-      $('shareStatus').textContent=crmBinding.record?'Opgeslagen productontwerp geopend.':'Nieuw ontwerp gekoppeld aan dit product.';
+      $('shareStatus').textContent=crmBinding.sourceNeedsReview?'De productmaat of het aantal is gewijzigd. De huidige ordermaat staat klaar; controleer de plaatsing en bewaar eerst een nieuwe versie.':crmBinding.record?'Opgeslagen productontwerp geopend.':'Nieuw ontwerp gekoppeld aan dit product.';
     }catch(error){loadFailure=error;crmBindingError=error;$('shareStatus').textContent=error.message;}
   }
   if(!hasProduct&&location.hash.startsWith('#local=')){
@@ -385,6 +395,7 @@ async function initDesign(){
     }
     if(crmBinding){const section=$('savedDesigns').closest('details');section.querySelector('summary').textContent='Een bestaand ontwerp als basis gebruiken';section.querySelector('.field-help').textContent='Je kunt een eerder los bewaard ontwerp openen. Bewaren koppelt de aangepaste kopie aan dit product; maten en aantal volgen de order.';}
   } catch(error){loadFailure=error;$('shareStatus').textContent=error.message;}
+  await customFontReady;
   updateHistoryButtons();
   if(loadFailure)activity.error(loadFailure);else activity.success('Ontwerptool klaar.');
   }catch(error){activity.error(error);throw error;}

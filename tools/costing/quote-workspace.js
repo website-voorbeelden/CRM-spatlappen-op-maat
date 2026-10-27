@@ -1,7 +1,7 @@
 import {inlineTaskClient} from './inline-task-client.js?v=build-triage-20261021';
 import {calculationChoice} from '../../shared/costing-link.js';
 import {newCostQuote,editCostQuote,validateCostQuote,quoteSignature,quoteSaleTotal,productBasis,mergeSupplierQuote} from './quote-domain.js';
-import {listCostQuotes,readCostQuote,saveCostQuote} from './quote-store.js';
+import {listCostQuotes,readCostQuote,saveCostQuote} from './quote-store.js?v=crm-code-review-20261027';
 const $=s=>document.querySelector(s),Core=window.QuoteCalculatorCore,esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const euro=v=>v===null?'Nog niet vastgesteld':new Intl.NumberFormat('nl-NL',{style:'currency',currency:'EUR'}).format(v/100);
 let current=null,expected=null,dirty=false,busy=false,availableQuotes=[],inlineTask=null;

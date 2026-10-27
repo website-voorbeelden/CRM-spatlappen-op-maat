@@ -87,7 +87,7 @@ class Handler(SimpleHTTPRequestHandler):
             self.wfile.write(data)
 
     def proxy_assistant(self):
-        allowed = {'feedback-list': 'GET', 'feedback-create': 'POST', 'feedback-import': 'POST', 'feedback-status': 'POST', 'status': 'GET', 'models': 'GET', 'login': 'POST', 'cancel': 'POST', 'select': 'POST', 'logout': 'POST', 'chat': 'POST', 'stop': 'POST', 'gmail-actions-capabilities': 'GET', 'gmail-actions-list': 'GET', 'gmail-actions-propose': 'POST', 'gmail-actions-review': 'POST', 'gmail-actions-confirm': 'POST', 'gmail-actions-cancel': 'POST', 'gmail-status': 'GET', 'gmail-configure': 'POST', 'gmail-login': 'POST', 'gmail-disconnect': 'POST', 'gmail-labels': 'POST', 'gmail-phase-auto-status': 'GET', 'gmail-phase-auto-configure': 'POST', 'gmail-phase-auto-sync': 'POST', 'gmail-phase-review': 'POST', 'gmail-phase-apply': 'POST', 'gmail-list': 'POST', 'gmail-message': 'POST', 'gmail-thread': 'POST', 'gmail-attachment': 'POST', 'mail-status': 'GET', 'mail-journal': 'GET', 'mail-configure': 'POST', 'mail-send': 'POST', 'speech-status': 'GET', 'speech-diagnostics': 'GET', 'speech-report': 'POST', 'transcribe': 'POST'}
+        allowed = {'route-status': 'GET', 'route-configure': 'POST', 'route-compute': 'POST', 'feedback-list': 'GET', 'feedback-create': 'POST', 'feedback-import': 'POST', 'feedback-status': 'POST', 'status': 'GET', 'models': 'GET', 'login': 'POST', 'cancel': 'POST', 'select': 'POST', 'logout': 'POST', 'chat': 'POST', 'stop': 'POST', 'gmail-actions-capabilities': 'GET', 'gmail-actions-list': 'GET', 'gmail-actions-propose': 'POST', 'gmail-actions-review': 'POST', 'gmail-actions-confirm': 'POST', 'gmail-actions-cancel': 'POST', 'gmail-status': 'GET', 'gmail-configure': 'POST', 'gmail-login': 'POST', 'gmail-disconnect': 'POST', 'gmail-labels': 'POST', 'gmail-phase-auto-status': 'GET', 'gmail-phase-auto-configure': 'POST', 'gmail-phase-auto-sync': 'POST', 'gmail-phase-review': 'POST', 'gmail-phase-apply': 'POST', 'gmail-list': 'POST', 'gmail-message': 'POST', 'gmail-thread': 'POST', 'gmail-attachment': 'POST', 'mail-status': 'GET', 'mail-journal': 'GET', 'mail-configure': 'POST', 'mail-send': 'POST', 'speech-status': 'GET', 'speech-diagnostics': 'GET', 'speech-report': 'POST', 'transcribe': 'POST'}
         endpoint = urlsplit(self.path).path.removeprefix('/__local/assistant/')
         if allowed.get(endpoint) != self.command:
             self.send_error(404)
@@ -208,6 +208,17 @@ class Handler(SimpleHTTPRequestHandler):
             return
         if COMPANY == 'maatwerkkunststof' and path.startswith('/spatlap-preview') or COMPANY == 'spatlappen' and path.startswith('/tools/costing/'):
             self.send_error(404)
+            return
+        if path == '/crm.webmanifest':
+            label = 'Maatwerkkunststof' if COMPANY == 'maatwerkkunststof' else 'Spatlappen op maat'
+            manifest = {'id':'/admin/','name':label+' CRM','short_name':label+' CRM','lang':'nl','start_url':'/admin/#dashboard','scope':'/admin/','display':'standalone','background_color':'#ffffff','theme_color':'#39ff14' if COMPANY == 'maatwerkkunststof' else '#8b24ff','icons':[{'src':f'/admin/icons/{COMPANY}-{size}.png','sizes':f'{size}x{size}','type':'image/png','purpose':'any maskable'} for size in (192,512)]}
+            body = json.dumps(manifest).encode()
+            self.send_response(200)
+            self.send_header('Content-Type','application/manifest+json')
+            self.send_header('Cache-Control','no-store')
+            self.send_header('Content-Length',str(len(body)))
+            self.end_headers()
+            self.wfile.write(body)
             return
         if path == '/crm-runtime.json':
             body = json.dumps({'mode':'local','localServices':COMPANY=='spatlappen','companyId':COMPANY,'release':'2.0.0'}).encode()

@@ -1,7 +1,7 @@
 import {inlineTaskClient} from './inline-task-client.js?v=build-triage-20261021';
 import {calculationChoice} from '../../shared/costing-link.js';
 import {newCostQuote,applyQuoteCalculation,privateCostInputs,quoteSignature} from './quote-domain.js';
-import {readCostQuote,saveCostQuote} from './quote-store.js';
+import {readCostQuote,saveCostQuote} from './quote-store.js?v=crm-code-review-20261027';
 export async function installQuoteBridge({query,runtime,api,status}){
  if(query.has('orderId')||query.has('itemId'))return false;
  let quote=query.get('quoteId')?await readCostQuote(query.get('quoteId')):null,expected=quote?quoteSignature(quote):null,dirty=false,busy=false;

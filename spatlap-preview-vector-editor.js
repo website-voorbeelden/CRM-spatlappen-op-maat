@@ -68,9 +68,11 @@
     const result=new Set();let unknown=false;
     for(const piece of pieces(root)){
       const el=geometry(piece);if(!el||el.closest('[display="none"],[visibility="hidden"]'))continue;
+      let hidden=false;for(let parent=el;parent;parent=parent.parentElement)if(parseFloat(parent.getAttribute('opacity')||'1')===0)hidden=true;if(hidden)continue;
       for(const name of ['fill','stroke']){
         const value=el.getAttribute(name)|| (name==='fill'?'#000000':'none');
-        if(value==='none')continue;
+        if(value==='none'||value==='transparent'||parseFloat(el.getAttribute(name+'-opacity')||'1')===0)continue;
+        if(/^rgba\(/i.test(value)||value.includes('/')){const alpha=value.match(/(?:,|\/)\s*([\d.]+%?)\s*\)$/);if(alpha&&parseFloat(alpha[1])===0)continue;}
         const hex=colour(value);if(hex)result.add(hex);else unknown=true;
       }
     }
@@ -151,8 +153,25 @@
     root.addEventListener('pointercancel',event=>finish(event,true));
     root.addEventListener('lostpointercapture',event=>{if(drag)finish(event,true);});
     root.addEventListener('click',event=>{if(event.target.closest?.('g[data-sp-piece]')){event.stopPropagation();event.preventDefault();}});
+    function selectAt(clientX,clientY){
+      const direct=shadow.elementFromPoint?.(clientX,clientY)?.closest?.('g[data-sp-piece]');
+      if(direct){select(direct.getAttribute('data-sp-piece'));return selected;}
+      for(const piece of [...pieces(root)].reverse()){
+        const el=geometry(piece),matrix=el?.getScreenCTM();if(!matrix)continue;
+        try{const local=new DOMPoint(clientX,clientY).matrixTransform(matrix.inverse());
+          const hit=typeof el.isPointInFill==='function'?el.isPointInFill(local)||(typeof el.isPointInStroke==='function'&&el.isPointInStroke(local)):(()=>{const b=el.getBoundingClientRect();return clientX>=b.left&&clientX<=b.right&&clientY>=b.top&&clientY<=b.bottom;})();
+          if(hit){select(piece.getAttribute('data-sp-piece'));return selected;}
+        }catch{}
+      }return null;
+    }
+    function scaleBy(factor){
+      if(!Number.isFinite(factor)||factor<.1||factor>10)throw new Error('Kies een geldige schaal.');
+      const el=geometry(selectedPiece());if(!el)return;const b=el.getBBox(),cx=b.x+b.width/2,cy=b.y+b.height/2;
+      if(![cx,cy,b.width,b.height].every(Number.isFinite)||b.width<=0||b.height<=0)throw new Error('Dit onderdeel heeft geen schaalbaar oppervlak.');
+      el.setAttribute('transform',(el.getAttribute('transform')||'')+` translate(${cx} ${cy}) scale(${factor}) translate(${-cx} ${-cy})`);highlight();
+    }
     return {
-      root,position,moveTo,select,highlight,
+      root,position,moveTo,select,selectAt,scaleBy,highlight,
       selectedId:()=>selected,
       selected:()=>geometry(selectedPiece()),
       parts:()=>pieces(root).map((piece,index)=>({id:piece.getAttribute('data-sp-piece'),label:`Onderdeel ${index+1} · ${geometry(piece)?.localName==='path'?'pad':geometry(piece)?.localName||'vorm'}`})),

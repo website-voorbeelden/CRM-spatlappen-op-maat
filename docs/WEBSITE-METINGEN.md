@@ -1,10 +1,12 @@
+> Nieuw27oktober: [Vrijdagrapporten](VRIJDAGRAPPORTEN.md) als lokale bron: vorige volledige maandag–zondag tegenover vorige week, zes grafieken en aandachtspunten met volumebodem/dekkingsgrenzen. Zelfde eigen bedrijfsmeetbinding en uitsluitingen, Google/GA4 apart. Geen nieuwe tracking of credentials gelezen, geen rapport opgehaald/ingepland/verzonden. Ontvangstkeuze en eigen controle/publicatie open.
+
 # Website & aanvragen — 17 oktober 2026
 
-Live gepubliceerd op 17 oktober 2026 na expliciete opdracht. Spatlappen-CRM: release spatlappen-analytics-20261017, deployment 2b639005-e30f-49f2-9abc-4dcd442610c0. Website: deployment 42ddc1a7-8198-4979-9c3b-7a19ce9ed9bd. Aparte EU-meetdatabase en beide bindings actief; bestaande bedrijfsgegevens exact behouden.
+Live gepubliceerd op 17 oktober 2026 na expliciete opdracht. Spatlappen-CRM: release spatlappen-analytics-20261017, deployment <deployment-id>. Website: deployment <deployment-id>. Aparte EU-meetdatabase en beide bindings actief; bestaande bedrijfsgegevens exact behouden.
 
 De publieke websitebron staat nu lokaal in:
 
-`/Users/philippevannieuwkerk/Documents/Codex/2026-10-15/we-gaan-verder-aan-mijn-twee/spatlappen-website`
+`<lokale-projectmap>`
 
 Dit is een verse Git-kopie van `website-voorbeelden/spatlappen-op-maat`, uitgangspunt `715a5d2`. De oude september-uploadmappen zijn achterhaald en ongewijzigd gebleven. De oorspronkelijke nieuwe `site.js` is bytegelijk aan de live site gecontroleerd. Lees de website-`AGENTS.md`, `AI.md` en `docs/analytics.md` voordat je daar werkt. Laat CRM-code in dit gedeelde project; maak geen tweede CRM.
 

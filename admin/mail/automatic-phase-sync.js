@@ -1,8 +1,8 @@
-import {gmailPhaseContext} from '../../shared/gmail-phase-context.js';
-import {funnelPhasesFor,funnelPhaseLabel} from '../../shared/sales-funnel.js?v=maat-cleanup-20261021';
+import {gmailPhaseContext} from '../../shared/gmail-phase-context.js?v=ui-batch234-20261027';
+import {funnelPhasesFor,funnelPhaseLabel} from '../../shared/sales-funnel.js?v=ui-batch234-20261027';
 import {gmailPhaseSuggestions} from '../../shared/gmail-labels.js';
-import {phaseAutoConfirmation,phaseResolveConfirmation} from '../../shared/gmail-phase-auto.js';
-import {markProvenance} from '../../shared/provenance.js';
+import {phaseAutoConfirmation,phaseResolveConfirmation} from '../../shared/gmail-phase-auto.js?v=ui-batch234-20261027';
+import {markProvenance} from '../../shared/provenance.js?v=provenance-colors-20261027';
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 export function createAutomaticPhaseSync({company,runtime,getState,loadState,mergeStoredState,request,openForm,toast,render,isEditing}){
  const available=['local','cloud'].includes(runtime.mode)&&!runtime.offlineReview,issues=new Map(),checked=new Map();

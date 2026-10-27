@@ -1,5 +1,5 @@
 import {calculationRecord,calculationSignature,applyCalculation} from '../costing/crm-storage.js';
-import {markProvenance} from '../../shared/provenance.js';
+import {markProvenance} from '../../shared/provenance.js?v=provenance-colors-20261027';
 export const orderContextSignature=order=>JSON.stringify({customerId:order.customerId,packagePrice:order.packagePrice,vat:order.vat,archived:order.archived});
 export function orderTarget(state,orderId,itemId){
  const order=state?.orders?.find(o=>o.id===orderId),item=order?.items?.find(i=>i.id===itemId),customer=state?.customers?.find(c=>c.id===order?.customerId);

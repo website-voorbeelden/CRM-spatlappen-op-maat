@@ -1,8 +1,8 @@
-import {installAssistant} from '../../admin/assistant.js';
-import {installFeedback} from '../../admin/feedback.js';
-import {storageRuntime} from '../../admin/cloud-storage.js';
+import {installAssistant} from '../../admin/assistant.js?v=ui-batch234-20261027';
+import {installFeedback} from '../../admin/feedback.js?v=crm-code-review-20261027';
+import {storageRuntime} from '../../admin/cloud-storage.js?v=crm-code-review-20261027';
 import {companyFor} from '../../shared/companies.js';
-import {assistantPageContext} from '../../shared/assistant-page-context.js';
+import {assistantPageContext} from '../../shared/assistant-page-context.js?v=payments-overview-20261027';
 const toast=text=>{const box=document.getElementById('toast');box.textContent=text;box.hidden=false;clearTimeout(toast.timer);toast.timer=setTimeout(()=>box.hidden=true,7000);};
 const downloadBlob=(blob,name)=>{const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);return true;};
 try{

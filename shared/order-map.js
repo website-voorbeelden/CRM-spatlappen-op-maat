@@ -1,7 +1,7 @@
-import {orderExecution,executionStages} from './order-progress.js';
+import {orderExecution,executionStages} from './order-progress.js?v=ui-batch234-20261027';
 
 export const mapPhases=[['preparation','Voorbereiding'],['ordered','Besteld bij leverancier'],['production','In productie'],['transit','Onderweg'],['arrived','Binnen / te leveren'],['shipped','Verzonden'],['delivered','Afgerond']];
-export const mapPhaseColors={preparation:'#7185bf',ordered:'#b57b20',production:'#255ce5',transit:'#7c51b5',arrived:'#167b60',shipped:'#52756c',delivered:'#6d7c8c'};
+export const mapPhaseColors={preparation:'#7185bf',ordered:'#b57b20',production:'#255ce5',transit:'#147d91',arrived:'#167b60',shipped:'#52756c',delivered:'#6d7c8c'};
 const phaseKeys=['ordered','production','transit','arrived','shipped','delivered'];
 const dated=value=>typeof value==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(value)&&Number.isFinite(Date.parse(value));
 export function mapDeliveryAddress(order,customer){

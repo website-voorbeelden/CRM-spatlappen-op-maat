@@ -1,4 +1,4 @@
-import {batchPackingReview,batchPackingBasis,batchPackingPayload} from '../../shared/batch-packing-review.js';
+import {batchPackingReview,batchPackingBasis,batchPackingPayload} from '../../shared/batch-packing-review.js?v=ui-batch234-20261027';
 import {addressParts,nextDocumentNumber,renderConfirmation} from '../documents/generation.js';
 import {mergePackingPdfs} from '../documents/merge-pdfs.js';
 import {loading} from '../loading.js';

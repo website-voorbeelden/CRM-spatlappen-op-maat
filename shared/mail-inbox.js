@@ -1,5 +1,5 @@
 import {customerEmailMatches} from './inquiry-customer.js';
-import {formProblem} from '../admin/form-guidance.js';
+import {formProblem} from '../admin/form-guidance.js?v=crm-code-review-20261027';
 export const MAX_MAIL_BYTES=10_000_000;
 export function mailStorageUsage(state){const incoming=state.incomingEmails||[],drafts=[...state.customers,...state.orders].flatMap(r=>r.emailDrafts||[]),bytes=new TextEncoder().encode(JSON.stringify([incoming,drafts,state.mailThreads||[]])).length;return {bytes,limit:MAX_MAIL_BYTES,received:incoming.length,outgoing:drafts.length,percent:Math.min(100,bytes/MAX_MAIL_BYTES*100)};}
 export function assertMailStorage(state){const usage=mailStorageUsage(state);if(usage.bytes>usage.limit)throw Error('Het compacte CRM-mailarchief is vol (10 MB). Verwijder een oude CRM-kopie van een Gmail-gesprek; het origineel blijft in Gmail.');}

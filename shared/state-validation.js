@@ -1,12 +1,16 @@
+import {termsDocumentFor} from './company-documents.js?v=ui-batch234-20261027';
+import {validateDesignVariants} from './product-design-variants.js?v=batch1-variants-20261026';
+import {validateInquiryAttribution} from './inquiry-mail-metadata.js';
+import {validateWebsiteContacts,websiteUuid} from './website-dossier.js';
 import {supplierFileMetadata} from './direct-purchase.js?v=direct-purchase-20261021';
-import {validGmailSalesPhase} from './sales-phase-signal.js';
+import {validGmailSalesPhase} from './sales-phase-signal.js?v=open-fixes-20261027';
 import {validateVatLedger} from './vat-ledger.js';
 import {readVatClassification} from './vat-review.js';
 import {validateNamedCosts} from './named-costs.js';
 import {productImageTypes} from './product-primary-image.js';
-import {validFulfilmentMethod} from './inbound-readiness.js';
+import {validFulfilmentMethod} from './inbound-readiness.js?v=ui-batch234-20261027';
 import {validSampleDate} from './sample-order.js';
-import {validProvenance} from './provenance.js';
+import {validProvenance} from './provenance.js?v=provenance-colors-20261027';
 import {validateInventory} from './inventory.js?v=workspace-search-20261017';
 const fail=message=>{throw Object.assign(Error(message),{status:400});};
 const id=value=>typeof value==='string'&&/^[a-zA-Z0-9._-]{1,160}$/.test(value);
@@ -36,6 +40,14 @@ export function validateBusinessState(state) {
  if(state.mailThreadLabels!==undefined){const entries=state.mailThreadLabels;if(!Array.isArray(entries)||entries.length>1000||new Set(entries.map(entry=>entry?.key)).size!==entries.length||entries.some(entry=>!entry||typeof entry.key!=='string'||!entry.key||entry.key.length>2048||!id(entry.ownerId)||!Array.isArray(entry.labels)||entry.labels.length>4||new Set(entry.labels).size!==entry.labels.length||entry.labels.some(label=>!['handled','followup','price-high','price-extreme'].includes(label))||!Number.isFinite(Date.parse(entry.updatedAt))||Object.keys(entry).some(key=>!['key','ownerId','labels','updatedAt'].includes(key))))fail('Controleer de labels bij het mailgesprek.');}
  if(state.mailReplyGuidance!==undefined){const entries=state.mailReplyGuidance;if(!Array.isArray(entries)||entries.length>1000||new Set(entries.map(entry=>entry?.key)).size!==entries.length||entries.some(entry=>!entry||typeof entry.key!=='string'||!entry.key||entry.key.length>1024||!id(entry.ownerId)||typeof entry.notes!=='string'||entry.notes.length>6000||!Number.isFinite(Date.parse(entry.updatedAt))||Object.keys(entry).some(key=>!['key','ownerId','notes','updatedAt'].includes(key))))fail('Controleer de werkinstructies bij het mailgesprek.');}
 
+ for(const document of state.documents)if(document.companyAsset!==undefined){
+  const asset=termsDocumentFor('maatwerkkunststof');
+  if(document.companyAsset!==asset.key||document.name!==asset.name||document.type!=='application/pdf'||!Number.isSafeInteger(document.size)||document.size<=0||document.size>4_000_000||document.internalDesign||document.generated||!state.orders.some(order=>order.id===document.ownerId))fail('Ongeldige bedrijfsbijlage.');
+ }
+ for(const document of state.documents)if(document.manualDelivery!==undefined){
+  const m=document.manualDelivery,day=m?.sentOn;
+  if(!m||typeof m!=='object'||Array.isArray(m)||Object.keys(m).some(key=>!['kind','sentOn','recordedAt','source'].includes(key))||!['invoice','confirmation','quote'].includes(m.kind)||m.source!=='user'||typeof day!=='string'||!/^\d{4}-\d{2}-\d{2}$/.test(day)||!Number.isFinite(Date.parse(day))||new Date(day).toISOString().slice(0,10)!==day||typeof m.recordedAt!=='string'||!Number.isFinite(Date.parse(m.recordedAt))||!state.orders.some(order=>order.id===document.ownerId)||! /\.pdf$/i.test(document.name||'')||document.supplierDocument||document.generated?.kind&&document.generated.kind!==m.kind)fail('Controleer de handmatig geregistreerde documentverzending.');
+ }
  for(const document of state.documents)if(document.supplierDocument!==undefined){const metadata=document.supplierDocument;if(!metadata||metadata.kind!=='invoice'||Object.keys(metadata).some(key=>!['kind','supplier','reference','date'].includes(key))||!state.orders.some(order=>order.id===document.ownerId)||document.generated||document.category!=='other')fail('Ongeldige leveranciersfactuur bij de order.');try{supplierFileMetadata(metadata);}catch(error){fail(error.message);}}
  for(const customer of state.customers)if(customer.contacts!==undefined){
   const contacts=customer.contacts;
@@ -63,9 +75,13 @@ export function validateBusinessState(state) {
  if(state.customerNumberStart!==undefined&&(!Number.isSafeInteger(state.customerNumberStart)||state.customerNumberStart<1||state.customerNumberStart>999999999)||state.customerNumberPadding!==undefined&&(!Number.isInteger(state.customerNumberPadding)||state.customerNumberPadding<0||state.customerNumberPadding>8))fail('Ongeldige klantnummerinstellingen.');
  if(state.paymentCorrections!==undefined){if(!Array.isArray(state.paymentCorrections)||state.paymentCorrections.length>10000||new Set(state.paymentCorrections.map(c=>c?.id)).size!==state.paymentCorrections.length||state.paymentCorrections.some(c=>!c||!id(c.id)||!['remove','replace'].includes(c.kind)||typeof c.reason!=='string'||c.reason.trim().length<8||c.reason.length>1000||!c.before||!id(c.before.id)||!id(c.before.orderId)||!Number.isSafeInteger(c.before.amount)||c.before.amount<=0||!Number.isFinite(Date.parse(c.at))||c.restoredAt&&!Number.isFinite(Date.parse(c.restoredAt))))fail('Ongeldig betaalcorrectielog.');}
  try{for(const owner of [...state.orders,...(state.purchases||[])])validateNamedCosts(owner);}catch(error){fail(error.message);}
+ for(const owner of [...state.customers,...state.orders])validateWebsiteContacts(owner.websiteContacts);
+ for(const order of state.orders)validateInquiryAttribution(order.websiteAttribution);
+ for(const order of state.orders)if(order.websiteLeadId!=null&&order.websiteLeadId!==''&&!websiteUuid(order.websiteLeadId))fail('Ongeldig website-aanvraagnummer.');
  analyticsExclusions(state.analyticsExclusions);
  if(state.orders.some(o=>o.analyticsInternal!==undefined&&typeof o.analyticsInternal!=='boolean'))fail('Ongeldige interne testmarkering.');
  validateVatLedger(state.vatLedger);
  validateInventory(state);
+ try{validateDesignVariants(state);}catch(error){fail(error.message);}
  return state;
 }

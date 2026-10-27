@@ -1,3 +1,7 @@
+## Vervolg 24 oktober 2026
+
+Actuele bronwijzigingen en grenzen: docs/VERVOLGWERK-2026-10-24.md (vanaf projectroot). Nieuwste publicatiestatus staat bovenaan OVERDRACHT.md. Oudere uitspraken over alleen lokaal/ontbrekende customdomeinen zijn hieronder historische momentopnamen. Geen functionele tests door Codex uitgevoerd; Philippe controleert zelf.
+
 # Online CRM met AI via je eigen laptop
 
 21 oktober 2026 — lokaal bronwerk, nog geen onlinepublicatie of functionele controle. Volgens gebruikersafspraak geen tests, syntaxchecks, builds of browser-QA uitgevoerd. Geen echte klantdata, providerverzoeken, tokens of bestaande authconfig onderzocht. Geen hosting besteld of publiek netwerk geopend.

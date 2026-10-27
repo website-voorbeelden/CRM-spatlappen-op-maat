@@ -1,6 +1,12 @@
+Nieuw27oktober: [opmaakbatches2–4](BATCHES2-4-OPMAAK-20261027.md) en [algemene voorwaarden bij Maatorder/mail](ALGEMENE-VOORWAARDEN-BIJ-ORDER.md). Bron lokaal/review, gebruikerscontrole en publicatie apart.
+
+- [Vier opmaakbatches](VIER-OPMAAKBATCHES-20261027.md) — batches1–4 lokaal brongebouwd voor eigen controle; nieuwste batch2aanvulling bij hervatten na productbewerking.
+
+- [Verder uitgewerkte dossierindeling](DOSSIER-INDELING-20261027.md) — lokale bron, eigen visuele controle open.
+
 # Projectwijzer
 
-Dit is het startpunt voor de documentatie van beide CRM’s. De documentenpagina is het visuele voorbeeld; het doel is minder zoeken, minder dubbel invoeren en controle over kosten, marge en vervolgstappen.
+Dit is het startpunt voor de documentatie van beide CRM’s. De openbare nieuwe Exact Online-interface is de nieuwste opmaakreferentie; het doel is minder zoeken, minder dubbel invoeren en controle over kosten, marge en vervolgstappen.
 
 ## Wat is leidend?
 
@@ -22,6 +28,46 @@ Dit is het startpunt voor de documentatie van beide CRM’s. De documentenpagina
 De taakcatalogus heeft één bewerkbare bron: `shared/planning/roadmap.js`. Het CRM leest die rechtstreeks en combineert deze met de opgeslagen voortgang/opmerkingen in de aparte planning-verzameling per bedrijf. `npm run plan` maakt het leesbare Markdown-overzicht opnieuw. Het werklog blijft chronologisch en bestaande documentatie/links blijven geldig.
 
 ## Onderwerpen
+
+[Betalingenoverzicht](BETALINGENOVERZICHT.md): ontvangen geld bij klant/order terugvinden, Tikkie-/zoekfilter en readonly Bijwerken; lokaal, eigen controle/publicatie open.
+
+[Vrijdagrapporten](VRIJDAGRAPPORTEN.md): Google, websitegebruik en aanvraagconversie met grafieken en aandachtspunten; lokale rapport-/planningsbasis plus gekozen telefoonmelding en exacte editie-knop, appupdate/gebruikerscontrole/publicatie open.
+
+[Gedeelde CRM-CSS](CRM-CSS.md) en [compact orderoverzicht/fasevoorstel](COMPACT-ORDEROVERZICHT.md): nieuwste onderhouds-/UXafspraak27oktober, lokale bron en eigen controle open.
+
+[Exact Online als opmaakreferentie en maatwerkvergelijking](EXACT-REFERENTIE-20261027.md): nieuwste correctie op de te brede Exceltoepassing, lokale bronopmaak en concrete voorstellen naast bestaande functies. Eigen controle open.
+
+[Standaard factuur- en bevestigingsmails](MAIL-HERZIENING.md#standaard-factuur--en-bevestigingsmails--27-oktober-2026): betaalde/open factuur, 70%/volledige betaling en behoud van eigen templates; lokaal, eigen controle open.
+
+[Historische CRM-Excelrichting](EXCEL-STIJL-20261027.md): vervangen door de Exactreferentie; brede mail-/klant-/takenregisters en vlakke grijze werkbladen; lokaal, eigen controle open.
+
+[Algemene codelezing en gerichte verbeteringen](ALGEMENE-CODELEZING-20261027.md): opslag/transacties, formulierherstel, dagelijkse dossieracties en variantkopieën; bronwerk lokaal, bredere herstel-/login-/conflictscope open.
+
+[Open punten batch3/4 verder gebouwd](OPEN-PUNTEN-VERVOLG-20261027.md): vectorsegmenten, optioneel leren, automatische aanbetalingsfase en Google Maps-routes; lokaal, sleutel/activering en eigen controle apart.
+
+[Batch4 mail en CRM](BATCH4-MAIL-EN-CRM-20261026.md): rustige gesprekslabels, behoud bij verversen/antwoord en concrete open feedbackgrenzen; lokaal, gebruikerscontrole open.
+
+[Batch3 logo, kleur en plaatsing](BATCH3-LOGO-KLEUR-PLAATSING-20261026.md): palet/transparantie, begrensde eilandherkenning, tijdelijke vectorpreview, randveiligheid en voorkeuren; lokale bron en gebruikerscontrole open.
+
+[Batch2 tekst en dagelijkse bediening](BATCH2-TEKST-EN-BEDIENING-20261026.md): fontvoorbeelden, import/beheer, kopiëren, sneltoetsen en scroll/zoom; lokale afronding, gebruikerscontrole open.
+
+[Batch1 ontwerpvarianten](BATCH1-ONTWERPVARIANTEN-20261026.md): meerdere voorstellen en eerdere versies bij één product, definitieve keuze gebonden aan werkelijk opgeslagen maat; lokale afronding en gebruikerscontrole.
+
+[Vier delen feedback26oktober](VIER-DELEN-20261026.md): productvarianten als prioriteit, fonts/editor, kleuren/randen/tijdelijk voorbeeld en rustige mail; lokaal en gebruikercontrole open.
+
+[Spatlap-ontwerptool: bronlezing en vijf gerichte correcties](EDITOR-BRONLEZING-20261026.md): feedbackmatrix, concrete fouten, CRM-opslagroute en resterend werk; lokaal, gebruikercontrole open.
+
+[Klant en mailwerkproces — batch3](KLANT-EN-MAILWERKPROCES.md): contact inline, templates bewerken met invoerbehoud en duidelijke reply-/nieuwkeuze; lokaal, gebruikercontrole open.
+
+[Betalingen en documenten — batch2](BETALINGEN-EN-DOCUMENTEN.md): ontvangstpresets, conflict-/dubbelcontrole, factuurvervolg, selectie en kostenopbouw; lokaal, gebruikercontrole open.
+
+[Vier feedbackbatches van23oktober](VIER-BATCHES-2026-10-23.md): concreet bronresultaat voor mobiel, betaling/documenten, contact/mailwerkproces en editor; eigen controle en online activering apart.
+
+[Mobiele app en betalingsmeldingen](MOBIELE-MELDINGEN.md): installatie, per-apparaat toestemming en servercontrole. Servers eerder actief; correctie27oktober lokaal: handmatige betaalinvoer geen push, providerontvangsten wel. Eigen controle/publicatie van die correctie open.
+
+[Dossierlijsten sorteren](DOSSIER-SORTERING.md): standaard laatst geopend, zichtbare eigen keuze en persoonlijke browseropslag voor beide bedrijven. Lokaal; gebruikercontrole open.
+
+[Directe ontwerpdownloads](ONTWERP-DOWNLOADS.md): opgeslagen klantpreview en vector-PDF zonder editorbediening. Lokaal bronwerk, gebruikercontrole open.
 
 [Orderkaart en bezorgroute](ORDERKAART-EN-BEZORGROUTE.md): standaard productie, filters per levering en zelf een route voorbereiden. Lokaal bronwerk, gebruikercontrole open.
 
@@ -67,3 +113,9 @@ CRM-featuremappen en live-statecontract: admin/workspace/ARCHITECTURE.md. Nieuwe
 
 - [Levertijd vanaf aanbetaling](LEVERTIJD-AANBETALING.md): percentage, echte ontvangst, planning en documentvoorstel.
 - [Maat-eigen werkproces](MAAT-EIGEN-WERKPROCES.md): drukwerkbediening verwijderd uit Maat, technische bestanden en historie behouden.
+
+- [Websitegegevens & ontvangen contact](WEBSITE-DOSSIER.md): lokale dossiertabs, meetbetekenissen, toestemmingsgrens en nog ontbrekende Maat-aansluiting.
+
+- [Formuliermetadata en spamonderzoek](FORMULIERMAIL-EN-SPAM.md): schone geciteerde formuliermails, aanvraagkoppeling via headers en grenzen van spamdetectie.
+
+- [Overdracht naar de AI van de Maat-website](OVERDRACHT-MAAT-WEBSITE-CRM.md): bekende repository, taakverdeling, headers, bestaande cookiebediening, multipagina-rapport en afspraken voor volgende updates.

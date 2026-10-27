@@ -38,6 +38,7 @@ function customerAddresses(c){
 function renderCustomer(id){
  const c=context.customer(id);if(!c){location.hash='customers';return;}
  const view=context.customerViews.dossier(context.state,c,context.route()[2]);context.shell(view.markup,'customers',view.details);
+ if(context.route()[2]==='website')context.websiteDossier.mount(context.$('#customer-content'));
 }
 
 function selectCustomerTab(tab){const id=context.route()[1];history.replaceState(null,'',`#customers/${id}/${tab}`);renderCustomer(id);}
@@ -45,23 +46,27 @@ function selectCustomerTab(tab){const id=context.route()[1];history.replaceState
 function customerForm(id,prefill){
  if(!id)return context.orderForm(null,'__new_customer__',prefill||{});
  const c=context.customer(id)||prefill||{},info=customerAddressInfo(c),single=id?info.single:null;
+ const customerBasis=JSON.stringify(c),singleBasis=JSON.stringify(single),orderIds=customerOrders(c.id).map(o=>o.id).sort().join(',');
  const billingInput=info.billing.source==='delivery'?'':info.billing.address;
  context.openForm(id?'Klant bewerken':'Nieuwe klant',`${single?`<p class="notice">Deze klant is gekoppeld aan één order (#${context.esc(single.sourceNumber||single.number)}). Afleveradreswijzigingen werken ook die order bij.</p>`:id?'<p class="form-help">Je bewerkt het klantdossier. Orders met een eigen afleveradres houden dat adres.</p>':''}<section class="form-section"><h3>Contact & bedrijf</h3><div class="fields">${context.field('company','Bedrijfsnaam / klantnaam',c.company,'text','required')}${context.field('contact','Contactpersoon',c.contact)}${context.field('email','E-mail',c.email,'email')}${context.field('invoiceEmail','Factuurmail',c.invoiceEmail,'email')}${context.field('phone','Telefoon',c.phone)}${context.field('vatNumber','Btw-nummer',c.vatNumber)}${context.field('country','Land (bedrijf)',c.country||'Nederland')}</div>${(c.contacts||[]).length?`<details class="form-details"><summary>Extra contactpersonen (${c.contacts.length})</summary>${c.contacts.map((person,index)=>`<div class="fields"><label>Naam<input name="contact_name_${index}" maxlength="200" required value="${context.esc(person.name)}"></label><label>E-mail<input name="contact_email_${index}" type="email" maxlength="200" value="${context.esc(person.email)}"></label><label>Telefoon<input name="contact_phone_${index}" maxlength="100" value="${context.esc(person.phone)}"></label></div>`).join('')}</details>`:''}</section><section class="form-section"><h3>Afleveradres</h3><div class="fields">${context.field('shippingRecipient','Ontvanger / contactpersoon',info.shipping.recipient)}${context.field('shippingCountry','Land van aflevering',info.shipping.country||c.country||'Nederland')}${context.area('shippingAddress','Straat, huisnummer, postcode en plaats',info.shipping.address)}</div></section><section class="form-section"><h3>Factuuradres</h3>${context.area('billingAddress','Afwijkend factuuradres (optioneel)',billingInput)}<p class="form-help">Leeg laten = automatisch het afleveradres gebruiken.${single?' Deze keuze geldt ook bij de gekoppelde order.':''}</p></section>${context.area('notes','Interne notities',c.notes)}`,async fd=>{
   const values=Object.fromEntries([...fd].filter(([key])=>!/^contact_(name|email|phone)_\d+$/.test(key)));for(const key of Object.keys(values))values[key]=values[key].trim();if(!values.company)throw context.formProblem('Vul een klantnaam in.',{field:'company'});
-  if(!id){context.state.customers.push({...values,id:context.uid(),archived:false});await context.save('Klant aangemaakt');return;}
-  const previous=structuredClone(c),oldDelivery=single?.delivery,oldBilling=single?.billing,oldDraft=single?context.deliveryDrafts.get(single.id):null;
   const shippingChanged=values.shippingAddress!==(info.shipping.address||'')||values.shippingRecipient!==(info.shipping.recipient||'')||values.shippingCountry!==(info.shipping.country||c.country||'Nederland');
   const contacts=(c.contacts||[]).map((person,index)=>({...person,name:String(fd.get('contact_name_'+index)||'').trim(),email:String(fd.get('contact_email_'+index)||'').trim().toLowerCase(),phone:String(fd.get('contact_phone_'+index)||'').trim()}));
   if(contacts.some(person=>!person.name))throw context.formProblem('Vul de naam van iedere extra contactpersoon in.');
-  Object.assign(c,values);if(c.contacts)c.contacts=contacts;context.formRecordProvenance(context.$('#dialog form'),c);
-  if(single){
-   if(shippingChanged)single.delivery={source:'custom',address:values.shippingAddress,recipient:values.shippingRecipient,country:values.shippingCountry,instructions:single.delivery?.instructions||''};
-   if(values.billingAddress!==(billingInput||''))single.billing=values.billingAddress?{source:'custom',address:values.billingAddress,recipient:values.company,country:values.country}:{source:'delivery'};
-   syncSingleOrderDelivery(single);
-  }
+  const form=context.$('#dialog form'),message='Klant bijgewerkt'+(single?' · gekoppelde order bijgewerkt':'');
+  await context.mergeStoredState(next=>{
+   const current=next.customers.find(client=>client.id===id),orders=next.orders.filter(o=>o.customerId===id),linked=single?orders.find(o=>o.id===single.id):null;
+   if(JSON.stringify(current)!==customerBasis||orders.map(o=>o.id).sort().join(',')!==orderIds||JSON.stringify(linked)!==singleBasis)throw Error('Deze klant of gekoppelde order is intussen gewijzigd. Je invoer blijft staan; open de bewerking opnieuw met de actuele gegevens.');
+   Object.assign(current,values);if(current.contacts)current.contacts=contacts;context.formRecordProvenance(form,current);
+   if(linked){
+    if(shippingChanged)linked.delivery={source:'custom',address:values.shippingAddress,recipient:values.shippingRecipient,country:values.shippingCountry,instructions:linked.delivery?.instructions||''};
+    if(values.billingAddress!==(billingInput||''))linked.billing=values.billingAddress?{source:'custom',address:values.billingAddress,recipient:values.company,country:values.country}:{source:'delivery'};
+    if(linked.delivery?.source==='custom')Object.assign(current,{shippingAddress:linked.delivery.address||'',shippingRecipient:linked.delivery.recipient||'',shippingCountry:linked.delivery.country||'',shippingAddressOrderId:linked.id});
+   }
+   next.activities.unshift({id:context.uid(),message,time:new Date().toISOString()});
+  });
   if(single&&shippingChanged)context.deliveryDrafts.delete(single.id);
-  try{await context.save('Klant bijgewerkt'+(single?' · gekoppelde order bijgewerkt':''));}
-  catch(error){for(const key of Object.keys(c))if(!Object.hasOwn(previous,key))delete c[key];Object.assign(c,previous);if(single){single.delivery=oldDelivery;single.billing=oldBilling;if(oldDraft)context.deliveryDrafts.set(single.id,oldDraft);}throw error;}
+  context.render();context.toast(message);
  });
  context.markFormSources(context.$('#dialog form'),context.customerWithSources(context.state,c,context.company.id));if(!c.country)context.markFormSources(context.$('#dialog form'),context.markProvenance({country:'Nederland'},['country'],'default'));
 }

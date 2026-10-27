@@ -1,0 +1,71 @@
+# Opmaakbatches 2–4 — lokaal bronwerk, 27 oktober 2026
+
+Philippe geeft tijdens de lopende batch2 ook opdracht voor batch3 en batch4. Daarna levert hij de PDF Algemene_voorwaarden_Maatwerkkunststof_01-01-2023.pdf aan en bevestigt: het gaat om de algemene voorwaarden, alleen bij Maatwerkkunststof. Die aanvullende opdracht is meegenomen in batch4. De PDF is ongewijzigd gekopieerd; geen inhoudelijke/juridische beoordeling of PDFbewerking.
+
+Geen tests, checks, syntaxchecks, builds, browser-/DOMuitlezing, visuele beoordeling of providerproeven uitgevoerd. Alleen bronlezing/bewerking en bouwadministratie. Beide bedrijven delen dezelfde code/CSS en bestaande gegevens/IDs/versie-/bedrijfs-/transactiegrenzen. Niet gepubliceerd of naar GitHub gestuurd. Bestaande opgeslagen gebruikersstatus en feedback blijven leidend. Alle drie batches zijn brongebouwd voor **Jouw controle**, geen gebruikersakkoord.
+
+## Batch2: dossiers en ontwerpen
+
+Aanvraaggegevens als compacte gelabelde rijen. Ontbrekende velden openen dezelfde editor met focus op het betreffende veld; een gesloten veldgroep gaat daarbij open. Bij meerdere producten blijft de bestaande route Productregels bewerken leidend. Hervatten bewaart de reeds ingevulde aanvraagvelden/vinkjes. Volgende stap heeft bij tekorten Zelf gegevens aanvullen, naast de bestaande hoofdactie. Product Meer heeft Productgegevens aanpassen en focust de betreffende regel in de bestaande ordereditor.
+
+Concrete bronbevinding: inquiryUI.install stond alleen op maildetails. Orderworkspace installeert deze nu ook voor de checklist én klantkoppelreview op alle dossiertabs. Er is geen browserbewijs dat dit de eerdere klikmelding volledig oplost. Een open dialoog wordt niet door een aanvulklik vervangen.
+
+Ontwerpvariantenpresentatie in products/design-variants.js, zonder opslag-/canvas-/approvalregels te kopiëren. Geldige definitieve keuze prominent, overige varianten onder Andere ontwerpen. Zonder geldige keuze alle voorstellen direct zichtbaar. Maat/aantal gewijzigd, oude keuze opnieuw bevestigen en ontbrekende ontwerpmetadata expliciet. Historische versies blijven via Meer beschikbaar. Thumbnail opent bestaand afbeeldingsvenster; dat noemt een voorstel/eerdere versie/referentie geen Besteld ontwerp meer. Exacte bronmaat, product-/keuzesignature, expliciete klantakkoordbevestiging, immutable JSON/PNG en CAS blijven in bestaande helpers/handlers. Beschikbare metadata is geen bewijs dat de blob werkelijk bestaat. Bekende ontvangst blijft in de compacte geldregel zichtbaar wanneer het saldo nog onbekend is.
+
+### Batch2 hervat na gemelde rate limit
+
+De eerdere batch2bron en bouwlog bleken bewaard. Alleen een aanvullende aanvraagformulierfix, geen heruitvoering of reset van batches3/4. Bij Productregels bewerken werd ieder zichtbaar veld in de tijdelijke resume gezet, ook de ongemoeid gelaten uit productregels afgeleide waarden. Na bewaren van nieuwe maten kon daardoor de oude maat terug in het aanvulformulier verschijnen.
+
+Nieuw shared/inquiry-edit.js levert beperkte pure basis-/drafthelpers. Bij uitstap alleen afwijkingen ten opzichte van actuele basis/proposal bewaren; terugkeer leest ongewijzigde productwaarden opnieuw. Eerder eigen invoer blijft bij herhaald uitstappen verschil t.o.v. basis, bewust leegmaken blijft een waarde. Vinkjes behouden. Bestaande expliciete aanvraagwaarden blijven eerdere aanvraaggegevens: zichtbare afwijkingsmelding i.p.v. ze stil aan nieuwe productmaten gelijk te zetten. Meerdere producten blijven uitsluitend via productregels beheerd.
+
+Opslag controleert in dezelfde bestaande merge naast aanvraagwaarden/vinkjes ook klantbinding en de productvelden die de aanvraagprojectie gebruikt. Onverwachte relevante wijzigingen blokkeren bewaren met invoerbehoud; prijzen/ontwerpen/notities vormen geen onnodige productblokkade. Bij de bewuste terugkeer uit producteditor wordt de zichtbare productbasis herlezen, oorspronkelijke aanvraag-/klantbasis blijft bewaakt. Een ondertussen gewijzigde aanvraag of klantbinding vraagt bewust opnieuw openen; geen automatische conflictoverschrijving of herstel van verwijderde orders.
+
+Alleen bronwerk, taak review/local. Geen tests/checks/syntaxchecks/build/browser-/DOMcontrole/publicatie. Eigen controle extra open: één product, nieuwe maat na uitstap zonder eigen maatwijziging; eigen tekst/leegmaken/vinkjes en tweemaal uitstappen; producteditor annuleren; meerdere producten; bestaande afwijkende aanvraagwaarde; andere tab wijzigt product/aanvraag/klant, en een los prijs-/notitie-/ontwerpupdate. Draft uitsluitend in het huidige tabgeheugen, geen database-/localStoragedraft.
+
+## Batch3: lijsten en betalingen
+
+Ordertabelpresentatie uit app.js naar orders/list.js. Coordinator levert actuele projecties/sortering; geen nieuwe status, bedragenberekening, paginering of opslag. Dossier/klant, verkoopfase, expliciet gelabelde uitvoeringsstatus, planning, verkoop en inkoop blijven. Aanvraagtype bij het dossier; dubbele betaaltekst op twee kolommen verwijderd. Volgende actie onder native uitklapper; fase en tekorttelling direct zichtbaar. Sorteerkoppen hebben scope en aria-sort; dezelfde bestaande sorteerkeys/richting/voorkeuren.
+
+Verkoop-/ontvangstkolommen rechts uitgelijnd met tabulaire cijfers; netto/bruto/voorlopig/onbekend/te veel ontvangen blijven benoemd. Bij onvolledige prijs/verzending bekende ontvangst tonen, saldo niet verzinnen. Klantenlijst behoudt huidige zoekprojectie/grid; smalle schermen krijgen zichtbare kolomlabels. Betalingsaandachtspunten krijgen een tekst-/kleuraccent. Geen betalersidentiteit of rekeninghouder raden: naam blijft uit orderkoppeling.
+
+Nieuwe klant/order is hoofdactie; AI/nummering bij Meer. Zoeken/groep/status/sorteren blijven zichtbaar; Filters wissen bij bestaande Meer filters. Geen businessfilters of recent-geopendvoorkeur gewijzigd. Bestaande invoer-/zoek-/paginering-/open-detailrefreshbediening niet vervangen.
+
+### Batch3 verder uitgewerkt
+
+De eerdere bron bleef bewaard. Nieuw: orders/klanten noemen op gesloten Meer filters het aantal actieve extra criteria; binnenin de betreffende labels. 0 drukkleuren telt als echte filter, lege criteria niet. Speling alleen tellen als maat/aantal actief is. Fasefilter dat al archief meenam krijgt uitleg, geen nieuw archiefbeleid. Geen extra knoppen of filteropslag. labelshelper in workspace/list-filters.js; bestaande handlers/zoekfocus/reset/routes leidend.
+
+Sorteerteksten benoemen Aanvraagdatum en Uitvoeringsstatus. Aanvraag & planning blijft dezelfde datum/planninginhoud; title/aria van kolomknoppen noemt de werkelijke sorteerbasis, niet geplande leverdatum of afgeleide verkoopfase. Bestaande keys/voorkeuren/volgorde onveranderd. Bij Maat wordt opgeslagen uitvoering ook zichtbaar als daarop gesorteerd is, via bestaande bedrijfsvertaling zonder nieuwe ontwerpstappen.
+
+Concrete bronfout: betaalstatus/filter konden Betaald of Te veel ontvangen afleiden terwijl verzending nog onbekend was. shared/order-payment-status.js is uitsluitend een labelhelper op bestaande bedragen; screen en filter gebruiken dezelfde onbekendregel. Productprijs eerst onbekend; anders shippingKnown niet expliciet true = Verzendprijs nog onbekend. Nieuwe filteroptie, dossierbadge dan niet groen. Ook historische records zonder flag blijven voor deze labels onbekend, geen datamigratie. Bestaande sommen/btw/ontvangsten/saldo-opslag, sales-funnel/emailIsFullyPaid-/productievrijgaveregels ongewijzigd; geen volledige financiële auditclaim.
+
+Betalingen: ongeldige omgekeerde periode markeert beide velden aria-invalid, geen paginering tijdens de fout. Bij rijvervanging huidige detail-/linkfocus vastleggen en via receipt-ID/href plus voorkomensnummer terugzetten; dezelfde URL kan meermaals in een rij staan. Als de ontvangst uit de zichtbare selectie verdwijnt focus naar bestaande zoekveld. Alleen focus uit deze tabel herstellen; filterinvoer/ander geopend venster niet overnemen. Open details blijven via bestaande IDset behouden. Geen extra poll, provideractie of businessstore.
+
+Alleen bronwerk, review/local; geen tests/checks/syntaxchecks/builds/browser-/DOMcontrole/publicatie. Eigen controle beide bedrijven/desktop/mobiel: gesloten actieve filters/0 drukkleuren/speling/archiefmelding, reset/sorteren en oude voorkeur, onbekende productprijs/verzending inclusief historische flag, betaald/open/overbetaling bij complete prijs, omgekeerde periode/herstel en open detail/link-/zoekfocus tijdens inkomende update of verdwijnende rij.
+
+## Batch4: mail, documenten en formulieren
+
+Mailhoofdfilters houden zoeken/weergave/sorteren; alleen de providerophaalperiode is naar Meer filters verplaatst. Zelfde data-attributen/handlers/ophaalbeleid, geen extra Gmailrequest. Berichtcontext, bijlagerijen, quickreply en extrafilters sluiten aan op neutrale vlakken/dunne scheidingen. Oude afzonderlijke mailfocus/knophoverregels weg; gedeelde controlregels zijn eigenaar, herkomstpaars blijft eigen marker. Geen extra stylesheet.
+
+Los bestand: Preview/Download direct, verwijderen/verplaatsen/betaalacties in het gedeelde Meer-menu. Gegenereerde bundel: Mail voorbereiden als hoofdactie waar een order-PDF bestaat, Preview/PDFdownload bereikbaar, inhoud aanpassen bij bestaande Meer · bestanden beheren. PDF/Wordbundeling en eerdere versies/nummering/handmatige verzendregistratie blijven leidend. Historische versie is nog steeds bewust mailbaar met bestaande versiecontrole; documentaanmaak is geen verzending.
+
+Volledige mailcomposer accepteert bestanden slepen op Bijlagen en bestanden plakken; tekstplakken blijft gewone tekstinvoer. De bestaande upload-/mailAttachment-/verzendpreviewroute blijft leidend: maximaal5extra,4MBelk,8MBsamen. Nieuwe selectie vóór schrijven op gezamenlijk metadatagewicht begrensd, uiteindelijke preview valideert de echte bytes. Bij gedeeltelijke uploadfout blijven eerder bewaarde bestanden zichtbaar. Formulier is inert/busy tijdens bijlageopslag; berichtvelden worden niet opnieuw opgebouwd. De dossierkeuzelijst biedt interne ontwerp-JSON niet meer als gewone bijlage aan; oude expliciete selecties worden niet stil gewist en kunnen worden verwijderd.
+
+Concrete invoerbevinding: van inline antwoord naar volledige composer worden afzenderinstellingen asynchroon gelezen. De twee betreffende acties lezen nu de nog gemounte actuele replyseed opnieuw vlak vóór vervanging. Wissel van gesprek/formulier of intussen geopende dialoog breekt overname af; typen tijdens laden blijft in die seed. Andere async-/login-/achtergrondconflictgrenzen zijn hiermee niet volledig geaudit.
+
+Algemene voorwaarden: zie ALGEMENE-VOORWAARDEN-BIJ-ORDER.md. Alleen op expliciete toevoeging een blijvende orderbijlage; nooit automatisch meesturen. Geen bestaande mailtekst, handtekening, template of verzendtransport veranderd.
+
+### Batch4 verder uitgewerkt
+
+Eerdere mail/documenten/voorwaardenbron behouden. Concrete bronbevinding: tijdens extra-bijlagewerk was de composer inert/aria-busy, maar de algemene openForm-escape-/annuleergrens keek uitsluitend naar eigen submitbusy. Deze centrale grens gebruikt nu beide vormen van bezig. Ook tweede submit en aanvulactie via dezelfde guard; normale annuleren/dirtybevestiging/afterCancel blijven zodra werk klaar is. Geen nieuwe losstaande cancel-listener of derde busyopslag.
+
+Composer start bijlagewerk alleen vanuit het huidige open gemounte formulier. Bij fout eerst inert/busy vrijgeven voordat de bestaande foutfocus wordt aangevraagd; bericht/gekozen bijlagen niet heropbouwen. Na succes alleen eventueel verloren bodyfocus terug naar de eerdere control in dezelfde nog open composer, geen fout-/ander dialoogfocus overnemen.
+
+Bijlagenlijst noemt aantal extra selecties en KB. Metadata bestaat maar is niet geschikt (intern ontwerp/grootte onbekend/te groot) toont echte naam en concrete reden, niet onjuist Bijlage ontbreekt. Werkelijk verdwenen metadata blijft ontbrekend. Oude selectie niet stil wissen, alleen de bestaande Verwijderen uit mailactie; dossierbestand blijft. Nieuwe keuzelijst begrenst geldige positieve grootte en sluit interne ontwerpen zoals eerder uit. Aanwezige metadata is geen bewijs dat bytes nog beschikbaar zijn; gewone verzendpreview blijft leidend.
+
+Concrete grensverbetering: grootte werd pas na arrayBuffer/base64 gecontroleerd. Nu in composer elke nieuwe file4MB en gezamenlijke extra selectie8MB vóór die reads, plus bestaande metadatagrootte geldig. shared/mail-attachments controleert bestandsnaam/type/positieve grootte ook vóór lezen bij opgeslagen-filepreview. Naam/type één private helper, exact dezelfde bestaande extensielijst, uitsluitend eigen allowlistkeys (geen geërfde objectproperties). De canonical-base64-/werkelijke byte-/aantal-/totaalvalidatie blijft achteraf bestaan. Geen sniffing-/malwarescanclaim of verruimde bestandstypen. Geen echte mail/verzendtransport/templatemutatie.
+
+Alleen lokale bron, review/local. Geen tests/checks/syntaxchecks/builds/browser-/DOMcontrole/publicatie. Eigen controle beide bedrijven/desktop/mobiel: upload/drop/paste/voorwaarden, precies4MB/te groot/8MBgezamenlijk/teveel/ongeldige naam of extensie, Escape/annuleren/tweede actie tijdens opslag en na fout weer verder, gedeeltelijke opslagfout, foutfocus/succesfocus/ander venster, historische ontbrekende/interne/te grote selectie en verwijderen uit mail zonder dossierverwijdering. Bredere gebruikerscontrole van mail/documenten/voorwaarden hieronder blijft open.
+
+## Open eigen gebruikerscontrole
+
+Philippe beoordeelt beide bedrijven desktop/mobiel na zelf bewaren/herladen. Dossier openen/tekorten aanvullen/veldgroepen/terug uit producteditor/klantkoppelreview; varianten vergelijken/finale opnieuw kiezen/eerdere versies/ontbrekende bestanden; bedragen/unknown/overbetaling/zoek- en sorteerkeuzes/archief; Meer/Volgende actie/toetsenbord; mailfilters/inline naar volledig tijdens typen/concept/previewterug; upload/drop/paste en grootte-/opslagfout; documentrevisies/versies/Meer/Downloads. Bij Maat ook voorwaarden bij order en bestaand/nieuw bericht, opnieuw toevoegen zonder dubbele bijlage, ontbrekend opgeslagen bestand, annuleren, kopiëren/slepen in eigen browser/mailprogramma. Mobiele aansluitingen zijn alleen uit bron afgeleid, niet visueel of functioneel gevalideerd. Bredere codeaudit, andere historische bouwtaken en publicatie blijven apart open.

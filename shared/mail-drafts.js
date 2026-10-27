@@ -1,8 +1,8 @@
 import {replyReferences,validMessageId} from './mail-reply.js';
-import {validProvenance} from './provenance.js';
-import {mailOwner,emailAddresses,assertMailStorage} from './mail-inbox.js?v=workspace-search-20261017';
-import {checkMailText} from './mail-templates.js';
-import {formProblem} from '../admin/form-guidance.js';
+import {validProvenance} from './provenance.js?v=provenance-colors-20261027';
+import {mailOwner,emailAddresses,assertMailStorage} from './mail-inbox.js?v=crm-code-review-20261027';
+import {checkMailText} from './mail-templates.js?v=mail-texts-20261027';
+import {formProblem} from '../admin/form-guidance.js?v=crm-code-review-20261027';
 const validId=v=>typeof v==='string'&&/^[a-zA-Z0-9._-]{1,160}$/.test(v);
 export function prepareQuickReplyDraft(state,ownerId,input,{uid=()=>crypto.randomUUID(),now=new Date().toISOString()}={}){
  if(input.provenance!==undefined&&!validProvenance(input.provenance))throw Error('Ongeldige herkomstmarkering.');const owner=mailOwner(state,ownerId);if(!owner)throw Error('Dit dossier bestaat niet meer.');

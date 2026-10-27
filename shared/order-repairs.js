@@ -1,4 +1,4 @@
-import {formProblem} from '../admin/form-guidance.js';
+import {formProblem} from '../admin/form-guidance.js?v=crm-code-review-20261027';
 export function shippingPriceSignature(order){return JSON.stringify([order.shippingKnown,order.shippingCharge]);}
 export function applyShippingPrice(state,orderId,value,expected){
  const order=state.orders.find(record=>record.id===orderId);if(!order)throw Error('Deze order bestaat niet meer.');

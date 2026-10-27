@@ -1,3 +1,4 @@
+import {createLocalGoogleRoutes} from './google-routes.mjs';
 import {createBrowserBridge} from './browser-bridge.mjs';
 import {createServer} from 'node:http';
 import {timingSafeEqual,createHmac} from 'node:crypto';
@@ -19,6 +20,7 @@ export async function startAssistantServer({key,directory,port=3030,connection:p
  const speechDiagnostics=createSpeechDiagnostics();
  const feedback=createFeedbackService(feedbackDirectory);
  const network=(url,options={})=>fetchImpl(url,{...options,signal:AbortSignal.any([options.signal,shutdown.signal].filter(Boolean))});
+ const routes=createLocalGoogleRoutes(directory?directory+'/../routes':'.local/routes',{fetcher:network});
  const mail=await createMailService(mailDirectory||(directory?directory+'/../mail':'.local/mail'),{fetchImpl:network});
  const gmail=await createGmailService(gmailDirectory||(directory?directory+'/../gmail':'.local/gmail'),{fetchImpl:network});
  // No Gmail executor is installed. OAuth grants alone cannot enable writes.
@@ -44,6 +46,12 @@ export async function startAssistantServer({key,directory,port=3030,connection:p
   if(!equals(req.headers.authorization,'Bearer '+key))return json({error:'Geen toegang tot de lokale assistent.'},403);
   const companyId=req.headers['x-crm-company'];if(!companies.has(companyId))return json({error:'Onbekend bedrijf.'},403);
   if(['/login','/logout','/select'].includes(url.pathname))bridge.invalidate();
+  if(url.pathname.startsWith('/route-')){try{
+   const action=url.pathname.slice('/route-'.length),service=routes(companyId);
+   if(action==='status'&&req.method==='GET')return json(await service.status());
+   if(['configure','compute'].includes(action)&&req.method==='POST')return json(await service[action](await body(req)));
+   return json({error:'Onbekende routeroute.'},404);
+  }catch(error){return json({error:error.message||'Route verwerken lukt niet.'},error.status||400);}}
   if(url.pathname.startsWith('/feedback-')){try{
    if(url.pathname==='/feedback-list'&&req.method==='GET')return json({reports:await feedback.list(companyId)});
    if(url.pathname==='/feedback-create'&&req.method==='POST')return json(await feedback.create(companyId,await body(req)));

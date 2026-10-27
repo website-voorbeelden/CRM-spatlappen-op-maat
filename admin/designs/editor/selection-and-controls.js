@@ -6,7 +6,11 @@ function updateMobilePreviewTop(){
 
 function fitPreviewFrame(){
   const mobile=window.matchMedia('(max-width:700px)').matches,wrap=$('previewWrap'),header=document.querySelector('.app-header'),bar=$('selectionActions');
-  const height=SpatlapLayout.previewHeight({w:state.flap.w,h:state.flap.h,availableWidth:Math.max(40,wrap.clientWidth-(mobile?90:150)),viewportHeight:window.innerHeight,headerHeight:header.offsetHeight,selectionHeight:bar.classList.contains('visible')?bar.offsetHeight:0,mobile});
+  let height=SpatlapLayout.previewHeight({w:state.flap.w,h:state.flap.h,availableWidth:Math.max(40,wrap.clientWidth-(mobile?90:150)),viewportHeight:window.innerHeight,headerHeight:header.offsetHeight,selectionHeight:bar.classList.contains('visible')?bar.offsetHeight:0,mobile});
+  if(window.matchMedia('(min-width:951px)').matches){
+    const card=wrap.closest('.canvas-card'),fixed=wrap.closest('.preview-fixed');
+    if(card&&fixed){const style=getComputedStyle(card),padding=parseFloat(style.paddingTop)+parseFloat(style.paddingBottom),overhead=Math.max(0,fixed.offsetHeight-wrap.offsetHeight);height=Math.min(height,Math.max(80,card.clientHeight-padding-overhead-96));}
+  }
   document.documentElement.style.setProperty(mobile?'--mobile-preview-h':'--adaptive-preview-h',height+'px');updateMobilePreviewTop();
 }
 
@@ -24,7 +28,8 @@ function scaleFactor(){
 function setPreviewZoom(value,clientX,clientY){
   const wrap=$('previewWrap'),stage=$('stage');
   const before=stage.getBoundingClientRect(),box=wrap.getBoundingClientRect();
-  const x=clientX??box.left+box.width/2,y=clientY??box.top+box.height/2;
+  const selectedBox=clientX==null&&clientY==null?SpatlapLayout.union(allSelectedRefs().map(ref=>layoutElement(ref)?.getBoundingClientRect()).filter(Boolean)):null;
+  const x=clientX??(selectedBox?(selectedBox.left+selectedBox.right)/2:box.left+box.width/2),y=clientY??(selectedBox?(selectedBox.top+selectedBox.bottom)/2:box.top+box.height/2);
   const fractionX=before.width?(x-before.left)/before.width:.5;
   const fractionY=before.height?(y-before.top)/before.height:.5;
   const next=Math.max(.5,Math.min(8,Math.round(value*100)/100));
@@ -33,8 +38,9 @@ function setPreviewZoom(value,clientX,clientY){
   render();
   $('zoomLevel').textContent=Math.round(previewZoom*100)+'%';
   const after=stage.getBoundingClientRect();
-  wrap.scrollLeft+=after.left+fractionX*after.width-x;
-  wrap.scrollTop+=after.top+fractionY*after.height-y;
+  const targetX=selectedBox?box.left+wrap.clientWidth/2:x,targetY=selectedBox?box.top+wrap.clientHeight/2:y;
+  wrap.scrollLeft+=after.left+fractionX*after.width-targetX;
+  wrap.scrollTop+=after.top+fractionY*after.height-targetY;
 }
 
 function stopPreviewPan(){
@@ -85,6 +91,7 @@ function syncAutomaticShoulders(){
 }
 
 function syncUIFromState(){
+  syncCustomFontOptions();
   syncAutomaticShoulders();
   $('radiusAuto').checked=state.flap.radiusAuto===true;
   $('w').value=state.flap.w;$('h').value=state.flap.h;$('qty').value=state.flap.qty;
@@ -150,7 +157,7 @@ function allSelectedRefs(){
   multiSelection.forEach(r=>{
     if(!refs.some(x=>x.id===r.id && x.type===r.type)) refs.push({id:r.id,type:r.type});
   });
-  return refs;
+  return refs.filter(ref=>itemById(ref.id,ref.type));
 }
 
 function isSelectedRef(id,type){
@@ -197,7 +204,7 @@ function updateSelectionActionBar(){
     $('duplicateOtherSideSelected').title=refs.length===1?'Maak een kopie op dezelfde afstand van de andere zijkant.':'Selecteer één onderdeel om het naar de andere zijde te dupliceren.';
     $('trimSelectedVector').hidden=refs.length!==1||!!vectorEditingLogoId;
     $('shrinkSelected').disabled=$('growSelected').disabled=!!vectorEditingLogoId;
-    for(const id of ['quickCenterSelection','quickBalanceSelection','quickBottomSide'])$(id).disabled=!!vectorEditingLogoId;
+    for(const id of ['quickCenterSelection','quickBalanceSelection','quickBalanceVertical','quickBottomSide','mirrorArtwork','rotateArtwork'])$(id).disabled=!!vectorEditingLogoId;
     $('deleteSelected').setAttribute('aria-label',vectorEditingLogoId?'Logo verwijderen':'Selectie verwijderen');
     syncSelectionDimensions();
   }
@@ -243,6 +250,7 @@ function updateVectorStatusBadge(){
 }
 
 function setSelected(id,type,additive=false){
+  clearArtworkFontPreview();
   if(pendingHeightMatch){applyVectorHeightMatch(id,type);return;}
   if(additive){
     toggleMultiSelection(id,type);
@@ -254,15 +262,17 @@ function setSelected(id,type,additive=false){
 }
 
 function syncSelectionControls(){
+  if(fontPreviewOverride&&(state.selectedType!=='text'||state.selected!==fontPreviewOverride.id))clearArtworkFontPreview();
+  refreshCustomFontManager();
   const logo=state.selectedType==='logo'?itemById(state.selected,'logo'):null;
   $('logoControls').style.display=logo?'block':'none';
   $('replaceLogo').disabled=!logo||logoReplacementBusy;
   $('replaceLogo').textContent=logoReplacementBusy?'Bestand laden...':'Bestand vervangen';
   if($('replaceLogoStatus').dataset.logoId!==logo?.id)$('replaceLogoStatus').textContent='';
   const canTrace=!!logo&&(!logo.svgMarkup||!!logo.originalRasterSrc);
-  $('vectorizeLogo').disabled=!canTrace;
-  $('whitePngVector').disabled=!canTrace||!/\.png$/i.test(logo.name||'');
-  $('headerQuickVector').disabled=false;$('headerQuickVector').classList.toggle('vector-ready',!!canTrace);$('headerQuickVector').title=canTrace?'Geselecteerde afbeelding snel naar witte vector omzetten':state.selectedType==='text'?'Tekst wordt al als vector geëxporteerd':'Selecteer een afbeelding om die om te zetten';
+  $('vectorizeLogo').disabled=!canTrace||vectorApplyBusy;
+  $('whitePngVector').disabled=!canTrace||vectorApplyBusy||vectorQuickBusy||!/\.png$/i.test(logo.name||'');
+  $('headerQuickVector').disabled=vectorApplyBusy||vectorQuickBusy;$('headerQuickVector').classList.toggle('vector-ready',!!canTrace);$('headerQuickVector').title=canTrace?'Geselecteerde afbeelding snel naar witte vector omzetten':state.selectedType==='text'?'Tekst wordt al als vector geëxporteerd':'Selecteer een afbeelding om die om te zetten';
   $('restoreRasterLogo').disabled=!logo?.originalRasterSrc;
   $('vectorTarget').textContent=logo
     ? canTrace?`Geselecteerd: ${logo.name||'afbeelding'}. Alleen deze afbeelding wordt omgezet; het kleurenaantal van het hele ontwerp staat hieronder.`:`Geselecteerd: ${logo.name||'SVG'}. Dit is al een vectorbestand. Kies een PNG/JPG/WebP om kleuren te beperken.`
@@ -274,8 +284,9 @@ function syncSelectionControls(){
     $('logoW').value=Math.round(logo.w*100)/100;
     $('logoH').value=Math.round(logo.h*100)/100;
 
-    const left=logo.x*state.flap.w-logo.w/2;
-    const top=logo.y*state.flap.h-logo.h/2;
+    const footprint=logoFootprint(logo);
+    const left=logo.x*state.flap.w-footprint.w/2;
+    const top=logo.y*state.flap.h-footprint.h/2;
     $('logoLeft').value=Math.round(left*100)/100;
     $('logoTop').value=Math.round(top*100)/100;
   }
@@ -284,7 +295,8 @@ function syncSelectionControls(){
   $('textControls').style.display=txt?'block':'none';
   if(txt){
     if(!txt.font)txt.font='Arial, sans-serif';
-    $('editText').value=txt.text;$('editTextSize').value=txt.size;
+    if($('editText').value!==txt.text)$('editText').value=txt.text;
+    $('editTextSize').value=txt.size;
     $('editTextTracking').value=txt.tracking??0;
     $('editTextWeight').value=String(txt.weight||700);
     $('editTextColor').value=normalizeHex(txt.color);
@@ -293,6 +305,9 @@ function syncSelectionControls(){
     $('editTextFont').value=txt.font;
     if(typeof updateFontPreviews==='function')updateFontPreviews();
   }
+  syncLogoPalette();
+  revealSelectedPanel(logo,txt);
+  if(txt)resizeTextField($('editText'));
   updateSelectionActionBar();
   scheduleVectorPreview();
   syncVectorPieceControls();
@@ -308,4 +323,38 @@ function normalizeHex(value){
   }
   if(!/^#[0-9a-fA-F]{6}$/.test(v))return '#FFFFFF';
   return v.toUpperCase();
+}
+
+// Fixed quarter turns and horizontal reflection remain editable design data.
+function artworkRotation(obj){return [0,90,180,270].includes(obj.rotation)?obj.rotation:0;}
+function logoFootprint(obj){return artworkRotation(obj)%180?{w:obj.h,h:obj.w}:{w:obj.w,h:obj.h};}
+function artworkTransform(obj){return `translate(-50%,-50%) rotate(${artworkRotation(obj)}deg) scale(${obj.flipX===true?-1:1},1)`;}
+// Local artwork distances are centimetres; transform them before moving its centre.
+function offsetArtworkCenter(obj,dx,dy){
+ const angle=artworkRotation(obj)*Math.PI/180,localX=dx*(obj.flipX===true?-1:1);
+ obj.x+=(Math.cos(angle)*localX-Math.sin(angle)*dy)/state.flap.w;
+ obj.y+=(Math.sin(angle)*localX+Math.cos(angle)*dy)/state.flap.h;
+}
+function transformArtwork(action){
+ if(vectorEditingLogoId){toast('Rond eerst de losse onderdeelbewerking af.');return;}
+ const refs=allSelectedRefs();if(!refs.length)return;pushHistory();
+ for(const ref of refs){const obj=itemById(ref.id,ref.type);if(action==='mirror')obj.flipX=!obj.flipX;else obj.rotation=(artworkRotation(obj)+90)%360;}
+ syncSelectionControls();render();toast(action==='mirror'?'Gespiegeld rond het eigen midden':'90° gedraaid rond het eigen midden');
+}
+function balanceArtwork(axis){
+ if(vectorEditingLogoId)return;
+ const refs=allSelectedRefs(),box=SpatlapLayout.union(refs.map(layoutBox).filter(Boolean));if(!box)return;
+ const low=axis==='y'?'top':'left',high=axis==='y'?'bottom':'right',extent=axis==='y'?state.flap.h:state.flap.w,center=(box[low]+box[high])/2,size=box[high]-box[low];let start=0,end=extent;
+ for(const ref of layoutRefs()){if(refs.some(r=>r.id===ref.id&&r.type===ref.type))continue;const other=layoutBox(ref);if(!other)continue;const midpoint=(other[low]+other[high])/2;if(midpoint<center)start=Math.max(start,other[high]);else if(midpoint>center)end=Math.min(end,other[low]);}
+ if(end-start<size){toast('Te weinig ruimte tussen deze randen. Maak de selectie kleiner of verplaats haar eerst.');return;}
+ const delta=(start+end-box[low]-box[high])/2;pushHistory();for(const ref of refs)itemById(ref.id,ref.type)[axis]+=delta/extent;
+ syncSelectionControls();render();toast((axis==='y'?'Verticaal':'Horizontaal')+' gecentreerd tussen de dichtstbijzijnde randen');
+}
+function resizeTextField(field){if(!field)return;field.style.height='auto';field.style.height=Math.max(76,Math.min(420,field.scrollHeight+4))+'px';}
+let lastSidebarSelection='';
+function revealSelectedPanel(logo,txt){
+ const key=state.selectedType+':'+state.selected;if(key===lastSidebarSelection)return;lastSidebarSelection=key;
+ if(logo){$('logosSection').open=true;$('logoControls').open=true;}
+ if(txt){$('textSection').open=true;$('textControls').open=true;resizeTextField($('editText'));}
+ if(state.texts.length)$('textCreate').open=false;
 }

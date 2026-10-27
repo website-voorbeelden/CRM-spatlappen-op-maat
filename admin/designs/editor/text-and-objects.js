@@ -1,11 +1,11 @@
 // Classic editor helpers; loaded before runtime.js. See README.md for the shared state contract.
 function alignLogo(horizontal,vertical){
   const x=itemById(state.selected,'logo');if(!x)return;
-  pushHistory();
-  if(horizontal==='left')x.x=x.w/(2*state.flap.w);
+  pushHistory();const footprint=logoFootprint(x);
+  if(horizontal==='left')x.x=footprint.w/(2*state.flap.w);
   if(horizontal==='center')x.x=.5;
-  if(horizontal==='right')x.x=1-x.w/(2*state.flap.w);
-  if(vertical)x.y=verticalPlacement(x.h,vertical);
+  if(horizontal==='right')x.x=1-footprint.w/(2*state.flap.w);
+  if(vertical)x.y=verticalPlacement(footprint.h,vertical);
   syncSelectionControls();render();
 }
 
@@ -35,7 +35,7 @@ function setCustomColor(group,color,commit=false){
 
 function firstWord(value){
   const v=String(value||'').trim();
-  return v ? v.split(/\s+/)[0] : 'Voorbeeld';
+  return v ? v.replace(/\s+/g,' ').slice(0,60)+(v.length>60?'…':'') : 'Voorbeeld';
 }
 
 function textTracking(value){return Math.max(-.5,Math.min(2,Number(value)||0));}
@@ -43,24 +43,25 @@ function textTracking(value){return Math.max(-.5,Math.min(2,Number(value)||0));}
 function textWeight(value){return Number(value)===400?400:700;}
 
 function updateFontPreviews(){
+  for(const [fontId,weightId] of [['textFont','textWeight'],['editTextFont','editTextWeight']]){const family=$(fontId)?.value.split(',')[0].replace(/['"]/g,'').trim(),single=fontIsSingle($(fontId).value),weight=$(weightId);weight.disabled=single;weight.title=single?'Dit lettertype heeft één vaste dikte.':'';if(single)weight.value='400';}
   const apply=()=>{
-    const p=$('textFontPreview');
-    if(p){
-      p.textContent=firstWord($('textValue')?.value);
-      p.style.fontFamily=printFontFamily($('textFont')?.value);
-      p.style.fontWeight=String(textWeight($('textWeight').value));
-      p.style.letterSpacing=(textTracking($('textTracking').value)*26/Math.max(.5,Number($('textSize').value)||5))+'px';
-    }
-    const ep=$('editTextFontPreview');
-    if(ep){
-      ep.textContent=firstWord($('editText')?.value);
-      ep.style.fontFamily=printFontFamily($('editTextFont')?.value);
-      ep.style.fontWeight=String(textWeight($('editTextWeight').value));
-      ep.style.letterSpacing=(textTracking($('editTextTracking').value)*26/Math.max(.5,Number($('editTextSize').value)||5))+'px';
+    for(const [fieldId,previewId,textId,sizeId,weightId,trackingId] of [
+      ['textFont','textFontPreview','textValue','textSize','textWeight','textTracking'],
+      ['editTextFont','editTextFontPreview','editText','editTextSize','editTextWeight','editTextTracking']
+    ]){
+      const preview=$(previewId);if(!preview)continue;
+      const font=preview.dataset.comparisonFont||$(fieldId).value;
+      const family=font.split(',')[0].replace(/['"]/g,'').trim();
+      preview.textContent=firstWord($(textId).value);
+      preview.style.fontFamily=printFontFamily(font);
+      preview.style.fontWeight=String(fontIsSingle(font)?400:textWeight($(weightId).value));
+      preview.style.letterSpacing=(textTracking($(trackingId).value)*26/Math.max(.5,Number($(sizeId).value)||5))+'px';
+      preview.title=(preview.dataset.comparisonFont?'Voorbeeld, nog niet toegepast: ':'Gekozen lettertype: ')+family;
     }
   };
-  if(document.fonts?.ready){
-    document.fonts.ready.then(apply).catch(apply);
+  apply();
+  if(document.fonts?.status==='loading'){
+    if(!updateFontPreviews.waiting){updateFontPreviews.waiting=true;document.fonts.ready.then(()=>{updateFontPreviews.waiting=false;apply();}).catch(()=>{updateFontPreviews.waiting=false;});}
   }else{
     apply();
   }
@@ -70,6 +71,7 @@ function deleteSelectedObject(){
   const refs=allSelectedRefs();
   if(!refs.length)return;
   pushHistory();
+  if(pendingHeightMatch)cancelVectorHeightMatch();
   const logoIds=new Set(refs.filter(r=>r.type==='logo').map(r=>r.id));
   const textIds=new Set(refs.filter(r=>r.type==='text').map(r=>r.id));
   state.logos=state.logos.filter(x=>!logoIds.has(x.id));
@@ -86,7 +88,7 @@ function cloneSelectedForClipboard(){
   const refs=allSelectedRefs();
   return refs.map(r=>{
     const obj=itemById(r.id,r.type);
-    return obj?{type:r.type,data:JSON.parse(JSON.stringify(obj))}:null;
+    return obj?{type:r.type,data:JSON.parse(JSON.stringify(obj)),fonts:r.type==='text'?(state.ui?.customFonts||[]).filter(f=>f.family===SpatlapVectorExport.firstFamily(obj.font)):[]}:null;
   }).filter(Boolean);
 }
 
@@ -99,7 +101,8 @@ function copySelectedObjects(){
 
 function pasteInternalClipboard(offsetCm=.8){
   if(!internalClipboard.length){toast('Niets om te plakken');return;}
-  pushHistory();
+  const fontMap=new Map((state.ui?.customFonts||[]).map(f=>[f.family,f]));for(const entry of internalClipboard)for(const font of entry.fonts||[]){if(fontMap.has(font.family)&&fontMap.get(font.family).data!==font.data){throw Error('Een font-ID verwijst naar een ander bestand. Importeer het lettertype opnieuw; bestaande teksten zijn behouden.');}fontMap.set(font.family,font);}if(fontMap.size>5)throw Error('Maximaal vijf eigen lettertypen per ontwerp. Verwijder eerst een ongebruikt font.');
+  pushHistory();state.ui.customFonts=[...fontMap.values()];syncCustomFontOptions();void restoreDesignFonts();
   clearMultiSelection();
   let first=null;
   internalClipboard.forEach((entry,i)=>{
@@ -129,7 +132,7 @@ function duplicateSelectedObjects(){
   const copied=cloneSelectedForClipboard();
   if(!copied.length)return;
   internalClipboard=copied;
-  pasteInternalClipboard(.8);
+  try{pasteInternalClipboard(.8);}catch(error){toast(error.message);return;}
   toast(copied.length===1?'Onderdeel gedupliceerd':`${copied.length} onderdelen gedupliceerd`);
 }
 
@@ -263,7 +266,7 @@ function renderLists(){
     const b=document.createElement('button');b.textContent='Selecteer';b.onclick=()=>setSelected(x.id,'logo');
     const dup=document.createElement('button');dup.textContent='⧉';dup.title='Dupliceren';dup.onclick=e=>{e.stopPropagation();setSelected(x.id,'logo');duplicateSelectedObjects();};
     const del=document.createElement('button');del.className='trash';del.textContent='×';del.title='Verwijderen';
-    del.onclick=e=>{e.stopPropagation();state.selected=x.id;state.selectedType='logo';deleteSelectedObject();toast('Logo verwijderd');};
+    del.onclick=e=>{e.stopPropagation();clearMultiSelection();state.selected=x.id;state.selectedType='logo';deleteSelectedObject();toast('Logo verwijderd');};
     actions.append(b,dup,del);d.append(name,actions);ll.appendChild(d);
   });
 
@@ -275,7 +278,22 @@ function renderLists(){
     const b=document.createElement('button');b.textContent='Selecteer';b.onclick=()=>setSelected(x.id,'text');
     const dup=document.createElement('button');dup.textContent='⧉';dup.title='Dupliceren';dup.onclick=e=>{e.stopPropagation();setSelected(x.id,'text');duplicateSelectedObjects();};
     const del=document.createElement('button');del.className='trash';del.textContent='×';del.title='Verwijderen';
-    del.onclick=e=>{e.stopPropagation();state.selected=x.id;state.selectedType='text';deleteSelectedObject();toast('Tekst verwijderd');};
+    del.onclick=e=>{e.stopPropagation();clearMultiSelection();state.selected=x.id;state.selectedType='text';deleteSelectedObject();toast('Tekst verwijderd');};
     actions.append(b,dup,del);d.append(name,actions);tl.appendChild(d);
   });
+}
+
+function installFontGalleries(){
+ for(const [fieldId,previewId]of [['textFont','textFontPreview'],['editTextFont','editTextFontPreview']]){
+  const select=$(fieldId),preview=$(previewId),gallery=document.createElement('details');gallery.className='subdetails font-gallery';
+  const summary=document.createElement('summary');summary.textContent='Lettertypen vergelijken · veelgebruikt eerst';const grid=document.createElement('div');grid.className='font-gallery-grid';gallery.append(summary,grid);select.after(gallery);
+  const restore=()=>{clearArtworkFontPreview();delete preview.dataset.comparisonFont;updateFontPreviews();};
+  function populate(){grid.replaceChildren();const options=[...select.options].filter(o=>o.value&&!o.textContent.includes('alleen preview')).sort((a,b)=>(Number(fontUsage[b.value])||0)-(Number(fontUsage[a.value])||0));for(const option of options){const button=document.createElement('button');button.type='button';button.textContent=option.textContent;button.style.fontFamily=printFontFamily(option.value);button.style.fontWeight=fontIsSingle(option.value)?'400':'700';button.title=option.textContent;const sample=()=>{preview.dataset.comparisonFont=option.value;updateFontPreviews();if(fieldId==='editTextFont')previewArtworkFont(option.value);};button.onpointerenter=sample;button.onfocus=sample;button.onclick=()=>{restore();select.value=option.value;select.dispatchEvent(new Event('change',{bubbles:true}));gallery.open=false;};grid.append(button);}}
+  select.addEventListener('fontoptionschange',()=>{restore();if(gallery.open)populate();});gallery.addEventListener('toggle',()=>{if(gallery.open)populate();else restore();});gallery.addEventListener('pointerleave',restore);gallery.addEventListener('focusout',event=>{if(!gallery.contains(event.relatedTarget))restore();});select.addEventListener('change',()=>{rememberFont(select.value);restore();});
+ }
+ const help=document.createElement('details');help.className='subdetails';const title=document.createElement('summary');title.textContent='Tekst als vectorcontouren / hulp voor AI';help.append(title);
+ const text=document.createElement('p');text.className='field-help';text.textContent='Voor bewerkbare tekst gebruik je Eigen lettertype importeren. Als alternatief kun je tekst als SVG-contouren importeren via Logo toevoegen. Dat blijft vector, maar is daarna geen bewerkbare tekst meer. Gebruik alleen lettertypen waarvoor je gebruiksrechten hebt.';help.append(text);
+ const copy=document.createElement('button');copy.type='button';copy.textContent='Uitleg voor AI kopiëren';const status=document.createElement('p');status.className='field-help';status.setAttribute('role','status');
+ copy.onclick=async()=>{const prompt='Help mij tekst in een eigen lettertype voor de Spatlappen-ontwerptool voorbereiden. Vraag eerst welke tekst en welk lettertype ik bedoel. Verwacht een zelfstandig SVG-bestand met een geldige viewBox en echte paden: zet letters om naar contouren met het werkelijk aanwezige fontbestand. Geen ingesloten afbeeldingen, webfonts, externe URLs, scripts, filters, maskers of verzonnen contouren. Behoud gaten en kleur. Als het fontbestand ontbreekt, vraag dat eerst; stuur geen nep-SVG of JavaScript. Ik importeer het resultaat via Logo toevoegen. SVG-contouren zijn later als vectorvormen bewerkbaar, niet als gewone tekst. Geef daarom ook de oorspronkelijke tekst apart.';try{await navigator.clipboard.writeText(prompt);status.textContent='Gekopieerd; plak dit in je AI.';}catch{const field=document.createElement('textarea');field.readOnly=true;field.value=prompt;help.append(field);field.select();status.textContent='Kopieer de geselecteerde uitleg.';}};
+ help.append(copy,status);$('textSection').querySelector('.section-body').append(help);
 }

@@ -1,0 +1,17 @@
+> Vervolg27oktober: dezelfde date/stagekeys en voorkeuren, duidelijkere labels Aanvraagdatum/Uitvoeringsstatus. Kolom Aanvraag & planning sorteert op aanvraagdatum, niet geplande levering; title/aria zegt dat expliciet. Bij Maat opgeslagen uitvoering zichtbaar zodra daarop gesorteerd. Meer filters toont actieve extra criteria; bestaande fasefilter dat archief meeneemt krijgt uitleg. Bronwerk lokaal; eigen controle open, geen tests/build/browsercontrole/publicatie.
+
+# Aanvragen, orders en klanten sorteren
+
+23 oktober 2026 — lokaal bronwerk voor beide bedrijven. Philippe controleert zelf; geen tests, syntaxchecks, builds, browser-QA of publicatie uitgevoerd.
+
+Aanvragen & orders en Klanten beginnen standaard op **Laatst geopend**. De dropdown **Sorteren** staat direct naast de zoek-/filterkeuzes. Andere sorteringen blijven mogelijk: dossiernummer, orderdatum, klantnaam, status en verkoopbedrag bij orders; klantnaam, laatste bestelling en openstaand bedrag bij klanten. De bestaande klikbare orderkolommen werken mee met dezelfde voorkeur. Filters wissen verandert de gekozen sortering niet. Prijzen vergelijken behoudt zijn eigen rangschikking op overeenkomst.
+
+Een opening telt wanneer de CRM-shell een geldig order- of klantdossier toont en dit een ander dossier of een terugkeer vanuit een lijst/ander scherm is. Naar een ander onderdeel binnen hetzelfde dossier gaan, opslaan of achtergrondverversing verandert het tijdstip niet. Herladen of een dossier in een nieuwe tab openen geldt wel als opening. Een order openen registreert alleen die order; het klantdossier telt pas als je dat zelf opent. Achtergrondmails, imports en AI-bewerkingen krijgen geen verzonnen openingsmoment.
+
+Historische openingsmomenten bestaan niet. Nog niet geopende orders volgen op orderdatum (nieuwste eerst), dan dossiernummer en ID; klanten op laatste besteldatum, naam en ID. Dit is geen registratie van laatst bewerkt of nieuwste binnengekomen mail. De instelling geldt voor de gewone lijst en diens bestaande fase-/zoekfilters; gearchiveerde dossiers blijven onder hun bestaande zichtbaarheidsfilter vallen.
+
+`admin/workspace/dossier-preferences.js` bewaart alleen dossier-IDs, openingsmomenten en twee sorteerkeuzes in localStorage, met een aparte bedrijfssleutel `<companyId>:dossier-view-v1`. Maximaal1000 recente orders en1000 klanten; validatie en begrensde inleesgrootte. Geen namen, bedragen, zoektermen, formulierinhoud, mailinhoud, accounttokens of zakelijke state. Bij blokkade/volle browseropslag blijft de actuele tab bruikbaar met een melding dat bewaren niet lukt. Browserdata wissen of privévensters verliezen deze persoonlijke voorkeuren; geen automatische account-/apparaatsynchronisatie of backupimport. Lokale en online origins delen ze niet.
+
+Bij een volgende lijstrender worden bewaarde openingsmomenten uit andere tabbladen ingelezen; een ander tabblad veroorzaakt geen automatische schermvervanging. De sorteerkeuze van een al geopend scherm blijft staan tot je hem zelf wijzigt of herlaadt. Bestaande centrale CRM-opslag, rechten, dossiergegevens, transacties en providers veranderen niet.
+
+Eigen controle open: beide bedrijfsprofielen, opening → lijst → herladen, kolomsortering/dropdown, filters wissen, fasefilters, archief, klant met/zonder orders, prijsvergelijking, smal scherm en geweigerde/volle browseropslag. Geen gebruikersrecords of browservoorkeuren door de bouwer ingevuld.

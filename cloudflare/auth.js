@@ -35,6 +35,12 @@ export async function authenticated(request, env) {
   const found = await env.DB.prepare('SELECT email,auth_version,expires_at FROM crm_sessions WHERE token_hash=?').bind(await digest(value)).first();
   return found && found.email === email(env) && found.auth_version === await digest(env.CRM_PASSWORD_HASH) && found.expires_at > Math.floor(Date.now() / 1000) ? {email: found.email} : null;
 }
+// Device notifications are tied to a real login session, never a local bypass.
+export async function notificationIdentity(request,env){
+ const user=await authenticated(request,env);
+ if(!user||user.local)throw Object.assign(Error('Log in op de online CRM-versie om meldingen te gebruiken.'),{status:401});
+ return {sessionHash:await digest(token(request)),authVersion:await digest(env.CRM_PASSWORD_HASH),email:user.email};
+}
 export async function sessionFingerprint(request,env){
  if(!await authenticated(request,env))throw Object.assign(Error('Log opnieuw in om de koppeling te gebruiken.'),{status:401});
  return digest(token(request)+'|'+env.CRM_PASSWORD_HASH+'|'+env.CRM_COMPANY_ID);

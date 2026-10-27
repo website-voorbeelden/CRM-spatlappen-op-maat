@@ -13,8 +13,8 @@ function identity(payload){
   return {id,value:{orderId,documentId,body:{amountInCents:payload.amountInCents,description,expiryDate:payload.expiryDate,referenceId:'CRM'+id.replaceAll('-','')}}};
 }
 const uncertain='Tikkie heeft nog geen zeker antwoord gegeven. Controleer je Tikkie-portaal; we maken geen tweede link aan.';
-async function provider(env,path,method='GET',body){
-  return fetch((env.TIKKIE_BASE_URL||'https://api.abnamro.com/v2/tikkie')+path,{method,headers:{'API-Key':env.TIKKIE_API_KEY,'X-App-Token':env.TIKKIE_APP_TOKEN,'Content-Type':'application/json',Accept:'application/json'},body:body===undefined?undefined:JSON.stringify(body),signal:AbortSignal.timeout(25000),redirect:'manual'});
+async function provider(env,path,method='GET',body,{timeout=25000}={}){
+  return fetch((env.TIKKIE_BASE_URL||'https://api.abnamro.com/v2/tikkie')+path,{method,headers:{'API-Key':env.TIKKIE_API_KEY,'X-App-Token':env.TIKKIE_APP_TOKEN,'Content-Type':'application/json',Accept:'application/json'},body:body===undefined?undefined:JSON.stringify(body),signal:AbortSignal.timeout(timeout),redirect:'manual'});
 }
 async function create(env,payload){
   const {id,value}=identity(payload),encoded=JSON.stringify(value);
@@ -48,19 +48,19 @@ async function requests(env,orderId){
   const {results}=await env.DB.prepare('SELECT status,result FROM crm_tikkie_requests WHERE order_id=? ORDER BY created_at,id').bind(uuid(orderId)).all();
   return {links:results.filter(r=>r.result).map(r=>JSON.parse(r.result)),pending:results.some(r=>r.status==='pending')};
 }
-async function check(env,payload){
+export async function checkTikkiePayments(env,payload,{maxPages=100,requestTimeoutMs=25000}={}){
   if(!tikkieReady(env))fail('De online Tikkie-koppeling is nog niet ingesteld.',503);
   const saved=await requests(env,payload.orderId),linkId=payload.linkId?uuid(payload.linkId):null;
   const links=saved.links.filter(link=>!linkId||link.id===linkId);
   if(!links.length)fail('Geen opgeslagen Tikkie-betaallink voor deze order. Neem bij de migratie ook de Tikkie-historie mee.');
-  const get=async path=>{const response=await provider(env,path);if(!response.ok)fail('De Tikkie-betalingen konden niet worden opgehaald. Bestaande betalingen blijven behouden.',503);return response.json();};
+  const get=async path=>{const response=await provider(env,path,'GET',undefined,{timeout:requestTimeoutMs});if(!response.ok)fail('De Tikkie-betalingen konden niet worden opgehaald. Bestaande betalingen blijven behouden.',503);return response.json();};
   const checked=[];
   try{
     for(const link of links){
       const path='/paymentrequests/'+encodeURIComponent(link.paymentRequestToken),details=await get(path),payments=[],seen=new Set();
       if(typeof details.status!=='string')fail('Tikkie gaf een onvolledig antwoord.',503);
       let complete=false;
-      for(let page=0;page<100;page++){
+      for(let page=0;page<maxPages;page++){
         const data=await get(path+'/payments?pageNumber='+page+'&pageSize=50');
         if(!Array.isArray(data.payments))fail('Tikkie gaf een onvolledig antwoord.',503);
         for(const row of data.payments){
@@ -107,6 +107,6 @@ export async function handleTikkie({request,env}){
     if(!request.headers.get('Content-Type')?.startsWith('application/json'))fail('JSON verwacht.',415);
     const raw=await request.text();if(raw.length>10000)fail('Tikkie-verzoek is te groot.',413);
     const payload=JSON.parse(raw);
-    return Response.json(path.endsWith('/create')?await create(env,payload):await check(env,payload));
+    return Response.json(path.endsWith('/create')?await create(env,payload):await checkTikkiePayments(env,payload));
   }catch(error){return Response.json({error:error.status?error.message:error instanceof SyntaxError?'Ongeldige JSON.':'De Tikkie-opslag is niet beschikbaar. Er is geen nieuw verzoek bevestigd.'},{status:error.status||503});}
 }

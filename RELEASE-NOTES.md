@@ -1,7 +1,9 @@
-# CRM update — 19 October 2026
+# Gedeelde CRM-bron — 27 oktober 2026
 
-Mail workspace reform: explicit reply/new conversation and sender selection, attachment upload/read/save, single HTML signature with inline images, clearer sorting and filters. Invoice generation defaults to PDF; Word is optional. Website applicants with differing contact data can be reviewed against the existing customer or added as an extra contact.
+Vier opmaakbatches met Exact Online als referentie: centrale CSS en navigatie, compacte aanvraag-/orderdossiers met bereikbare ontwerpvarianten, overzichtslijsten en betalingen, mail/documenten/bijlagen. Gewone bediening blauw/neutraal; lichtpaars voor automatische herkomst en donkerpaars voor AI/interpretatie. Algemene voorwaarden alleen bij Maatwerkkunststof, expliciet toe te voegen/downloaden/slepen/kopiëren.
 
-Includes the pending shared workspace refactor, settings tabs, packing-slip batch review, VAT preparation and analytics controls. Existing customer records and runtime configuration are not included or migrated. Costing V2 remains optional source code; the standard published build still uses V1.
+Bevat ook het opgebouwde lokale bronwerk sinds de vorige GitHub-update: meerdere opgeslagen ontwerpversies, editorbediening, betaal-/mailwerkprocessen, gerichte formulier- en conflictcorrecties, mobiele meldingen en de vrijdagrapportbasis. Rapportplanning, Google Maps en andere nieuwe koppelingen worden niet door deze upload geactiveerd. Costing V2 blijft optionele bron; de normale bedrijfsbuild blijft V1 gebruiken.
 
-No automated tests, builds or browser QA were run, at the owner's request. Functional review remains open. This commit does not itself deploy Cloudflare, run database migrations or change Gmail permissions. Gmail remains read-only; mail sending retains the separate preview and user confirmation.
+Op expliciet verzoek alleen naar de aparte GitHub-branch `crm-ui-batches-20261027`. Geen wijziging van main of productie-uitrol. Privéconfiguratie, klantgegevens, feedbackexports, operationele overdracht en back-ups zijn niet opgenomen; bestaande deploymentconfiguratie en templates blijven behouden.
+
+Geen tests, automatische checks, syntaxchecks, builds of browser-QA uitgevoerd, op verzoek van de eigenaar. De vier opmaakbatches staan op review/local; functionele en visuele gebruikerscontrole voor beide bedrijven en mobiel blijven open. Bredere herstel-/login-/conflictscope en historische bouwtaken zijn niet als afgerond gemarkeerd. Bij een latere livegang moeten frontend en bijbehorende diensten doelgericht samen worden gepubliceerd.

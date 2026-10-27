@@ -1,3 +1,7 @@
+## Vervolg 24 oktober 2026
+
+Actuele bronwijzigingen en grenzen: docs/VERVOLGWERK-2026-10-24.md (vanaf projectroot). Nieuwste publicatiestatus staat bovenaan OVERDRACHT.md. Oudere uitspraken over alleen lokaal/ontbrekende customdomeinen zijn hieronder historische momentopnamen. Geen functionele tests door Codex uitgevoerd; Philippe controleert zelf.
+
 # Aanvraaggegevens uit een e-mail
 
 Open E-mail, kies een ontvangen gesprek dat nog geen order heeft en klik **Aanvraag herkennen**. De tekst van dat geopende bericht wordt lokaal gelezen. Er vindt bij deze herkenning geen AI-aanroep plaats; eventuele Gmail-ophaalacties blijven onderdeel van de bestaande mailbediening.

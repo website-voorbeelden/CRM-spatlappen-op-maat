@@ -46,5 +46,29 @@
   "UnifrakturMaguntia": {
     "400": "fonts/unifrakturmaguntia-400.ttf",
     "700": "fonts/unifrakturmaguntia-700.ttf"
+  },
+  "Metal Mania": {
+    "400": "fonts/metalmania-regular.ttf",
+    "700": "fonts/metalmania-regular.ttf"
+  },
+  "Rye": {
+    "400": "fonts/rye-regular.ttf",
+    "700": "fonts/rye-regular.ttf"
+  },
+  "Germania One": {
+    "400": "fonts/germaniaone-regular.ttf",
+    "700": "fonts/germaniaone-regular.ttf"
+  },
+  "Bungee": {
+    "400": "fonts/bungee-400.ttf",
+    "700": "fonts/bungee-400.ttf"
+  },
+  "Fredericka the Great": {
+    "400": "fonts/frederickathegreat-400.ttf",
+    "700": "fonts/frederickathegreat-400.ttf"
+  },
+  "Ewert": {
+    "400": "fonts/ewert-400.ttf",
+    "700": "fonts/ewert-400.ttf"
   }
 }

@@ -1,0 +1,9 @@
+{
+ "name": "crm-notifications-COMPANY",
+ "main": "index.js",
+ "compatibility_date": "2026-10-23",
+ "triggers": {"crons": ["*/15 * * * *"]},
+ "vars": {"CRM_NOTIFICATION_TARGET": "https://YOUR-CRM-HOST/api/crm/notifications/run"}
+ // CRM_NOTIFICATION_JOB_KEY: separate Worker secret, same value as its own Pages app.
+ // Do not copy the Spatlappen job key to Maatwerkkunststof or to a preview deployment.
+}

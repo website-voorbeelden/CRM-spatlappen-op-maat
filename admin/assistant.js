@@ -1,12 +1,12 @@
-import {assistantTransport} from './assistant/laptop-transport.js?v=laptop-bridge-20261021';
-import {markFormClean} from './form-guidance.js?v=form-protection-20261019';
+import {assistantTransport} from './assistant/laptop-transport.js?v=ui-batch234-20261027';
+import {markFormClean} from './form-guidance.js?v=crm-code-review-20261027';
 import {installOnlineAgentEntry} from './assistant/online-entry.js?v=feedback-launcher-20261020';
-import {specLabels,inquiryRequirements} from '../shared/inquiries.js?v=workspace-search-20261017';
+import {specLabels,inquiryRequirements} from '../shared/inquiries.js?v=ui-batch234-20261027';
 import {saveMicrophonePreference} from './field-dictation.js';
 import {normalizeAssistantKeys,captureShortcut,shortcutLabel,updateAssistantKey,defaultAssistantKeys} from '../shared/keyboard-shortcuts.js';
 import {loading} from './loading.js';
-import {assistantSnapshot,assistantTransportState} from '../shared/assistant-domain.js?v=provenance-20261015';
-import {describeAssistantPageContext} from '../shared/assistant-page-context.js?v=delivery-map-20261021';
+import {assistantSnapshot,assistantTransportState} from '../shared/assistant-domain.js?v=ui-batch234-20261027';
+import {describeAssistantPageContext} from '../shared/assistant-page-context.js?v=payments-overview-20261027';
 import {createLocalDictation} from './assistant-local-speech.js?v=mic-stable-20261013';
 import {createDictation,assistantShortcutAction} from './assistant-speech.js';
 const labels={company:'Klantnaam',contact:'Contactpersoon',email:'E-mail',invoiceEmail:'Factuurmail',phone:'Telefoon',vatNumber:'Btw-nummer',country:'Land',billingAddress:'Factuuradres',shippingAddress:'Afleveradres',notes:'Notities',customerId:'Klant',description:'Productomschrijving',quantity:'Aantal',width:'Breedte (mm)',height:'Hoogte (mm)',price:'Verkoop per stuk excl. btw',vat:'Btw (%)',date:'Orderdatum',expectedDate:'Verwachte levering',stage:'Orderstatus'};

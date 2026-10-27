@@ -1,5 +1,5 @@
-import {funnelPayment} from './sales-funnel.js';
-import {documentReplyContext} from './document-mail-context.js';
+import {funnelPayment} from './sales-funnel.js?v=ui-batch234-20261027';
+import {documentReplyContext} from './document-mail-context.js?v=crm-code-review-20261027';
 export function arrivalMail(state,id,company,{euro}){
  if(company.id!=='spatlappen')throw Error('Deze aankomstmail hoort bij Spatlappen.');
  const o=state.orders.find(o=>o.id===id),p=(state.purchases||[]).find(p=>p.id===o?.purchaseId);

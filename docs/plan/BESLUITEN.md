@@ -1,3 +1,7 @@
+## 27 oktober 2026 — Opmaakbatches2–4 en voorwaardenbijlage
+
+Philippe vraagt alle drie vervolgbatches en levert de voorwaarden-PDF. Expliciet alleen Maatwerkkunststof. Eén vaste bedrijfsdocumentallowlist, originele PDF, uitsluitend op gekozen toevoeging een gewone orderbijlage. Geen algemene automatische mailbijlage, geen upload op naam gelijkstellen, geen schijnbestand in clipboard. Browserafhankelijke kopie/drag met downloadterugval; daadwerkelijke mail via gewone preview/bevestiging. Exact één PDFpad uitzonderen bij toekomstige Maatbuild, niet alle PDFs toelaten; Spatasset vóór oplevering verwijderen. Presentatie blijft in featuremodules/centrale CSS, actuele state/CAS/versies blijven leidend. Bron lokaal/review; gebruiker test zelf en publicatie apart. Zie ../BATCHES2-4-OPMAAK-20261027.md en ../ALGEMENE-VOORWAARDEN-BIJ-ORDER.md.
+
 # Besluitenlog
 
 Noteer hier keuzes die een volgende bouwer anders opnieuw zou maken. Vermeld aanleiding, keuze, gevolg en wanneer herziening zinvol is. Tests en de laatste wijziging horen in `OVERDRACHT.md`; geplande functies in de roadmap.
@@ -323,3 +327,103 @@ Toon geen latere betaling als eigenschap van een oude PDF. Gebruik per gegeneree
 ## 21 oktober 2026 — Kaart volgt uitvoering, route blijft bewuste voorbereiding
 
 Standaard fysieke productie in beide profielen; geen verkoop-/ontwerpstatus als geografisch hoofdmodel. Gekoppelde batch als expliciete context, niet als bewijs complete klantorder. Bewuste stopselectie/volgorde met Maps-URLs pas na klik, zonder geocoding/API-rechten of nieuwe businessrecords. Geen optimale route/wegafstand/tijd claimen; aparte kostenvergelijking behouden. Bestaande adressen/leverafspraken blijven leidend en bij klik actueel controleren. Zie ../ORDERKAART-EN-BEZORGROUTE.md. Alleen lokaal, gebruikercontrole open.
+
+## 21 oktober 2026 — Snelle exports gebruiken dezelfde renderer
+
+Geen tweede vector-/PNGimplementatie en geen tijdelijk overschrijven van een actief ontwerp voor een download. Een aparte downloadtab hergebruikt de bestaande layout/export, leest alleen de gekozen opgeslagen bron en controleert opnieuw vóór aanbieden. Huidige framebeveiliging blijft staan. PDF blijft vector/waregrootte/fontcontrole; onleesbare PNGlogos blokkeren i.p.v. stil weglaten. Zie ../ONTWERP-DOWNLOADS.md; gebruikercontrole open, niet gepubliceerd.
+
+## 21 oktober — dossierconversie en meetdekking
+
+Exacte aanvraagkoppeling en bewust ontvangen contact delen geen anoniem browserprofiel via e-mail/telefoon. Persoonlijke bezoekdetails pas bij nieuwe, uitgelegde v2-meetkeuze; bestaande v1-rijen blijven algemene tellingen. Eerst eerste stappenmomenten en pagina→aanvraag; browser-/sessieaantallen onbekend laten tot echt sessiecontract. Geen onafgemaakte contactvelden opslaan. Eigen apparaat = per website/browser, teruggelezen status op website; onafhankelijke provideranalytics niet als uitgesloten presenteren. Websitecode/eigen meetdatabase apart van CRM en eigen binding per bedrijf. Lokaal bronwerk, release/gebruikerscontrole/open scope in WEBSITE-DOSSIER.md.
+
+## 23 oktober — formuliermetadata in headers
+
+Visuele ID-/herkomstfooter kan met een Gmail-citaat bij een klant belanden. Gebruik beperkt, gevalideerd headertransport naar de bestaande bedrijfseigen intake; geen onzichtbare HTML of nieuwe ontvanger. Bestaande bodyfallback behouden; metadata alleen geeft geen autorisatie, conflicten vragen review. Gedeelde CRM-lezer eerst leveren, aparte Spat-websitewriter daarna. Mogelijke spam van Gmail-antwoorden blijft afzonderlijke diagnose: SMTP2GO Delivered is geen inboxbewijs en klacht-events meten geen volledige automatische spamplaatsing. Geen echte mail/provider-/DNSwijziging of functionele controle deze ronde.
+
+## 23 oktober 2026 — Laatst geopend is een persoonlijke lijstvoorkeur
+
+Gebruiker wil aanvragen/orders/klanten standaard recent en zelf anders kunnen sorteren. Gekozen voor echte dossieropeningen per browser en bedrijf, geen zakelijke updatedAt-migratie of databasewrite bij bekijken. Bestaande naam/datum/bedrag/kolomkeuzes en zoekfilters behouden, sortering zichtbaar naast filters. Geen historische openmomenten of editdatum verzinnen; onbekende dossiers vallen terug op bestaande zakelijke datums/naam. Geen account-/apparaatsynchronisatie. Alleen lokale bron, gebruikercontrole open. Zie DOSSIER-SORTERING.md.
+
+## 23 oktober 2026 — Telefoon via gedeelde webapp en serveroutbox
+
+Gebruiker geeft opdracht mobiele betalingspush en open feedback verder te bouwen; export35meldingen aangeleverd. Eén bedrijfsgebonden webapp behouden. Push deelt bestaande rootserviceworker; beperkte aparte Cron-Worker roept beveiligde eigen Pages-taak aan. Geen centrale klantdata op een persoonlijke laptop nodig voor notificaties. Eerste ontvangstbaseline stil, positieve nieuwe ontvangst naar outbox, sessiegebonden toestelopt-in, geen klantdetails op lockscreen. Tikkiecontrole optioneel en begrensd, gewone bankbetalingen blijven handmatig. Geen automatische factuur/mail/productieactie. Bron volledig gescheiden van liveactivering; nog geen migratie/secretgeneratie/provideractie/publicatie/test uitgevoerd. Open werkzaamheden en activering in MOBIELE-MELDINGEN.md.
+
+Export via bestaande private feedbackdienst geïmporteerd:29nieuwe IDs,38totaal, bestaande statussen behouden. Geen onlinefeedbackstatus of klantrecord gewijzigd. Geen gedeeltelijk punt afgehandeld; private uitvoerplan houdt nieuwe ontwerptoolwensen en onzekere oudere punten open. Kleine aanvullende lokale reparaties: factuurontvangsten standaard aan, mobiele toetsenbordpositionering en Maat-contactprefix/Bedrijfalias.
+
+## 23 oktober — Vier lokale feedbackbatches, aparte activering
+
+Werk opgesplitst in mobiel/push, betaling/document, contact/mailwerkproces en editor. Details VIER-BATCHES-2026-10-23.md. Bestaande feedbackIDs/status/historie behouden en geen resolve op alleen bronwerk; Philippe test zelf. Geen provideractie of publicatie als verborgen onderdeel van bouwen.
+
+Een prijs is geen leverafspraak: in herstelvenster expliciet bevestigbaar paars voorstel, niet stil uit prijs afgeleid. Een PDF is geen verzonden mail: externe verzending alleen via expliciete registratie op concreet bestand. Geld is geen ontwerpgoedkeuring of fysieke productie: aparte vrijgavevoorwaarden/bevestiging behouden. Eigen font alleen met werkelijk font naar SVGcontouren; geen verzonnen fontJSON of raster-PDFfallback.
+
+## 27 oktober 2026 — resterende feedback verder bouwen
+
+Nieuwe expliciete vervolgopdracht laat gewone Spatlappen-productievrijgave automatisch volgen op de afgesproken aanbetaling plus actuele prijs/specificaties/ontwerpgoedkeuring. Read-only faseprojectie, geen fysieke uitvoering of historische datum afleiden. Gratis teststuk blijft bewust. Bestaande factuur-PDF voldoet aan de factuurwerkstap zonder verzendclaim. Opt-in leren uitsluitend na geslaagde save en alleen geometrie. Voor kleursegmenten lokale Paper.js-booleans met behoud van laagvolgorde/alpha en duidelijke invoergrenzen. Gebruiker kiest Google Maps voor routeafstand/rijtijd; eigen sleutel bij de bestaande beveiligde serveropslag, geen betaalde activering of providerproef gedaan. Geen tests of publicatie; OPEN-PUNTEN-VERVOLG-20261027.md.
+
+## 27 oktober 2026 — bronreview eerst concrete opslagfouten herstellen
+
+Dagelijkse dossieracties gebruiken actuele merge en beginbasis; geen zichtbare state muteren vóór geslaagde commit. Algemene save-route verwijderd, geen tweede gegevenslaag. Orderkopie krijgt geen ontwerpvarianten/goedkeuring/bestanden van het oorspronkelijke dossier. UI-callbackfouten na commit blijven apart van opslagfalen. Invoer tijdens bewaren blokkeren en bij fout behouden, ontbrekend foutvak lokaal aanvullen. Lokale back-upatomiciteit, loginherstel en bredere gelijktijdigheid expliciet openhouden; geen massale financiële refactor of volledige auditclaim. ALGEMENE-CODELEZING-20261027.md; geen tests of publicatie.
+
+## 27 oktober — klikmelding aanvragen/orders
+
+Gerichte correctie van niet-bestaande f naar bestaande funnel in order-progress; geen brede terugdraaiing van variant-/opslag-/vrijgavewerk of klantdata. Geen globale noodvariabele. De gebruiker weigert ook browseruitlezing; bronroute verklaren en eigen gebruikerscontrole openhouden in plaats van runtimebewijs claimen. Geen tests/publicatie.
+
+## 27 oktober — vlakke tabellen/grijze vlakken als nieuwe CRM-stijl
+
+Op expliciete feedback vervangt Excel-stijl de oudere ronde kaders. Niet alleen de hoeken veranderen: brede mailkolommen boven berichtdetail, vaste metadataregels en klant-/takenkoppen. Gedeelde centrale grijs/wit/rijstijl met groen hoofdactieaccent, afgebakende mail-CSS. Geen spreadsheetfuncties, extra hoofdknoppen, wijziging aan CRM-data of geproduceerde mail/PDF. Lokale bron, eigen gebruikerscontrole; geen tests/browseruitlezing/publicatie. Zie EXCEL-STIJL-20261027.md.
+
+## 2026-10-27 — Betaalde factuurtekst en herkenbare bevestigingsvarianten
+
+Philippe bevestigt dat zijn betalingsontvangstzin alleen bij volledig betaald hoort. Gebruik de bestaande betaalstatusregel; onbekend/open krijgt dezelfde factuurtekst zonder ontvangstclaim. Twee gevraagde bevestigingsteksten70%/volledig gebruiken bestaande variabelen en aangeleverde banktekst. Automatisch alleen bij passende vastgelegde linkbasis, anders neutraal; geen financiële afspraken aanpassen door een tekstkeuze. Eigen template-overrides en oude concepten niet migreren/overschrijven, label eigen aanpassing verduidelijkt bestaande reset. Zie MAIL-HERZIENING. Lokaal en eigen controle open, geen tests of publicatie.
+
+## 2026-10-27 — Bijlagen onderscheiden van ingebedde mailafbeeldingen
+
+Een filename alleen maakt een Gmail MIMEdeel geen losse dossierbijlage. Classificeer gedeeld bij lezen én download: image inline of zonder disposition met werkelijke CIDafbeeldingsverwijzing uitsluiten; explicit attachment en onzekerheid behouden. Niet op bestandsnaam/logoheuristiek wissen. Origineel/snapshots/dossierfiles behouden, geen automatische cloudopruiming. Bestaande SMTP2GO inlineverzending laten staan; Gmailnativepresentatie vraagt echte mailheaders en is niet bewezen. Alleen lokaal, bronfix en gebruikerscontrole apart. Zie MAIL-HERZIENING.
+
+## 2026-10-27 — Exactreferentie vervangt te brede Exceltoepassing
+
+Philippe corrigeert Codex: Excel niet op heel CRM bedoeld, wil Exact Online vrijwel1op1 als opmaakrichting. Kies openbare nieuwe-interfacevoorbeelden (geen Exactaccount/merkimitatie) en vervang de eigen Excel-laag: blauw hoofdactie/paars actief/witte inhoud, dunne lijstlijnen/kleine hoeken en duidelijke formulieren. Functionele maatwerkdossiers en eigen labels/routes behouden. Functievergelijking geeft advies, geen automatische bouwopdracht: vaste versie bij klantakkoord en begroting/werkelijkheid kansrijk, zwaar MRP-/magazijn-/boekhoudpakket geen uitgangspunt. Leverafspraken/offerteversies bestaan al. Historisch stijltaak-ID/historie behouden; nieuwste tekst is leidend. Geen tests/CRM-QA/publicatie.
+
+## 2026-10-27 — Kleine dossierbovenkant en expliciete kleurparen
+
+Gebruiker vindt faseblok te groot en meldt licht-op-licht. Huidige fase/bedrag blijven kort zichtbaar, volledige stappen en cijferkolommen standaard gesloten, volgende hoofdactie met reden zichtbaar. Review/conflictwaarschuwing niet achter historie verstoppen. Oude witte hovertekst bij nu lichte zijbalkkleuren aan de bron herstellen. Exactvoorbeeld toont plaatselijk paarse selectie, geen grond voor alle tabs/navigatie paars: daar donkerblauw. Inhoud/financiële/faseregels intact, geen contrastmeting of CRM-QA uitgevoerd.
+
+## 2026-10-27 — Eén CRM-stijlbasis en detail op verzoek
+
+Aanleiding: stapsgewijze UXbouw heeft thema-/onderdeelregels opgestapeld en orderoverzichten te groot gemaakt. Keuze: één actieve admin/style.css inclusief mail, één :root en gedeelde control-/surface-/detailpatronen. Specifieke indeling en responsivevoorwaarden blijven bestaan; geen blinde herschikking of nieuwe themalaag. Producten en volgende actie direct; aanvraag/planning/klant-/prijsdetails standaard dicht, echte tekorten/waarschuwingen zichtbaar. Complete onbesliste aanvraag mag afgeleid naar Prijs berekenen; bewuste handmatige/Gmailkeuze niet terugzetten. Direct rekenen zonder faseformulier. Niet meer tonen bij mailfasepopup is voorlopig lokale weergave, geen automatische bevestiging; optionele verduidelijking gebruiker blijft open. Alleen bron/docs, eigen controle open; geen tests/browsercontrole/publicatie. Zie CRM-CSS en COMPACT-ORDEROVERZICHT.
+
+## 2026-10-27 — Fasemelding verbergen zonder automatische fase te blokkeren
+
+Philippe beantwoordt de optionele vraag: alleen melding verbergen, fase blijft automatisch bekende gegevens volgen. Nieuwe bekende specs/indication/quote/confirmation-mails krijgen confirmed bij daadwerkelijke acceptatie-opslag, waarna bestaande pure afleiding werkt. Popup alleen uitleg, weer aan via Meer. Geen nieuwe factuur-/betaal-/fysieke feiten, geen migratie van oude pending/dismissed of acceptatieherstel en geen extra mail/Gmailactie. Dit vervangt de eerdere voorlopige popupinterpretatie. Gebruikerscontrole open; alleen bron, geen tests/publicatie.
+
+## 2026-10-27 — Gedeelde kleine melding met gerichte fase-undo
+
+Philippe vervangt de fasepopup door hetzelfde soort melding als een nieuwe aanvraag/betaling, met Bekijken/Terugdraaien. Hergebruik het inkomende-meldingsvak via één sessiemanager per bedrijf; geen modal of tweede zwevend vak. Alleen vorige fase selecteren op actuele workflowbasis, met guard op bron/fase/klantkoppeling en voorvertoning van de bedoelde afleiding. Mailacceptatie/betaling/documenten/fysieke feiten en andere gegevens behouden; geen algemene snapshot-undo. Voorkeur alleen weergave. Nieuwe bron lokaal, eigen gebruikerscontrole open; geen tests/publicatie.
+
+## 2026-10-27 — Eigen betaalinvoer blijft stil op de telefoon
+
+Philippe wil geen telefoonmelding over een betaling die hij zelf invoert. Eén herkomstregel op de server: alleen providerontvangsten uit de bestaande Tikkie-import (source en externe ontvangst-ID samen). Bij eventopbouw én vóór bezorging toepassen, zodat oude pending handmatige events ook stil blijven zonder historie te wissen. Tikkie controleren blijft providerimport; handmatig omschrijving invullen is geen betaalbewijs van de provider. Geen extra UIkeuze, poll, schema of toestelreset. Lokaal, gebruikerscontrole en publicatie apart; geen tests of pushproef.
+
+## 2026-10-27 — Vrijdagrapporten met bron-/meetgrenzen
+
+Philippe wil wekelijks interessante Search Console-/website-/conversiegrafieken en positieve/negatieve verschuivingen. Vorige volledige ma–zo naast week ervoor, voorstel vrijdag09.00 Europe/Amsterdam. Bronnen apart, bij voldoende volume en geschiedenis aandachtspunten; geen statistische significantie, oorzaken, unieke personen/sessies of betaalconversie verzinnen uit ontbrekende metingen. Deterministische grenzen, geen AI-/trackinguitbreiding. Bestaande job en readonlykoppelingen hergebruiken, eigen versleutelde bedrijfssnapshots laatste12, bounded retries met checkpoint/lease/CAS; geen businessstate of providerwrites. Lokale rapport-/CRM-klaarzetbasis, geen liveplanning. Ontvangstkeuze vroeg gevraagd en onbeantwoord; telefoon-/mailbezorging, gebruikerscontrole en expliciete publicatie blijven als restscope open. Zie VRIJDAGRAPPORTEN.md.
+
+## 2026-10-27 — Vrijdagrapporten bezorgen via bestaande telefoonapp
+
+Philippe kiest CRM met telefoonmelding en Rapport bekijken. Rapport eerst bewaren, daarna aparte bewaarde pushoutbox onder dezelfde bedrijfsgrens; geen fakebetaling/nieuwe mailroute/extra Worker. Eén editie-event, boundedretry en resterendeTTL, huidige sessie/key/apparaatversie/config/uitsluitingen vlak voor aanbieding. Native actieknop waar ondersteund, aantikken altijd dezelfde veilige editie-link met gewone login. Oude worker kan een nieuw bericht als betaling misclassificeren: eerst expliciete active-workerhandshake en capability bij de bestaande device vastleggen. Geen rapportcijfers op lockscreen, geen stil bestaande CRM-onlyconfig naar push migreren. Bron review/local, geen liveactivering, providerproef of publicatie; appupdate en gebruikerscontrole open.
+
+## 2026-10-27 — Betaling als eigen ingang naar klant/order
+
+Philippe kan een zojuist ontvangen Tikkie niet bij een klant plaatsen. Eén gedeeld readonly overzicht uit bestaande payments/order/customer, in menu Betalingen. Geen nieuwe ledger, automatische matching op bedrag, banktoegang of rekeninghouderclaim: de bron heeft alleen de gekoppelde CRM-klant. Actuele correcties niet dubbel optellen, archief/orphan zichtbaar, exacte bestaande orderlink. Filters/DOM bij refresh behouden en fouten tonen, geen providercontrole door Bijwerken. Bron review/local; gebruikerscontrole en publicatie apart. Zie BETALINGENOVERZICHT.md.
+
+## 27 oktober 2026 — betaalopslag, CRM-melding en telefoonbezorging onderscheiden
+
+Een opgeslagen Tikkie is geen bewijs dat een melding is getoond. Lokale sessieobserver voegt nieuwe providerontvangsten toe aan bestaande CRM-meldingsqueue; correctie/herstel/eigen invoer/initiale historie/expliciete import stil. Geen terugwerkend notificatiecentrum. Telefoonstatus leest alleen eigen apparaatbezorguitkomst binnen bestaand7dagenvenster; pushaccepted blijft afzonderlijk van telefoonweergave. Shared receiptpredicate voorkomt afwijkend handmatigbeleid. Geen nieuwe poll, schema, providerproef of publicatie; concrete gemiste telefoonoorzaak en gebruikerscontrole open.
+
+## 27 oktober 2026 — dossierstructuur boven verdere themalagen
+
+Na kritiek op de Exact-geïnspireerde preview de dossiersamenstelling aangepakt: één kop met compacte context/tabstrip, volgende actie bij producten, productregels in plaats van binnenkaders, aanvullend dossiergedeelte. Bestaande acties/projecties/data-/bewaarregels behouden. Algemene navigatiegeometrie beperkt tot het echte hoofdmenu, vervallen productregels opgeruimd. Opmaak in één centraal bestand bij bestaande eigenaren. Geen previewwaarneming of visuele gelijkheid claimen zonder gebruikersbeoordeling; bron lokaal/review, brede werkplek en eigen controle open.
+
+## 27 oktober 2026 — opmaakbatch1: gedeelde owners vóór schermwerk
+
+Eerst centrale type/spacing/control-/menu-/navigatiebasis uitwerken; dossiers/lijsten/mail volgen in eigen batches. Eén native controller voor quiet-menu en order-more, gewone details/filters niet als actiemenu behandelen. Native toetsenbord-/dialogbediening, bestaande routes/inklapvoorkeur en invoer behouden. Bovenbalk module/bedrijf groeperen, zoekbreedte laten meeschalen. CSS-eigenaars aanpassen en oude conflictlagen weghalen, geen nieuwe themeoverride of private data. Bron lokaal/review, eigen visuele/bedieningscontrole en publicatie apart.

@@ -1,4 +1,5 @@
-import {laptopContext} from '../../shared/assistant-laptop-context.js';
+import {laptopOriginAllowed} from '../../shared/laptop-origins.js';
+import {laptopContext} from '../../shared/assistant-laptop-context.js?v=ui-batch234-20261027';
 const instances=new Map(),marker='crm-laptop-v1';
 export function assistantTransport({companyId,runtime}){
  const key=runtime.mode+'|'+companyId;if(instances.has(key))return instances.get(key);
@@ -34,6 +35,7 @@ export function assistantTransport({companyId,runtime}){
  });
  async function enable(){
   if(!online){enabled=true;remember(true);notify();return;}
+  if(!laptopOriginAllowed(companyId,location.origin))throw Error('Dit adres is niet gekoppeld aan dit bedrijf. Open het CRM op het eigen crm-domein.');
   if(connected&&!popup?.closed){enabled=true;notify();return;}
   if(connecting)throw Error('Rond het openstaande koppelvenster eerst af.');
   // This call is deliberately synchronous with the user's click, before any await.

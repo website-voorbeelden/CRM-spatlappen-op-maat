@@ -1,8 +1,8 @@
-import {installQuoteBridge} from './quote-bridge.js?v=build-triage-20261021';
-import {openCrmDatabase,storageRuntime} from '../../admin/cloud-storage.js';
+import {installQuoteBridge} from './quote-bridge.js?v=crm-code-review-20261027';
+import {openCrmDatabase,storageRuntime} from '../../admin/cloud-storage.js?v=crm-code-review-20261027';
 import {calculationSignature,calculationRecord,applyCalculation} from './crm-storage.js';
 import {orderInputs,productValues} from './order-inputs.js';
-import {readCostQuote} from './quote-store.js';
+import {readCostQuote} from './quote-store.js?v=crm-code-review-20261027';
 const q=new URLSearchParams(location.search),status=document.querySelector('#crm-status'),button=document.querySelector('#crm-save');
 const el=id=>document.getElementById(id);
 function read(db){return new Promise((resolve,reject)=>{const tx=db.transaction('state'),r=tx.objectStore('state').get('main');r.onsuccess=()=>resolve(r.result);tx.onerror=()=>reject(tx.error);});}

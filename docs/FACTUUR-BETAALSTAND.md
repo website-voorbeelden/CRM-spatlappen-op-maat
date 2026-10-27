@@ -31,3 +31,7 @@ Bestaande nummer-/generatiegroepering blijft leidend. PDF en Word van dezelfde f
 De bestaande factuurmaker maakt steeds een **nieuw nummer voor de volledige orderwaarde**. Bij eerdere facturen verschijnt daarom een melding met de bestaande nummers en het verschil met een losse aanbetalings-/restfactuur. Opnieuw versturen kan via de bestaande documentkaart. Dit werk wijzigt geen factuurnummers, btw-bronnen, betaaltoerekening of financiële boekingen en introduceert geen deel-/restfacturen of correcties onder hetzelfde nummer. Een afzonderlijke betrouwbare route voor een nieuwe betaalweergave van dezelfde uitgegeven factuur blijft eventueel vervolgwerk; daarvoor niet ongemerkt meerdere volledige facturen uitreiken.
 
 Gebruikercontrole open: onbetaald/deel/volledig in beide profielen, lange stempeltekst in Word/PDF, nul/overbetaling en oude bestanden met ontbrekende bron. Geen visuele pasvormclaim op basis van een niet uitgevoerde renderproef.
+
+## Batch2 — 23 oktober 2026
+
+Ontvangsten vermelden heeft teller, geselecteerd bedrag en alles/niets; expliciet lege selectie na herstel behouden. Dit wijzigt de bestaande paidAmount/betaalstempel niet. Knop Factuur mailen nu op de bestaande router aangesloten; ontbrekende factuur maakt ook Maat met eigen generator vóór mailvoorbereiding. Geen oude factuur aangepast, geen ontvangst aan een individuele factuur toegewezen, geen echte verzending. Zie BETALINGEN-EN-DOCUMENTEN.md; niet getest of gepubliceerd.

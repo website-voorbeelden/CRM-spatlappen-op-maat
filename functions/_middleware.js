@@ -1,3 +1,4 @@
+import {validNotificationJob} from '../cloudflare/notifications.js';
 import {companyFromEnv} from '../shared/companies.js';
 import {authenticated,authReady,localBypass,localHost} from '../cloudflare/auth.js';
 export async function onRequest(context) {
@@ -15,9 +16,13 @@ export async function onRequest(context) {
     catch{return Response.json({error:'Bedrijfsregistratie ontbreekt. Rond de veilige publicatieprocedure af.'},{status:503});}
   }
   if(company.tool!=='design'&&url.pathname.startsWith('/spatlap-preview')||company.tool!=='costing'&&url.pathname.startsWith('/tools/costing/'))return new Response('Deze tool hoort bij een andere bedrijfsversie.',{status:404});
+  if(url.pathname==='/api/crm/notifications/run'){
+    if(!validNotificationJob(context.request,context.env))return Response.json({error:'Geen toegang.'},{status:401,headers:{'Cache-Control':'no-store'}});
+    return context.next();
+  }
   // Pages redirects .html URLs to their extensionless equivalents.
   const offlineCode=url.pathname==='/crm-offline-sw.js'||url.pathname.startsWith('/admin/offline/')||['/shared/offline-state.js','/shared/companies.js'].includes(url.pathname);
-  const favicon=['/admin/icons/spatlappen.svg','/admin/icons/maatwerkkunststof.svg'].includes(url.pathname);
+  const favicon=/^\/admin\/icons\/(spatlappen|maatwerkkunststof)(?:-(192|512)\.png|\.svg)$/.test(url.pathname)||url.pathname==='/crm.webmanifest';
   const publicLogin=['/login','/login.html','/login.css','/login.js','/auth/login'].includes(url.pathname);
   const api=url.pathname.startsWith('/api/')||url.pathname.startsWith('/__local/')||url.pathname.startsWith('/auth/');
   if (!['GET','HEAD'].includes(context.request.method)) {

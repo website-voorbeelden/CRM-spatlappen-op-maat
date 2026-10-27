@@ -1,5 +1,5 @@
 import {gmailPhaseSuggestions} from './gmail-labels.js';
-import {funnelPhasesFor} from './sales-funnel.js?v=maat-cleanup-20261021';
+import {funnelPhasesFor} from './sales-funnel.js?v=ui-batch234-20261027';
 const random=()=>Array.from(crypto.getRandomValues(new Uint8Array(32)),n=>n.toString(16).padStart(2,'0')).join('');
 const digest=async value=>Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(JSON.stringify(value)))),n=>n.toString(16).padStart(2,'0')).join('');
 const failure=message=>Object.assign(Error(message),{status:409});

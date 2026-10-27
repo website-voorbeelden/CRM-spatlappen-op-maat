@@ -1,3 +1,5 @@
+> Actuele aanvulling23oktober2026: mobiele webapp/push is nu als lokale bron toegevoegd. Zie [MOBIELE-MELDINGEN.md](MOBIELE-MELDINGEN.md) voor actuele implementatie, grenzen en nog uit te voeren Cloudflare-activering. De oudere test-/runtimebeschrijving hieronder is historie; voor deze uitbreiding geen tests of publicatie uitgevoerd. Modals volgen nu ook visualViewport-offset en actief veld; factuurontvangsten standaard aangevinkt, expliciete uitvinkselectie bij terugkeer behouden.
+
 # Mobiel, persoonlijke sneltoetsen en invulhulp
 
 De gedeelde CRM-code biedt vanaf 14 oktober 2026 dezelfde bediening voor beide bedrijven. Herlaad na een update. Er is niets gepubliceerd en er zijn geen echte mails, Gmail-wijzigingen of betaalverzoeken uitgevoerd tijdens deze uitbreiding.

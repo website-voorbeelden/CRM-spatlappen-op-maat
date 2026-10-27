@@ -1,3 +1,5 @@
+> Vervolg27oktober: [vectorsegmenten en optioneel plaatsingsleren](OPEN-PUNTEN-VERVOLG-20261027.md). Segmenten volgen vectorgebieden in plaats van alleen begrenzingsvakken. Leren standaard uit en alleen na geslaagde save, voorstel expliciet toepassen, inhoud/klantdata niet leren. Oude beweringen niet gebouwd hieronder zijn historisch. Geen tests/publicatie.
+
 # Spatlappen-ontwerptool: werkplan 18 oktober 2026
 
 Doel: Philippe plaatst en vergelijkt logo’s met weinig handelingen, vooral op brede spatlappen. Alle wensen eerst geborgd in Bouwtaken 35–41. Dit plan is geen bewijs dat de functies al gebouwd zijn.
@@ -109,3 +111,33 @@ Kleurvenster: vaste stalen in volgorde wit/zwart/donkergrijs, HEX/RGB tekstinvoe
 Start met rustig laadscherm tot ontwerp/modules/fonts gereed, met herstelknop na15s zonder reset. Nieuwe automatische radius10% kortste zijde (voorheen20%); handmatige bestaande waarde behouden.
 
 Tijdens formaatbewerking eerste Esc = invoer afronden/selectie behouden/pijltjes bewegen. Volgende losse Esc deselecteert. ✥ naast maatvelden doet hetzelfde; geen scrollsprong. Ingevoerde maat behouden, undo via bestaande wijzigingsroute.
+
+## Directe downloads — 21 oktober 2026
+
+Bij bewaarde ontwerpen Preview PNG en Vector-PDF naast Openen. Ook bij opgeslagen orderproductontwerp, met bronlabel/datum; losse uploads/goedkeuringen niet met het huidige vectorontwerp verwarren. Aparte downloadtab gebruikt bestaande export zonder editor te openen/op te slaan, met voortgang, blijvende downloadlink en hulp naar juiste ontwerp bij fouten. Onbewaard werk intact, maten/bronconflicten blokkeren, vectorcontroles behouden. Zie [Ontwerpdownloads](ONTWERP-DOWNLOADS.md). Alleen lokaal gebouwd, geen tests/downloadproef/publicatie, Philippe controleert zelf.
+
+## Feedbackbatch — 23 oktober 2026
+
+Selectie opent het juiste paneel; bestaande tekst bewerken gaat boven nieuwe tekst invoeren. Nieuwe tekst blijft via gesloten + Tekst toevoegen bereikbaar. Tekstsectie staat vóór Plaatsing & hulplijnen. Het tekstvak gebruikt de zijbalkbreedte, groeit en accepteert Enter; inline bewerken groepeert undo per focus-/objectsessie.
+
+Toolbar biedt naast horizontaal ook verticaal tussen de dichtstbijzijnde randen, spiegelen en kwartslag draaien om eigen midden. Opmaakmodus bij hoogtereferentie neemt uitsluitend tekstfont/grootte/gewicht/kleur/afstand over; geen inhoud/positie. Dubbelklik SVG opent bestaande onderdeelmodus en kiest onderliggende geometrie;±10% schaalt het geselecteerde stuk met behoud van SVGstructuur. Het blijft een beperkte SVGeditor, geen volledige Illustrator.
+
+Fontvoorbeeld staat boven keuze met60 tekens en hover-/toetsenbordvergelijking in gesloten galerij. Drie echte lokale extra fonts: Metal Mania, Rye, Germania One. Eén echte dikte; geen gesimuleerd bold. Eigen font via gesloten AIhulp voor echte SVGcontouren, niet als editable TTF/JSONimport. Zie print-assets/EXTRA-FONTS-20261023.md.
+
+Meerregelige tekst, rotatie en spiegeling zijn doorgetrokken naar bewaren, portable transfer, PNG en vectorpaden. Alleen bronwijzigingen, geen tests/build/browser-/export-/productieproef. Deze batch vervangt eerdere beperkingen over éénregelige tekst/ontbrekende transformaties, niet bestaande opslag-/productiebeveiligingen.
+
+## Batch4 vervolg — 23 oktober 2026
+
+Gedraaide logo’s: vrij breedte/hoogte schalen volgt zichtbare schermassen; de lokale w/h-as wordt bij90/270° verwisseld. Links/boven/randuitlijning en passend maken gebruiken gedraaide kaderafmetingen, ratio blijft lokaal. Meerregelige en gedraaide tekst wordt verticaal geplaatst met het bestaande gemeten kader, niet alleen de fontgrootte. Geen nieuwe geometrie-export of opslagvelden.
+
+Live tekstbewerking: een andere historyactie en undo/redo beëindigen de tekstgroep; verder typen begint opnieuw. Zijbalk schrijft dezelfde textarea-inhoud niet onnodig terug en past de hoogte ook bij herhaalde selecties aan. Fontgalerij houdt een tijdelijk hover-/focusvoorbeeld, inclusief één echte dikte, ook als document.fonts.ready later afloopt. Vertrek/keuze/sluiten herstelt het gekozen font; hover wijzigt geen artwork.
+
+Klassieke laadvolgorde en bestaande vector-/rasterblokkades behouden; cache batch4-editor-20261023. Geen tests, syntaxchecks, browser-QA of export-/productieproef; Philippe controleert zelf. Publicatie apart vastgelegd.
+
+## Integriteit na bronlezing — 26 oktober 2026
+
+Een kruisje op één lijstregel verwijdert alleen die regel, ook na een groepsselectie. Nieuw logo/tekst wordt een eigen selectie. Ongedaan/opnieuw beëindigt tijdelijke groep/vector-/referentiekeuzes; daarna werken acties op de herstelde primaire selectie. Bijsnijden houdt rekening met lokale spiegeling en kwartslagrotatie; vervangen behoudt die oriëntatie. Bij gewijzigde order-klantkoppeling bewaren weigeren met behoud van het onbewaarde ontwerp en hulp voor een kopie. Bron lokaal aangepast, niet getest/gepubliceerd. Volledige feedbackmatrix en open font-/plaatsings-/variantwensen staan in EDITOR-BRONLEZING-20261026.md; niet alle configuratietoolfeedback afgehandeld.
+
+## Vier delen26oktober
+
+VIER-DELEN-20261026.md is de actuele aanvulling: varianten per product/revisies/definitieve keuze, eigen statische TTF/OTF, tijdelijk font- en vectorvoorbeeld op artwork met expliciet kiezen/toepassen, kleurpalet, randlijn, selectiezoom en korte losse kopie. Uitgebreide kleur-/SVGvormbediening en plaatsingsvoorkeuren ingeklapt. Desktopartwork en aanvullende opties apart scrollbaar; mobiel bestaande viewport behouden. Geen tests/publicatie; alle gebruiks-/exportcontrole door Philippe. Echte verbonden segmenten in compound SVGpaden en automatisch plaatsingsleren niet gebouwd.

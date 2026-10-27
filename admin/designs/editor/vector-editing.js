@@ -21,10 +21,13 @@ function applyVectorRoot(logo,root,reframe=false){
   if(!next.every(Number.isFinite)||width<=0||height<=0)throw new Error('Het vectoronderdeel heeft ongeldige afmetingen.');
   if(reframe){
     // Expand the image viewport without shifting any of its other shapes.
+    const oldCenterX=logo.x,oldCenterY=logo.y;
     const oldW=logo.w,oldH=logo.h,oldLeft=logo.x*state.flap.w-oldW/2,oldTop=logo.y*state.flap.h-oldH/2;
     logo.w=oldW*width/old[2];logo.h=oldH*height/old[3];logo.ratio=logo.w/logo.h;
     logo.x=(oldLeft+(left-old[0])*oldW/old[2]+logo.w/2)/state.flap.w;
     logo.y=(oldTop+(top-old[1])*oldH/old[3]+logo.h/2)/state.flap.h;
+    const dx=(logo.x-oldCenterX)*state.flap.w,dy=(logo.y-oldCenterY)*state.flap.h;
+    logo.x=oldCenterX;logo.y=oldCenterY;offsetArtworkCenter(logo,dx,dy);
     if(logo.vectorCrop){const c=logo.vectorCrop;logo.vectorCrop={x:c.x+c.w*(left-old[0])/old[2],y:c.y+c.h*(top-old[1])/old[3],w:c.w*width/old[2],h:c.h*height/old[3]};}
   }
   root.setAttribute('viewBox',next.join(' '));root.setAttribute('width',String(width));root.setAttribute('height',String(height));
@@ -39,6 +42,7 @@ function syncVectorPieceControls(){
   $('vectorPieceControls').style.display=logo?.svgMarkup?'block':'none';
   if($('wholeLogoColorStatus').dataset.logoId!==logo?.id)$('wholeLogoColorStatus').textContent='';
   const editing=logo?.id===vectorEditingLogoId;
+  if(editing)$('vectorAdvanced').open=true;
   $('toggleVectorParts').textContent=editing?'Klaar met onderdelen bewerken':'Losse vectoronderdelen bewerken';
   $('restoreVectorOriginal').disabled=!logo?.originalVectorMarkup;
   $('vectorPieceEditPanel').style.display=editing?'block':'none';
@@ -88,8 +92,10 @@ function vectorPieceKeydown(e,typing){
   if(typing||!vectorPieceApi||!vectorEditingLogoId)return false;
   if(e.key==='Escape'){e.preventDefault();deselectArtwork();return true;}
   if(['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(e.key)){
-    e.preventDefault();const step=e.shiftKey?1:.1,p=vectorPieceApi.position();
-    mutateVectorPiece(api=>api.moveTo(p.x+(e.key==='ArrowLeft'?-step:e.key==='ArrowRight'?step:0),p.y+(e.key==='ArrowUp'?-step:e.key==='ArrowDown'?step:0)),true);return true;
+    const logo=itemById(vectorEditingLogoId,'logo');if(!logo){clearVectorEditing();return false;}
+    e.preventDefault();const step=e.shiftKey?1:.1,p=vectorPieceApi.position(),angle=artworkRotation(logo)*Math.PI/180,dx=e.key==='ArrowLeft'?-step:e.key==='ArrowRight'?step:0,dy=e.key==='ArrowUp'?-step:e.key==='ArrowDown'?step:0;
+    const localX=(Math.cos(angle)*dx+Math.sin(angle)*dy)*(logo.flipX?-1:1),localY=-Math.sin(angle)*dx+Math.cos(angle)*dy;
+    mutateVectorPiece(api=>api.moveTo(p.x+localX,p.y+localY),true);return true;
   }
   if(e.key==='Delete'||e.key==='Backspace'){e.preventDefault();$('deleteVectorPart').click();return true;}
   if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='d'){e.preventDefault();$('duplicateVectorPart').click();return true;}

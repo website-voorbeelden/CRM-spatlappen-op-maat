@@ -1,3 +1,7 @@
+> Actuele aanvulling26oktober: [batch4 mail en CRM](BATCH4-MAIL-EN-CRM-20261026.md). Meer met labels klapt binnen de pagina uit; labelconflicten zonder gesprekheropening; refresh bewaart recente invoer en oorspronkelijk antwoord. Deze ronde uitsluitend bronwerk, geen tests/publicatie.
+
+> Actuele batch3-aanvulling, 23 oktober: [klant en mailwerkproces](KLANT-EN-MAILWERKPROCES.md). Contact inline aanpassen, templatekeuze direct bij tekst en bewerken zonder oudermail vervangen; consistente reply-/nieuwkeuze. Alleen lokale bron, niet getest/gepubliceerd. Oudere testbeschrijvingen hieronder zijn historie.
+
 # Mailwerkplek en offerteaanvragen
 
 De nieuwe werkplek staat op **E-mail** en in het **E-mailtabblad van een order**. In de algemene mailbox staan gesprekken links en het antwoord rechts. In een order opent het recentste bewaarde Gmail-gesprek direct over de volle breedte; als er geen Gmail-gesprek is, opent het recentste CRM-gesprek. **Gesprekken** opent de wissellijst en filters. Mails worden als veilige tekst getoond, zonder actieve HTML of externe afbeeldingen.

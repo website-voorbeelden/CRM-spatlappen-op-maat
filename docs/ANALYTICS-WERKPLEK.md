@@ -1,0 +1,17 @@
+> Actueel24oktober: beide CRM’s gepubliceerd als crm-analytics-notifications-20261024; servermeldingen actief na expliciete toestemming. Automatische betaalprovidercontrole uit. Toestelopt-in en fysieke gebruikerscontrole nog nodig. Geen functionele tests uitgevoerd. Zie bovenaan OVERDRACHT.md; oudere lokaal/geen-activeringpassages zijn historische momentopnamen.
+
+# Analytics-werkplek — 24 oktober 2026
+
+Gedeelde presentatie voor beide bedrijven. Analytics opent op Overzicht. Website, Aanvragen, Financiën, Btw en Google/SEO blijven rechtstreeks bereikbaar op hun bestaande routes. Nieuwe route #analytics/overview; #analytics opent hetzelfde overzicht.
+
+Overzicht begint met paginabezoeken, ontvangen websiteaanvragen, exact bezoek→aanvraag en gemiddelde tijd vanaf eerste servermeting van een gekoppelde pagina. Daarna één daggrafiek met bezoeken/aanvragen, dagtabel optioneel, twee aparte conversietellingen en compacte CRM-cijfers. Ontvangen formulieren zonder meettoestemming kunnen wel als aanvraag tellen; paginabezoeken zijn geen unieke mensen. De twee lijnen hebben daarom geen identieke dekking. CRM-dossiers zijn alle bronnen/pagina’s op orderdatum, niet alleen het websitepaginafilter; die cijfers niet bij aanvragen optellen. Verkoopstappen tonen huidige feiten, niet historisch bewezen doorlopen stappen.
+
+Website en Aanvragen houden hun eigen kerncijfers en rapport. Foutsoorten, pagina-/contactdetails, meetuitleg en recente dossiers zijn inklapbaar. Geen enorme losse kaart meer voor nog niet gemeten sessies. Een veranderde filter wist een succesvol rapport niet: lokale status benoemt dat de vorige pagina/periode nog staat. Bij fout blijven vorige cijfers herkenbaar met Opnieuw proberen. Na wijziging van testuitsluitingen wordt de vorige weergave wel gewist, zodat eerder uitgesloten inhoud niet als actueel blijft staan. Zonder meetbinding of bij een eerste fout blijven CRM-cijfers beschikbaar; ontbrekende websitecijfers zijn onbekend.
+
+Financiën toont eerst verkoop/kosten/marge excl. btw en ontvangen geld incl. btw. Orderwaarde is geen factuuromzet. Eén zichtbare interactieve grafiek gebruikt bestaande financialGroups, met maand/klant/inkoop/land en waarde/aantal/marge. Laatste twaalf aanwezige maanden direct zichtbaar, oudere maanden optioneel; bij andere groepen de tien grootste en de rest optioneel. Dit is geen doorlopende kalendergrafiek met geschatte nulmaanden. Negatieve waarden en onvolledige bedragen blijven herkenbaar. Klik opent precies dezelfde dossiers. Openstaande bedragen over alle periodes en topklanten staan gesloten daaronder. Materiaal/dikte blijft bij Maat beschikbaar.
+
+Cohortcorrectie: een offertedocument met ownerId naar de order telt nu net als orderId als offertebewijs, overeenkomstig de bestaande CRM-aanvraagtelling. Geen documenten/bedragen of dossiers aangepast.
+
+Alle styling centraal admin/style.css; grafiekgeometrie is data, kleuren en meteropmaak centraal. Geen tracking toegevoegd, geen nieuwe opslag, geen live websites gewijzigd en geen Google/providerrechten aangevraagd. Websitecollector, unieke browsers/30-minutensessies en verdere retentie blijven apart werk met de website-AI.
+
+Geen tests, syntaxchecks, browser-QA of controlebuilds uitgevoerd op afspraak. Philippe beoordeelt de bediening zelf. Publicatie en meldingenactivering worden afzonderlijk bovenaan OVERDRACHT.md geregistreerd; bouwen van de noodzakelijke publicatieassets is geen functioneel testbewijs.

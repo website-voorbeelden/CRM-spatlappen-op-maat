@@ -30,10 +30,11 @@ export async function cloudRequest(path,options={}) {
 }
 export function openBrowserDatabase(name,storeNames) {
   return new Promise((resolve,reject)=>{
+    let blocked=false;
     const request=indexedDB.open(name,1);
     request.onupgradeneeded=()=>{for (const store of storeNames) if (!request.result.objectStoreNames.contains(store)) request.result.createObjectStore(store,store==='state'?undefined:{keyPath:'id'});};
-    request.onsuccess=()=>resolve(request.result);request.onerror=()=>reject(request.error);
-    request.onblocked=()=>reject(Error('Sluit andere CRM-tabbladen en probeer opnieuw.'));
+    request.onsuccess=()=>{const db=request.result;if(blocked){db.close();return;}db.onversionchange=()=>db.close();resolve(db);};request.onerror=()=>reject(request.error);
+    request.onblocked=()=>{blocked=true;reject(Error('Sluit andere CRM-tabbladen en probeer opnieuw.'));};
   });
 }
 let cloudDatabase;
@@ -84,7 +85,7 @@ export async function commitCloud(body) {
 }
 
 // A deliberately small transaction facade for the methods used by this CRM.
-// Success callbacks fire only after the central transaction has been committed.
+// Request callbacks may enqueue more requests; oncomplete alone confirms commit.
 // No IndexedDB shadow writes or background upload can pretend a save succeeded.
 export class CloudDatabase {
   constructor() {this.queue=Promise.resolve();this.observed=new Map();this.revision=null;}
@@ -97,11 +98,16 @@ export class CloudDatabase {
 }
 class CloudTransaction {
   constructor(db,names,mode) {this.db=db;this.names=names;this.mode=mode;this.requests=[];this.operations=[];this.aborted=false;this.done=false;this.readKeys=new Set();}
-  abort() {this.aborted=true;}
+  abort() {if(this.done||this.committing)throw Error('Deze opslagbewerking kan niet meer worden afgebroken.');this.aborted=true;}
+  dispatch(type) {
+    // A UI error after commit must never become a failed transaction/retry.
+    try {this[type]?.({target:this});}
+    catch(error) {queueMicrotask(()=>{throw error;});}
+  }
   objectStore(name) {
     if (!this.names.includes(name)||!['state','files','reports','designs','planning'].includes(name)) throw Error('Onbekende gegevensverzameling.');
     const enqueue=(action,key,value)=>{
-      if (this.done||this.aborted) throw Error('Deze opslagbewerking is al afgesloten.');
+      if (this.done||this.aborted||this.committing) throw Error('Deze opslagbewerking is al afgesloten.');
       if (['put','delete','clear'].includes(action)&&this.mode!=='readwrite') throw Error('Deze opslagbewerking is alleen-lezen.');
       const request={result:undefined,error:null};
       this.requests.push({name,action,key,value:clone(value),request});return request;
@@ -114,6 +120,7 @@ class CloudTransaction {
       if(isReviewMode()&&this.mode==='readwrite')throw Error(readOnlyMessage);
       const data=isReviewMode()?await reviewSnapshot(this.names):await cloudRequest('/snapshot?stores='+this.names.join(','));
       const values=new Map(this.names.map(name=>[name,new Map(name==='files'?data.files.map(f=>[f.id,f]):Object.entries(data.records[name]||{}))]));
+      const writtenKeys=new Set(),clearedStores=new Set();
       this.db.revision=data.revision;
       while (this.requests.length) {
         if (this.aborted) throw Error('Opslaan afgebroken.');
@@ -139,20 +146,27 @@ class CloudTransaction {
         } else {
           // Blind saves may originate from a form opened before another device
           // changed this record. Such a save must not overwrite newer values.
-          if (action==='put'&&name!=='files'&&!this.readKeys.has(observedKey)&&this.db.observed.has(observedKey)&&this.db.observed.get(observedKey)!==JSON.stringify(map.get(key))) throw Object.assign(Error('Gegevens zijn intussen gewijzigd. Sluit dit formulier en open het opnieuw; je invoer is nog niet opgeslagen.'),{status:409});
-          if (action==='clear') map.clear();
+          if (['put','delete'].includes(action)&&name!=='files'&&!this.readKeys.has(observedKey)&&!writtenKeys.has(observedKey)&&!clearedStores.has(name)&&this.db.observed.has(observedKey)&&this.db.observed.get(observedKey)!==JSON.stringify(map.get(key))) throw Object.assign(Error('Gegevens zijn intussen gewijzigd. Sluit dit formulier en open het opnieuw; je invoer is nog niet opgeslagen.'),{status:409});
+          if (action==='clear') {map.clear();clearedStores.add(name);}
           else if (action==='delete') map.delete(key);
           else map.set(key,value);
+          if(action!=='clear')writtenKeys.add(observedKey);
           this.operations.push({store:name,action,...(key===undefined?{}:{key}),...(action==='put'?{value}: {})});
           request.result=key;
         }
+        if(this.aborted)throw Error('Opslaan afgebroken.');
         request.onsuccess?.({target:request});
         // Requests enqueued synchronously from an onsuccess callback are included.
       }
       if (this.aborted) throw Error('Opslaan afgebroken.');
       if (this.operations.length) {
         const operations=[];
-        for (const op of this.operations) operations.push(op.store==='files'&&op.action==='put'?{...op,value:await uploadCloudFile(op.value.blob)}:op);
+        for (const op of this.operations) {
+          if(this.aborted)throw Error('Opslaan afgebroken.');
+          operations.push(op.store==='files'&&op.action==='put'?{...op,value:await uploadCloudFile(op.value.blob)}:op);
+        }
+        if(this.aborted)throw Error('Opslaan afgebroken.');
+        this.committing=true;
         const saved=await commitCloud({id:crypto.randomUUID(),revision:data.revision,operations});
         this.db.revision=saved.revision;
         for (const op of this.operations) if (op.store!=='files') {
@@ -160,29 +174,30 @@ class CloudTransaction {
           if (op.action!=='clear') this.db.observed.set(op.store+'/'+op.key,JSON.stringify(op.action==='put'?op.value:undefined));
         }
       }
-      this.done=true;this.oncomplete?.({target:this});
     } catch(error) {
       this.error=error;this.done=true;
       if (error.status===409) window.dispatchEvent(new Event('crm-cloud-conflict'));
-      this.onerror?.({target:this});this.onabort?.({target:this});
+      this.dispatch('onerror');this.dispatch('onabort');return;
     }
+    this.done=true;this.dispatch('oncomplete');
   }
 }
 
 export function startCloudRefresh({onChanged}) {
   if(isReviewMode())return ()=>{};
-  let busy=false;
+  let busy=false,disposed=false;
+  const changed=()=>{if(!disposed)onChanged();};
   async function check() {
-    if (busy||document.hidden) return;
+    if (disposed||busy||document.hidden) return;
     busy=true;
     try {
       const latest=await cloudRequest('/snapshot?stores=state');
       const observed=cloudDatabase?.observed.get('state/main');
-      if (observed!==undefined&&JSON.stringify(latest.records.state?.main)!==observed) onChanged();
+      if (!disposed&&observed!==undefined&&JSON.stringify(latest.records.state?.main)!==observed) changed();
     } catch { /* Saves and opening a page surface connection failures separately. */ }
     finally {busy=false;}
   }
   const timer=setInterval(check,15000);window.addEventListener('focus',check);
-  window.addEventListener('crm-cloud-conflict',onChanged);
-  void check();return ()=>clearInterval(timer);
+  window.addEventListener('crm-cloud-conflict',changed);
+  void check();return ()=>{disposed=true;clearInterval(timer);window.removeEventListener('focus',check);window.removeEventListener('crm-cloud-conflict',changed);};
 }

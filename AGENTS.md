@@ -14,6 +14,32 @@ Deze map bevat één CRM met twee bedrijfsprofielen. De instructies van de gebru
 
 Philippe test zelf. Vanaf deze afspraak geen browser-QA, automatische tests, check- of buildrondes uitvoeren tenzij hij daar opnieuw expliciet om vraagt. Wijzigingen wel zorgvuldig doorvoeren en documenteren; vertel wat gewijzigd is zonder testclaims. Deze expliciete gebruikersafspraak gaat voor de oudere controle-instructies hieronder.
 
+## Nieuwste UX-correctie — 27 oktober 2026: Exact Online
+
+Philippe bedoelde Excel niet voor zijn hele CRM. De brede Excel-laag is vervangen; neem de openbare nieuwe Exact Online-interface als opmaakreferentie: blauwe hoofdacties, rustige witte werkvlakken, lichte pagina-achtergrond, donkerblauwe tabs/navigatie en blauwe selectie-/filteraccenten, lijniconen, dunne horizontale lijstscheidingen en duidelijke formulieren. Eigen merken/werkprocessen, één hoofdactie/Meer, inline aanvullen en invoerbehoud blijven. Alleen gegevenslijsten als tabellen; geen algemeen celraster, groene Excelstijl of terugkeer naar overal grote ronde kaders. Lees docs/EXACT-REFERENTIE-20261027.md en het nieuwste deel van UX-WERKPLEK.md. Oudere Excelafspraken zijn historie. Nieuwe Exactfuncties zijn voorstellen, geen opdracht ze allemaal te bouwen. Geen tests/CRM-browser-QA of CRM-DOMuitlezing; uitsluitend openbare Exactvoorbeelden mogen als brononderzoek bekeken worden. Eigen gebruikerscontrole en publicatie blijven apart.
+
+## Aanscherping dossierbovenkant en contrast — 27 oktober 2026
+
+Philippe vindt de bovenkant met alle fases te groot. Behoud compacte huidige fase en bekend bedrag/saldo; volledige stappen/keuzes onder standaard gesloten Fases & voortgang, vier cijferkolommen onder Bedragen & marge. Volgende hoofdactie/ontbrekende gegevens en actieve conflict-/reviewmeldingen zichtbaar, overige opties Meer/toelichting. Donkere tekst op lichte vlakken inclusief hover/focus/actief/disabled, geen algemeen paars thema. Inhoud/toegang/bevoegdheden en financiële-/voortgangsbetekenis niet wijzigen door compact maken. Lees nieuwste UX-WERKPLEK/OVERDRACHT. Geen tests of browsercontrole, Philippe beoordeelt zelf.
+
+## Laatste kleurafspraak — 27 oktober 2026: herkomst, geen paars thema
+
+Paars is uitsluitend voor de herkomst van ingevulde gegevens: heel lichtpaars voor rechtstreeks automatisch overgenomen waarden, templates, defaults, berekeningen en Gmailfases; donkerpaars met witte tekst voor AI of interpretatie (vrije mailherkenning/historische bronvergelijking). Bronuitleg maakt AI versus interpretatie expliciet. Kleur volgt de bron, niet assisted/automatic of wie een voorstel bevestigt. Tabs, navigatie, filters, selectie, bouwtaken en kaartlegenda gebruiken blauw/neutrale kleuren. Geen historische herkomst verzinnen of data migreren. Handmatige afwijking verliest de markering. Lees docs/HERKOMST.md; alleen bronwerk, Philippe controleert zelf.
+
+## Nieuwste onderhoudsafspraak — 27 oktober 2026: centrale CSS en compact dossier
+
+Eén actieve CRM-stylesheet admin/style.css, inclusief de eerder apart toegestane mailopmaak; mail/mail.css is nu een lege compatibiliteitsURL. Eén :root voor gedeelde kleuren/type/radius, bestaande controls/surfaces gebruiken, geen nieuwe losse feature-CSS/inline vaste presentatie of gedateerde override erbij. Onderdeelregels alleen waar indeling/bediening het vereist; bestaande responsivevolgorde/specificiteit behouden. Losse tools/offline/login en documentinhoud apart. Lees docs/CRM-CSS.md. Dit vervangt de oudere mail-CSSuitzondering hieronder.
+
+Orderoverzicht: producten/ontwerp en volgende actie zichtbaar; checklist, planning, klant/notities en herhaalde prijsopbouw standaard dicht. Tekorten/actieve waarschuwingen/te laat zichtbaar houden. Prijs berekenen zonder extra faseformulier, complete onbesliste aanvraag mag afgeleid Prijs berekenen worden; bewuste handmatige/Gmailkeuze behouden. Nieuwste expliciete antwoord: nieuwe bekende SMTPmailfasen volgen automatisch in dezelfde acceptatie-opslag; de fasemelding gebruikt het gedeelde niet-modale meldingsvak met Bekijken en gericht Terugdraaien. Nieuwere fase/bron/betaling/klantkoppeling niet overschrijven; geen mail/betaal-/fysieke feiten of hele snapshot terugzetten. Niet meer tonen verbergt alleen melding per bedrijf/browser, faseafleiding onafhankelijk. Oude pending/dismissed en acceptatieherstel niet migreren; legacyreview behouden. Meer → Fase-meldingen zet meldingen weer aan. Lees docs/COMPACT-ORDEROVERZICHT.md. Geen tests/checks/build/browsercontrole/publicatie; Philippe beoordeelt zelf.
+
+## Meldingenafspraak — 27 oktober 2026
+
+Zelf een betaling invoeren geeft geen telefoonpush. Beperk betalingspush tot bestaande Tikkie-providerontvangsten (source tikkie én niet-lege tikkie:externalId), bij eventopbouw én vóór bezorging. Tikkie controleren is providerimport en blijft meldingsgerechtigd; gewone betaalopslag/toast, polling, dedup en toestelkeuzes behouden. Geen migratie/queuewissen of providerproef. Zie docs/MOBIELE-MELDINGEN.md; correctie lokaal, eigen controle/publicatie apart.
+
+## Vrijdagrapporten — ontvangstkeuze 27 oktober 2026
+
+Philippe kiest rapport in CRM met telefoonmelding en Rapport bekijken. Alleen algemene melding op lockscreen, veilige link naar exacte editie, normale login en invoerbehoud. Oude workers niet met nieuw betaalvreemd payloadtype benaderen; capabilityhandshake/apparaat-/sessie-/sleutelversie leidend. Standaard geen geactiveerde rapportconfig; bron klaar, publicatie/activering en telefoonappupdate/eigen controle apart. Geen e-mail of Codex-appschema. Lees docs/VRIJDAGRAPPORTEN.md en MOBIELE-MELDINGEN.md. Geen tests/providerproef/browsercontrole zonder expliciete toestemming.
+
 ## Btw-afspraken — 19 oktober 2026
 
 Spatlappen en Maatwerkkunststof hebben aparte btw-administraties. Het gebruikte stelsel weet Philippe nog niet: laat dit instelbaar op Nog vaststellen, niet raden of live invullen. Voor de btw-berekeningen is opnieuw expliciet bevestigd: geen automatische tests uitvoeren, Philippe test zelf. Fictieve testfixtures mogen klaarstaan maar zijn niet uitgevoerd. Lees docs/BTW-VOORBEREIDING.md vóór uitbreiding; voorbereiden is niet indienen.
@@ -48,4 +74,4 @@ Geen bouwtaken meer handmatig invullen via browserformulieren. Noteer bouwwerk v
 
 ## Mailherziening — 19 oktober 2026
 
-Gebruiker heeft voor mail expliciet een eigen afgebakend stylesheet toegestaan: admin/mail/mail.css, naast de centrale CRMstijl. Geen stijlen buiten mail/attachment-dialog laten lekken. Eerst mail herstellen, AI-assistent vindbaar maken staat daarna in roadmap. Lees docs/MAIL-HERZIENING.md. Geen echte mails/Gmailmutaties en geen tests/build/browser-QA uitvoeren; gebruiker test zelf. Gmail blijft readonly, SMTP2GO verzendt na expliciete gebruikersklik. Aanvraagformuliermelding aan beheerder bestaat doorgaans niet in de mailbox van de klant; correcte replyheaders zijn geen garantie van een bestaande klantthread.
+Historisch toegestaan: een eigen afgebakend mailstylesheet. De nieuwe centralisatieopdracht27oktober heeft deze uitzondering vervangen: mailselectors staan nu ook in admin/style.css, admin/mail/mail.css is alleen een lege compatibiliteitsURL. Geen stijlen buiten mail/attachment-dialog laten lekken. Eerst mail herstellen, AI-assistent vindbaar maken staat daarna in roadmap. Lees docs/MAIL-HERZIENING.md. Geen echte mails/Gmailmutaties en geen tests/build/browser-QA uitvoeren; gebruiker test zelf. Gmail blijft readonly, SMTP2GO verzendt na expliciete gebruikersklik. Aanvraagformuliermelding aan beheerder bestaat doorgaans niet in de mailbox van de klant; correcte replyheaders zijn geen garantie van een bestaande klantthread.

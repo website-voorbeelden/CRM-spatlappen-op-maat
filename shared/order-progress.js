@@ -1,5 +1,6 @@
+import {orderDesignApproved} from './product-design-variants.js?v=batch1-variants-20261026';
 import {companyFor} from './companies.js';
-import {salesFunnel} from './sales-funnel.js?v=maat-cleanup-20261021';
+import {salesFunnel} from './sales-funnel.js?v=ui-batch234-20261027';
 const knownDate=value=>typeof value==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(value)&&Number.isFinite(Date.parse(value));
 export const executionStages=['Besteld bij leverancier','In productie','Onderweg naar Nederland','Binnen in Nederland','Verzonden','Afgerond'];
 export function orderExecution(o){
@@ -12,7 +13,7 @@ export function orderExecution(o){
 }
 export function orderProgress(state,o,companyId){
  const design=companyFor(companyId).tool==='design',funnel=salesFunnel(state,o,companyId),execution=orderExecution(o),payment=funnel.payment;
- const designApproved=knownDate(o.approvedDate)||(state.documents||[]).some(d=>d.ownerId===o.id&&d.imageRole==='approved');
+ const designApproved=orderDesignApproved(state,o);
  const quoteSent=knownDate(o.quoteSentDate)||funnel.events.some(e=>e.phase==='quote'&&(e.source==='mail'||!['pending','dismissed'].includes(e.review)));
  const quotePrepared=Boolean(o.quoteDraft)||(state.documents||[]).some(d=>d.ownerId===o.id&&(d.generated?.kind||d.category)==='quote');
  const firstDone=design?designApproved:!funnel.missing.length&&payment.known;
@@ -22,7 +23,7 @@ export function orderProgress(state,o,companyId){
   {key:'intake',label:design?'Ontwerp':'Aanvraag & prijs',tab:'overview',done:firstDone,status:design?(designApproved?'Akkoord geregistreerd':'Ontwerp en akkoord controleren'):funnel.missing.length?funnel.missing.length+' gegevens nog nodig':payment.known?'Specificaties en prijs bekend':'Prijs nog aanvullen'},
   {key:'quote',label:'Offerte',tab:'documents',done:quoteSent,status:quoteSent?'Verstuurd geregistreerd':quotePrepared?'Concept beschikbaar':'Nog niet verstuurd'},
   {key:'payment',label:'Betaling',tab:'payments',done:payment.fullyPaid,status:payment.fullyPaid?'Volledig ontvangen':payment.paid>0?'Deels ontvangen':payment.known?'Nog geen betaling':'Orderbedrag nog onbekend'},
-  {key:'execution',label:'Uitvoering',tab:'costs',done:execution.shipped,status:execution.started?execution.label:'Nog niet geregistreerd'},
+  {key:'execution',label:'Uitvoering',tab:'costs',done:execution.shipped,status:execution.started?execution.label:funnel.phase==='released'?'Productie vrijgegeven · start nog registreren':'Nog niet geregistreerd'},
   {key:'delivery',label:'Levering',tab:'delivery',done:execution.delivered,status:execution.delivered?'Ontvangst geregistreerd':execution.shipped?'Verzonden · ontvangst nog registreren':'Nog niet geleverd'}
  ].map((step,index)=>({...step,current:index===current}));
  return {funnel,execution,steps,purchase:(state.purchases||[]).find(p=>p.id===o.purchaseId)||null};

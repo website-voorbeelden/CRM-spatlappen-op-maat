@@ -10,7 +10,7 @@ export function websiteCohort(state,report,{totals}){
  const paid=new Set(),quoted=new Set();
  for(const [id,orders] of groups)for(const o of orders){
   // A quote document or registered sending is evidence; a stage name alone is not.
-  if(o.quoteSentDate||(state.documents||[]).some(d=>d.orderId===o.id&&d.category==='quote'))quoted.add(id);
+  if(o.quoteSentDate||(state.documents||[]).some(d=>(d.orderId===o.id||d.ownerId===o.id)&&d.category==='quote'))quoted.add(id);
   const t=totals(o);if(t.priceKnown&&o.shippingKnown&&Number.isFinite(t.total)&&t.total>0&&t.paid>=t.total)paid.add(id);
  }
  return {linked:groups.size,quoted:quoted.size,paid:paid.size,unlinked:Math.max(0,(report.leads?.count||0)-groups.size),complete:report.leadIdsComplete===true};

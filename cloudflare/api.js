@@ -1,7 +1,10 @@
+import {handleNotifications} from './notifications.js';
+import {handleWeeklyReports} from './weekly-reports.js';
 import {handleOnlineAssistant,hostedAgentReady} from './assistant.js';
 import {validateTaskProgress} from '../shared/planning/progress.js?v=build-triage-20261021';
 import {handleMarketing} from './marketing.js';
 import {websiteAnalytics} from './site-analytics.js';
+import {websiteJourney} from './website-journey.js';
 import {companyFromEnv} from '../shared/companies.js';
 import {validateBusinessState} from '../shared/state-validation.js';
 import {authReady,localBypass,authenticated} from './auth.js';
@@ -162,10 +165,15 @@ export async function handleCrm({request,env}) {
       loadCommit:async id=>await env.DB.prepare('SELECT revision FROM crm_commits WHERE id=?').bind(id).first(),
       commitState:(state,{id,revision})=>commit(env,{id,revision,companyId:company.id,operations:[{action:'put',store:'state',key:'main',value:state}]})
     });
+    if(path.startsWith('notifications/'))return handleNotifications({request,env,dependencies:{
+      loadSnapshot:async()=>{const s=await snapshot(env.DB,['state']);return {revision:s.revision,state:s.records.state?.main||{orders:[],payments:[],activities:[]}};},
+      commitState:(state,{id,revision})=>commit(env,{id,revision,companyId:company.id,operations:[{action:'put',store:'state',key:'main',value:state}]})
+    }});
     if(path.startsWith('marketing/'))return handleMarketing({request,env});
-    if (request.method==='GET'&&path==='website-analytics') {
+    if(path==='weekly-reports'||path.startsWith('weekly-reports/'))return handleWeeklyReports({request,env,loadSnapshot:async()=>{const s=await snapshot(env.DB,['state']);return {state:s.records.state?.main||{}};}});
+    if (request.method==='GET'&&['website-analytics','website-journey'].includes(path)) {
       const current=env.DB?await snapshot(env.DB,['state']):null;
-      return websiteAnalytics({request,env,state:current?.records.state?.main||{}});
+      return (path==='website-journey'?websiteJourney:websiteAnalytics)({request,env,state:current?.records.state?.main||{}});
     }
     if (!env.DB||!env.CRM_FILES) fail('Database- of bestandsbinding ontbreekt.',503);
     if (request.method==='GET'&&path==='snapshot') {

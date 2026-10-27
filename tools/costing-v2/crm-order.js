@@ -1,13 +1,13 @@
-import {openCrmDatabase,storageRuntime} from '../../admin/cloud-storage.js';
-import {readCostQuote} from '../costing/quote-store.js';
-import {orderTarget,seedOrderCalculation,orderCalculationRecord,saveOrderCalculation} from './crm-order-domain.js?v=quick-entry-20261016';
+import {openCrmDatabase,storageRuntime} from '../../admin/cloud-storage.js?v=crm-code-review-20261027';
+import {readCostQuote} from '../costing/quote-store.js?v=crm-code-review-20261027';
+import {orderTarget,seedOrderCalculation,orderCalculationRecord,saveOrderCalculation} from './crm-order-domain.js?v=provenance-colors-20261027';
 const g=window,api=g.CrmCostCalculator,esc=g.GasketV2Geometry.esc;
 const context=document.getElementById('v2-order-context'),entry=document.getElementById('v2-order-link'),status=document.getElementById('v2-status');
 const money=cents=>cents==null?'Onbekend':new Intl.NumberFormat('nl-NL',{style:'currency',currency:'EUR'}).format(cents/100);
 let target=null,busy=false;
 const serial=()=>JSON.stringify(api.exportState());
 const read=db=>new Promise((resolve,reject)=>{const tx=db.transaction('state'),r=tx.objectStore('state').get('main');r.onsuccess=()=>resolve(r.result);tx.onerror=()=>reject(tx.error);});
-async function connection(){const runtime=await storageRuntime();if(runtime.companyId!=='maatwerkkunststof'||runtime.mode!=='local')throw Error('Orderkoppeling V2 werkt alleen met het lokale Maatwerkkunststof-CRM.');return openCrmDatabase();}
+async function connection(){const runtime=await storageRuntime();if(runtime.companyId!=='maatwerkkunststof'||runtime.offlineReview||runtime.mode==='cloud'&&runtime.features?.costingV2!==true)throw Error('Open calculator V2 vanuit de bijgewerkte Maatwerkkunststof-versie. Online moet het V2-pakket expliciet zijn meegeleverd; offline alleen lezen is hier niet ondersteund.');return openCrmDatabase();}
 function modal(title){const d=document.createElement('dialog');d.className='v2-help-dialog';d.dataset.orderDialog='';d.setAttribute('aria-label',title);d.innerHTML='<header><h2>'+title+'</h2><button type="button" data-close>Sluiten ×</button></header><div data-body></div>';document.body.append(d);let active=true;const close=()=>{if(busy)return;active=false;d.close();d.remove();};d.querySelector('[data-close]').onclick=close;d.addEventListener('cancel',e=>{e.preventDefault();close();});d.showModal();return {d,body:d.querySelector('[data-body]'),close,isActive:()=>active};}
 function updateUrl(){const u=new URL(location.href);for(const k of ['orderId','itemId','quoteId'])u.searchParams.delete(k);if(target){u.searchParams.set('orderId',target.order.id);u.searchParams.set('itemId',target.item.id);}history.replaceState(null,'',u.pathname+u.search+u.hash);}
 function syncPrimary(){document.getElementById('v2-customer-save').hidden=!!target;for(const button of document.querySelectorAll('[data-customer-save],[data-order-primary]')){if(target){button.removeAttribute('data-customer-save');button.setAttribute('data-order-primary','');button.setAttribute('data-order-review','');button.textContent='Deze uitkomst in de order opslaan';}else{button.removeAttribute('data-order-primary');button.removeAttribute('data-order-review');button.setAttribute('data-customer-save','');button.textContent='Deze berekening bij klant bewaren';}}}

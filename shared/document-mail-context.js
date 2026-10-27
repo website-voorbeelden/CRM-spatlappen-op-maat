@@ -1,5 +1,5 @@
 import {replyReferences,validMessageId,replySubject} from './mail-reply.js';
-import {emailAddresses} from './mail-inbox.js?v=workspace-search-20261017';
+import {emailAddresses} from './mail-inbox.js?v=crm-code-review-20261027';
 // Reuse only one unambiguous saved conversation for this order and recipient.
 // No provider call, new Gmail permission or customer match by subject alone.
 export function documentReplyChoices(state,orderId,recipient){

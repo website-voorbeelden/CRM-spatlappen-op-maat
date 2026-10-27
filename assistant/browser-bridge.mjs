@@ -1,8 +1,8 @@
+import {laptopOriginAllowed} from '../shared/laptop-origins.js';
 import {randomBytes,createHash} from 'node:crypto';
 import {readFile,writeFile,mkdir,rename,chmod} from 'node:fs/promises';
 import path from 'node:path';
 const random=()=>randomBytes(32).toString('hex'),hash=value=>createHash('sha256').update(value).digest('hex');
-const origins={spatlappen:['https://spatlappen-crm.pages.dev','http://localhost:3010'],maatwerkkunststof:['https://maatwerkkunststof-crm.pages.dev','http://localhost:3011']};
 const escape=value=>String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const fail=(message,status=400)=>Object.assign(Error(message),{status});
 export async function createBrowserBridge({directory,connection,run,signal}){
@@ -21,7 +21,7 @@ export async function createBrowserBridge({directory,connection,run,signal}){
    if(unavailableReason)throw fail(unavailableReason,503);
    prune();const local='http://127.0.0.1:'+req.socket.localPort;
    if(url.pathname==='/browser-bridge'&&req.method==='GET'){
-    const company=url.searchParams.get('company'),origin=url.searchParams.get('origin');if(!Object.hasOwn(origins,company)||!origins[company].includes(origin))throw fail('Dit CRM-adres is niet toegestaan.',403);
+    const company=url.searchParams.get('company'),origin=url.searchParams.get('origin');if(!laptopOriginAllowed(company,origin))throw fail('Dit CRM-adres is niet toegestaan.',403);
     if(pending.size>=100)throw fail('Te veel openstaande koppelvensters.',429);
     const old=String(req.headers.cookie||'').split(';').map(v=>v.trim()).find(v=>v.startsWith('crm_bridge_browser='))?.split('=')[1],browser=/^[a-f0-9]{64}$/.test(old||'')?old:random(),nonce=random(),scriptNonce=random();
     const grant=hash(browser+'|'+company+'|'+origin);pending.set(nonce,{company,origin,grant,expires:Date.now()+300000});
