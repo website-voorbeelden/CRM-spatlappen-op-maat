@@ -10,6 +10,7 @@ export function designVariantsMarkup(context,order,item,{imageTag,variantUrl}){
   const preview=context.state.documents.find(d=>d.id===variant.previewId&&d.ownerId===order.id&&d.itemId===item.id);
   const artwork=context.state.documents.some(d=>d.id===variant.documentId&&d.ownerId===order.id&&d.itemId===item.id&&d.internalDesign);
   const mismatch=variant.sourceBasis&&!variantMatchesProduct(item,variant),selected=item.designFinalVariantId===variant.id,isFinal=final?.id===variant.id;
+  const vector=variant.vectorSummary,vectorLabel=vector?.version===1?({vector:'Vector',mixed:'Deels vector',raster:'Afbeelding (pixels)',empty:'Geen artwork'})[vector.level]||'Vectorstatus onbekend':'Vectorstatus nog niet vastgesteld';
   const label=isFinal?'Definitief':mismatch?'Maat / aantal gewijzigd':selected?'Keuze opnieuw bevestigen':'Voorstel';
   const status=context.badge(label,isFinal?'green':mismatch||selected?'orange':'');
   const date=variant.updatedAt&&Number.isFinite(Date.parse(variant.updatedAt))?context.date(variant.updatedAt.slice(0,10)):'Datum onbekend';
@@ -20,7 +21,7 @@ export function designVariantsMarkup(context,order,item,{imageTag,variantUrl}){
   }).join('');
   const warning=mismatch?'Open deze variant, controleer de maat en het aantal en bewaar een nieuwe versie.':!preview||!artwork?'Ontwerp of voorbeeld ontbreekt. Open en bewaar deze variant opnieuw.':selected&&!isFinal?'Het product of ontwerp is gewijzigd. Controleer opnieuw vóór je de keuze bevestigt.':'';
   return `<article class="design-variant ${isFinal?'is-final':''}">
-   <div class="design-variant-heading"><h4>${esc(variant.name)}</h4>${status}<small>${esc(date)} · ${revisions.length+1} bewaarde versie${revisions.length?'s':''}</small></div>
+   <div class="design-variant-heading"><h4>${esc(variant.name)}</h4>${status}<span class="badge" data-design-vector-result="${esc(variant.documentId)}">${esc(vectorLabel)}</span>${!vector?`<button type="button" data-design-vector-status="${esc(variant.documentId)}" data-order="${esc(order.id)}" data-item="${esc(item.id)}">Vectorstatus bekijken</button>`:''}<small>${esc(date)} · ${revisions.length+1} bewaarde versie${revisions.length?'s':''}</small></div>
    ${preview?`<button type="button" class="design-variant-preview" data-action="view-product-image" data-id="${esc(preview.id)}" aria-label="Voorbeeld van ${esc(variant.name)} vergroten">${imageTag(preview)}</button>`:'<p class="form-help">Geen voorbeeld beschikbaar.</p>'}
    ${warning?`<p class="design-variant-warning">${warning}</p>`:''}
    <div class="actions"><a href="${esc(variantUrl(order,item,variant.id))}" target="_blank" rel="noopener">Openen / bewerken ↗</a>${!isFinal&&!mismatch&&preview&&artwork?`<button type="button" data-design-final="${esc(variant.id)}" data-order="${esc(order.id)}" data-item="${esc(item.id)}">Definitief kiezen</button>`:''}
@@ -33,8 +34,8 @@ export function designVariantsMarkup(context,order,item,{imageTag,variantUrl}){
  const choices=alternatives.length?`<div class="design-variant-grid">${alternatives.map(card).join('')}</div>`:'';
  const invalidChoice=!final&&Boolean(item.designFinalVariantId);
  return `<section class="product-design-variants">
-  <div class="section-heading"><div><h3>Ontwerpen</h3><p>${variants.length} variant${variants.length===1?'':'en'} · ${final?'definitieve keuze bewaard':'nog geen geldige definitieve keuze'}</p></div><a class="download-button" href="${esc(variantUrl(order,item,'new'))}" target="_blank" rel="noopener">Nieuw ontwerp</a></div>
+  <div class="section-heading"><div><h3>Ontwerpen</h3><p>${variants.length} variant${variants.length===1?'':'en'} · ${final?'definitieve keuze bewaard':'nog geen geldige definitieve keuze'}</p></div><a class="download-button" href="${esc(variantUrl(order,item,'new'))}" target="_blank" rel="noopener">Nieuwe variant</a></div>
   ${!final?`<p class="${invalidChoice?'design-variant-warning':'form-help'}">${invalidChoice?'De eerdere definitieve keuze is niet meer geldig. ':''}Kies na klantakkoord één definitief ontwerp. Varianten delen dezelfde productmaat, aantallen en prijs.</p>`:''}
-  ${current}${final&&alternatives.length?`<details class="design-alternatives"><summary>Andere ontwerpen (${alternatives.length})</summary>${choices}</details>`:choices}
+  ${final?`<details class="form-details"><summary>Opslag na bestellen</summary><p>Na expliciet bestellen bij de leverancier kunnen ongebruikte voorstellen worden opgeruimd. Het definitieve ontwerp en bewijs-/mailbijlagen blijven bewaard. Dit staat standaard uit.</p><button type="button" data-design-cleanup="${esc(item.id)}" data-order="${esc(order.id)}">${item.autoPruneDesignVariants?'Automatisch opruimen uitschakelen':'Automatisch opruimen instellen'}</button></details>`:''}${current}${final&&alternatives.length?`<details class="design-alternatives"><summary>Andere ontwerpen (${alternatives.length})</summary>${choices}</details>`:choices}
  </section>`;
 }

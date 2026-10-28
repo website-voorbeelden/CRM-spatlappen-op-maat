@@ -1,12 +1,23 @@
 # Ontwikkelplan — beide CRM’s
 
-Bijgewerkt: 2026-10-27. Automatisch gemaakt uit `shared/planning/roadmap.js` met `npm run plan`. Bewerk de bron, niet dit bestand.
+Bijgewerkt: 2026-10-28. Automatisch gemaakt uit `shared/planning/roadmap.js` met `npm run plan`. Bewerk de bron, niet dit bestand.
 
 Dit is een geordende planning, geen opdracht om alles tegelijk uit te voeren. De volgorde binnen Eerstvolgend is het vertrekpunt; de gebruiker kan die bijstellen. Dezelfde taakcatalogus staat in beide CRM’s onder **Beheer → Bouwtaken**, gefilterd op bedrijf. Actuele afvinkstatus, publicatie en opmerkingen staan in de aparte CRM-planningopslag; deze gegenereerde catalogus is daarvan geen live export.
 
 ## Eerstvolgend
 
 Eerst deze basis afmaken voordat we meer functies toevoegen.
+
+### Nieuwe pakbon op basis van aangeleverde Word-template
+
+- **ID:** `packing-word-template-20261028`
+- **Voor:** Spatlappen en Maatwerkkunststof
+- **Doel:** De gewenste nieuwe pakbon vanuit de echte Word-template overnemen.
+- **Omvang / status:** Open · nieuwe template volgt van Philippe
+- **Volgende stap:** Philippe bevestigt zelf een nieuwe Word-template te sturen. Tot aanlevering huidige pakbon/documenten/generator behouden; gewenste inhoud en bedrijfsbereik daarna uit concrete opdracht/template bepalen. Geen vervangend ontwerp of test/render/publicatie uitvoeren. Voorlopig niets naar GitHub.
+- **Klaar wanneer:** Aangeleverde template en expliciete gewenste bedrijfsinhoud verwerkt zonder bestaande pakbonnen/data te overschrijven; gebruikerscontrole en publicatie apart.
+- **Eerst nodig:** Geen aparte stap in dit plan.
+- **Vindplaatsen:** `admin/documents/generated-forms.js`, `admin/documents/generation.js`, `document-service/templates`, `docs/TABEL-BEDIENING.md`
 
 ### Online feedbackexport verwerken in de vaste privéwerklijst
 
@@ -56,9 +67,9 @@ Eerst deze basis afmaken voordat we meer functies toevoegen.
 - **ID:** `mobile-notifications`
 - **Voor:** Spatlappen en Maatwerkkunststof
 - **Doel:** Alleen nuttige berichten over nieuwe providerontvangsten, klantactie, batch of opvallende prestatie; zelf ingevoerde betalingen blijven stil.
-- **Omvang / status:** Servers actief · CRM-ontvangstmelding/bezorgstatus lokaal · concrete telefoonoorzaak en eigen controle open
-- **Volgende stap:** 27oktober lokaal: providerontvangsten tijdens geopende sessie krijgen klein CRM-bericht met Bekijken, baseline/handmatig/correctie/herstel/expliciete import stil. Gedeelde receipt-/recencyregels met bestaande serverpush. Telefoonstatus toont eigen recente eventbezorguitkomst; accepted is geen weergavebewijs. Concrete gemiste push niet live onderzocht; geen tests/publicatie. Eerdere handmatige-pushfilter/vrijdagrapportbron behouden, bredere meldingen en eigen controle open.
-- **Klaar wanneer:** Toestelopt-in en bedrijfs/deviceafscheiding; geen gevoelige inhoud op vergrendelscherm. Zelf ingevoerde betalingen geen telefoonpush, ook niet vanuit oude pending wachtrij. Alleen bewezen Tikkieontvangsten, geen dubbele import of terugbetaling. Serveractivering is geen bewezen telefoonaflevering; bredere klant-/batchmeldingen apart.
+- **Omvang / status:** Servers actief · bedrag/CRM-klant in Tikkiepush lokaal · toestelcontrole/bredere scope open
+- **Volgende stap:** 28oktober lokaal: optionele v1-betaaldetails met echte positieve Tikkieontvangst en gekoppelde CRM-klant, begrensde naam; oude worker/ontbrekende details blijft generiek. Op expliciet verzoek ook lockscreen; rapportcijfers blijven privé in CRM. Zelf invoeren stil en bestaande bedrijf/device/session/key/dedup/retry behouden. Server + worker/appupdate later leveren; geen tests/build/browser-/pushproef/publicatie. Eerdere CRM-ontvangstmelding/bezorgstatus behouden; concrete gemiste aflevering niet bewezen opgelost. Bredere klant-/batchscope en eigen controle open.
+- **Klaar wanneer:** Toestelopt-in en bedrijfs/deviceafscheiding. Betaalpush toont op verzoek ontvangstbedrag/gekoppelde CRM-klant; geen bankrekeninghouder raden. Rapportmelding zonder cijfers. Zelf ingevoerde betalingen stil, ook oude pending. Alleen bewezen Tikkie, geen dubbele import/terugbetaling. Oude payload/worker compatibel. Serveractivering/acceptatie is geen bewezen telefoonaflevering; eigen iOS/Androidcontrole en bredere meldingen open.
 - **Eerst nodig:** 20. Dezelfde CRM-opmaak en previewtool zonder wifi
 - **Vindplaatsen:** `admin/notifications/client.js`, `admin/offline/worker-template.js`, `shared/mobile-app.js`, `shared/tikkie-payments.js`, `cloudflare/notifications.js`, `cloudflare/web-push.js`, `workers/notifications/`, `migrations/0005_notifications.sql`, `docs/MOBIELE-MELDINGEN.md`, `admin/payments/notifications.js`, `shared/payment-notifications.js`, `cloudflare/payment-delivery-status.js`
 
@@ -131,16 +142,93 @@ Eerst deze basis afmaken voordat we meer functies toevoegen.
 
 De implementatie is aanwezig. Controleer de bediening zelf; publicatie staat apart en open vervolgwerk blijft als eigen taak staan.
 
+### Nieuwe feedback28oktober · twaalf vervolgpunten
+
+- **ID:** `feedback28-followup-twelve`
+- **Voor:** Spatlappen en Maatwerkkunststof
+- **Doel:** Ontwerpbediening, gekoppelde variantopslag, vectorstatus, order aanvullen via eigen AI en passende bevestigingsmail verbeteren.
+- **Omvang / status:** Brongebouwd · eigen controle open
+- **Volgende stap:** Gebruiker beoordeelt de twaalf bronwijzigingen volgens docs/FEEDBACK-VERVOLG-20261028.md. Optionele conceptopruiming staat uit en bewaart definitief/bewijs; oude feedback niet automatisch opgelost. GitHubupload gevraagd; geen nieuwe livepublicatie.
+- **Klaar wanneer:** Bron aanwezig, invoer en klantgegevens behouden; ontwerp-/mail-/AI-/opruim-/mobiele gebruikerscontrole open. Geen tests/checks/builds/browsercontrole uitgevoerd.
+- **Eerst nodig:** Geen aparte stap in dit plan.
+- **Vindplaatsen:** `docs/FEEDBACK-VERVOLG-20261028.md`, `admin/designs/editor/`, `admin/product-designs.js`, `shared/design-variant-cleanup.js`, `shared/order-ai-update.js`, `admin/orders/ai-update.js`, `admin/mail/composer.js`
+
+### Dubbelen herkennen en orders gecontroleerd samenvoegen
+
+- **ID:** `duplicate-order-review-20261028`
+- **Voor:** Spatlappen en Maatwerkkunststof
+- **Doel:** Mogelijk dubbele klanten, vergelijkbare orders en identieke ontvangsten herkennen; gebruiker kiest conflicterende waarden bij samenvoegen.
+- **Omvang / status:** Brongebouwd · eigen controle open
+- **Volgende stap:** Gebruiker beoordeelt waarschuwingen, bewuste herhaalbestelling, productkoppeling, veldkeuzes en echte bankontvangsten. Samenvoegen via Meer, één klantdossier; providerorder blijft, ingewikkelde koppelingen expliciet geblokkeerd. Publicatie op verzoek, geen automatische samenvoeging van bestaande dossiers.
+- **Klaar wanneer:** Invoer behouden bij waarschuwing; expliciet bevestigen, CAS, alle bestanden/IDs/historie behouden, geen automatische dubbele ontvangst of factuurcorrectie. Bron aanwezig; tests/browsercontrole niet uitgevoerd op gebruikersafspraak. Zie DUBBELE-ORDERS.md voor grenzen en gebruikerscontrole.
+- **Eerst nodig:** Geen aparte stap in dit plan.
+- **Vindplaatsen:** `shared/duplicate-records.js`, `shared/order-merge.js`, `admin/orders/duplicate-guard.js`, `admin/orders/merge.js`, `docs/DUBBELE-ORDERS.md`
+
+### Feedback28oktober · batch 1/3 — Aanvragen en voortgang
+
+- **ID:** `feedback28-batch1-orders`
+- **Voor:** Spatlappen en Maatwerkkunststof
+- **Doel:** Aanvraaggegevens direct als productvoorstel gebruiken; verzonden orderbevestiging als alternatief voor aparte offerte in relevante voortgang.
+- **Omvang / status:** Lokaal brongebouwd · eigen controle open
+- **Volgende stap:** Product uit aanvraag maken gebruikt bekende of actuele onbewaarde aanvraagwaarden als voorstel bij lege order; expliciet opslaan, bestaande producten/bron/CAS/delta behouden. Gedeeltelijke maten ook later bewaard. Offerte / bevestiging telt bestaande bevestigingsverzendfeiten, niet alleen klaargezet document. Philippe controleert beide bedrijven, deelgegevens, annuleren/terugkeer/conflict/bestaande producten en verzendbewijs. Geen tests/checks/build/browsercontrole/GitHubpush/publicatie. Batch2/3 ook lokaal brongebouwd; eigen controle/feedbackafhandeling open.
+- **Klaar wanneer:** Brongebouwd; eigen controle van voorstel, onbekende waarden, behouden invoer/bron/klantbasis/producten en gelijktijdige wijzigingen blijft open. Offerte en werkelijk geregistreerde bevestiging voldoen dezelfde voortgangsstap, alleen klaargezet document niet. Geen verzonnen akkoord/betaling/vrijgave. Zie FEEDBACK-BATCH1-20261028.md; geen automatische feedbackresolve.
+- **Eerst nodig:** Geen aparte stap in dit plan.
+- **Vindplaatsen:** `docs/FEEDBACK-BATCH1-20261028.md`, `docs/DRIE-FEEDBACKBATCHES-20261028.md`, `shared/inquiry-product-proposal.js`, `admin/inquiry-ui.js`, `admin/orders/workspace.js`, `admin/orders/overview.js`, `shared/order-progress.js`
+
+### Feedback28oktober · batch 2/3 — Inkoop, btw en AI-invoer
+
+- **ID:** `feedback28-batch2-purchases`
+- **Voor:** Spatlappen en Maatwerkkunststof
+- **Doel:** Betaalde btw met bron/bewijs vanuit inkoop terugvinden; gecontroleerd AI-JSONvoorstel voor leveranciersdocumenten met eigen handmatige bijlage.
+- **Omvang / status:** Lokaal brongebouwd · eigen controle open
+- **Volgende stap:** Betaalde btw met zending/datum/bewijs via hetzelfde btw-register vanuit inkoop. Nieuw leveranciersformulier heeft afgebakend AI-prompt/JSONvoorstel zonder betaalregistratie of overschrijven bestaande regels; eigen invoer/bijlagen/herkomst behouden. Bronaliases, geopende zending/productbasis en bestaande state/files-CAS bewaakt. Philippe controleert beide bedrijven, bron/concept/kwartaal, oude boekingen, JSON/stuk-paar/match/invoer/bijlagen/conflict en mobiel. Batch3 ook lokaal brongebouwd; geen tests/checks/build/browsercontrole/GitHubpush/publicatie of feedbackresolve.
+- **Klaar wanneer:** Lokale bronuitwerking, eigen functionele/visuele controle open. Eén btw-register en leveranciersbron, betaalmetadata apart van kostprijs/saldo/aftrek; historische boekingen/IDs niet migreren. AI-voorstel vóór bewaren corrigeren, expliciete EUR/eenheden/bronbinding, geen betaal-/leveringsfeiten of regels vervangen. Bestaande offertes naar definitieve factuur via Bewerken om dezelfde stuks niet dubbel te koppelen. Zie FEEDBACK-BATCH2-20261028.md.
+- **Eerst nodig:** Feedback28oktober · batch 1/3 — Aanvragen en voortgang
+- **Vindplaatsen:** `docs/FEEDBACK-BATCH2-20261028.md`, `admin/purchases/supplier-document-form.js`, `admin/purchases/document-ai.js`, `admin/purchases/vat.js`, `admin/purchases/batch-workspace.js`, `shared/supplier-invoices.js`, `shared/vat-ledger.js`, `admin/analytics/vat-entry.js`, `admin/analytics/vat-quarter.js`, `admin/inquiries/ai-import-flow.js`
+
+### Feedback28oktober · batch 3/3 — Analytics en kleinere schermen
+
+- **ID:** `feedback28-batch3-insights`
+- **Voor:** Spatlappen en Maatwerkkunststof
+- **Doel:** Gemeten formulierafrondingen en klikbare tijdreeksen in Websitegebruik; editorwerkbalk binnen beschikbare breedte laten omlopen.
+- **Omvang / status:** Lokaal brongebouwd · eigen controle open
+- **Volgende stap:** Acht Websitegebruik-meetkaarten met daggrafiek/tabel, poging versus ontvangen expliciet; read-only dagquery op bestaande actieve-seconden/verzend-/scrollvelden uitgebreid, filters/uitsluitingen/ontbrekende reeks behouden. Editor-nowrap/shrinkconflict verwijderd, één wrap-eigenaar op beschikbare breedte en scroll bij lage desktophoogte. Philippe controleert beide bedrijven/perioden/pagina/oudere backend/metricfocus/tabel/foutretry en MacBook/mobiel/knoppen/dropdowns/canvas/zoom. Geen tests/checks/build/browsercontrole/GitHubpush/publicatie of feedbackresolve. Alle drie nieuwe batches brongebouwd, historische restscope open.
+- **Klaar wanneer:** Lokale bronuitwerking; eigen functionele/visuele controle open. Geen verzoekpoging als ontvangen aanvraag, geen unieke bezoekers of historische betaal-/CRMreeks verzinnen. Correcte gewogen tijd/conversie; ontbrekende dekking/dagreeks onbekend, juiste periode/pagina/testfilters. Editorbediening bereikbaar zonder horizontale uitloop met bestaande selectie/ontwerp/undo/zoom/export/opslag. Nieuwe rapportbron later samen leveren; zie FEEDBACK-BATCH3-20261028.md.
+- **Eerst nodig:** Geen aparte stap in dit plan.
+- **Vindplaatsen:** `docs/FEEDBACK-BATCH3-20261028.md`, `admin/analytics/website-metrics.js`, `admin/analytics/website.js`, `cloudflare/site-analytics.js`, `admin/style.css`, `admin/designs/editor/editor.css`, `admin/designs/editor/README.md`, `spatlap-preview.html`
+
+### Zebra en actieve rij/kolom duidelijk zichtbaar
+
+- **ID:** `crm-table-guides-20261028`
+- **Voor:** Spatlappen en Maatwerkkunststof
+- **Doel:** In tabellen en keuzes eenvoudig volgen welke gegevens je aanwijst of met toetsenbord gebruikt.
+- **Omvang / status:** Bron lokaal gebouwd · eigen controle open
+- **Volgende stap:** Zebra/hover/kruismarkering en native keuzes lokaal behouden. Aanvulling: gewone ordercel volgt bestaande dossierlink via één gedelegeerde featurehandler; controls/details/links/tekstselectie/modifiers behouden. Geen nieuwe businessstate/writes. Eigen controle beide bedrijven/cellen/filter/sort/keyboard/touch/faseacties/prijsdetails/inkooplink open. Geen tests/checks/build/browsercontrole/publicatie/GitHubpush; zie TABEL-BEDIENING.
+- **Klaar wanneer:** Eigen controle beide bedrijven/desktop/mobiel/keyboard, rijen/kolomkop/cel, spans/nieuwe gesorteerde gefilterde rijen, geselecteerde/disabled/herkomststaten en native popupverschillen; formulieren/invoer behouden.
+- **Eerst nodig:** Geen aparte stap in dit plan.
+- **Vindplaatsen:** `admin/workspace/table-guides.js`, `admin/workspace/preferences.js`, `admin/style.css`, `admin/index.html`, `docs/TABEL-BEDIENING.md`, `admin/orders/list-navigation.js`, `admin/app.js`
+
+### Startpagina met zoeken, recente dossiers en grote menutegels
+
+- **ID:** `crm-home-20261028`
+- **Voor:** Spatlappen en Maatwerkkunststof
+- **Doel:** Vanuit het bedrijfslogo naar een begrijpelijk startpunt met grote zoekbalk en dagelijkse menutegels.
+- **Omvang / status:** Bron lokaal gebouwd · eigen controle open
+- **Volgende stap:** Nieuwste correctie28oktober: tegels direct onder de zoekbalk, recent geopende orders/ontvangsten daaronder; Bouwtaken en Feedback alleen uit deze tegelgroep weggelaten, sidebar/routes behouden. Logo op desktop en bedrijfsnaam mobiel linken naar #dashboard. Zoekopdracht opent bestaande zoekdialoog; bestaande browser-/bedrijfseigen geopende orders en huidige ontvangsten afgelopen7dagen, maximaal4per lijst. Overige menulinks als grote gedeelde tegels; Te doen & overzicht via #dashboard/tasks, overige bestaande tabs behouden. Geen nieuwe businessstore/providerpoll of ongelezenclaims. Bestaande invoerbescherming en actuele zoekresultaatcontrole behouden. Geen tests/checks/build/browsercontrole/GitHubupload/livepublicatie; Philippe beoordeelt beide bedrijven en mobiel.
+- **Klaar wanneer:** Eigen controle logo/start vanuit taken- en dossierpagina, zoekveld/Enter/resultaten/open formulieren en terugkeren, recent geopend na reload en bedrijfsafscheiding, lege/ontbrekende/gecorrigeerde ontvangsten en juiste dossierlinks, grote tegels en mobiel/keyboard/contrast. Alle bestaande onderdelen bereikbaar; gebruikersstatus/feedback en gegevens behouden.
+- **Eerst nodig:** Geen aparte stap in dit plan.
+- **Vindplaatsen:** `admin/workspace/home.js`, `admin/workspace/overview-settings.js`, `admin/workspace/navigation.js`, `admin/workspace/dossier-preferences.js`, `admin/search/workspace-search.js`, `shared/workspace-search.js`, `admin/app.js`, `admin/style.css`, `docs/STARTPAGINA.md`
+
 ### Belangrijke informatie eerst in de gedeelde CRM-werkplekken
 
 - **ID:** `crm-calm-workspaces-20261027`
 - **Voor:** Spatlappen en Maatwerkkunststof
 - **Doel:** De rustige dossiergedachte doorzetten: enkele relevante gegevens met ruimte, één hoofdactie en details op verzoek.
 - **Omvang / status:** Lokaal brongebouwd · eigen controle open
-- **Volgende stap:** Gedeelde kerngegevens en horizontale tabonthulling, centrale CSS-eigenaren. Overzicht, orderlijsten/betaling/kosten, klant/inkoop, ontvangsten, mail/documenten en financiële Analytics aangepast; instellingen/overige CRM-schermen gedeelde basis. Bronprojecties/acties/invoer/waarschuwingen behouden; geen nieuwe financiële engine/opslag/provideractie. Alleen bestaand Maatbetaalvoorbeeld bekeken; overige schermen/beide bedrijven/mobiel en onbekende/volledige/deel/nul/overbetalingen, historie/lange gegevens/filters/Meer/focus/invoerbehoud door Philippe. Geen automatische tests/builds/brede QA of publicatie. Bredere werkproces-/code-/financiële audit blijft open.
+- **Volgende stap:** 28oktober: prominente wachttijd overal sinds eerste werkelijke betaling of aanbetaling, geen aanvraagfallback of reset bij restbetaling. Bron shared/order-payment-wait.js gebruikt bij dossierkop, orderlijst, klant/werkvoorraad en kaart. Aanvraagdatum bij details; afgesproken levertermijn en taak-/mailprioriteit behouden. Geen tests/checks/build/browsercontrole/publicatie; eigen controle open. Gedeelde kerngegevens en horizontale tabonthulling, centrale CSS-eigenaren. Overzicht, orderlijsten/betaling/kosten, klant/inkoop, ontvangsten, mail/documenten en financiële Analytics aangepast; instellingen/overige CRM-schermen gedeelde basis. Bronprojecties/acties/invoer/waarschuwingen behouden; geen nieuwe financiële engine/opslag/provideractie. Alleen bestaand Maatbetaalvoorbeeld bekeken; overige schermen/beide bedrijven/mobiel en onbekende/volledige/deel/nul/overbetalingen, historie/lange gegevens/filters/Meer/focus/invoerbehoud door Philippe. Geen automatische tests/builds/brede QA of publicatie. Bredere werkproces-/code-/financiële audit blijft open.
 - **Klaar wanneer:** Belangrijke informatie herkenbaar zonder herhaalde statussen of rijen onbekende bedragen. Alle bestaande acties/gegevens/bedrijfs-/CAS-/invoergrenzen behouden. Ontbrekende gegevens en actieve waarschuwingen zichtbaar. Bestaande voorkeuren/feedback/gebruikersstatus niet resetten. Alleen lokale bron; geen volledig visueel/functioneel akkoord claimen.
 - **Eerst nodig:** Geen aparte stap in dit plan.
-- **Vindplaatsen:** `admin/workspace/key-facts.js`, `admin/workspace/tab-visibility.js`, `admin/workspace/overview-settings.js`, `admin/orders/list.js`, `admin/orders/key-facts.js`, `admin/orders/payment-view.js`, `admin/orders/workspace.js`, `admin/customers/views.js`, `admin/purchases/batch-workspace.js`, `admin/payments/workspace.js`, `admin/mail-workspace.js`, `admin/documents/library-workspace.js`, `admin/documents/layout.js`, `admin/analytics/workspace.js`, `admin/style.css`, `docs/RUSTIGE-WERKPLEK.md`
+- **Vindplaatsen:** `admin/workspace/key-facts.js`, `admin/workspace/tab-visibility.js`, `admin/workspace/overview-settings.js`, `admin/orders/list.js`, `admin/orders/key-facts.js`, `admin/orders/payment-view.js`, `admin/orders/workspace.js`, `admin/customers/views.js`, `admin/purchases/batch-workspace.js`, `admin/payments/workspace.js`, `admin/mail-workspace.js`, `admin/documents/library-workspace.js`, `admin/documents/layout.js`, `admin/analytics/workspace.js`, `admin/style.css`, `docs/RUSTIGE-WERKPLEK.md`, `shared/order-payment-wait.js`, `shared/work-queue.js`, `admin/orders/planning.js`, `admin/orders/map-workspace.js`
 
 ### Opmaakbatch 1/4 — Gedeelde basis en navigatie
 
@@ -225,7 +313,7 @@ De implementatie is aanwezig. Controleer de bediening zelf; publicatie staat apa
 - **Voor:** Spatlappen en Maatwerkkunststof
 - **Doel:** Gedeelde opmaak consequent op één plek beheren, zonder nieuwe visuele regels per scherm te stapelen.
 - **Omvang / status:** Lokale consolidatie · eigen controle open
-- **Volgende stap:** admin/index.html laadt alleen admin/style.css, inclusief mail in eerdere cascadevolgorde. Eén root voor actuele kleuren/type/radius en gedeelde controls/surfaces, identieke eerdere declaraties en achterhaalde gewone control-eigenschappen opgeruimd. Vaste AI-promptpresentatie naar gedeelde klasse. Oude CSSpaden als lege compatibiliteit; losse tools/documentinhoud apart. Bron leesbaar uitgeschreven. Verschillende componentselectors/media niet blind samengevoegd; resterende historische uitzonderingen geen conflictvrijclaim. Geen tests/checks/build/browsercontrole/publicatie. Philippe beoordeelt beide bedrijven.
+- **Volgende stap:** 28oktober: desktopcollapse-CSS geconsolideerd; latere nav-display overschreef verbergen, nu sterke scoped hide en intrinsieke begrensde balk. Bestaande voorkeur/JS/mobiele drawer en mailinvoer behouden. Geen browserreproductie/tests/build/publicatie; eigen controle in-/uitklappen/beide bedrijven/breakpoints/AI open. admin/index.html laadt alleen admin/style.css, inclusief mail in eerdere cascadevolgorde. Eén root voor actuele kleuren/type/radius en gedeelde controls/surfaces, identieke eerdere declaraties en achterhaalde gewone control-eigenschappen opgeruimd. Vaste AI-promptpresentatie naar gedeelde klasse. Oude CSSpaden als lege compatibiliteit; losse tools/documentinhoud apart. Bron leesbaar uitgeschreven. Verschillende componentselectors/media niet blind samengevoegd; resterende historische uitzonderingen geen conflictvrijclaim. Geen tests/checks/build/browsercontrole/publicatie. Philippe beoordeelt beide bedrijven.
 - **Klaar wanneer:** Eén actieve CRM-stylesheet en thema-eigenaar; gewone navigatie/tabs/knoppen/invoer/mail gebruiken de gedeelde basis. Bronkleuren licht automatisch/donker AI behouden. Gebruiker beoordeelt hover/focus/disabled/readonly, mail/Meer/bijlagen en mobiel; geen data-/gedragsverlies claimen zonder controle.
 - **Eerst nodig:** Geen aparte stap in dit plan.
 - **Vindplaatsen:** `admin/style.css`, `admin/index.html`, `admin/mail/mail.css`, `admin/inquiries/ai-import-flow.js`, `docs/CRM-CSS.md`

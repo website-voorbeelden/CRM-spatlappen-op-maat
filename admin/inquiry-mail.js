@@ -1,6 +1,6 @@
 import {markGeneratedMail,mailFormProvenance} from './provenance-ui.js?v=provenance-colors-20261027';
-import {requestChoices,requestBasis,requestMail,defaultRequestFormat,cleanRequestFormat,cleanRequestSelection} from '../shared/inquiry-mail.js?v=ui-batch234-20261027';
-import {checkMailText} from '../shared/mail-templates.js?v=mail-texts-20261027';
+import {requestChoices,requestBasis,requestMail,defaultRequestFormat,cleanRequestFormat,cleanRequestSelection} from '../shared/inquiry-mail.js?v=feedback-followup-20261028';
+import {checkMailText} from '../shared/mail-templates.js?v=feedback-followup-20261028';
 import {formProblem} from './form-guidance.js?v=crm-code-review-20261027';
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 export function createInquiryMailUI({getState,company,mergeStoredState,openForm,toast}){

@@ -1,6 +1,6 @@
-import {inquiryRequirements,specLabels} from './inquiries.js?v=ui-batch234-20261027';
+import {inquiryRequirements,specLabels} from './inquiries.js?v=feedback-followup-20261028';
 import {companyFor} from './companies.js';
-import {checkMailText} from './mail-templates.js?v=mail-texts-20261027';
+import {checkMailText} from './mail-templates.js?v=feedback-followup-20261028';
 export const requestLabels={...specLabels,application:'Toepassing / waar het voor gebruikt wordt',delivery:'Gewenste leverdatum'};
 export const defaultRequestFormat={opening:'Bedankt voor je aanvraag. Om een passende offerte te maken ontvangen we graag nog de volgende informatie:',closing:'Je kunt op deze mail antwoorden. Een tekening of voorbeeld mag je ook meesturen. Zodra we deze informatie hebben, werken we je aanvraag verder uit.'};
 export function requestBasis(order){return JSON.stringify([order.inquirySpecs||{},order.inquiryNotRequired||[],order.items.map(i=>({id:i.id,description:i.description,quantity:i.quantity,width:i.width,height:i.height,material:i.material,thickness:i.thickness,shape:i.shape,diameter:i.diameter,holeDiameter:i.holeDiameter,printColors:i.printColors,designDocumentId:i.designDocumentId}))]);}

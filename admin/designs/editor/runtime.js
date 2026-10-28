@@ -566,9 +566,9 @@ $('sameSize').onclick=()=>{
 
 $('syncSides').onclick=syncSidePair;
 
-['contourOn','contourGap','contourWidth','contourUnderHoles'].forEach(id=>$(id).addEventListener('change',()=>{
+['contourOn','contourGap','contourWidth','contourUnderHoles','contourColor'].forEach(id=>$(id).addEventListener('change',()=>{
   pushHistory();state.ui??={};const gap=Number($('contourGap').value),width=Number($('contourWidth').value);
-  state.ui.contour={on:$('contourOn').checked,gap:Number.isFinite(gap)?Math.max(0,gap):1,width:Number.isFinite(width)?Math.max(.1,width):2,underHoles:$('contourUnderHoles').checked};syncContourControls();render();
+  state.ui.contour={on:$('contourOn').checked,gap:Number.isFinite(gap)?Math.max(0,gap):1,width:Number.isFinite(width)?Math.max(.1,width):2,underHoles:$('contourUnderHoles').checked,color:normalizeHex($('contourColor').value)};syncContourControls();render();
 }));
 
 const vectorLogoPreviewCache=new WeakMap();
@@ -927,3 +927,14 @@ window.SpatlapPreview=Object.freeze({
     return importDesignDocument(documentData);
   }
 });
+
+// Comfortable dimension controls use the existing input/change resize path.
+for(const button of document.querySelectorAll('[data-dimension-step]'))button.onclick=event=>{event.preventDefault();const [id,direction]=button.dataset.dimensionStep.split(':'),input=$(id);if(input.disabled||previewActivities.size)return;try{input.stepUp(Number(direction));input.dispatchEvent(new Event('change',{bubbles:true}));}catch(error){toast(error.message);}};
+const logoDrop=$('logoDropTarget');logoDrop.classList.add('logo-drop-target');logoDrop.insertAdjacentHTML('beforeend','<span class="field-help">Of sleep logo’s hierheen (PNG, JPG, WebP, SVG of PDF).</span>');
+for(const type of ['dragenter','dragover'])logoDrop.addEventListener(type,event=>{if(!event.dataTransfer?.types.includes('Files'))return;event.preventDefault();logoDrop.classList.add('is-dragover');});
+logoDrop.addEventListener('dragleave',event=>{if(!logoDrop.contains(event.relatedTarget))logoDrop.classList.remove('is-dragover');});
+logoDrop.addEventListener('drop',async event=>{event.preventDefault();event.stopPropagation();logoDrop.classList.remove('is-dragover');if(previewActivities.size)return;const files=[...(event.dataTransfer?.files||[])];if(files.length)try{await addLogoFiles(files);}catch(error){toast(error.message);}});
+
+$('cropArtwork').onclick=openArtworkCrop;
+
+$('saveNewProductVariant').onclick=saveAsNewProductVariant;

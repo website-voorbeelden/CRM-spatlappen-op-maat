@@ -1,4 +1,4 @@
-import {createMailEngine} from '../shared/mail-service.js';
+import {createMailEngine} from '../shared/mail-service.js?v=feedback-followup-20261028';
 import {integrationStore,integrationError,sha256} from './integration-store.js';
 import {sessionFingerprint} from './auth.js';
 export function createCloudMail(env,{fetcher=fetch}={}){

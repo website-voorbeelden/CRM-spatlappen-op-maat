@@ -1,4 +1,4 @@
-import {createSearchIndex,searchWorkspace,searchTypes} from '../../shared/workspace-search.js';
+import {createSearchIndex,searchWorkspace,searchTypes} from '../../shared/workspace-search.js?v=duplicate-review-20261028';
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 export const searchLauncherMarkup=()=>'<button type="button" class="global-search-trigger" data-global-search aria-haspopup="dialog"><span aria-hidden="true">⌕</span><span>Zoek klant, order, nummer of pagina…</span><kbd>⌘ / Ctrl K</kbd></button>';
 export function createWorkspaceSearch({getState,company,navigate,canNavigate=()=>true,document=globalThis.document}){
@@ -20,7 +20,7 @@ export function createWorkspaceSearch({getState,company,navigate,canNavigate=()=
   dialog.querySelector('[data-search-more]').hidden=rows.length>=found.total||!found.query;
  }
  function activate(n){const result=rows[n];if(!result)return;if(!canNavigate(dialog)){status.textContent='Sla je openstaande bewerking eerst op of annuleer die. Sluit zoeken om terug te gaan.';return;}const fresh=createSearchIndex(getState(),company).entries.find(r=>r.key===result.key);if(!fresh){index=null;paint();status.textContent='Dit resultaat bestaat niet meer. De resultaten zijn bijgewerkt.';return;}dialog.close();navigate(fresh);}
- function open(){ensure();if(dialog.open){input.focus();return;}lastFocus=document.activeElement;index=null;source=null;input.value=lastQuery;type='all';limit=18;paint();dialog.showModal();input.focus();input.select();}
+ function open({query}={}){ensure();if(dialog.open){input.focus();return;}lastFocus=document.activeElement;index=null;source=null;input.value=typeof query==='string'?query:lastQuery;type='all';limit=18;paint();dialog.showModal();input.focus();input.select();}
  document.addEventListener('click',event=>{if(event.target.closest('[data-global-search]'))open();});
  document.addEventListener('keydown',event=>{if((event.metaKey||event.ctrlKey)&&event.key.toLowerCase()==='k'&&!event.altKey){event.preventDefault();open();}});
  return {open,invalidate(){index=null;},get isOpen(){return !!dialog?.open;}};

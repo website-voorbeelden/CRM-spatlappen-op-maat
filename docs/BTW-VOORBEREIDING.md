@@ -1,3 +1,5 @@
+> Aanvulling28oktober: gekoppelde zending en werkelijk betaalde btw met datum/betaalbewijs in dezelfde boeking; vanuit inkoop terugvinden/bewerken. Meta-informatie verandert geen aftrek-/kwartaalsom of kostprijs. Leverancierrecord + uploads één bron; bestaande file:-boekingen als alias behouden, geen migratie. Historische offerteboekingen krijgen controlepunt. Zie FEEDBACK-BATCH2-20261028.md; lokale bronreview, eigen controle en publicatie open. Geen tests/checks/build/browsercontrole of fiscale beoordeling.
+
 # Btw-voorbereiding per kwartaal
 
 Lokale bron gebouwd op 19 oktober 2026. **Niet getest, gebouwd voor publicatie of gepubliceerd.** Philippe bevestigt op 19 oktober opnieuw dat hij zelf test. De fictieve proeven in tests/vat-ledger.mjs zijn alleen klaargezet en niet uitgevoerd.

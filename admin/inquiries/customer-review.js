@@ -1,5 +1,5 @@
 import {inquiryCustomerReview,inquiryCustomerBasis,resolveInquiryCustomer,customerEmailMatches} from '../../shared/inquiry-customer.js';
-import {parseFormInquiry,isFormInquiry} from '../../shared/inquiries.js?v=ui-batch234-20261027';
+import {parseFormInquiry,isFormInquiry} from '../../shared/inquiries.js?v=feedback-followup-20261028';
 import {ensureCustomerNumbers} from '../customer-numbers.js';
 const esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 export function createInquiryCustomerUI({getState,company,mergeStoredState,openForm,render,toast}){

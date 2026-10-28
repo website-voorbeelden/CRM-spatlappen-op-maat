@@ -1,6 +1,6 @@
 import {addressParts} from './document-address.js';
 import {documentSeriesKey,documentVersion} from './document-revisions.js';
-import {inboundReadiness} from './inbound-readiness.js?v=ui-batch234-20261027';
+import {inboundReadiness} from './inbound-readiness.js?v=feedback-followup-20261028';
 import {customerExecutionDetails} from './product-specifications.js';
 
 const packingPdf=d=>(d.generated?.kind||d.category)==='packing'&&(d.type==='application/pdf'||/\.pdf$/i.test(d.name||''));

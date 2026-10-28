@@ -1,5 +1,5 @@
 import {installInvoicePaymentSelection} from './payment-selection.js?v=batch2-payments-20261023';
-import {fulfilmentMethods,setFulfilmentMethod} from '../../shared/inbound-readiness.js?v=ui-batch234-20261027';
+import {fulfilmentMethods,setFulfilmentMethod} from '../../shared/inbound-readiness.js?v=feedback-followup-20261028';
 import {publicProductSpecifications,missingProductThickness} from '../../shared/product-specifications.js?v=product-thickness-20261021';
 // Feature implementation. context provides live dependencies from workspace composition.
 // Keep state reads through context.state; never cache a separate dossier snapshot here.

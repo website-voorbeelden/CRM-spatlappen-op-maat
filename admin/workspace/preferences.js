@@ -1,7 +1,9 @@
+import {installTableGuides} from './table-guides.js?v=table-guides-20261028';
 import {installActionMenus} from './action-menus.js?v=ui-batch1-20261027';
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 let menuCleanup=()=>{};
 export function installSidebar(root,companyId){
+ installTableGuides(document);
  menuCleanup();menuCleanup=installActionMenus(root);
  const shell=root.querySelector('.shell'),button=root.querySelector('[data-sidebar-toggle]');
  if(!shell||!button)return;

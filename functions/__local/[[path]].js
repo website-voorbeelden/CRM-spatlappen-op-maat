@@ -2,8 +2,8 @@ import {handleGoogleRoutes} from '../../cloudflare/google-routes.js';
 import {localBypass} from '../../cloudflare/auth.js';
 import {handleTikkie} from '../../cloudflare/tikkie.js';
 import {handleDocuments} from '../../cloudflare/documents.js';
-import {handleGmail} from '../../cloudflare/gmail.js';
-import {handleMail} from '../../cloudflare/mail.js';
+import {handleGmail} from '../../cloudflare/gmail.js?v=feedback-followup-20261028';
+import {handleMail} from '../../cloudflare/mail.js?v=feedback-followup-20261028';
 export async function onRequest({request,env}) {
   if (!localBypass(request,env) || !['http://127.0.0.1:3000','http://127.0.0.1:3010'].includes(env.CRM_LOCAL_SERVICES)) {
     if(new URL(request.url).pathname.startsWith('/__local/assistant/route-'))return handleGoogleRoutes({request,env});

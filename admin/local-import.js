@@ -1,3 +1,4 @@
+import {nextOrderNumber} from '../shared/duplicate-records.js?v=duplicate-review-20261028';
 import {ensureCustomerNumbers} from "./customers/numbers.js?v=documents-flexible-20261010";
 import {supplierInvoices,syncSupplierInvoiceCosts} from "./purchases/costs.js?v=invoices-20261009-2";
 // Only the loopback development server exposes this import queue.
@@ -95,7 +96,7 @@ export async function importLocalOrders({db,stages,today,beforeCommit,companyId=
      if(o.purchaseId&&!next.purchases.some(p=>p.id===o.purchaseId))throw Error('De gekoppelde inkoopbestelling bestaat niet meer.');
      let client=next.customers.find(x=>x.company.trim().toLowerCase()===c.company.trim().toLowerCase()||c.email&&x.email?.toLowerCase()===c.email.toLowerCase());
      if(!client){client={id:crypto.randomUUID(),archived:false};for(const key of customerKeys)client[key]=c[key].trim();next.customers.push(client);}
-     const item={id:crypto.randomUUID(),number:Math.max(3000,...next.orders.map(x=>x.number))+1,customerId:client.id,archived:false,vat:o.vat,shippingKnown:o.shippingCharge!=null,shippingCharge:o.shippingCharge??0,packagePrice:o.packagePrice??null,shippingExpected:null,shippingActual:null,extraCosts:null,leadTimeMinWeeks:o.leadTimeMinWeeks??null,leadTimeMaxWeeks:o.leadTimeMaxWeeks??null,leadTimeBasis:o.leadTimeBasis||'payment',...(o.leadTimeDepositPercent!=null?{leadTimeDepositPercent:o.leadTimeDepositPercent}:{})};
+     const item={id:crypto.randomUUID(),number:nextOrderNumber(next),customerId:client.id,archived:false,vat:o.vat,shippingKnown:o.shippingCharge!=null,shippingCharge:o.shippingCharge??0,packagePrice:o.packagePrice??null,shippingExpected:null,shippingActual:null,extraCosts:null,leadTimeMinWeeks:o.leadTimeMinWeeks??null,leadTimeMaxWeeks:o.leadTimeMaxWeeks??null,leadTimeBasis:o.leadTimeBasis||'payment',...(o.leadTimeDepositPercent!=null?{leadTimeDepositPercent:o.leadTimeDepositPercent}:{})};
      for(const key of textKeys)item[key]=o[key]||'';
      item.items=o.items.map(i=>({id:crypto.randomUUID(),description:i.description.trim(),quantity:i.quantity,width:i.width??null,height:i.height??null,price:i.price??null,cost:i.cost??null,printColors:i.printColors??null,specs:i.specs,productionSource:i.productionSource||'supplier'}));
      next.orders.push(item);ids.push(item.id);targetRoute=`orders/${item.id}`;

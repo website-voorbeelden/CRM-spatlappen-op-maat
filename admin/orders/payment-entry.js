@@ -1,4 +1,4 @@
-import {manualReceiptBasis,similarReceipts,appendManualReceipt,validReceiptDate} from '../../shared/manual-receipt.js?v=batch2-payments-20261023';
+import {manualReceiptBasis,similarReceipts,appendManualReceipt,validReceiptDate} from '../../shared/manual-receipt.js?v=duplicate-review-20261028';
 export function createPaymentEntry(context){
  return function paymentForm(id,paymentId){
   if(paymentId)return context.openPaymentCorrection(paymentId);
@@ -21,7 +21,7 @@ export function createPaymentEntry(context){
    try{await context.mergeStoredState(next=>{
     result=appendManualReceipt(next,id,expected,{id:receiptId,amount,date,reference,registeredAt:new Date().toISOString()},{acknowledged:fd.has('confirmReceipt'),requiresReview:overpaid,today:context.today()});
     if(!result.alreadySaved)next.activities.unshift({id:context.uid(),message:'Betaling geregistreerd voor order #'+(next.orders.find(o=>o.id===id)?.sourceNumber||owner.number),time:new Date().toISOString()});
-   });}catch(error){if(error.code==='RECEIPT_BASIS_CHANGED')throw context.formProblem(error.message,{action:{label:'Actueel saldo ophalen',run:refreshBasis}});throw error;}
+   },{allowDuplicatePayments:fd.has('confirmReceipt')});}catch(error){if(error.code==='RECEIPT_BASIS_CHANGED')throw context.formProblem(error.message,{action:{label:'Actueel saldo ophalen',run:refreshBasis}});throw error;}
    context.toast(result.alreadySaved?'Deze ontvangst was al opgeslagen':'Betaling geregistreerd');
   },{afterSave:()=>{context.orderView={id,tab:'payments'};history.replaceState(null,'',`#orders/${id}/payments`);context.renderOrder(id);}});
   form=context.$('#dialog form');const amount=form.elements.amount,percentage=form.elements.paymentPercentage,confirmation=form.elements.confirmReceipt;
@@ -34,7 +34,7 @@ export function createPaymentEntry(context){
    depositButton.textContent=deposit()+'% aanbetaling';depositButton.hidden=!known()||totals.paid>0;remainingButton.hidden=!known()||totals.balance<=0;
    percentage.closest('label').hidden=!known();percentage.disabled=!known();
    const value=readAmount(amount.value),date=form.elements.date.value,duplicates=similarReceipts(context.state,id,{amount:value,date}),warnings=[];
-   if(duplicates.length)warnings.push('Er staat al '+(duplicates.length===1?'een ontvangst':'meer dan één ontvangst')+' met dit bedrag op deze datum. Controleer of dit geen dubbele registratie is.');
+   if(duplicates.length)warnings.push('Er staat al '+(duplicates.length===1?'een ontvangst':'meer dan één ontvangst')+' met dit bedrag op deze datum. Controleer of dit geen dubbele registratie is; ook andere orders bij deze klant worden meegenomen.');
    if(known()&&Number.isSafeInteger(value)&&totals.paid+value>totals.total)warnings.push('Na opslaan is er '+context.euro(totals.paid+value-totals.total)+' meer ontvangen dan het orderbedrag.');
    form.querySelector('[data-payment-warning]').textContent=warnings.join(' ');form.querySelector('[data-payment-review]').hidden=!warnings.length;confirmation.required=!!warnings.length;confirmation.disabled=!warnings.length;
    const after=form.querySelector('[data-payment-after]');after.textContent=known()&&Number.isSafeInteger(value)&&value>0?'Na registratie: '+context.euro(totals.paid+value)+' ontvangen · '+context.euro(Math.max(0,totals.balance-value))+' openstaand, incl. btw.':'';

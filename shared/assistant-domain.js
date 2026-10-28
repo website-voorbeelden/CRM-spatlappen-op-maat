@@ -1,6 +1,7 @@
+import {nextOrderNumber} from './duplicate-records.js?v=duplicate-review-20261028';
 import {markProvenance} from './provenance.js?v=provenance-colors-20261027';
 import {companyFor,orderStagesFor,displayOrderStage} from './companies.js';
-import {validateBusinessState} from './state-validation.js?v=ui-batch234-20261027';
+import {validateBusinessState} from './state-validation.js?v=feedback-followup-20261028';
 import {ensureCustomerNumbers} from '../admin/customer-numbers.js';
 import {normalizeAssistantPageContext} from './assistant-page-context.js?v=payments-overview-20261027';
 export const customerFields=['company','contact','email','invoiceEmail','phone','vatNumber','country','billingAddress','shippingAddress','notes'];
@@ -111,7 +112,7 @@ export function applyAssistantPlan(state,plan,companyId,{approved=false,now=Date
    if(op.operation==='create')next.customers.push({id:op.id,archived:false,...Object.fromEntries(customerFields.map(k=>[k,''])),...op.fields});
    else Object.assign(next.customers.find(c=>c.id===op.id),op.fields);
   }else if(op.operation==='create'){
-   const f=op.fields,number=Math.max(3000,...next.orders.map(o=>Number(o.number)||0))+1;
+   const f=op.fields,number=nextOrderNumber(next);
    next.orders.push({id:op.id,number,customerId:f.customerId,date:f.date||today(),stage:orderStagesFor(companyId)[0],archived:false,vat:f.vat,notes:f.notes||'',expectedDate:f.expectedDate||'',shippingCharge:0,shippingKnown:false,shippingActual:null,shippingExpected:null,extraCosts:null,packagePrice:null,leadTimeMinWeeks:2,leadTimeMaxWeeks:8,leadTimeBasis:'payment',
     items:[{id:op.itemId,description:f.description,quantity:f.quantity,width:f.width??null,height:f.height??null,price:f.price??null,cost:null,printColors:null,specs:'',productionSource:'supplier'}]});
   }else Object.assign(next.orders.find(o=>o.id===op.id),op.fields);

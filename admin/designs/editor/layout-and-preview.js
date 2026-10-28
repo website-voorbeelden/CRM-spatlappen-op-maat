@@ -5,7 +5,7 @@ function colorCountInfo(){
     return {label:`${manual} drukkleur${manual===1?'':'en'}`,status:'Handmatig ingevuld; controleer dit vóór je de preview verstuurt.'};
   }
   const colors=new Set();
-  if(contourPath())colors.add('#FFFFFF');
+  if(contourPath())colors.add(contourSettings().color.toUpperCase());
   let unknown=false;
   state.texts.forEach(t=>{if(String(t.text||'').trim()){colors.add(normalizeHex(t.color));if(outlineStyle(t))colors.add(normalizeHex(t.outline.color));}});
   state.logos.forEach(logo=>{
@@ -25,7 +25,7 @@ function topGuideOverlapCount(){
     state.texts.filter(t=>t.y*state.flap.h-t.size/2<top).length;
 }
 
-function contourSettings(){return {on:false,gap:1,width:2,underHoles:true,...state.ui?.contour};}
+function contourSettings(){return {on:false,gap:1,width:2,underHoles:true,color:'#ffffff',...state.ui?.contour};}
 
 function contourPath(){
   const c=contourSettings();if(!c.on)return '';
@@ -58,11 +58,11 @@ function contourPath(){
   return polygon.map(([x,y],i)=>`${i?'L':'M'}${x.toFixed(5)},${y.toFixed(5)}`).join(' ')+' Z';
 }
 
-function contourSvg(){const d=contourPath();return d?`<path d="${d}" fill="none" stroke="#ffffff" stroke-width="${contourSettings().width/10}" stroke-linejoin="round"/>`:'';}
+function contourSvg(){const d=contourPath();return d?`<path d="${d}" fill="none" stroke="${normalizeHex(contourSettings().color)}" stroke-width="${contourSettings().width/10}" stroke-linejoin="round"/>`:'';}
 
-function drawContour(ctx,x,y,scaleX,scaleY=scaleX){const d=contourPath();if(!d)return;ctx.save();ctx.translate(x,y);ctx.scale(scaleX,scaleY);ctx.strokeStyle='#ffffff';ctx.lineWidth=contourSettings().width/10;ctx.lineJoin='round';ctx.stroke(new Path2D(d));ctx.restore();}
+function drawContour(ctx,x,y,scaleX,scaleY=scaleX){const d=contourPath();if(!d)return;ctx.save();ctx.translate(x,y);ctx.scale(scaleX,scaleY);ctx.strokeStyle=normalizeHex(contourSettings().color);ctx.lineWidth=contourSettings().width/10;ctx.lineJoin='round';ctx.stroke(new Path2D(d));ctx.restore();}
 
-function syncContourControls(){const c=contourSettings();$('contourOn').checked=c.on;$('contourGap').value=c.gap;$('contourWidth').value=c.width;$('contourUnderHoles').checked=c.underHoles;}
+function syncContourControls(){const c=contourSettings();$('contourColor').value=normalizeHex(c.color);$('contourOn').checked=c.on;$('contourGap').value=c.gap;$('contourWidth').value=c.width;$('contourUnderHoles').checked=c.underHoles;}
 
 function printableTopCm(){return state.ui?.topGuideOn?Math.min(3,state.flap.h):0;}
 
@@ -181,7 +181,7 @@ function render(){
     el.style.transform=artworkTransform(x);
     el.style.width=(x.w*s)+'px';el.style.height=(x.h*s)+'px';applyOutlinePreview(el,x,s);
     bindDrag(el,original,'logo');el.onclick=e=>{e.stopPropagation();if(!suppressClickAfterDrag&&(state.selected!==x.id||state.selectedType!=='logo'||e.shiftKey))setSelected(x.id,'logo',e.shiftKey)};flap.appendChild(el);applyOutlinePreview(el,x,s);
-    if(original.svgMarkup)el.ondblclick=event=>{event.preventDefault();event.stopPropagation();const cx=event.clientX,cy=event.clientY;setSelected(x.id,'logo');if(vectorEditingLogoId!==x.id)$('toggleVectorParts').click();if(vectorPieceApi){vectorPieceApi.selectAt(cx,cy);selectedVectorPieceId=vectorPieceApi.selectedId();syncVectorPieceControls();}};
+    el.ondblclick=event=>{event.preventDefault();event.stopPropagation();if(vectorEditingLogoId)return;setSelected(x.id,'logo');openArtworkCrop();};
     if(editing){mountVectorPieceEditor(el,x);vectorPieceApi.highlight();selectedVectorPieceId=vectorPieceApi.selectedId();}
     else if(x.svgMarkup)mountVectorLogoPreview(el,x);
   });

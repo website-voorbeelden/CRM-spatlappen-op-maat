@@ -1,3 +1,17 @@
+> Nieuwe ronde28oktober: [twaalf feedbackpunten](FEEDBACK-VERVOLG-20261028.md), brongebouwd; eigen controle open.
+
+> 28 oktober: [Dubbelen herkennen en orders samenvoegen](DUBBELE-ORDERS.md), brongebouwd; gebruikerscontrole open.
+
+Nieuw28oktober: [feedbackbatch3 — Websitegebruik en kleinere schermen](FEEDBACK-BATCH3-20261028.md), lokaal brongebouwd voor Jouw controle. Alle drie nieuwe batches uitgewerkt; eerdere restscope/eigen controle en publicatie blijven apart.
+
+Nieuw28oktober: [feedbackbatch2 — inkoop, betaalde btw en AI-documentvoorstel](FEEDBACK-BATCH2-20261028.md), lokaal brongebouwd voor Jouw controle. Batch3 ook lokaal brongebouwd; niets naar GitHub of live.
+
+Nieuw: [drie feedbackbatches28oktober](DRIE-FEEDBACKBATCHES-20261028.md) —6nieuwe meldingen,44bekende ongewijzigd. [Batch1 lokaal brongebouwd](FEEDBACK-BATCH1-20261028.md), eigen controle open; batch2 ook lokaal brongebouwd, batch3 ook lokaal brongebouwd.
+
+Nieuw28oktober: [duidelijkere tabel- en keuzebediening](TABEL-BEDIENING.md), zebra en rij-/kolommarkering. Alleen lokaal; geen GitHubpush. Nieuwe Word-pakbontemplate volgt van Philippe.
+
+Nieuw28oktober: [Startpagina](STARTPAGINA.md) met grote zoekbalk, recente orders/betalingen en menutegels. [Wachttijd](ORDER-IN-EEN-OOGOPSLAG.md) telt prominent vanaf eerste betaling of aanbetaling. Alleen lokaal; eigen controle/publicatie apart.
+
 Nieuwste ronde: [Rustige werkplek door het CRM](RUSTIGE-WERKPLEK.md) — gedeelde kerngegevens, meer ruimte en details op verzoek. Lokaal; eigen controle/publicatie apart.
 
 Nieuwste dossierkop: [Order in één oogopslag](ORDER-IN-EEN-OOGOPSLAG.md) — betaling, wachttijd en uitvoering/levering; fases via Meer. Bron lokaal, beperkte toegestane Maatweergave bekeken; eigen controle/publicatie apart.

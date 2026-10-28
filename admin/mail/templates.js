@@ -1,6 +1,6 @@
 import {openInlineFormTask} from '../inline-tasks.js?v=crm-code-review-20261027';
 import {markGeneratedMail,mailFormProvenance} from "../provenance-ui.js?v=provenance-colors-20261027";
-import {mailTemplates,templatesNamed,templateNameKey,templateOptionLabel,replaceNamedMailTemplates,templateKinds,variableLabels,validateMailTemplate,saveMailTemplate,fillMailTemplate} from "../../shared/mail-templates.js?v=mail-texts-20261027";
+import {mailTemplates,templatesNamed,templateNameKey,templateOptionLabel,replaceNamedMailTemplates,templateKinds,variableLabels,validateMailTemplate,saveMailTemplate,fillMailTemplate} from "../../shared/mail-templates.js?v=feedback-followup-20261028";
 import {showFormProblem} from "../form-guidance.js?v=crm-code-review-20261027";
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 export function createMailTemplatesUI({company,getState,mergeStoredState,openForm,toast,render,uid=()=>crypto.randomUUID()}){

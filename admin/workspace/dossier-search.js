@@ -1,6 +1,6 @@
 import {orderPaymentStatusLabel} from '../../shared/order-payment-status.js?v=ui-batch3-followup-20261027';
 import {materialKey} from '../../shared/product-metrics.js?v=product-thickness-20261021';
-import {customerFinancials} from "../../shared/customer-workspace.js?v=ui-batch234-20261027";
+import {customerFinancials} from "../../shared/customer-workspace.js?v=feedback-followup-20261028";
 export const normalizeSearch=value=>String(value??'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[×✕]/g,'x').replace(/\s+/g,' ').trim();
 export const defaultOrderSearch=()=>({text:'',visibility:'active',customerId:'',stage:'',outcome:'',width:'',height:'',quantity:'',printColors:'',material:'',thickness:'',tolerance:'0',from:'',to:'',expanded:false,mode:'orders',sourceOrderId:'',orderIds:[],selectionLabel:''});
 export const defaultCustomerSearch=(sort='opened')=>({text:'',visibility:'active',activity:'',country:'',sort,expanded:false});

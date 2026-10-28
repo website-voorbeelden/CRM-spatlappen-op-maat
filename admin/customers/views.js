@@ -1,12 +1,12 @@
 import {customerExtraFilterLabels,extraFilterSummary} from '../workspace/list-filters.js?v=ui-batch3-followup-20261027';
 import {websiteDossierSlot} from '../analytics/dossier.js?v=inquiry-headers-20261023';
-import {searchCustomers} from "../workspace/dossier-search.js?v=ui-batch3-followup-20261027";
+import {searchCustomers} from "../workspace/dossier-search.js?v=feedback-followup-20261028";
 import {customerSortOptions} from "../workspace/dossier-preferences.js?v=ui-batch3-followup-20261027";
-import {customerWorkspace} from '../../shared/customer-workspace.js?v=ui-batch234-20261027';
+import {customerWorkspace} from '../../shared/customer-workspace.js?v=feedback-followup-20261028';
 import {keyFactsMarkup} from '../workspace/key-facts.js?v=calm-workspaces-20261027';
 
 // Presentation only. Forms, transactions and routing remain with the app coordinator.
-export function createCustomerViews({dossierPreferences,company,esc,button,badge,euro,date,heading,searchSelect,guidanceMarkup,documentVersionGroups,customerWithSources,provenanceText,ordersTable,sortedOrders,customerAddressSummary,customerAddresses,documents,documentsForOwner,inboxUI}){
+export function createCustomerViews({dossierPreferences,company,esc,button,badge,euro,date,heading,searchSelect,guidanceMarkup,documentVersionGroups,customerWithSources,provenanceText,ordersTable,sortedOrders,customerAddressSummary,customerAddresses,documents,documentsForOwner,inboxUI,today=()=>new Date().toISOString().slice(0,10)}){
  const show=(markup,page,details)=>({markup,details});
  function list(state,f){
  dossierPreferences.refresh();
@@ -20,7 +20,7 @@ export function createCustomerViews({dossierPreferences,company,esc,button,badge
   return `<section class="order-surface"><div class="section-heading"><h2>Contact & bedrijf</h2>${button('edit-customer','Bewerken',c.id)}</div><dl class="detail">${fields.map(([label,key])=>`<dt>${label}</dt><dd>${provenanceText(customerWithSources(state,c,company.id),key,c[key])||'—'}${key==='number'?` <button type="button" data-customer-number="${esc(c.id)}">Aanpassen</button>`:''}</dd>`).join('')}</dl>${(c.contacts||[]).length?`<h3>Extra contactpersonen</h3><ul class="customer-contact-list">${c.contacts.map(person=>`<li><strong>${esc(person.name)}</strong><span>${esc(person.email||'Geen e-mailadres')}${person.phone?' · '+esc(person.phone):''}</span></li>`).join('')}</ul>`:''}<details class="history-details"><summary>Interne klantnotities${c.notes?' · aanwezig':''}</summary><p class="notes">${esc(c.notes)||'Nog geen notities.'}</p></details></section>`;
  }
  function dossier(state,c,requestedTab){
-  const model=customerWorkspace(state,c.id,company.id),files=documentsForOwner(c.id),documentCount=documentVersionGroups(files).length;
+  const model=customerWorkspace(state,c.id,company.id,{today:today()}),files=documentsForOwner(c.id),documentCount=documentVersionGroups(files).length;
   const views=[['overview','Overzicht'],['orders',`Orders (${model.orders.length})`],['documents',`Documenten (${documentCount})`],['mail','E-mail'],['website','Websitegegevens'],['details','Klantgegevens'],['addresses','Adressen']];
   const tab=views.some(([key])=>key===requestedTab)?requestedTab:'overview';
   const tabs=views.map(([key,label])=>`<button type="button" id="customer-tab-${key}" role="tab" aria-controls="customer-content" tabindex="${tab===key?0:-1}" aria-selected="${tab===key}" class="${tab===key?'selected':''}" data-action="customer-tab" data-id="${key}">${label}</button>`).join('');

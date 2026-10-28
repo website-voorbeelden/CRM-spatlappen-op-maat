@@ -1,4 +1,4 @@
-import {createMailWorkspace} from './mail-workspace.js?v=calm-workspaces-20261027';
+import {createMailWorkspace} from './mail-workspace.js?v=feedback-followup-20261028';
 import {parseGoogleDesktopClient,parseGoogleWebClient} from '../shared/google-oauth-client.js?v=online-integrations-20261016';
 import {gmailApprovalMarkup,installGmailApprovals} from './gmail-approvals.js';
 import {customerMailEntries,matchingMailCustomers,saveInboxMessage,emailAddresses,orderMailThreads,savedConversation,conversationSignature,saveInboxThread,removeInboxThread,mailStorageUsage,gmailConversationKey} from '../shared/mail-inbox.js?v=crm-code-review-20261027';

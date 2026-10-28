@@ -1,8 +1,8 @@
-import {laptopContext} from '../shared/assistant-laptop-context.js';
+import {laptopContext} from '../shared/assistant-laptop-context.js?v=feedback-followup-20261028';
 import {sessionFingerprint,authenticated} from './auth.js';
 import {companyFromEnv} from '../shared/companies.js';
 import {integrationStore,random,sha256,integrationError as fail} from './integration-store.js';
-import {assistantTransportState,assistantSnapshot,prepareAssistantPlan,applyAssistantPlan} from '../shared/assistant-domain.js';
+import {assistantTransportState,assistantSnapshot,prepareAssistantPlan,applyAssistantPlan} from '../shared/assistant-domain.js?v=feedback-followup-20261028';
 const json=(data,status=200)=>Response.json(data,{status,headers:{'Cache-Control':'no-store'}});
 const id=value=>typeof value==='string'&&/^[a-zA-Z0-9._-]{1,160}$/.test(value);
 function endpoint(env){try{const u=new URL(env.CRM_AGENT_SERVICE_URL);if(u.protocol!=='https:'||u.username||u.password||u.port||u.pathname!=='/'||u.search||u.hash||!u.hostname.includes('.')||!/[a-z]$/i.test(u.hostname)||/\.(local|internal|localhost)$/i.test(u.hostname)||/^(localhost|127\.|10\.|192\.168\.|169\.254\.)/.test(u.hostname)||!/^[a-f0-9]{64}$/.test(env.CRM_AGENT_SERVICE_TOKEN||''))return null;return u.origin;}catch{return null;}}

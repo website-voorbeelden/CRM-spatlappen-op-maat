@@ -1749,5 +1749,257 @@ export const sourceUpdates = [
     "delivery": "local",
     "note": "Op expliciet verzoek de nieuwere dossierkop en rustige gedeelde werkplekken voorbereid voor upload naar bestaande GitHub-branch crm-ui-batches-20261027. Gewijzigde bron gelezen op concrete blokkades: imports/context, bekende versus onbekende bedragen, bestaande acties/tabbediening en centrale CSS. Geen concrete uploadblokkade gevonden. Alleen publieke bron/assets/productdocumentatie; klantgegevens, privéconfiguratie, operationele overdracht, feedbackexports, werkuitvoer en deploymentconfiguratie uitgesloten. Geen main-/productiewijziging. Bestaande taken blijven review/local; brede werkplek doing/local en eigen controle open.",
     "evidence": "Bron-/difflezing en Git-/pakketadministratie; geen automatische tests/checks/syntaxchecks/builds, nieuwe browser-QA of provider-/data-/mail-/betaalactie. Alleen het eerdere beperkte Maatvoorbeeld is handmatig bekeken. Uploadresultaat volgt in lokale overdracht; GitHubbron is geen functioneel akkoord of livepublicatie. Andere schermen/beide bedrijven/mobiel/historische en betaalrandgevallen blijven open. Bestaande gegevens, wijzigingen, opgeslagen status en feedback behouden."
+  },
+  {
+    "companies": [
+      "spatlappen",
+      "maatwerkkunststof"
+    ],
+    "at": "2026-10-28T02:08:50.970Z",
+    "author": "Codex",
+    "delivery": "local",
+    "evidence": "Uitsluitend bronlezing/bewerking en bouwadministratie. Geen automatische tests/checks/syntaxchecks/builds, browser-/DOMcontrole, provider-/mail-/Gmail-/betaal-/pushproef, herstart, GitHubupload of livepublicatie. Eigen controle beide bedrijven/mobiel/lege/historische/afwijkende gegevens, focus en invoerbehoud blijft open. Bestaande data/IDs/bedrijven/CAS/voorkeuren/gebruikersstatus/feedback behouden.",
+    "id": "payment-wait-20261028",
+    "taskId": "crm-calm-workspaces-20261027",
+    "status": "review",
+    "note": "Prominente dagtelling vanaf eerste huidige positieve betaling of aanbetaling in dossierkop, orderlijst, werkvoorraad/klantdossier en kaart. Geen aanvraagfallback of reset bij restbetaling; geen betaling expliciet benoemen, onbruikbare bedragen/datums controleren. Levering stopt teller; afgerond zonder datum blijft onbekend. Eén shared/order-payment-wait-projectie, geen prijs-/drempelvereiste om feitelijke ontvangst te dateren. Afgesproken levertermijn, betaaldstatus en taakprioriteit blijven apart. Aanvraagdatum bij details. Zie ORDER-IN-EEN-OOGOPSLAG."
+  },
+  {
+    "companies": [
+      "spatlappen",
+      "maatwerkkunststof"
+    ],
+    "at": "2026-10-28T02:08:50.970Z",
+    "author": "Codex",
+    "delivery": "local",
+    "evidence": "Uitsluitend bronlezing/bewerking en bouwadministratie. Geen automatische tests/checks/syntaxchecks/builds, browser-/DOMcontrole, provider-/mail-/Gmail-/betaal-/pushproef, herstart, GitHubupload of livepublicatie. Eigen controle beide bedrijven/mobiel/lege/historische/afwijkende gegevens, focus en invoerbehoud blijft open. Bestaande data/IDs/bedrijven/CAS/voorkeuren/gebruikersstatus/feedback behouden.",
+    "id": "home-20261028",
+    "taskId": "crm-home-20261028",
+    "status": "review",
+    "note": "Logo/bedrijfsnaam naar Start met grote zoekbalk, echt recent geopende orders uit bestaande bedrijf/browservoorkeuren, recente ontvangsten afgelopen7dagen en grote tegels uit gedeelde sidebar. Bestaande zoekdialoog met queryovername, huidige resultaat-/invoerguards, bestaande dashboardtabs via Te doen & overzicht en hashterugkeer naar home. Geen extra state/poll/provider, query alleen vluchtig, CSS centraal responsive. Zie STARTPAGINA."
+  },
+  {
+    "companies": [
+      "spatlappen",
+      "maatwerkkunststof"
+    ],
+    "at": "2026-10-28T02:08:50.970Z",
+    "author": "Codex",
+    "delivery": "local",
+    "evidence": "Uitsluitend bronlezing/bewerking en bouwadministratie. Geen automatische tests/checks/syntaxchecks/builds, browser-/DOMcontrole, provider-/mail-/Gmail-/betaal-/pushproef, herstart, GitHubupload of livepublicatie. Eigen controle beide bedrijven/mobiel/lege/historische/afwijkende gegevens, focus en invoerbehoud blijft open. Bestaande data/IDs/bedrijven/CAS/voorkeuren/gebruikersstatus/feedback behouden.",
+    "id": "home-payment-workspace-20261028",
+    "taskId": "consistent-workspace",
+    "status": "doing",
+    "note": "Nieuwe startpagina en prominente betaalwachttijd lokaal uitgewerkt met afzonderlijke reviewtaken, geen bredere werkplek/financiële/invoer-/conflictaudit als afgerond markeren. Eerdere wijzigingen en opgeslagen status blijven leidend. Eigen beoordeling en eventuele GitHub/livepublicatie apart."
+  },
+  {
+    "companies": [
+      "spatlappen",
+      "maatwerkkunststof"
+    ],
+    "at": "2026-10-28T02:17:09.065Z",
+    "author": "Codex",
+    "delivery": "local",
+    "evidence": "Alleen bronlezing/bewerking en bouwadministratie. Geen tests/checks/syntaxchecks/builds/browser-/DOMcontrole/contrastmeting, template-/PDF-render, provider-/mail-/betaal-/data-actie, herstart, GitHubpush of livepublicatie. Bestaande wijzigingen/data/IDs/bedrijven/CAS/voorkeuren/gebruikersstatus/feedback behouden. Eigen controle beide bedrijven/desktop/mobiel/keyboard/spans/nieuwe rijen/selecties/disabled/herkomst/invoer blijft open.",
+    "id": "table-guides-20261028",
+    "taskId": "crm-table-guides-20261028",
+    "status": "review",
+    "note": "Centrale zebra en duidelijkere hover/focus voor hele rijen, gedeelde tijdelijke rij/kolom/celmarkering inclusief koppen en spanbewaking. Kleine schermen rij/cel; geen willekeurige kolom bij colspan. Native dropdowns en bestaande menu-/zoekresultaten duidelijker, geselecteerde mail en bronkleuren behouden. Eén gedelegeerde installatie, geen focus-/data-/sorteringswijziging of opslag. Zie TABEL-BEDIENING."
+  },
+  {
+    "companies": [
+      "spatlappen",
+      "maatwerkkunststof"
+    ],
+    "at": "2026-10-28T02:17:09.065Z",
+    "author": "Codex",
+    "delivery": "local",
+    "evidence": "Alleen bronlezing/bewerking en bouwadministratie. Geen tests/checks/syntaxchecks/builds/browser-/DOMcontrole/contrastmeting, template-/PDF-render, provider-/mail-/betaal-/data-actie, herstart, GitHubpush of livepublicatie. Bestaande wijzigingen/data/IDs/bedrijven/CAS/voorkeuren/gebruikersstatus/feedback behouden. Eigen controle beide bedrijven/desktop/mobiel/keyboard/spans/nieuwe rijen/selecties/disabled/herkomst/invoer blijft open.",
+    "id": "packing-template-awaiting-20261028",
+    "taskId": "packing-word-template-20261028",
+    "status": "open",
+    "note": "Philippe geeft aan zelf een nieuwe Word-pakbontemplate te sturen. Huidige pakbon/template/generator/bestaande documenten nu behouden; inhoud en bedrijfsbereik na aanlevering concreet vaststellen. Geen nieuw ontwerp verzinnen. Voorlopig expliciet geen GitHubpush; templateverwerking en eigen controle open."
+  },
+  {
+    "id": "home-layout-20261028",
+    "taskId": "crm-home-20261028",
+    "companies": [
+      "spatlappen",
+      "maatwerkkunststof"
+    ],
+    "at": "2026-10-28T02:48:20.817Z",
+    "author": "Codex",
+    "status": "review",
+    "delivery": "local",
+    "note": "Bouwtaken en Feedback alleen uit starttegels gefilterd. Overige tegels direct onder zoekbalk geplaatst, recente orders en ontvangsten daarna. Gedeelde bestaande markup/CSS/navigatie hergebruikt; sidebar/routes en zoek-/invoer-/voorkeuren behouden. Zie STARTPAGINA.",
+    "evidence": "Bronlezing/bewerking en bouwadministratie; geen automatische tests/checks/syntaxchecks/builds/browser-/DOMcontrole, provider-/data-actie/herstart/GitHubpush/livepublicatie. Eigen controle beide bedrijven/mobiel/volgorde/links blijft open; bestaande wijzigingen/gegevens/gebruikersstatus/feedback behouden."
+  },
+  {
+    "id": "sidebar-collapse-20261028",
+    "taskId": "crm-central-css-20261027",
+    "companies": [
+      "spatlappen",
+      "maatwerkkunststof"
+    ],
+    "at": "2026-10-28T02:50:59.900Z",
+    "author": "Codex",
+    "status": "review",
+    "delivery": "local",
+    "note": "Concrete CSScascadebotsing desktop inklappen gecorrigeerd: latere gewone nav-displayregel overschreef display:none. Drie verspreide collapsedblokken geconsolideerd in centrale eigenaar; directe navigatie/kop/voet sterker verborgen, intrinsieke eerste gridrij en begrensde compacte balk met omloop. Bestaande uitklapknop, slots, opgeslagen voorkeur, mobiele drawer en mailinvoer behouden. Geen nieuwe stylesheet/JS/!important.",
+    "evidence": "Alleen bron-/cascadereview en bewerking plus bouwadministratie; geen browser-/DOMuitlezing of visuele reproductie, automatische tests/checks/syntaxchecks/builds, provider-/data-/mailactie, serviceherstart/tabreload, GitHubpush of publicatie. Eigen controle beide bedrijven/mail/dossier, herhaald in-/uitklappen, smalle desktop/mobiel/breakpointovergang en AI/invoer blijft open. Bestaande wijzigingen/data/IDs/bedrijven/CAS/gebruikersstatus/feedback behouden."
+  },
+  {
+    "id": "plan-feedback28-batch1-orders",
+    "taskId": "feedback28-batch1-orders",
+    "companies": [
+      "spatlappen",
+      "maatwerkkunststof"
+    ],
+    "at": "2026-10-28T02:57:30.584Z",
+    "author": "Codex",
+    "status": "open",
+    "delivery": "local",
+    "note": "Alleen ingedeeld op verzoek, nog niet geïmplementeerd. Aanvraaggegevens direct als productvoorstel gebruiken; verzonden orderbevestiging als alternatief voor aparte offerte in relevante voortgang. Export50meldingen:6nieuw,44ongewijzigd; eerdere lokale bronbouw en gebruikerscontrole niet dubbel uitvoeren of automatisch afvinken. Zie DRIE-FEEDBACKBATCHES-20261028.",
+    "evidence": "Export-/privélijstvergelijking en gerichte bron-/documentlezing;6nieuwe privéfeedback-IDs via bestaande CLI toegevoegd, oudere3extra en bestaande2resolved behouden. Geen functionele codewijziging, tests/checks/syntaxchecks/builds/browser-/DOMcontrole/provider-/klant-/mail-/betaalactie/render/herstart/GitHubpush/livepublicatie. Batch blijft Open; bouwen en eigen controle later. Bestaande data/IDs/bedrijven/CAS/gebruikersstatus/feedback behouden."
+  },
+  {
+    "id": "plan-feedback28-batch2-purchases",
+    "taskId": "feedback28-batch2-purchases",
+    "companies": [
+      "spatlappen",
+      "maatwerkkunststof"
+    ],
+    "at": "2026-10-28T02:57:30.585Z",
+    "author": "Codex",
+    "status": "open",
+    "delivery": "local",
+    "note": "Alleen ingedeeld op verzoek, nog niet geïmplementeerd. Betaalde btw met bron/bewijs vanuit inkoop terugvinden; gecontroleerd AI-JSONvoorstel voor leveranciersdocumenten met eigen handmatige bijlage. Export50meldingen:6nieuw,44ongewijzigd; eerdere lokale bronbouw en gebruikerscontrole niet dubbel uitvoeren of automatisch afvinken. Zie DRIE-FEEDBACKBATCHES-20261028.",
+    "evidence": "Export-/privélijstvergelijking en gerichte bron-/documentlezing;6nieuwe privéfeedback-IDs via bestaande CLI toegevoegd, oudere3extra en bestaande2resolved behouden. Geen functionele codewijziging, tests/checks/syntaxchecks/builds/browser-/DOMcontrole/provider-/klant-/mail-/betaalactie/render/herstart/GitHubpush/livepublicatie. Batch blijft Open; bouwen en eigen controle later. Bestaande data/IDs/bedrijven/CAS/gebruikersstatus/feedback behouden."
+  },
+  {
+    "id": "plan-feedback28-batch3-insights",
+    "taskId": "feedback28-batch3-insights",
+    "companies": [
+      "spatlappen",
+      "maatwerkkunststof"
+    ],
+    "at": "2026-10-28T02:57:30.585Z",
+    "author": "Codex",
+    "status": "open",
+    "delivery": "local",
+    "note": "Alleen ingedeeld op verzoek, nog niet geïmplementeerd. Gemeten formulierafrondingen en klikbare tijdreeksen in Websitegebruik; editorwerkbalk binnen beschikbare breedte laten omlopen. Export50meldingen:6nieuw,44ongewijzigd; eerdere lokale bronbouw en gebruikerscontrole niet dubbel uitvoeren of automatisch afvinken. Zie DRIE-FEEDBACKBATCHES-20261028.",
+    "evidence": "Export-/privélijstvergelijking en gerichte bron-/documentlezing;6nieuwe privéfeedback-IDs via bestaande CLI toegevoegd, oudere3extra en bestaande2resolved behouden. Geen functionele codewijziging, tests/checks/syntaxchecks/builds/browser-/DOMcontrole/provider-/klant-/mail-/betaalactie/render/herstart/GitHubpush/livepublicatie. Batch blijft Open; bouwen en eigen controle later. Bestaande data/IDs/bedrijven/CAS/gebruikersstatus/feedback behouden."
+  },
+  {
+    "id": "feedback28-batch1-orders-built-20261028",
+    "taskId": "feedback28-batch1-orders",
+    "companies": [
+      "spatlappen",
+      "maatwerkkunststof"
+    ],
+    "at": "2026-10-28T03:13:19.771Z",
+    "author": "Codex · feedback batch1 28 oktober",
+    "status": "review",
+    "delivery": "local",
+    "note": "Batch1 lokaal brongebouwd. Product uit aanvraag maken stelt bij lege bestaande order bekende en actuele onbewaarde aanvraaggegevens voor in bestaande editor; expliciet Opslaan, geen gegokte prijs/aantal/maat of overschrijven bestaande producten. Gedeeltelijke maten ook later behouden, extra Maatkenmerken en geldige formulierherkomst bewaard. Aanvraagdelta/vinkjes/hervatten, basisguard en bestaande order-CAS behouden; geen nieuwe businessopslag/schema. Voortgang Offerte / bevestiging telt bestaande bevestigingsverzendfeiten als alternatief voor aparte offerte; alleen klaargezet document blijft onverstuurd. Geen mail-/offertedatum/akkoord/betaal-/vrijgavefeit verzonnen. Scope en open controle in docs/FEEDBACK-BATCH1-20261028.md. Batch2/3 nog gepland; eerdere bron/gegevens/IDs/gebruikersstatus/feedback behouden.",
+    "evidence": "Alleen handmatige bronlezing/bewerking en bouwadministratie. Geen tests/checks/syntaxchecks/builds/browser-/DOMcontrole/render/provider-/mail-/betaalactie/klantdataonderzoek/herstart/GitHubpush/publicatie. Eigen controle open: beide bedrijven, gedeeltelijke/ongeldige/onbewaarde aanvraag, vrij bedrukkingstekst/0 drukkleuren/Maatvorm, terugkeer/annuleren/conflict/bestaande producten/dubbel bewaren en klaargezet versus werkelijk geregistreerd offerte-/bevestigingsbewijs. Bronreview is geen functioneel of visueel akkoord; feedback niet automatisch afgehandeld."
+  },
+  {
+    "id": "feedback28-batch2-purchases-built-20261028",
+    "taskId": "feedback28-batch2-purchases",
+    "companies": [
+      "spatlappen",
+      "maatwerkkunststof"
+    ],
+    "at": "2026-10-28T03:32:46.862Z",
+    "author": "Codex · feedback batch2 28 oktober",
+    "status": "review",
+    "delivery": "local",
+    "note": "Batch2 lokaal brongebouwd. Betaalde btw met datum/betaalbewijs en zendingkoppeling in hetzelfde bestaande btw-register; vanuit inkoop en Analytics terugvinden/bewerken. Betaalmetadata wijzigt geen kostprijs/leverancierssaldo/aftrek. Leverancierrecord/uploads één bron; oude file:-boekingen als alias behouden, geen migratie. Nieuw leveranciersformulier met begrensde prompt/JSON-voorinvulling, actief bedrijf/zending/productmatch/EUR/stuk-paar gecontroleerd; geen betalingen/nieuwe order/zending, bestaande regels niet vervangen. Eigen kopinvoer/JSON/bijlagen/herkomst behouden; expliciete Opslaan. Regel-IDs/rekentool behouden, geopende zending/productbasis en bestaande state/files-CAS bewaakt bij document/betaalformulier/oudere AI-review. Nieuwe bijlagen 20/15MBperfile/30MBsamen. Offerte naar definitieve factuur voor dezelfde stuks via bestaand document Bewerken; geen automatische vervanging afleiden. Zie docs/FEEDBACK-BATCH2-20261028.md. Batch1 review/local en batch3 open/local, bestaande gegevens/IDs/gebruikersstatus/feedback behouden.",
+    "evidence": "Alleen handmatige bronlezing/bewerking en bouwadministratie. Geen tests/checks/syntaxchecks/builds/browser-/DOMcontrole/render/provider-/mail-/betaalactie/klantdataonderzoek/herstart/GitHubpush/publicatie. Eigen controle beide bedrijven/desktop/mobiel open: btw-bedrag/datum/bewijs/concept/kwartaal/CSV/historie/aliases, AI-fouten/valuta/stuk-paar/match/onbekend, kopinvoer/bijlagen/bestaande regels/tweemaal invullen, regel-ID/rekentool/limieten en relevante wijziging/CASfout. Geen functioneel/visueel akkoord, fiscale beoordeling, historische dedup of feedbackresolve."
+  },
+  {
+    "id": "feedback28-batch3-insights-built-20261028",
+    "taskId": "feedback28-batch3-insights",
+    "companies": [
+      "spatlappen",
+      "maatwerkkunststof"
+    ],
+    "at": "2026-10-28T03:50:12.528Z",
+    "author": "Codex · feedback batch3 28 oktober",
+    "status": "review",
+    "delivery": "local",
+    "note": "Batch3 lokaal brongebouwd. Websitegebruik acht klikbare meetkaarten/daggrafiek/tabel, poging versus werkelijk ontvangen formulier en alle ontvangen aanvragen apart. Pure website-metricsprojectie, tijd/conversie uit juiste teller/noemer, onbekende dekking/reeks geen verzonnen nul. Bestaande read-only dagquery uitgebreid met actieve seconden/submitted/scroll75/capability, geen nieuwe tracking/DB/migratie. Zelfde periode/pagina/testfilters/loadguards/foutretry; alleen vluchtige gekozen meetwaarde en getoonde rapportbasis. Centrale CRM-CSS. Editor: concrete latere nowrap/shrink:0-conflicten verwijderd, één wrap-eigenaar op beschikbare breedte, begrensde knoppen/maatgroep, lage desktophoogte met scroll bereikbaar. Bestaande fitPreviewFrame/scriptvolgorde/ontwerp/zoom/undo/export/opslag intact. Zie docs/FEEDBACK-BATCH3-20261028.md. Alle drie nieuwe batches brongebouwd voor Jouw controle; eerdere restscope/gebruikersstatus/feedback/data/IDs/bedrijven/CAS behouden.",
+    "evidence": "Alleen handmatige bron-/documentlezing, bewerking en bouwadministratie. Geen tests/checks/syntaxchecks/builds/browser-/DOMcontrole/contrastmeting/render, meet-/klantdataonderzoek, API-/provider-/mail-/betaalactie, herstart/tabreload, GitHubpush/livepublicatie. Eigen controle beide bedrijven,7/30/90dagen/pagina/testfilters/oudere backend/ontbrekende data, metricfocus/tabel/tijdconversie/randdagen/foutretry; editor1470x831/kleiner/laag/smal/mobiel, knoppen/maatgroep/dropdowns/canvas/zoom/undo/export open. Geen visuele reproductie of functioneel/visueel akkoord; nieuwe dagreeksen vragen later ook bijgewerkte rapportbron. Geen automatische feedbackresolve; Word-pakbon wacht op gebruiker."
+  },
+  {
+    "id": "order-cell-navigation-20261028",
+    "taskId": "crm-table-guides-20261028",
+    "companies": [
+      "spatlappen",
+      "maatwerkkunststof"
+    ],
+    "at": "2026-10-28T03:54:43.473Z",
+    "author": "Codex · ordercelnavigatie",
+    "status": "review",
+    "delivery": "local",
+    "note": "Gewone primaire klik in een ordercel volgt de bestaande dossierlink via eenmalig gedelegeerde orders/list-navigation-handler. Geen nieuwe hashroute/businessstate/recordwrites of extra tabstops; echte link blijft keyboard-/nieuw-tabroute. Eigen links/knoppen/invoer/labels/details/contenteditable/interactieve rollen/data-action, tekstselectie/modifiers/busy/inert behouden. CSS centraal, zebra/kruis en filter/sort behouden. Beide bedrijven gedeeld; zie docs/TABEL-BEDIENING.md. Eerdere bron/klantdata/IDs/opgeslagen gebruikersstatus/feedback behouden.",
+    "evidence": "Handmatige bronlezing/bewerking en bouwadministratie; geen tests/checks/syntaxchecks/builds/browser-/DOMcontrole/klantdataonderzoek/provideractie/herstart/tabreload/GitHubpush/publicatie. Eigen controle beide bedrijven/alle cellen/filter/sort/lege lijst/tekstselectie/muis/touch/keyboard/faseacties/prijsdetails/inkooplink/modifiers open. Bronreview is geen functioneel/visueel akkoord."
+  },
+  {
+    "id": "tikkie-payment-details-20261028",
+    "taskId": "mobile-notifications",
+    "companies": [
+      "spatlappen",
+      "maatwerkkunststof"
+    ],
+    "at": "2026-10-28T03:59:12.399Z",
+    "author": "Codex · Tikkiepushdetails",
+    "status": "doing",
+    "delivery": "local",
+    "note": "Deelstap lokaal: Tikkie-telefoonmelding met bedrag van echte positieve ontvangst en klant uit gekoppelde CRM-order. Begrensde/schoongemaakte klantnaam, onbekend expliciet; geen bankidentiteit of ordertotaal raden. Optionele paymentSummary in bestaand encrypted v1-pushbericht; worker controleert/formatteert, oude worker/payload/ontbrekende details blijft generiek. Rapportmeldingen zonder cijfers. Op expliciet verzoek bedrag/klant ook op lockscreen; clientuitleg bijgewerkt. Handmatig stil en bron/company/device/session/key/lease/dedup/retry/veilige doorklik behouden. Geen nieuwe store/query/migratie/opt-in; oude meldingen niet opnieuw sturen. Bredere taak blijft Mee bezig. Zie docs/MOBIELE-MELDINGEN.md.",
+    "evidence": "Alleen bronlezing/bewerking en bouwadministratie. Geen tests/checks/syntaxchecks/builds/browser-/DOMcontrole/push-/provider-/mail-/betaalproef/klantdataonderzoek/herstart/GitHubpush/publicatie. Gegenereerde worker niet gebouwd; server/workerlevering en telefoonappupdate later nodig. Eigen controle beide bedrijven/deel-restbedrag/CRM-klant/ontbrekende-lange naam/handmatig stil/oude-nieuwe worker-payload/fallback/doorklik/login/invoer/rapport/iOS-Android open. Geen telefoonbezorgbewijs of claim dat eerdere gemiste push opgelost is; gegevens/IDs/gebruikersstatus/feedback behouden."
+  },
+  {
+    "id": "duplicate-review-built-20261028",
+    "taskId": "duplicate-order-review-20261028",
+    "companies": [
+      "spatlappen",
+      "maatwerkkunststof"
+    ],
+    "at": "2026-10-28T14:00:00.000Z",
+    "author": "Codex",
+    "status": "review",
+    "delivery": "local",
+    "note": "Brongebouwd: mogelijke klant-/order-/ontvangstdubbelen, invoerbehoud en bewuste bevestiging; Meer → vergelijken/samenvoegen met productmapping, verplichte conflict- en ontvangstkeuzes, betaalcorrectielog, ongewijzigde bestanden, oorspronkelijke historie/nummerreservering/zoekalias/doorverwijzing. Providerorder blijft; complexe btw-/voorraad-/inkoop-/ontwerpkoppelingen blokkeren expliciet. Geen bestaande dossiers door bouwer samengevoegd. Gebruikerscontrole open.",
+    "evidence": "Bron gelezen en bewerkt; twee door gebruiker genoemde dossiers gericht read-only onderzocht, geen klantdata gewijzigd. Geen tests/checks/syntaxchecks/browsercontrole uitgevoerd. Publicatie nog niet uitgevoerd; zie docs/DUBBELE-ORDERS.md."
+  },
+  {
+    "id": "duplicate-review-published-20261028",
+    "taskId": "duplicate-order-review-20261028",
+    "companies": [
+      "spatlappen",
+      "maatwerkkunststof"
+    ],
+    "at": "2026-10-28T07:26:21.823Z",
+    "author": "Codex",
+    "status": "review",
+    "delivery": "live",
+    "note": "Gedeelde code naar beide bestaande CRM Pages-projecten/main gepubliceerd, release crm-duplicate-review-20261028. Waarschuwingen en Meer → vergelijken/samenvoegen beschikbaar in gepubliceerde bron. Geen bestaande order of betaling door bouwer samengevoegd/gewijzigd. Eigen controle open. Administratieve correctie: de eerdere lokale bouwnotitie heeft per ongeluk 14:00Z als tijd; die tijd is onjuist. Deze publicatienotitie en het publicatiebewijs bevatten de werkelijke registratie/publicatievolgorde; oude notitie append-only behouden.",
+    "evidence": "Spatlappen be03d398-947e-4e49-8b43-d849979909e3; Maat d085870d-504a-42e7-91cd-b22c82cdb34e. Wrangler Deployment complete/Functionscompile en Cloudflare-productiebeheermetadata. Verse configs/DB/R2 behouden, vorige deployments en D1-herstelpunten vastgelegd. Geen tests/checkrondes/browser-/HTTP-/gebruikstest, GitHubpush, migratie, restore, provideractie of aparte Worker-/Renderrelease. Zie docs/PUBLICEREN-SPATLAPPEN.md en docs/DUBBELE-ORDERS.md."
+  },
+  {
+    "id": "feedback28-followup-twelve-built",
+    "taskId": "feedback28-followup-twelve",
+    "companies": [
+      "spatlappen",
+      "maatwerkkunststof"
+    ],
+    "at": "2026-10-28T08:07:42.658Z",
+    "author": "Codex",
+    "status": "review",
+    "delivery": "local",
+    "note": "Twaalf nieuwe online feedbackpunten brongebouwd: bijsnijkader/dubbelklik, directe bovenstrook, contourkleur, bevestigingsmail op betaallink, bestaande order gericht via JSON/AI aanvullen, orderteruglink en variantgebonden save/nieuwe variant, feedbackdefault, grotere maatknoppen, bovenstrookbalans, logo-drop, optionele veilige voorstelopruiming en vectorstatus. Geen bestaande klantdata/ontwerpen/betalingen of feedbackstatussen gewijzigd. Gebruikerscontrole blijft open; opruimen nergens aangezet.",
+    "evidence": "Gerichte read-only feedbackuitlezing en bronlezing/bewerking; geen tests/checks/syntaxchecks/builds/browser-/DOMcontrole/provideracties. Zie docs/FEEDBACK-VERVOLG-20261028.md voor bron/grenzen/eigen controle. GitHubupload volgt afzonderlijk, geen nieuwe livepublicatie."
   }
 ];

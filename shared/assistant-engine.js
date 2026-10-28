@@ -1,9 +1,9 @@
 import {orderStagesFor} from './companies.js';
-import {runMailReplyAssistant} from './mail-reply-engine.js?v=ui-batch234-20261027';
+import {runMailReplyAssistant} from './mail-reply-engine.js?v=feedback-followup-20261028';
 import {aiProductDescriptionRules} from './product-copy.js';
-import {prepareSpecsProposal,specLabels} from './inquiries.js?v=ui-batch234-20261027';
+import {prepareSpecsProposal,specLabels} from './inquiries.js?v=feedback-followup-20261028';
 import {prepareAssistantMail} from './assistant-mail.js';
-import {assistantSnapshot,assistantContext,appendNotesRequest,executeReadTool,prepareAssistantPlan,customerFields,orderFields,stages} from './assistant-domain.js?v=ui-batch234-20261027';
+import {assistantSnapshot,assistantContext,appendNotesRequest,executeReadTool,prepareAssistantPlan,customerFields,orderFields,stages} from './assistant-domain.js?v=feedback-followup-20261028';
 import {companyFor} from './companies.js';
 const schema=properties=>({type:'object',properties,required:Object.keys(properties),additionalProperties:false});
 const nullable=type=>({type:[type,'null']});

@@ -3,7 +3,7 @@ import {validateMailAttachments} from './mail-attachments.js?v=ui-batch4-followu
 import {replyReferences,validMessageId} from './mail-reply.js';
 import {sanitizeSignature,htmlSignatureMessage} from './mail-signature.js';
 import {companyFor} from './companies.js';
-import {checkMailText} from './mail-templates.js?v=mail-texts-20261027';
+import {checkMailText} from './mail-templates.js?v=feedback-followup-20261028';
 const fail=(message,field)=>{throw Object.assign(Error(message),{field});};
 const address=value=>typeof value==='string'&&value.length<=254&&/^[A-Za-z0-9.!#$%&'*+/=?^_`{|}~-]+@[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)+$/.test(value);
 const id=value=>typeof value==='string'&&/^[-a-zA-Z0-9._]{1,160}$/.test(value);

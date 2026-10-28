@@ -1,5 +1,5 @@
-import {orderExecution} from '../../shared/order-progress.js?v=ui-batch234-20261027';
-import {depositLeadTime} from '../../shared/lead-time.js';
+import {orderExecution} from '../../shared/order-progress.js?v=feedback-followup-20261028';
+import {orderPaymentWait} from '../../shared/order-payment-wait.js?v=payment-wait-20261028';
 import {keyFactsMarkup} from '../workspace/key-facts.js?v=calm-workspaces-20261027';
 
 const calendarDate=value=>typeof value==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(value)&&Number.isFinite(Date.parse(value+'T12:00:00Z'))&&new Date(value+'T12:00:00Z').toISOString().slice(0,10)===value;
@@ -25,21 +25,8 @@ export function orderPaymentFact(context,order,totals){
 export function orderKeyFacts(context,order,totals){
  const complete=totals.priceKnown&&order.shippingKnown===true;
  const fullyPaid=complete&&totals.total>0&&totals.paid>=totals.total;
- const execution=orderExecution(order),today=context.today(),payment=orderPaymentFact(context,order,totals);
- const paidDate=fullyPaid?context.paidDate(order):'';
- const deposit=!fullyPaid&&order.leadTimeBasis==='deposit'?depositLeadTime(context.state,order,totals):null;
- const baseline=fullyPaid?paidDate:deposit?.date||order.date;
- const basis=fullyPaid?'volledige betaling':deposit?.date?deposit.percentage+'% aanbetaling':'aanvraag';
- const delivered=calendarDate(order.deliveredDate),end=delivered?order.deliveredDate:today;
- const wait={label:delivered||execution.delivered?'Wachttijd tot levering':'Sinds '+basis,value:'Datum ontbreekt',detail:fullyPaid?'Ontvangstdatum betaling controleren':'Aanvraagdatum controleren',tone:'neutral',tab:'delivery'};
- if(calendarDate(baseline)&&calendarDate(end)&&baseline<=end&&end<=today){
-  if(execution.delivered&&!delivered)wait.detail='Leverdatum nog vastleggen';
-  else{
-   const days=context.elapsed(baseline,end);
-   wait.value=days+' '+(days===1?'dag':'dagen');
-   wait.detail=delivered?'Na '+basis+' · geleverd '+context.date(end):'Vanaf '+context.date(baseline);
-  }
- }else if(baseline){wait.value='Datum controleren';wait.detail='De geregistreerde datums sluiten niet aan';}
+ const execution=orderExecution(order),delivered=calendarDate(order.deliveredDate),today=context.today(),payment=orderPaymentFact(context,order,totals);
+ const wait={...orderPaymentWait(context.state,order,{today}),tone:'neutral',tab:'payments'};
 
  const window=context.deliveryWindow(order);
  // A date derived from full payment needs a complete price too. Fixed agreed

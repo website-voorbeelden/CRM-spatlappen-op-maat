@@ -1,3 +1,7 @@
+## 28 oktober 2026 — Startpunt en betaalwachttijd
+
+Logo naar gedeelde home met zoeken/recente dossiers en ontvangsten/menutegels uit bestaande navigatie. Voorkeuren en zoek-/betaalprojecties hergebruiken; geen tweede store of providerpoll. Prominente wachttijd vanaf eerste werkelijke huidige positieve ontvangst, ook aanbetaling: geen aanvraagfallback of reset bij restbetaling. Afgesproken levertermijn/taakprioriteit apart en ongewijzigd. Bron lokaal, eigen controle open; geen tests/build/browsercontrole/publicatie. Zie STARTPAGINA en ORDER-IN-EEN-OOGOPSLAG.
+
 ## 27 oktober 2026 — dossierkop op belangrijke informatie richten
 
 Gebruiker verwerpt de dichte fase-/geldregel: te veel nevenschikkende informatie en onbekende bedragen. Klant/order/acties, drie grotere kerngegevens (betaling, wachttijd met startbasis, uitvoering/levering) en afzonderlijke tabs. Fases & voortgang via Meer, bestaande financiële onderdelen behouden. Geen nieuwe financiële regels of workflowwrites. Gedeelde bron, centrale CSS-eigenaar; beperkte lokale Maatweergave met expliciete toestemming bekeken. Geen automatische tests/builds/brede QA/publicatie; overige gevallen/mobiel/gebruikercontrole open. Zie ../ORDER-IN-EEN-OOGOPSLAG.md. Oudere kopbesluiten zijn vervangen.

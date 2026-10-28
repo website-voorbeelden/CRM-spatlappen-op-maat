@@ -1,3 +1,5 @@
+> Nieuw28oktober: Offerte / bevestiging telt bestaande bekende bevestigingsverzenddatum of bevestigingsfasebewijs als alternatief voor offerte. Een alleen klaargezet document blijft klaar, niet verstuurd. Geen extra offerte verplicht, verzenddatum/fasefeit verzinnen of akkoord-/betaal-/vrijgaveregels veranderen. Bronreview/local; eigen controle open. Zie FEEDBACK-BATCH1-20261028.md.
+
 > Nieuwste27oktober: automatische mailfasemelding nu in gedeeld niet-modaal vak met Bekijken en gericht Terugdraaien, geen aparte popup met Verder/Fase aanpassen. Undo gebruikt actuele fase/bron/klant-/workflowbasis en herstelt geen betaal-/mail-/fysieke feiten of hele snapshot. Alleen sessiegeheugen; invoer beschermd. Zie COMPACT-ORDEROVERZICHT.md. Lokaal, geen tests/browsercontrole/publicatie; eigen controle open.
 
 # Verduidelijking27oktober: melding en automatische fase staan los

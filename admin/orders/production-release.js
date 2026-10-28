@@ -1,5 +1,5 @@
-import {productionReleaseInfo,releaseProduction} from '../../shared/production-release.js?v=ui-batch234-20261027';
-import {funnelPayment} from '../../shared/sales-funnel.js?v=ui-batch234-20261027';
+import {productionReleaseInfo,releaseProduction} from '../../shared/production-release.js?v=feedback-followup-20261028';
+import {funnelPayment} from '../../shared/sales-funnel.js?v=feedback-followup-20261028';
 export function releaseMarkup(state,o,company,{esc,euro}){
  if(company.id!=='spatlappen')return '';const info=productionReleaseInfo(state,o,company.id,{payment:funnelPayment(state,o)});if(!info.active||!funnelPayment(state,o).paid&&!o.isSample&&!o.productionReleasedDate)return '';
  if(info.automatic)return `<section class="order-surface"><h3>Productie vrijgegeven</h3><p>${info.percentage}% aanbetaling en de actuele ontwerpvoorwaarden zijn aanwezig.</p>${info.linkDifference?`<p class="form-help">De laatste betaallink vraagt ${euro(info.requested)}; de afgesproken aanbetaling is ${euro(info.required)} incl. btw. Controleer het eventuele restant.</p>`:''}<p class="form-help">Automatisch op basis van de huidige gegevens. Productiestart en levering registreer je zodra ze werkelijk plaatsvinden.</p><details><summary>Afspraak aanpassen</summary><button type="button" data-production-deposit="${esc(o.id)}">Aanbetalingsafspraak controleren</button></details></section>`;

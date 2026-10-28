@@ -2,7 +2,7 @@ import {navigationIcon} from './navigation-icons.js?v=payments-overview-20261027
 // Navigation belongs to the workspace; existing route IDs remain stable.
 export function navigationGroups(company) {
  return [
-  {id:'daily',label:'Werkdag',links:[['dashboard','Overzicht','⌂'],['mail','E-mail','✉']]},
+  {id:'daily',label:'Werkdag',links:[['dashboard','Start','⌂'],['mail','E-mail','✉']]},
   {id:'sales',label:'Verkoop & relaties',links:[['orders','Aanvragen & orders','▤'],['payments','Betalingen','€'],['customers','Klanten','♙'],['order-map','Orderkaart','◇']]},
   {id:'operations',label:'Uitvoering',links:[['purchases','Inkoopbestellingen','⇣'],['inventory','Voorraad','▦'],['designs',company.toolLabel,company.tool==='design'?'✎':'∑']]},
   {id:'management',label:'Beheer',links:[['analytics','Analytics','◴'],['feedback','Feedback','☏'],['development','Bouwtaken','≡'],['settings','Instellingen & back-up','⚙']]}

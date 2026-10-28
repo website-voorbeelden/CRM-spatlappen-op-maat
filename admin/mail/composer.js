@@ -1,4 +1,4 @@
-import {automaticFunnelMailPhase,salesFunnel} from '../../shared/sales-funnel.js?v=ui-batch234-20261027';
+import {automaticFunnelMailPhase,salesFunnel} from '../../shared/sales-funnel.js?v=feedback-followup-20261028';
 import {createCustomerContactEditor} from '../customers/contact-editor.js?v=crm-code-review-20261027';
 import {installSignatureChoice} from './signature-choice.js';
 import {renderSenderSignature,signatureForSender} from '../../shared/mail-signature-profiles.js';
@@ -48,10 +48,21 @@ async function emailDraftForm(id,documentId='',linkId='',draftId='',resume={},op
  const links=o.paymentLinks||[],drafts=o.emailDrafts||[];
  const draft=resume.newMail||!draftId?null:drafts.find(x=>x.id===draftId);
  const files=owner.order?context.emailDocuments(context.state.documents,id):[];
- const wantedDocument=Object.hasOwn(resume,'documentId')?resume.documentId:documentId||draft?.documentId;
- const selectedDoc=files.find(d=>d.id===wantedDocument)||files.find(d=>documentId&&d.generated?.generationId===context.state.documents.find(x=>x.id===documentId)?.generated?.generationId);
- const wantedLink=Object.hasOwn(resume,'paymentLinkId')?resume.paymentLinkId:linkId||draft?.paymentLinkId;
- const selectedLink=links.find(l=>l.id===wantedLink);
+ let wantedDocument=Object.hasOwn(resume,'documentId')?resume.documentId:documentId||draft?.documentId;
+ let selectedDoc=files.find(d=>d.id===wantedDocument)||files.find(d=>documentId&&d.generated?.generationId===context.state.documents.find(x=>x.id===documentId)?.generated?.generationId);
+ let wantedLink=Object.hasOwn(resume,'paymentLinkId')?resume.paymentLinkId:linkId||draft?.paymentLinkId;
+ let selectedLink=links.find(l=>l.id===wantedLink);
+ // New document mail may start from the freshly created request. Never
+ // replace an explicit choice, saved draft, reply, or resumed handwritten text.
+ const pristine=!draft&&!resume.body&&!resume.subject&&!resume.replyMessageId;
+ if(pristine&&owner.order&&!Object.hasOwn(resume,'paymentLinkId')&&!linkId){
+  const recent=links.filter(l=>l.url&&l.expiryDate>=context.today()&&Date.parse(l.createdAt)>=Date.now()-86400000&&(!selectedDoc||!l.documentId||l.documentId===selectedDoc.id)).sort((a,b)=>String(b.createdAt).localeCompare(String(a.createdAt)));
+  const currentTotal=context.totals(o),freshConfirmation=selectedDoc||files.find(d=>(d.generated?.kind||d.category)==='confirmation'&&(Date.parse(d.createdAt)>=Date.now()-86400000||d.date===context.today()));
+  const pair=recent.map(link=>({link,doc:files.find(d=>d.id===link.documentId)||(!link.documentId&&currentTotal.priceKnown&&o.shippingKnown===true&&link.basisTotal===currentTotal.total?freshConfirmation:null)})).find(pair=>(pair.doc?.generated?.kind||pair.doc?.category)==='confirmation'&&(!selectedDoc||pair.doc.id===selectedDoc.id));
+  if(pair){selectedDoc=pair.doc;wantedDocument=pair.doc.id;selectedLink=pair.link;wantedLink=pair.link.id;}
+ }
+ if(selectedLink&&!selectedDoc&&!Object.hasOwn(resume,'documentId')&&!documentId&&!draft){const doc=files.find(d=>d.id===selectedLink.documentId);if(doc){selectedDoc=doc;wantedDocument=doc.id;}}
+ if(resume.autoLinkTemplate){resume={...resume};for(const key of ['body','subject','templateId','autoLinkTemplate'])delete resume[key];}
  const missingAttachment=!!(draft?.documentId||documentId)&&!selectedDoc;
  const paid=owner.order?context.emailIsFullyPaid(o,context.totals(o)):false;const contextInput={company: context.company,customer:owner.customer,order:owner.order,document:selectedDoc,link:selectedLink,euro: context.euro,signature:config.signature,paid};const values={...(draft||context.standardTemplateMail(context.state,contextInput)),...resume};if(resume.replySeed&&resume.body)values.body=resume.body+'\n\n'+(config.signature||'Met vriendelijke groet,\n'+context.company.name);
  const automaticReply=!resume.newMail&&!draft&&!resume.replyMessageId&&!resume.subject?context.documentReplyContext(context.state,id,values.to):null;if(automaticReply)Object.assign(values,automaticReply);const hasReplyContext=!!values.replyMessageId;let replyChoices=context.documentReplyChoices(context.state,id,values.to);
@@ -183,14 +194,14 @@ async function emailDraftForm(id,documentId='',linkId='',draftId='',resume={},op
    if(create.disabled)return;create.disabled=true;
    const saved={...templateComposer.snapshot(),newMail:resume.newMail,composeId,composeRequestId,references:values.references,replyMessageId:values.replyMessageId,gmailThreadId:values.gmailThreadId,gmailMailbox:values.gmailMailbox,conversationId:values.conversationId},chosenDocument=files.find(d=>d.id===form.elements.documentId.value),documentId=chosenDocument&&['invoice','quote','confirmation','proforma'].includes(chosenDocument.generated?.kind||chosenDocument.category)?chosenDocument.id:'';
    const back=extra=>emailDraftForm(id,'','',draftId,{...saved,...extra});context.$('#dialog').close();
-   try{await context.loading.run('Betaallink voorbereiden…',()=>context.preparePaymentLink(id,documentId,{onCreated:link=>back({paymentLinkId:link.id,paymentLinkCreated:true}),onCancel:()=>back({}).catch(error=>context.toast(error.message))}));}
+   try{await context.loading.run('Betaallink voorbereiden…',()=>context.preparePaymentLink(id,documentId,{onCreated:link=>back({paymentLinkId:link.id,paymentLinkCreated:true,autoLinkTemplate:saved.body===values.body&&saved.subject===values.subject&&!values.replyMessageId}),onCancel:()=>back({}).catch(error=>context.toast(error.message))}));}
    catch(error){await back({});const current=context.$('#dialog form');context.showFormProblem(current,context.formProblem(error.message,{field:'paymentLinkId'}),{toast: context.toast});}
   };
   const toggleInsert=()=>{insert.disabled=!form.elements.paymentLinkId.value;};form.elements.paymentLinkId.addEventListener('change',toggleInsert);toggleInsert();
-  if(resume.paymentLinkCreated)context.$('#mail-link-notice').textContent='Betaallink gemaakt en geselecteerd. Je mailtekst is behouden; klik op Link in bericht zetten.';
+  if(resume.paymentLinkCreated)context.$('#mail-link-notice').textContent='Betaallink gemaakt en geselecteerd. Eigen mailtekst blijft behouden; controleer de standaardtekst en het bedrag vóór verzenden.';
  }
  form.addEventListener('input',()=>{if(!senderTouched){const purpose=form.dataset.funnelPurpose==='specs'?'question':form.dataset.funnelPurpose;form.elements.sender.value=context.emailSender(config,files.find(d=>d.id===form.elements.documentId.value),purpose);}});
- form.addEventListener('change',warn);form.elements.body.addEventListener('input',warn);warn();if(resume.paymentLinkCreated)context.$('#mail-link-notice').textContent='Betaallink gemaakt en geselecteerd. Je mailtekst is behouden; klik op Link in bericht zetten.';context.$('#dialog [type=submit]').textContent='Voorbeeld bekijken →';if(resume.addTerms&&termsButton)void addFiles([],{terms:true});
+ form.addEventListener('change',warn);form.elements.body.addEventListener('input',warn);warn();if(resume.paymentLinkCreated)context.$('#mail-link-notice').textContent='Betaallink gemaakt en geselecteerd. Eigen mailtekst blijft behouden; controleer de standaardtekst en het bedrag vóór verzenden.';context.$('#dialog [type=submit]').textContent='Voorbeeld bekijken →';if(resume.addTerms&&termsButton)void addFiles([],{terms:true});
 }
 
 async function prepareEmailPreview(id,draft,options={}){

@@ -1,3 +1,5 @@
+> Batch3 feedback28oktober lokaal: Websitegebruik heeft acht klikbare meetkaarten/dagreeksen met tabel; verzendpoging en werkelijk ontvangen formulier apart, Websiteaanvragen inclusief zonder bezoekmeting apart. Bestaande read-only dagquery uitgebreid met actieve seconden/submitted/scroll75 en expliciete beschikbare kolommen; geen nieuwe tracking/database/migratie. Ontbrekende reeks/oudere backend/dekking blijft expliciet onbekend. Zelfde periode/pagina/testfilters, fout/retry bewaart vorige getoonde rapportbasis. Zie FEEDBACK-BATCH3-20261028.md. Geen API-/meetdataonderzoek/tests/checks/build/browsercontrole of publicatie; eigen controle open. Oudere livebewijzen hieronder horen bij eerdere releases.
+
 > Nieuw27oktober: [Vrijdagrapporten](VRIJDAGRAPPORTEN.md) als lokale bron: vorige volledige maandag–zondag tegenover vorige week, zes grafieken en aandachtspunten met volumebodem/dekkingsgrenzen. Zelfde eigen bedrijfsmeetbinding en uitsluitingen, Google/GA4 apart. Geen nieuwe tracking of credentials gelezen, geen rapport opgehaald/ingepland/verzonden. Ontvangstkeuze en eigen controle/publicatie open.
 
 # Website & aanvragen — 17 oktober 2026

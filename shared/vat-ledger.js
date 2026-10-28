@@ -17,8 +17,16 @@ function invoiceSeed(payload){
 }
 export function vatSources(state){
  const sources=[],groups=new Map();
+ const supplierFiles=new Map();
+ for(const p of state.purchases||[])for(const invoice of supplierInvoices(p)){
+  const files=state.documents.filter(d=>d.ownerId===p.id&&d.invoiceId===invoice.id&&!d.vatEvidence&&!d.generated);
+  for(const file of files)supplierFiles.set(file.id,{p,invoice});
+ }
  for(const doc of state.documents){
   if(doc.vatEvidence)continue;
+  // The uploaded original and its supplier record are one source. Preserve old
+  // file-key bookings as aliases until the user explicitly corrects them.
+  if(supplierFiles.has(doc.id)&&!(state.vatLedger?.entries||[]).some(e=>e.status!=='void'&&e.sourceKey==='file:'+doc.id))continue;
   if(doc.generated?.kind==='invoice'){
    const g=doc.generated,key='invoice:'+doc.ownerId+':'+g.number,row=groups.get(key)||[];row.push(doc);groups.set(key,row);
   }else if(doc.supplierDocument?.kind==='invoice'){const source=doc.supplierDocument;sources.push({key:'file:'+doc.id,kind:'uploaded',label:'Leveranciersfactuur · '+doc.name,documentNumber:source.reference||'',counterparty:source.supplier||'',date:vatDate(source.date)?source.date:'',orderId:doc.ownerId,documentIds:[doc.id],signature:vatFingerprint([doc.id,doc.ownerId,doc.name,doc.size,source]),seed:null});
@@ -29,8 +37,16 @@ export function vatSources(state){
   const conflict=new Set(docs.map(d=>vatFingerprint([d.generated.generationId,d.generated.payload,d.generated.vatReason??null,d.date]))).size!==1;
   sources.push({key,kind:'invoice',label:g.number,documentNumber:g.number,date:vatDate(doc.date)?doc.date:'',orderId:order?.id||'',counterparty:p?.fields?.billing_company||customer?.company||'',counterpartyVat:customer?.vatNumber||'',documentIds:docs.map(d=>d.id),signature:vatFingerprint(docs.map(d=>[d.id,d.generated,d.date,d.size])),seed,hardIssue:conflict,issue:conflict?'Twee verschillende factuurbronnen met hetzelfde nummer.':!seed?'Factuurbedragen ontbreken in de bewaarde bron.':''});
  }
- for(const p of state.purchases||[])for(const invoice of supplierInvoices(p))if(invoice.kind==='invoice')sources.push({key:'supplier:'+p.id+':'+invoice.id,kind:'supplier',label:(p.supplier||p.name)+' · '+invoice.reference,documentNumber:invoice.reference||'',counterparty:p.supplier||p.name,date:vatDate(invoice.date)?invoice.date:'',purchaseId:p.id,documentIds:[],signature:vatFingerprint([p.id,p.supplier,invoice.id,invoice.reference,invoice.date,invoice.total,invoice.kind,invoice.currency||'']),seed:null});
+ for(const p of state.purchases||[])for(const invoice of supplierInvoices(p))if(invoice.kind==='invoice'){
+  const files=state.documents.filter(d=>supplierFiles.get(d.id)?.p.id===p.id&&supplierFiles.get(d.id)?.invoice.id===invoice.id),aliases=files.filter(d=>(state.vatLedger?.entries||[]).some(e=>e.status!=='void'&&e.sourceKey==='file:'+d.id));
+  sources.push({key:'supplier:'+p.id+':'+invoice.id,kind:'supplier',label:(p.supplier||p.name)+' · '+invoice.reference,documentNumber:invoice.reference||'',counterparty:p.supplier||p.name,date:vatDate(invoice.date)?invoice.date:'',purchaseId:p.id,documentIds:files.map(d=>d.id),signature:vatFingerprint([p.id,p.supplier,invoice.id,invoice.reference,invoice.date,invoice.total,invoice.kind,invoice.currency||'']),seed:null,aliases:aliases.map(d=>'file:'+d.id),issue:aliases.length?'Dit document heeft al een boeking via het bronbestand. Gebruik die bestaande boeking; voeg geen tweede toe.':''});
+ }
  for(const receipt of state.payments)sources.push({key:'receipt:'+receipt.id,kind:'receipt',label:'Ontvangst '+(receipt.reference||receipt.id),date:receipt.date,orderId:receipt.orderId,documentNumber:receipt.reference||receipt.id,documentIds:[],grossCents:receipt.amount,signature:vatFingerprint(receipt),seed:null});
+ for(const source of sources)if(source.kind==='uploaded'){
+  const linked=supplierFiles.get(source.key.slice(5));if(!linked)continue;
+  source.purchaseId=linked.p.id;
+  if(linked.invoice.kind==='offer'){source.hardIssue=true;source.issue='Dit bestand hoort bij een leveranciersofferte / pro forma, geen definitieve factuur. Controleer de bestaande boeking.';}
+ }
  return sources;
 }
 export function validateVatLedger(ledger){
@@ -45,6 +61,8 @@ export function validateVatLedger(ledger){
   for(const key of ['documentNumber','counterparty','counterpartyVat','country','invoiceDate','receivedDate','taxDate','periodReason','creditOf','note','evidenceNote'])if(typeof e[key]!=='string'||e[key].length>(['note','evidenceNote','periodReason'].includes(key)?2000:200))err('Ongeldige btw-tekst.');
   if(e.currency!=='EUR'||!Array.isArray(e.documentIds)||e.documentIds.length>20||e.documentIds.some(id=>typeof id!=='string'||!/^[a-zA-Z0-9._-]{1,160}$/.test(id))||!Array.isArray(e.lines)||e.lines.length>20||typeof e.checks!=='object'||!e.checks||Array.isArray(e.checks))err('Controleer bewijs en btw-regels.');
   if(e.duplicateOf!==undefined&&(typeof e.duplicateOf!=='string'||e.duplicateOf.length>160))err('Ongeldige verwijzing naar dubbele bron.');
+  if(e.purchaseId!==undefined&&(typeof e.purchaseId!=='string'||e.purchaseId!==''&&!/^[a-zA-Z0-9._-]{1,160}$/.test(e.purchaseId)))err('Ongeldige zending bij btw-boeking.');
+  if(e.paidVat!==undefined){const p=e.paidVat;if(!p||typeof p!=='object'||Array.isArray(p)||Object.keys(p).some(k=>!['amountCents','date','reference'].includes(k))||!money(p.amountCents)||typeof p.date!=='string'||p.date!==''&&!vatDate(p.date)||typeof p.reference!=='string'||p.reference.length>200)err('Controleer de werkelijk betaalde btw en het betaalbewijs.');}
   if(Object.values(e.checks).some(value=>typeof value!=='boolean')||typeof e.sourceSignature!=='string'||e.sourceSignature.length>2000000)err('Ongeldige broncontrole.');
   for(const l of e.lines)if(!l||!vatBoxes.some(([box])=>box===l.box)&&l.box!==''||!money(l.baseCents)||!money(l.vatCents)||!money(l.deductCents)||l.deductCents>l.vatCents)err('Controleer de btw-bedragen in centen.');
   for(const line of e.lines){absoluteCents+=line.baseCents+line.vatCents+line.deductCents;if(!Number.isSafeInteger(absoluteCents))err('Het btw-register overschrijdt de veilige rekengrens.');}
@@ -61,6 +79,17 @@ export function validateVatLedger(ledger){
 }
 export function vatEntryIssues(entry,state,sources=vatSources(state)){
  const issues=[],s=vatSettings(state),source=sources.find(row=>row.key===entry.sourceKey);
+ if(entry.purchaseId&&!state.purchases?.some(p=>p.id===entry.purchaseId))issues.push('De gekoppelde zending ontbreekt.');
+ if(entry.purchaseId&&source?.purchaseId&&entry.purchaseId!==source.purchaseId)issues.push('De btw-bron hoort bij een andere zending.');
+ if(entry.paidVat){
+  if(!['purchase','import'].includes(entry.kind))issues.push('Betaalde inkoop-btw hoort bij een inkoopfactuur of invoerbewijs.');
+  if(entry.paidVat.amountCents>0){
+   if(!vatDate(entry.paidVat.date))issues.push('Betaaldatum van de btw ontbreekt.');
+   if(!entry.paidVat.reference.trim())issues.push('Vul een referentie naar het btw-betaalbewijs in.');
+   if(entry.duplicateOf||entry.credit)issues.push('Een kopie of credit is geen extra btw-betaling.');
+   if(entry.paidVat.amountCents>entry.lines.reduce((n,l)=>n+l.vatCents,0))issues.push('De betaalde btw is hoger dan de btw volgens de bronregels.');
+  }
+ }
  if(!entry.documentNumber.trim())issues.push('Documentnummer / bronreferentie ontbreekt.');
  if(!entry.counterparty.trim())issues.push('Tegenpartij ontbreekt.');
  if(!vatDate(entry.invoiceDate)||!vatDate(entry.taxDate))issues.push('Bron- of btw-datum ontbreekt/is ongeldig.');
@@ -106,6 +135,10 @@ export function vatEntryIssues(entry,state,sources=vatSources(state)){
 export function saveVatEntry(state,entry,expected,{review=false,changeReason='',now=new Date().toISOString()}={}){
  const ledger=state.vatLedger||{version:1,settings:vatSettings(state),entries:[],preparations:[]};
  const old=ledger.entries.find(e=>e.id===entry.id);if(vatFingerprint(old)!==expected)err('Deze btw-boeking is intussen gewijzigd. Open haar opnieuw.');
+ const source=vatSources(state).find(s=>s.key===entry.sourceKey);
+ if(entry.purchaseId&&!state.purchases?.some(p=>p.id===entry.purchaseId))err('Deze zending bestaat niet meer. Je invoer blijft staan.');
+ if(source?.purchaseId&&entry.purchaseId&&source.purchaseId!==entry.purchaseId)err('De bron hoort bij een andere zending.');
+ if(!old&&source?.aliases?.length)err('Dit leveranciersdocument heeft al een boeking via een bestand. Open die bestaande boeking.');
  if(old?.history.length>=100)err('Het maximum van 100 revisies is bereikt. Bewaar een afzonderlijke correctie met bronverwijzing.');
  const next={...clone(entry),revision:(old?.revision||0)+1,status:review?'reviewed':'draft',updatedAt:now,reviewedAt:review?now:'',history:[...(old?.history||[]),...(old?[{at:now,previous:{...clone(old),history:undefined},reason:changeReason||entry.note}]:[])]};
  if(old?.status==='reviewed'&&!String(changeReason).trim())err('Geef bij wijziging van een gecontroleerde boeking een toelichting.');
@@ -126,8 +159,9 @@ export function vatPeriodReport(state,period){
  if(settings.regime==='unknown')issues.push('Btw-stelsel ontbreekt.');if(settings.administration==='unknown')issues.push('Aangiftegrens met andere bedrijfsprofielen nog niet vastgesteld.');if(!settings.taxpayer.trim()||!settings.taxNumber.trim())issues.push('Naam ondernemer en btw-nummer ontbreken.');
  const included=[];for(const entry of entries){const problems=vatEntryIssues(entry,state,sources);if(entry.status!=='reviewed')problems.push('Nog niet gecontroleerd.');if(problems.length){issues.push(...problems.map(message=>entry.documentNumber+': '+message));continue;}included.push(entry);}
  const represented=new Set((state.vatLedger?.entries||[]).filter(e=>e.status==='reviewed'&&!vatEntryIssues(e,state,sources).length).map(e=>e.sourceKey));
- const unbooked=sources.filter(s=>vatQuarter(s.date)===period&&!represented.has(s.key)&&(settings.regime==='cash'?s.kind!=='invoice':s.kind!=='receipt'));
- const unknown=sources.filter(s=>!vatDate(s.date)&&!represented.has(s.key)&&(settings.regime==='cash'?s.kind!=='invoice':s.kind!=='receipt'));if(unknown.length)issues.push(unknown.length+' bron(nen) zonder geldige datum nog te verwerken.');
+ const covered=s=>represented.has(s.key)||(s.aliases||[]).some(key=>represented.has(key));
+ const unbooked=sources.filter(s=>vatQuarter(s.date)===period&&!covered(s)&&(settings.regime==='cash'?s.kind!=='invoice':s.kind!=='receipt'));
+ const unknown=sources.filter(s=>!vatDate(s.date)&&!covered(s)&&(settings.regime==='cash'?s.kind!=='invoice':s.kind!=='receipt'));if(unknown.length)issues.push(unknown.length+' bron(nen) zonder geldige datum nog te verwerken.');
  const undated=(state.vatLedger?.entries||[]).filter(e=>e.status!=='void'&&!vatQuarter(e.taxDate));if(undated.length)issues.push(undated.length+' boeking(en) hebben nog geen geldige btw-datum; hun kwartaal is nog onbekend.');
  if(unbooked.length)issues.push(unbooked.length+' bron(nen) uit dit kwartaal nog niet verwerkt of bewust uitgesloten.');
  const summary=vatSummary(included);

@@ -7,7 +7,9 @@ export function productDesignUrl(o,item,mode='local',variantId=''){
  if(item.width)query.set('w',String(item.width/10));if(item.height)query.set('h',String(item.height/10));query.set('qty',String(item.quantity));
  if(mode==='cloud')query.set('storage','cloud');if(variantId)query.set('variant',variantId);return '../spatlap-preview.html?'+query;
 }
-export const productDesignSignature=item=>JSON.stringify([item.id,item.width,item.height,item.quantity,item.designDocumentId||'',item.designUpdatedAt||'',item.designVariants||null,item.designFinalVariantId||'',item.designFinalUpdatedAt||'',item.designFinalBasis||'']);
+export const productDesignSignature=(item,variantId='')=>JSON.stringify([item.id,item.width,item.height,item.quantity,
+ variantId==='new'?null:item.designVariants?productDesignVariants(item).find(v=>v.id===variantId)||null:[item.designDocumentId||'',item.designUpdatedAt||''],
+ item.designFinalVariantId===variantId?[item.designFinalUpdatedAt||'',item.designFinalBasis||'']:null]);
 export function designMeasurements(flap){
  if(!flap||typeof flap!=='object')throw Error('De maatvoering van het ontwerp ontbreekt. Open het ontwerp opnieuw.');
  const width=Math.round(Number(flap.w)*10),height=Math.round(Number(flap.h)*10),quantity=String(flap.qty??'').trim()===''?null:Number(flap.qty);
@@ -41,7 +43,7 @@ export async function loadProductDesign(orderId,itemId,{variantId='',copyVariant
  if(copyVariantId&&!isNew)throw Error('Kies een nieuwe variant voor een ontwerpkopie.');
  const source=copyVariantId?variants.find(v=>v.id===copyVariantId):chosen;
  if(copyVariantId&&!source)throw Error('Het bronontwerp voor de kopie ontbreekt.');
- const binding={requiresFinalChoice:Boolean(item.designVariants?.length&&!currentFinalVariant(item)),orderId,itemId,customerId:o.customerId,number:o.sourceNumber||o.number,description:item.description,company:data.customers.find(c=>c.id===o.customerId)?.company||'',signature:productDesignSignature(item),legacyDocumentId:item.designVariants?null:item.designDocumentId||null,width:item.width,height:item.height,quantity:item.quantity,designId:isNew?crypto.randomUUID():chosen.designId,variantId:isNew?crypto.randomUUID():chosen.id,variantNew:isNew,variantName:isNew?nextVariantName(variants):chosen.name};
+ const binding={requiresFinalChoice:Boolean(item.designVariants?.length&&!currentFinalVariant(item)),orderId,itemId,customerId:o.customerId,number:o.sourceNumber||o.number,description:item.description,company:data.customers.find(c=>c.id===o.customerId)?.company||'',signature:productDesignSignature(item,isNew?'new':chosen.id),legacyDocumentId:item.designVariants?null:item.designDocumentId||null,width:item.width,height:item.height,quantity:item.quantity,designId:isNew?crypto.randomUUID():chosen.designId,variantId:isNew?crypto.randomUUID():chosen.id,variantNew:isNew,variantName:isNew?nextVariantName(variants):chosen.name};
  if(revisionDocumentId&&(!isNew||!source?.revisions?.some(r=>r.documentId===revisionDocumentId)))throw Error('Kies een bewaarde revisie van deze variant als nieuwe kopie.');
  if(source?.documentId){
   const record=await readProductDesignRecord(db,orderId,itemId,revisionDocumentId||source.documentId);
@@ -66,8 +68,9 @@ export async function saveProductDesign(binding,record,preview){
   request.onsuccess=()=>{try{
    const next=request.result,o=next?.orders.find(o=>o.id===binding.orderId),item=o?.items.find(i=>i.id===binding.itemId);
    if(!item)throw Error('Dit product is intussen verwijderd. Het ontwerp is niet opgeslagen.');
+   if(item.autoPruneDesignVariants&&o.supplierOrderedDate&&binding.variantId!==currentFinalVariant(item)?.id)throw Error('Voorstellen worden na bestellen automatisch opgeruimd. Zet dat eerst uit bij de order om een extra voorstel te bewaren. Je artwork blijft in dit tabblad staan.');
    if(o.customerId!==binding.customerId)throw Error('Deze order hoort intussen bij een andere klant. Bewaar een ontwerpkopie en open de tool opnieuw vanuit de order.');
-   if(productDesignSignature(item)!==binding.signature)throw Error('Dit product of een ontwerp is intussen gewijzigd. Bewaar een ontwerpkopie en open het product opnieuw.');
+   if(productDesignSignature(item,binding.variantNew?'new':binding.variantId)!==binding.signature)throw Error('Dit product of een ontwerp is intussen gewijzigd. Bewaar een ontwerpkopie en open het product opnieuw.');
    const variants=structuredClone(productDesignVariants(item)),old=variants.find(v=>v.id===binding.variantId);
    if(legacySourceBasis&&variants[0])variants[0].sourceBasis={...legacySourceBasis};
    if(binding.variantNew?old||variants.length>=100:!old)throw Error('De ontwerpkeuze is gewijzigd of er zijn al 100 varianten. Open de order opnieuw.');
@@ -77,7 +80,7 @@ export async function saveProductDesign(binding,record,preview){
    if(!item.designVariants&&variants.length){const legacy=variants[0],preview=next.documents.find(d=>d.id===legacy.previewId);if(preview?.imageRole==='approved'&&preview.productDesignPreview&&legacy.updatedAt&&variantMatchesProduct(item,legacy)){item.designFinalVariantId=legacy.id;item.designFinalUpdatedAt=legacy.updatedAt;item.designFinalBasis=designVariantBasis(item,legacy);}}
    const revisions=old?[...(old.revisions||[]),{documentId:old.documentId,previewId:old.previewId,updatedAt:old.updatedAt,...(old.legacy?{legacy:true}:{}),...(old.sourceBasis?{sourceBasis:{...old.sourceBasis}}:{})}]:[];
    if(revisions.length>500)throw Error('Deze variant heeft 500 revisies. Maak een nieuwe variant; bestaande versies blijven bewaard.');
-   const variant={id:binding.variantId,name,designId:binding.designId,documentId:designDocumentId,previewId:designPreviewId,updatedAt:now,sourceBasis:{...measurements},revisions};
+   const variant={id:binding.variantId,name,designId:binding.designId,documentId:designDocumentId,previewId:designPreviewId,updatedAt:now,sourceBasis:{...measurements},vectorSummary:record.vectorSummary||null,revisions};
    if(old)variants[variants.indexOf(old)]=variant;else variants.push(variant);item.designVariants=variants;
    if(item.designFinalVariantId===variant.id){delete item.designFinalUpdatedAt;const prior=next.documents.find(d=>d.id===old?.previewId);if(prior?.imageRole==='approved'){prior.imageRole='reference';prior.approvalSupersededAt=now;}}
    const metadata={ownerId:o.id,itemId:item.id,category:'other',date:day,createdAt:now,designVariantId:variant.id};
@@ -88,6 +91,16 @@ export async function saveProductDesign(binding,record,preview){
    const fs=tx.objectStore('files');fs.put({id:designDocumentId,blob:designBlob});fs.put({id:designPreviewId,blob:preview});ss.put(next,'main');savedItem=structuredClone(item);
   }catch(error){tx.abort();reject(error);}};tx.oncomplete=resolve;
  });
- binding.signature=productDesignSignature(savedItem);binding.width=savedItem.width;binding.height=savedItem.height;binding.quantity=savedItem.quantity;binding.variantNew=false;binding.variantName=name;binding.record=stored;binding.sourceNeedsReview=false;binding.legacyDocumentId=null;
+ binding.signature=productDesignSignature(savedItem,binding.variantId);binding.width=savedItem.width;binding.height=savedItem.height;binding.quantity=savedItem.quantity;binding.variantNew=false;binding.variantName=name;binding.record=stored;binding.sourceNeedsReview=false;binding.legacyDocumentId=null;
  const channel=typeof BroadcastChannel==='function'?new BroadcastChannel('spatlappen-crm-changes'):null;channel?.postMessage('changed');channel?.close();return {record:stored,item:savedItem};
+}
+
+export async function readProductDesignVectorStatus(orderId,itemId,documentId){
+ const record=await readProductDesignRecord(await openCrmDatabase(),orderId,itemId,documentId),payload=record.payload;
+ const flags=(payload.l||[]).map(logo=>{
+  if(!logo.svgMarkup)return false;const doc=new DOMParser().parseFromString(logo.svgMarkup,'image/svg+xml');
+  return doc.documentElement.localName==='svg'&&!doc.querySelector('parsererror,image,foreignObject,filter,feImage');
+ });
+ flags.push(...(payload.t||[]).filter(t=>String(t.text||'').trim()).map(()=>true));if(payload.u?.contour?.on)flags.push(true);
+ const vectors=flags.filter(Boolean).length;return {version:1,total:flags.length,vectors,level:!flags.length?'empty':vectors===flags.length?'vector':vectors?'mixed':'raster'};
 }

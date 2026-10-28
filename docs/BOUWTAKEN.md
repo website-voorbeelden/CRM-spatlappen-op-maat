@@ -1,3 +1,15 @@
+> Batch3 feedback28oktober: feedback28-batch3-insights review/local via scripts/build-task.mjs. Alle drie nieuwe feedbackbatches nu lokaal brongebouwd voor Jouw controle; geen automatische feedbackresolve/opgeslagen statuswijziging, geen functioneel/visueel akkoord of publicatie. Historische restscope en Word-pakbonaanlevering open. Zie FEEDBACK-BATCH3-20261028.md.
+
+> Batch2 feedback28oktober: feedback28-batch2-purchases review/local via scripts/build-task.mjs. Betaalde btw vanuit inkoop en afgebakende AI-documentinvoer lokaal brongebouwd; eigen controle/feedbackafhandeling open. Batch1 blijft review/local, batch3 open/local. Bestaande opgeslagen status/opmerkingen behouden. Zie FEEDBACK-BATCH2-20261028.md.
+
+> Batch1 feedback28oktober: feedback28-batch1-orders brongebouwd review/local, aanvraagproductvoorstel en bevestiging als offertealternatief. Bouwlog via scripts/build-task.mjs; eigen controle en feedbackafhandeling open, gebruikersstatus behouden. Batch2/3 blijven open/lokaal. Zie FEEDBACK-BATCH1-20261028.md.
+
+> Feedback28oktober: feedback28-batch1-orders, feedback28-batch2-purchases en feedback28-batch3-insights toegevoegd als Open/lokaal. Alleen scope/vergelijking gepland, niet gebouwd. Bronlog via CLI; eerdere gebruikersstatus en feedbackafhandeling blijven leidend. Zie DRIE-FEEDBACKBATCHES-20261028.
+
+> Nieuw28oktober: crm-table-guides-20261028 review/local, packing-word-template-20261028 open/local (Philippe stuurt nieuwe Word-template). Geen tests/build/browsercontrole of GitHubpush/publicatie; bestaande gebruikersstatus en feedback behouden.
+
+> Nieuw28oktober: crm-home-20261028 review/local en crm-calm-workspaces-20261027 review/local via bronlog; startpagina en prominente betaalwachttijd. Brede werkplek blijft doing/local. Geen tests/build/browsercontrole/upload/livepublicatie; eigen controle open. Opgeslagen gebruikersstatus/feedback behouden.
+
 > Algemene ronde27oktober: crm-calm-workspaces-20261027 review/local, crm-central-css-20261027 review/local en consistent-workspace doing/local via bronlog. Gedeelde belangrijke-informatie-eerstindeling op de belangrijkste werkplekken; bestaande Maatbetaalvoorbeeld bekeken, overige controles open. Geen automatische tests/builds/publicatie, opgeslagen gebruikersstatus/feedback behouden. Zie RUSTIGE-WERKPLEK.md.
 
 > Nieuwste dossierkop27oktober: crm-polish-batch2-20261027 review/local en consistent-workspace doing/local via bronlog. Drie leesbare gegevens, fases via Meer, geld/marge uit kop. Beperkte lokale Maatweergave met expliciete toestemming bekeken, geen automatische tests/builds; andere betaalgevallen/mobiel/beide bedrijven en publicatie open. Zie ORDER-IN-EEN-OOGOPSLAG.md. Bestaande opgeslagen voortgang/feedback behouden.

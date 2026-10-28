@@ -1,4 +1,4 @@
-import {inquiryProductKeys,specLabels} from './inquiries.js?v=ui-batch234-20261027';
+import {inquiryProductKeys,specLabels} from './inquiries.js?v=feedback-followup-20261028';
 
 // Keep the inquiry and its customer binding stable across the product editor.
 // Product-only edits are intentionally allowed when that editor returns.

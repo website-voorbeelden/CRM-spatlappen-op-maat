@@ -1,3 +1,4 @@
+import {nextOrderNumber} from './duplicate-records.js?v=duplicate-review-20261028';
 // Deliberately small offline projection. No mail, credentials, files or finances.
 export const customerFields=['company','contact','email','invoiceEmail','phone','vatNumber','country','shippingRecipient','shippingCountry','shippingAddress','billingAddress','notes'];
 export const itemFields=['description','quantity','width','height','material','thickness','specs'];
@@ -38,7 +39,7 @@ export function mergeOffline(base,local,remote,{choices={},activityId,time=new D
      let n=Math.max(state.customerSequence||0,...state.customers.map(c=>Number(/^KL-(\d+)$/.exec(c.number||'')?.[1])||0));target.number='KL-'+String(++n).padStart(4,'0');state.customerSequence=n;
     }else{
      if(!state.customers.some(c=>c.id===row.customerId)){conflict('klant ontbreekt',row.customerId,null,false);continue;}
-     target={...pick(row,['id','customerId','date','notes']),number:Math.max(3000,...state.orders.map(o=>Number(o.number)||0))+1,sourceNumber:'',stage:'Ontwerp maken',vat:21,shippingKnown:false,shippingCharge:0,shippingExpected:null,shippingActual:null,extraCosts:null,packagePrice:null,purchaseId:'',archived:false,items:row.items.map(i=>({...pick(i,['id',...itemFields]),price:null,cost:null}))};
+     target={...pick(row,['id','customerId','date','notes']),number:nextOrderNumber(state),sourceNumber:'',stage:'Ontwerp maken',vat:21,shippingKnown:false,shippingCharge:0,shippingExpected:null,shippingActual:null,extraCosts:null,packagePrice:null,purchaseId:'',archived:false,items:row.items.map(i=>({...pick(i,['id',...itemFields]),price:null,cost:null}))};
     }
     state[type].push(target);applied.push(type+'/'+row.id);continue;
    }

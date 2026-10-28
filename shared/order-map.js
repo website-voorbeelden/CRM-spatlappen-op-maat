@@ -1,4 +1,4 @@
-import {orderExecution,executionStages} from './order-progress.js?v=ui-batch234-20261027';
+import {orderExecution,executionStages} from './order-progress.js?v=feedback-followup-20261028';
 
 export const mapPhases=[['preparation','Voorbereiding'],['ordered','Besteld bij leverancier'],['production','In productie'],['transit','Onderweg'],['arrived','Binnen / te leveren'],['shipped','Verzonden'],['delivered','Afgerond']];
 export const mapPhaseColors={preparation:'#7185bf',ordered:'#b57b20',production:'#255ce5',transit:'#147d91',arrived:'#167b60',shipped:'#52756c',delivered:'#6d7c8c'};

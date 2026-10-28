@@ -1,7 +1,7 @@
 import {formProblem} from '../admin/form-guidance.js?v=crm-code-review-20261027';
 import {documentMail} from './mail-workflow.js';
 export const templateKinds={general:'Algemeen bericht',invoice:'Factuur', 'invoice-paid':'Betaalde factuur',confirmation:'Orderbevestiging',quote:'Offerte',proforma:'Proforma',packing:'Pakbon',question:'Gegevens opvragen'};
-export const variableLabels={contact:'Contactpersoon',klant:'Klant / bedrijf',bedrijf:'Je eigen bedrijf',website:'Je website',order:'Ordernummer',document:'Documentnummer',documenttype:'Documenttype',handtekening:'Handtekening',betaallink:'Betaallink',betaalbedrag:'Bedrag betaallink',geldig_tot:'Geldigheid betaallink'};
+export const variableLabels={contact:'Contactpersoon',klant:'Klant / bedrijf',bedrijf:'Je eigen bedrijf',website:'Je website',order:'Ordernummer',document:'Documentnummer',documenttype:'Documenttype',handtekening:'Handtekening',betaallink:'Betaallink',betaalbedrag:'Bedrag betaallink',betaalpercentage:'Percentage betaallink',geldig_tot:'Geldigheid betaallink'};
 export function builtinMailTemplates(){
  const greeting='Beste {{contact}},\n\n',ending='\n\nHeb je vragen? Laat het gerust weten.\n\n{{handtekening}}';
  const invoiceBody=paid=>'Beste relatie,\n\nNogmaals bedankt voor je bestelling!\n'+(paid?'We hebben je betaling in goede orde ontvangen.\n':'')+'In de bijlage vind je factuur {{document}} voor je administratie.\n\nMocht je nog vragen hebben, dan hoor ik het graag!\n\n{{handtekening}}';
@@ -11,6 +11,7 @@ export function builtinMailTemplates(){
   if(kind!=='confirmation')return [standard];
   return [{...standard,name:'Orderbevestiging · volledige betaling',body:confirmationBody(false)},
    {...standard,id:'standard-confirmation-deposit-70',name:'Orderbevestiging · aanbetaling 70%',body:confirmationBody(true)},
+   {...standard,id:'standard-confirmation-deposit',name:'Orderbevestiging · aanbetaling volgens betaallink',body:confirmationBody(true).replace('70%', '{{betaalpercentage}}%')},
    {...standard,id:'standard-confirmation-other',name:'Orderbevestiging · andere betaalafspraak'}];
  });
  return [...docs,{id:'standard-ack',name:'Aanvraag ontvangen',kind:'general',subject:'Je aanvraag is ontvangen · {{website}}',body:greeting+'Bedankt voor je aanvraag. We hebben deze goed ontvangen en nemen zo snel mogelijk contact met je op.\n\n{{handtekening}}'},{id:'sales-indication',name:'Prijsindicatie',kind:'general',subject:'Prijsindicatie · {{order}} · {{website}}',body:greeting+'Op basis van de besproken gegevens sturen we je graag een eerste prijsindicatie.\n\n[Prijs en uitgangspunten invullen]\n\nDit is een indicatie. Na controle van de definitieve specificaties kunnen we een offerte opstellen.\n\n{{handtekening}}'},{id:'sales-followup',name:'Opvolging aanvraag / prijs',kind:'general',subject:'Even terugkomen op je aanvraag · {{order}}',body:greeting+'We komen graag even terug op ons eerdere bericht over je aanvraag. Heb je dit kunnen bekijken? Laat gerust weten of je nog vragen hebt of iets wilt aanpassen.\n\n{{handtekening}}'},{id:'standard-invoice-paid',name:'Factuur na betaling',kind:'invoice-paid',subject:'Factuur {{document}} · {{website}}',body:invoiceBody(true)},
@@ -42,7 +43,7 @@ export function replaceNamedMailTemplates(state,input,{targetId,expectedNamed,ex
  if(saved.length>=100)throw Error('Je kunt maximaal 100 eigen of aangepaste templates bewaren.');
  const replacement={...data,id:target.id,...(target.builtin?{kind:target.kind}:{})};saved.push(replacement);state.mailTemplates=saved;return replacement;
 }
-export function templateContext({customer,order,document,link,company,signature='',euro=String}){return {contact:customer?.contact||customer?.company||'',klant:customer?.company||'',bedrijf:company.name,website:company.website,order:order?String(order.sourceNumber||order.number):'',document:document?.generated?.number|| (order?'#'+(order.sourceNumber||order.number):''),documenttype:({invoice:'factuur',confirmation:'orderbevestiging',quote:'offerte',proforma:'proforma factuur',packing:'pakbon'})[document?.generated?.kind||document?.category]||'',handtekening:signature||'Met vriendelijke groet,\n'+company.name+'\n'+company.website,betaallink:link?.url||'',betaalbedrag:link?euro(link.amountInCents):'',geldig_tot:link?.expiryDate||''};}
+export function templateContext({customer,order,document,link,company,signature='',euro=String}){return {contact:customer?.contact||customer?.company||'',klant:customer?.company||'',bedrijf:company.name,website:company.website,order:order?String(order.sourceNumber||order.number):'',document:document?.generated?.number|| (order?'#'+(order.sourceNumber||order.number):''),documenttype:({invoice:'factuur',confirmation:'orderbevestiging',quote:'offerte',proforma:'proforma factuur',packing:'pakbon'})[document?.generated?.kind||document?.category]||'',handtekening:signature||'Met vriendelijke groet,\n'+company.name+'\n'+company.website,betaallink:link?.url||'',betaalbedrag:link?euro(link.amountInCents):'',betaalpercentage:link&&Number.isSafeInteger(link.basisTotal)&&link.basisTotal>0&&Number.isSafeInteger(link.amountInCents)?new Intl.NumberFormat('nl-NL',{maximumFractionDigits:2}).format(link.amountInCents/link.basisTotal*100):'',geldig_tot:link?.expiryDate||''};}
 export function fillMailTemplate(template,context){
  const missing=templateVariables(template).filter(key=>!Object.hasOwn(context,key)||String(context[key]??'').trim()==='');
  const replace=text=>String(text).replace(/\{\{\s*([a-zA-Z][a-zA-Z0-9_]{0,39})\s*\}\}/g,(whole,key)=>Object.hasOwn(context,key)&&String(context[key]??'').trim()?String(context[key]):whole);
@@ -57,6 +58,7 @@ function confirmationTemplateKey(link,document){
  if(!Number.isSafeInteger(basis)||basis<=0||!Number.isSafeInteger(amount)||amount<=0)return 'confirmation-other';
  if(amount===basis)return 'confirmation';
  if(amount===Math.round(basis*.7))return 'confirmation-deposit-70';
+ if(amount<basis)return 'confirmation-deposit';
  return 'confirmation-other';
 }
 export function standardTemplateMail(state,input){

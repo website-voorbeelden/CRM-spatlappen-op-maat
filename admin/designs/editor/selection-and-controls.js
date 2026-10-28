@@ -202,6 +202,7 @@ function updateSelectionActionBar(){
     $('matchVectorHeight').textContent=pendingHeightMatch?'Kies referentie…':'↕ Hoogte';
     $('matchVectorHeight').setAttribute('aria-pressed',String(!!pendingHeightMatch));
     $('duplicateOtherSideSelected').title=refs.length===1?'Maak een kopie op dezelfde afstand van de andere zijkant.':'Selecteer één onderdeel om het naar de andere zijde te dupliceren.';
+    $('cropArtwork').hidden=refs.length!==1||refs[0]?.type!=='logo'||!!vectorEditingLogoId;
     $('trimSelectedVector').hidden=refs.length!==1||!!vectorEditingLogoId;
     $('shrinkSelected').disabled=$('growSelected').disabled=!!vectorEditingLogoId;
     for(const id of ['quickCenterSelection','quickBalanceSelection','quickBalanceVertical','quickBottomSide','mirrorArtwork','rotateArtwork'])$(id).disabled=!!vectorEditingLogoId;
@@ -344,7 +345,7 @@ function transformArtwork(action){
 function balanceArtwork(axis){
  if(vectorEditingLogoId)return;
  const refs=allSelectedRefs(),box=SpatlapLayout.union(refs.map(layoutBox).filter(Boolean));if(!box)return;
- const low=axis==='y'?'top':'left',high=axis==='y'?'bottom':'right',extent=axis==='y'?state.flap.h:state.flap.w,center=(box[low]+box[high])/2,size=box[high]-box[low];let start=0,end=extent;
+ const low=axis==='y'?'top':'left',high=axis==='y'?'bottom':'right',extent=axis==='y'?state.flap.h:state.flap.w,center=(box[low]+box[high])/2,size=box[high]-box[low];let start=axis==='y'&&state.ui?.topGuideOn?Math.min(3,extent):0,end=extent;
  for(const ref of layoutRefs()){if(refs.some(r=>r.id===ref.id&&r.type===ref.type))continue;const other=layoutBox(ref);if(!other)continue;const midpoint=(other[low]+other[high])/2;if(midpoint<center)start=Math.max(start,other[high]);else if(midpoint>center)end=Math.min(end,other[low]);}
  if(end-start<size){toast('Te weinig ruimte tussen deze randen. Maak de selectie kleiner of verplaats haar eerst.');return;}
  const delta=(start+end-box[low]-box[high])/2;pushHistory();for(const ref of refs)itemById(ref.id,ref.type)[axis]+=delta/extent;

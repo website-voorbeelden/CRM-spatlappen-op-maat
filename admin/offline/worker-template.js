@@ -35,11 +35,16 @@ self.addEventListener('push',event=>event.waitUntil((async()=>{
  const common=message?.companyId===PUSH_COMPANY&&/^[a-f0-9]{64}$/.test(message?.eventId||'')&&Number.isSafeInteger(message?.createdAt)&&Math.abs(Date.now()/1000-message.createdAt)<86400;
  const report=common&&message.version===2&&message.kind==='weekly-report'&&reportId(message.reportId);
  const payment=common&&message.version===1&&/^[a-zA-Z0-9._-]{1,160}$/.test(message.orderId||'');
- const options={body:report?'Je vrijdagrapport staat klaar. Tik om het rapport in het CRM te bekijken.':payment?'Open het CRM om de betaling en de bijbehorende order te bekijken.':'Open het CRM om je meldingen te bekijken.',icon:'/admin/icons/'+PUSH_COMPANY+'-192.png',tag:report?'crm-report-'+message.eventId:payment?'crm-payment-'+message.eventId:'crm-message',data:{href:report?'/admin/#analytics/reports/'+message.reportId:payment?'/admin/#orders/'+encodeURIComponent(message.orderId)+'/payments':'/admin/#dashboard'}};
+ // Optional v1 extension: old workers ignore it, new workers still accept old
+ // generic payloads. Details only belong to a validated payment notification.
+ const detail=payment&&message.paymentSummary,hasDetail=detail&&Number.isSafeInteger(detail.amountCents)&&detail.amountCents>0&&typeof detail.customerName==='string'&&detail.customerName.length<=160;
+ const customerName=hasDetail?Array.from(detail.customerName.replace(/[\u0000-\u001f\u007f-\u009f\u2028-\u202e\u2066-\u2069]/g,' ').replace(/\s+/g,' ').trim()).slice(0,80).join('')||'Klant onbekend':'';
+ const paymentBody=hasDetail?new Intl.NumberFormat('nl-NL',{style:'currency',currency:'EUR'}).format(detail.amountCents/100)+' · '+customerName+'. Tik om de betaling te bekijken.':'Open het CRM om de betaling en de bijbehorende order te bekijken.';
+ const options={body:report?'Je vrijdagrapport staat klaar. Tik om het rapport in het CRM te bekijken.':payment?paymentBody:'Open het CRM om je meldingen te bekijken.',icon:'/admin/icons/'+PUSH_COMPANY+'-192.png',tag:report?'crm-report-'+message.eventId:payment?'crm-payment-'+message.eventId:'crm-message',data:{href:report?'/admin/#analytics/reports/'+message.reportId:payment?'/admin/#orders/'+encodeURIComponent(message.orderId)+'/payments':'/admin/#dashboard'}};
  // Action buttons are optional platform UI. Tapping the notification itself
  // always opens the same safe report link, including on phones without actions.
  if(report&&typeof Notification!=='undefined'&&Notification.maxActions>0)options.actions=[{action:'view-report',title:'Rapport bekijken'}];
- await self.registration.showNotification(report?'Vrijdagrapport klaar':payment?'Betaling geregistreerd':'CRM-melding',options);
+ await self.registration.showNotification(report?'Vrijdagrapport klaar':payment?(hasDetail?'Tikkie-betaling ontvangen':'Betaling geregistreerd'):'CRM-melding',options);
 })()));
 self.addEventListener('notificationclick',event=>{
  event.notification.close();

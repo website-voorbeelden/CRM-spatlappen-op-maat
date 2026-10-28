@@ -409,3 +409,47 @@ function scheduleVectorPreview(event){
   }catch(error){if(token!==vectorPreviewToken)return;vectorExperiment=null;resultImage.removeAttribute('src');status.textContent=error.message||'Voorbeeld maken lukte niet.';render();}
  },350);
 }
+
+// Manual clipping keeps vector geometry in SVG; raster input stays raster.
+// The candidate is prepared completely before one undoable artwork mutation.
+function openArtworkCrop(){
+ const logo=state.selectedType==='logo'&&itemById(state.selected,'logo');
+ if(!logo||allSelectedRefs().length!==1||vectorEditingLogoId){toast('Selecteer één volledig logo om bij te snijden. Tekstkaders kun je met Lege randen op de letters laten aansluiten.');return;}
+ const signature=JSON.stringify(logo),dialog=document.createElement('dialog');dialog.className='artwork-crop-dialog';
+ dialog.innerHTML='<h2>Logo bijsnijden</h2><p>Sleep een nieuw kader in het voorbeeld of stel de randen in. De tekening die overblijft blijft op dezelfde plek. Draaiing en spiegeling blijven behouden.</p><div class="crop-stage"><img alt="Logo voor het bijsnijden" draggable="false"><div class="crop-rectangle"></div></div><div class="crop-inputs">'+['links','boven','rechts','onder'].map((name,n)=>'<label>'+name+' (%)<input data-crop-edge="'+n+'" type="number" min="0" max="99.9" step="0.1" value="0"></label>').join('')+'</div><p data-crop-error role="status"></p><div class="mini-actions"><button type="button" data-crop-apply>Bijsnijden toepassen</button><button type="button" data-crop-cancel>Annuleren</button></div>';
+ document.body.append(dialog);const stage=dialog.querySelector('.crop-stage'),img=stage.querySelector('img'),rect=stage.querySelector('div'),inputs=[...dialog.querySelectorAll('[data-crop-edge]')];let busy=false,drag=null;
+ stage.style.aspectRatio=String(logo.w/logo.h);stage.style.width='min(100%, '+(50*logo.w/logo.h)+'vh)';img.src=logo.svgMarkup?'data:image/svg+xml;charset=utf-8,'+encodeURIComponent(logo.svgMarkup):logo.src;
+ const crop=()=>{const [left,top,right,bottom]=inputs.map(input=>Number(input.value)/100);if([left,top,right,bottom].some(v=>!Number.isFinite(v)||v<0||v>=1)||left+right>=.999||top+bottom>=.999)throw Error('Laat een zichtbaar kader over; de randen mogen elkaar niet kruisen.');return {x:left,y:top,w:1-left-right,h:1-top-bottom};};
+ const paint=()=>{try{const c=crop();rect.style.left=c.x*100+'%';rect.style.top=c.y*100+'%';rect.style.width=c.w*100+'%';rect.style.height=c.h*100+'%';dialog.querySelector('[data-crop-error]').textContent='';}catch(error){dialog.querySelector('[data-crop-error]').textContent=error.message;}};
+ inputs.forEach(input=>input.addEventListener('input',paint));
+ const point=event=>{const b=stage.getBoundingClientRect();return {x:Math.max(0,Math.min(1,(event.clientX-b.left)/b.width)),y:Math.max(0,Math.min(1,(event.clientY-b.top)/b.height))};};
+ stage.onpointerdown=event=>{if(busy||event.button!==0)return;event.preventDefault();drag=point(event);stage.setPointerCapture(event.pointerId);};
+ stage.onpointermove=event=>{if(!drag)return;const end=point(event),left=Math.min(drag.x,end.x),top=Math.min(drag.y,end.y),right=1-Math.max(drag.x,end.x),bottom=1-Math.max(drag.y,end.y);[left,top,right,bottom].forEach((v,n)=>inputs[n].value=(v*100).toFixed(1));paint();};
+ stage.onpointerup=stage.onpointercancel=()=>{drag=null;};
+ const close=()=>{if(!busy)dialog.close();};dialog.oncancel=event=>{if(busy)event.preventDefault();};dialog.onclose=()=>dialog.remove();dialog.querySelector('[data-crop-cancel]').onclick=close;
+ dialog.querySelector('[data-crop-apply]').onclick=async()=>{
+  if(busy)return;busy=true;for(const button of dialog.querySelectorAll('button'))button.disabled=true;
+  try{
+   const c=crop();if(c.x===0&&c.y===0&&c.w===1&&c.h===1){busy=false;close();return;}
+   let src,markup;
+   if(logo.svgMarkup){
+    if(logo.outline)throw Error('Verwijder eerst de rand om dit logo. Een vectorrand over een uitsnede vraagt afzonderlijke controle.');
+    const root=SpatlapVectorExport.normalizeLogo(logo.svgMarkup,'crop-'+Date.now()+'-'),box=root.getAttribute('viewBox').split(/[\s,]+/).map(Number),b=[box[0]+c.x*box[2],box[1]+c.y*box[3],c.w*box[2],c.h*box[3]],ns='http://www.w3.org/2000/svg';
+    const id='crop-frame-'+Math.random().toString(36).slice(2),defs=root.querySelector(':scope > defs')||document.createElementNS(ns,'defs'),clip=document.createElementNS(ns,'clipPath'),frame=document.createElementNS(ns,'rect'),group=document.createElementNS(ns,'g');
+    clip.id=id;clip.setAttribute('clipPathUnits','userSpaceOnUse');['x','y','width','height'].forEach((key,n)=>frame.setAttribute(key,String(b[n])));clip.append(frame);defs.append(clip);group.setAttribute('clip-path','url(#'+id+')');
+    for(const child of [...root.children])if(!['defs','style','title','desc','metadata'].includes(child.localName))group.append(child);
+    root.append(defs,group);root.setAttribute('viewBox',b.join(' '));root.setAttribute('width',String(b[2]));root.setAttribute('height',String(b[3]));markup=new XMLSerializer().serializeToString(root);
+   }else{
+    const image=new Image();image.src=logo.src;await image.decode();const w=image.naturalWidth,h=image.naturalHeight;if(!w||!h||w*h>32000000)throw Error('Afbeelding is te groot om veilig bij te snijden.');
+    const canvas=document.createElement('canvas');canvas.width=Math.max(1,Math.round(w*c.w));canvas.height=Math.max(1,Math.round(h*c.h));canvas.getContext('2d').drawImage(image,w*c.x,h*c.y,w*c.w,h*c.h,0,0,canvas.width,canvas.height);src=canvas.toDataURL('image/png');
+   }
+   if(itemById(logo.id,'logo')!==logo||JSON.stringify(logo)!==signature)throw Error('Het logo is gewijzigd. Sluit dit venster en kies opnieuw.');
+   pushHistory();const oldW=logo.w,oldH=logo.h;offsetArtworkCenter(logo,(c.x+c.w/2-.5)*oldW,(c.y+c.h/2-.5)*oldH);logo.w=oldW*c.w;logo.h=oldH*c.h;logo.ratio=logo.w/logo.h;
+   if(markup){discardVectorEditBackup(logo);if(logo.vectorCrop){const old=logo.vectorCrop;logo.vectorCrop={x:old.x+c.x*old.w,y:old.y+c.y*old.h,w:old.w*c.w,h:old.h*c.h};}updateVectorSource(logo,markup);}else{logo.src=src;logo.name=(logo.name||'Logo').replace(/\.[^.]+$/,'')+'.png';}
+   // Restoring an original vectorization must never silently undo the crop.
+   delete logo.originalRasterSrc;delete logo.vectorCrop;syncSelectionControls();render();busy=false;close();toast('Logo bijgesneden. Ongedaan maken herstelt de oorspronkelijke versie.');
+  }catch(error){dialog.querySelector('[data-crop-error]').textContent=error.message;}
+  finally{busy=false;for(const button of dialog.querySelectorAll('button'))button.disabled=false;}
+ };
+ paint();dialog.showModal();
+}

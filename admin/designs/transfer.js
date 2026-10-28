@@ -1,4 +1,4 @@
-import {DESIGN_FORMAT,SELECTION_FORMAT,TRANSFER_LIMIT,portableDesign,selectionTransfer,serializeTransfer,parseTransfer} from '../../shared/design-transfer.js?v=batch2-editor-20261026';
+import {DESIGN_FORMAT,SELECTION_FORMAT,TRANSFER_LIMIT,portableDesign,selectionTransfer,serializeTransfer,parseTransfer} from '../../shared/design-transfer.js?v=feedback-followup-20261028';
 export function installDesignTransfer({exportDocument,applyDocument,exportSelection,pasteSelection,cutSelection,sanitizeSVG,getName,busy,activity,notify}){
  const byId=id=>document.getElementById(id),dialog=byId('designTransferDialog'),field=byId('designTransferText'),status=byId('designTransferStatus');let working=false;
  const say=message=>status.textContent=message;

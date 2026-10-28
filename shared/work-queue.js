@@ -1,12 +1,13 @@
+import {orderPaymentWait} from './order-payment-wait.js?v=payment-wait-20261028';
 import {batchPackingRows} from './batch-packing.js';
-import {productionReleaseInfo} from './production-release.js?v=ui-batch234-20261027';
-import {orderReadiness} from './order-readiness.js?v=ui-batch234-20261027';
-import {salesFunnel,pendingFunnelMail} from './sales-funnel.js?v=ui-batch234-20261027';
+import {productionReleaseInfo} from './production-release.js?v=feedback-followup-20261028';
+import {orderReadiness} from './order-readiness.js?v=feedback-followup-20261028';
+import {salesFunnel,pendingFunnelMail} from './sales-funnel.js?v=feedback-followup-20261028';
 import {orderMailThreads} from './mail-inbox.js?v=crm-code-review-20261027';
 import {mailAttention,compareMailAttention} from './mail-attention.js?v=mail-priority-20261016-2';
 const day=86400000,time=v=>Number.isFinite(Date.parse(v))?Date.parse(v):0;
 // Pure projection of saved records. Rendering never sends mail or changes a dossier.
-export function workQueue(state,companyId,{now=Date.now()}={}){
+export function workQueue(state,companyId,{now=Date.now(),today=new Date(now).toISOString().slice(0,10)}={}){
  const tasks=[],waiting=[],packing=new Map();if(companyId==='spatlappen')for(const p of state.purchases||[])if(!p.archived&&(p.orderedDate||['Besteld','In productie','Onderweg','Binnen in Nederland'].includes(p.status)))for(const r of batchPackingRows(state,p.id))packing.set(r.order.id,r);
  for(const o of state.orders){
   if(o.isSample&&!o.archived&&!o.sampleFollowupDone){const due=o.sampleFollowupDate,dayText=new Date(now).toISOString().slice(0,10);if(!due||due<=dayText){tasks.push({kind:'sample',orderId:o.id,number:o.sourceNumber||o.number,customer:state.customers.find(c=>c.id===o.customerId)?.company||'Klant onbekend',phase:'Teststuk',title:due?'Teststuk opvolgen':'Opvolging teststuk plannen',reason:due?'Vraag hoe het teststuk bevalt en bespreek een eventuele serie.':'Kies een opvolgdatum bij Order bewerken.',action:'view',label:'Teststuk openen',rank:16,priority:due&&due<dayText?'hoog':'normaal',priorityReason:due&&due<dayText?'Opvolgdatum verstreken':'',age:0,waitLabel:due?'Opvolgdatum '+due.split('-').reverse().join('-'):'Nog geen opvolgdatum',gaps:[]});continue;}}
@@ -18,8 +19,8 @@ export function workQueue(state,companyId,{now=Date.now()}={}){
   const conversations=orderMailThreads(state,o.id).map(t=>({...t,attention:mailAttention(t.entries,{now,followupDays:o.salesFunnel?.followupDays||7})})).sort(compareMailAttention);
   const attention=conversations[0]?.attention;
   const hasConversationIncoming=conversations.some(t=>t.entries.some(m=>m.direction!=='outgoing'&&(m.gmailId||m.direction==='incoming')));
-  const readiness=orderReadiness(state,o,companyId,{funnel:f});
-  const task={gaps:readiness.inbound||readiness.paid?readiness.gaps:[],orderId:o.id,number:o.sourceNumber||o.number,customer:state.customers.find(c=>c.id===o.customerId)?.company||'Klant onbekend',phase:f.label,age:age||0,ageLabel:ageText,waitLabel:attention&&attention.waitingFor!=='none'?attention.label:ageText,waitDays:attention?.days??age,priority:'normaal',rank:40};
+  const readiness=orderReadiness(state,o,companyId,{funnel:f}),paymentWait=orderPaymentWait(state,o,{today});
+  const task={gaps:readiness.inbound||readiness.paid?readiness.gaps:[],orderId:o.id,number:o.sourceNumber||o.number,customer:state.customers.find(c=>c.id===o.customerId)?.company||'Klant onbekend',phase:f.label,age:age||0,ageLabel:ageText,waitLabel:paymentWait.summary,waitDays:attention?.days??age,priority:'normaal',rank:40};
   const add=(kind,title,reason,action,label,rank,priority='normaal',priorityReason='')=>tasks.push({...task,kind,title,reason,action,label,rank,priority,priorityReason});
   const due=time(o.expectedDateTo||o.expectedDateFrom||o.expectedDate);
   // Dates are calendar days: do not mark today's delivery overdue.

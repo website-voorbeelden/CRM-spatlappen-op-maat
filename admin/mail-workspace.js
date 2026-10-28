@@ -1,7 +1,7 @@
 import {termsDocumentFor} from '../shared/company-documents.js?v=ui-batch234-20261027';
 import {installSignatureChoice} from './mail/signature-choice.js';
-import {createThreadLabels} from './mail/thread-labels.js?v=ui-batch234-20261027';
-import {createReplyAssistant} from './mail/reply-assistant.js?v=ui-batch234-20261027';
+import {createThreadLabels} from './mail/thread-labels.js?v=feedback-followup-20261028';
+import {createReplyAssistant} from './mail/reply-assistant.js?v=feedback-followup-20261028';
 import {markProvenance} from '../shared/provenance.js?v=provenance-colors-20261027';
 import {mailSortOptions,mailListMatches,sortMailList,mailListDateProblem} from '../shared/mail-list-view.js';
 import {attachmentBlob,openMailAttachment} from './mail/attachments.js';
@@ -14,8 +14,8 @@ import {createMailNotifications} from './mail-notifications.js?v=payment-alerts-
 import {splitQuotedMail} from '../shared/mail-display.js';
 import {orderMailThreads,customerMailEntries,gmailConversationKey,emailAddresses,saveInboxThread,conversationSignature,removeInboxThread} from '../shared/mail-inbox.js?v=crm-code-review-20261027';
 import {mailStatusLabel} from '../shared/mail-workflow.js';
-import {mailTemplates,templateOptionLabel,templateContext,fillMailTemplate} from '../shared/mail-templates.js?v=mail-texts-20261027';
-import {isFormInquiryCandidate,isFormInquiry,inquiryAutomationReason,inquiryText} from '../shared/inquiries.js?v=ui-batch234-20261027';
+import {mailTemplates,templateOptionLabel,templateContext,fillMailTemplate} from '../shared/mail-templates.js?v=feedback-followup-20261028';
+import {isFormInquiryCandidate,isFormInquiry,inquiryAutomationReason,inquiryText} from '../shared/inquiries.js?v=feedback-followup-20261028';
 import {installFormGuidance,showFormProblem,hasActiveFormEdits,validateForm,markFormClean} from './form-guidance.js?v=crm-code-review-20261027';
 import {runGuidedAction} from './guided-actions.js';
 function mailTime(value){const d=new Date(value);return Number.isFinite(d.getTime())?d.toLocaleString('nl-NL',{dateStyle:'medium',timeStyle:'short'}):'';}

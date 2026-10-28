@@ -1,3 +1,5 @@
+> Nieuw28oktober: bij minder beschikbare ruimte mag de selectiebalk twee of meer rijen gebruiken, ook op desktop/MacBook. Nieuwste feedback vervangt de oudere vaste-één-rij/tot480px-afspraak hieronder. Eén bestaande CSS-eigenaar, geen nowrap-tegenregel; knoppen/maatgroep begrensd, lage desktophoogte via scroll bereikbaar. Selectie/zoom/ontwerp/undo/export/scriptvolgorde behouden. Zie FEEDBACK-BATCH3-20261028.md. Bronreview/local, geen tests/browsercontrole/publicatie; eigen controle open.
+
 > Vervolg27oktober: [vectorsegmenten en optioneel plaatsingsleren](OPEN-PUNTEN-VERVOLG-20261027.md). Segmenten volgen vectorgebieden in plaats van alleen begrenzingsvakken. Leren standaard uit en alleen na geslaagde save, voorstel expliciet toepassen, inhoud/klantdata niet leren. Oude beweringen niet gebouwd hieronder zijn historisch. Geen tests/publicatie.
 
 # Spatlappen-ontwerptool: werkplan 18 oktober 2026

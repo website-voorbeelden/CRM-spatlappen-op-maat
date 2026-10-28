@@ -1,6 +1,7 @@
-import {orderMapEntries,filterOrderMap,mapPhases} from '../../shared/order-map.js?v=ui-batch234-20261027';
-import {fulfilmentMethods} from '../../shared/inbound-readiness.js?v=ui-batch234-20261027';
-import {createMapRoutePlanner} from './map-route.js?v=ui-batch234-20261027';
+import {orderPaymentWait} from '../../shared/order-payment-wait.js?v=payment-wait-20261028';
+import {orderMapEntries,filterOrderMap,mapPhases} from '../../shared/order-map.js?v=feedback-followup-20261028';
+import {fulfilmentMethods} from '../../shared/inbound-readiness.js?v=feedback-followup-20261028';
+import {createMapRoutePlanner} from './map-route.js?v=feedback-followup-20261028';
 
 export function createOrderMapWorkspace(context){
  let method='',search='',paintRevision=0,filtersOpen=false;
@@ -8,10 +9,10 @@ export function createOrderMapWorkspace(context){
  const currentEntries=()=>filterOrderMap(orderMapEntries(context.state),filters());
  const planner=createMapRoutePlanner({getEntries:currentEntries,esc:value=>context.esc(value),euro:value=>context.euro(value),totals:order=>context.totals(order),toast:message=>context.toast(message)});
  function rowsFor(entries){return entries.map(row=>{
-  const {order:o,customer:c,progress,purchase}=row,t=context.totals(o),amountKnown=t.priceKnown&&o.shippingKnown===true;
+  const {order:o,customer:c,progress,purchase}=row,t=context.totals(o),amountKnown=t.priceKnown&&o.shippingKnown===true,wait=orderPaymentWait(context.state,o,{today:context.today()});
   return {id:o.id,number:o.sourceNumber||o.number,customer:c?.company||'Onbekende klant',stage:progress.label,phase:progress.key,color:progress.color,
    progressNote:progress.note,purchaseName:purchase?.name||'',method:fulfilmentMethods.find(([key])=>key===(o.fulfilmentMethod||''))?.[1]||'Nog afspreken',
-   waitLabel:o.deliveredDate?'Aanvraag tot levering':'Klant wacht',wait:(context.elapsed(o.date,o.deliveredDate||context.today())??'—')+' dagen',
+   waitLabel:wait.label,wait:wait.value,
    amount:t.priceKnown?context.euro(t.net)+' excl. btw'+(o.shippingKnown===true?'':' · voorlopig'):'Nog te bepalen',
    balance:!amountKnown?'Nog te bepalen':t.balance<0?context.euro(-t.balance)+' incl. btw te veel ontvangen':context.euro(t.balance)+' incl. btw',
    recipient:row.recipient,address:row.address,country:row.country};

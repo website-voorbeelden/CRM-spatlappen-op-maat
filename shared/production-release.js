@@ -1,5 +1,5 @@
 import {orderDesignApproved} from './product-design-variants.js?v=batch1-variants-20261026';
-import {inquiryRequirements} from './inquiries.js?v=ui-batch234-20261027';
+import {inquiryRequirements} from './inquiries.js?v=feedback-followup-20261028';
 export function productionReleaseInfo(state,o,companyId,{payment,percentage=o.productionDepositPercent??50}){
  const purchase=(o.items||[]).some(i=>i.productionSource!=='local')?(state.purchases||[]).find(p=>p.id===o.purchaseId):null;
  const physical=['Onderweg','Binnen in Nederland'].includes(purchase?.status)||Boolean(purchase?.shippedDate||purchase?.arrivedDate)||['In productie','Onderweg naar Nederland','Binnen in Nederland','Verzonden','Afgerond'].includes(o.stage)||Boolean(o.productionDate||o.transitDate||o.arrivedDate||o.shippedDate||o.deliveredDate);

@@ -7,20 +7,20 @@
 <link rel="icon" type="image/svg+xml" href="spatlap-preview-favicon.svg?v=1">
 <link rel="stylesheet" href="print-assets/fonts.css?v=four-parts-20261026">
 
-<link rel="stylesheet" href="admin/designs/editor/editor.css?v=batch2-editor-20261026">
+<link rel="stylesheet" href="admin/designs/editor/editor.css?v=feedback-followup-20261028">
 <script src="number-inputs.js?v=save-status-20261010" defer></script>
 </head>
 <body>
 <div id="previewBoot" role="status" aria-live="polite"><span id="previewBootSpinner" aria-hidden="true"></span><strong>Ontwerp laden…</strong><p id="previewBootMessage">Je werkplek wordt klaargezet.</p><button id="previewBootContinue" type="button" hidden>Werkgebied tonen</button></div>
 <noscript><style>.preview-booting .app{visibility:visible}#previewBoot{display:none}</style><p>Schakel JavaScript in om de ontwerptool te gebruiken.</p></noscript>
-<script src="admin/designs/editor/boot.js?v=four-parts-20261026"></script>
+<script src="admin/designs/editor/boot.js?v=feedback-followup-20261028"></script>
 <div id="previewActivity" class="preview-activity" role="status" aria-live="polite" aria-atomic="true" hidden><span class="preview-activity-symbol" aria-hidden="true"></span><span id="previewActivityText"></span><button id="previewActivityBackup" type="button">Ontwerpkopie</button><button id="previewActivityClose" type="button" aria-label="Melding sluiten">×</button></div>
 <div class="app">
   <header class="app-header">
     <div class="header-actions">
       <button id="undo" class="iconbtn" title="Ongedaan maken" aria-label="Ongedaan maken" disabled>↶</button>
       <button id="redo" class="iconbtn" title="Opnieuw uitvoeren" aria-label="Opnieuw uitvoeren" disabled>↷</button>
-      <button id="headerSave" class="primary" type="button" title="Bewaar in CRM/opslag (⌘⇧S / Ctrl+Shift+S)" aria-keyshortcuts="Meta+Shift+S Control+Shift+S">Bewaar</button>
+      <a id="returnToProduct" hidden>← Naar order</a><button id="saveNewProductVariant" type="button" hidden>Bewaar als nieuwe variant</button><button id="headerSave" class="primary" type="button" title="Bewaar in CRM/opslag (⌘⇧S / Ctrl+Shift+S)" aria-keyshortcuts="Meta+Shift+S Control+Shift+S">Bewaar</button>
       <details class="download-menu" id="downloadMenu"><summary>Download ▾</summary><div class="download-popover">
         <button id="downloadArtworkPdf" class="primary" type="button" title="Drukbestand downloaden (⌘⇧T / Ctrl+Shift+T)" aria-keyshortcuts="Meta+Shift+T Control+Shift+T">Drukbestand · vector-PDF</button>
         <div class="field-help">Eén pagina, zonder achtergrond, op ware grootte. Logo’s als vector; tekst als contouren.</div>
@@ -154,8 +154,8 @@
     <details class="section" id="logosSection" open>
       <summary><span class="section-num">3</span> Logo's</summary>
       <div class="section-body">
-        <label>Logo toevoegen</label>
-        <input id="file" type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml,application/pdf,.pdf" multiple>
+        <div id="logoDropTarget"><label for="file">Logo toevoegen</label>
+        <input id="file" type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml,application/pdf,.pdf" multiple></div>
         <div class="mini-actions" style="margin-top:9px"><button id="pasteLogo" type="button">Afbeelding plakken</button></div>
         <div id="pasteLogoStatus" class="field-help">PNG, JPG, WebP, SVG en PDF zijn mogelijk. Bij een PDF kies je de pagina; die wordt als afbeelding toegevoegd. Gebruik voor het drukbestand bij voorkeur een SVG met tekst als contouren. PNG/JPG en geïmporteerde PDF-pagina’s moeten vóór PDF-export naar vector worden omgezet. Je kunt ook een afbeelding plakken met Ctrl/⌘+V.</div>
         <div id="logoList" class="list"></div>
@@ -477,13 +477,14 @@
     <details class="section">
       <summary><span class="section-num">6</span> Binnencontour</summary>
       <div class="section-body">
-        <label class="check"><input id="contourOn" type="checkbox"> Witte contourlijn inschakelen</label>
+        <label class="check"><input id="contourOn" type="checkbox"> Binnencontour inschakelen</label>
         <div class="grid2">
           <div><label for="contourGap">Afstand tot rand (cm)</label><input id="contourGap" type="number" value="1" min="0" step="0.1"></div>
+          <div><label for="contourColor">Lijnkleur</label><input id="contourColor" type="color" value="#ffffff"></div>
           <div><label for="contourWidth">Lijndikte (mm)</label><input id="contourWidth" type="number" value="2" min="0.1" step="0.1"></div>
         </div>
         <label class="check"><input id="contourUnderHoles" type="checkbox" checked> Bovenafstand vanaf het hart van de gaten</label>
-        <div class="field-help">Afstand tot de buitenkant van de witte lijn. Bij gaten meten we vanaf het hart van het gat. De lijn volgt de vorm en afgeronde hoeken.</div>
+        <div class="field-help">Afstand tot de buitenkant van de lijn. Bij gaten meten we vanaf het hart van het gat. De lijn volgt de vorm en afgeronde hoeken.</div>
         <div id="contourStatus" class="status"></div>
       </div>
     </details>
@@ -513,7 +514,7 @@
         <span id="selectionLabel" class="selection-label" hidden></span>
         <button id="shrinkSelected" type="button" title="Selectie proportioneel 10% kleiner" aria-label="Selectie 10% kleiner">−</button>
         <button id="growSelected" type="button" title="Selectie proportioneel 10% groter" aria-label="Selectie 10% groter">+</button>
-        <span class="selection-dimensions"><label title="Breedte selectie in cm; verhouding volgens instellingen links">B <input id="selectionWidth" type="number" min="0.1" max="10000" step="0.1" aria-label="Breedte selectie in centimeter"></label><span aria-hidden="true">×</span><label title="Hoogte selectie in cm; verhouding volgens instellingen links">H <input id="selectionHeight" type="number" min="0.1" max="10000" step="0.1" aria-label="Hoogte selectie in centimeter"></label></span>
+        <span class="selection-dimensions"><label title="Breedte selectie in cm; verhouding volgens instellingen links">B <button type="button" class="dimension-step" data-dimension-step="selectionWidth:-1" aria-label="Selectiebreedte verkleinen">−</button><input id="selectionWidth" type="number" min="0.1" max="10000" step="0.1" aria-label="Breedte selectie in centimeter"><button type="button" class="dimension-step" data-dimension-step="selectionWidth:1" aria-label="Selectiebreedte vergroten">+</button></label><span aria-hidden="true">×</span><label title="Hoogte selectie in cm; verhouding volgens instellingen links">H <button type="button" class="dimension-step" data-dimension-step="selectionHeight:-1" aria-label="Selectiehoogte verkleinen">−</button><input id="selectionHeight" type="number" min="0.1" max="10000" step="0.1" aria-label="Hoogte selectie in centimeter"><button type="button" class="dimension-step" data-dimension-step="selectionHeight:1" aria-label="Selectiehoogte vergroten">+</button></label></span>
         <button id="selectionMoveMode" type="button" aria-label="Verder met verplaatsen" title="Verder met pijltjes verplaatsen (Esc na maat invoeren)">✥</button>
         <button id="selectionColor" type="button" aria-label="Kleur selectie aanpassen" title="Kleur selectie aanpassen"><span class="selection-color-chip" aria-hidden="true"></span></button>
         <select id="selectionPaint" aria-label="Kleur toepassen op" hidden><option value="fill">Vulling</option><option value="stroke">Lijn</option></select>
@@ -525,14 +526,19 @@
         <button id="quickBalanceVertical" type="button" title="Verticaal centreren tussen de dichtstbijzijnde boven- en onderrand">↕ Tussen</button><button id="mirrorArtwork" type="button" title="Horizontaal spiegelen op dezelfde plek">⇋ Spiegel</button><button id="rotateArtwork" type="button" title="90 graden draaien rond het eigen midden">↻ Draai</button>
         <button id="quickBottomSide" type="button" title="Onderruimte gelijk aan de dichtstbijzijnde zijruimte">Onder = zij</button>
         <button id="quickAddLogo" type="button" title="Logo toevoegen">＋Logo</button><button id="quickAddText" type="button" title="Tekst toevoegen">＋T</button>
-        <button id="trimSelectedVector" type="button" title="Lege transparante randen verwijderen, voor SVG of afbeelding" aria-label="Lege logo- of tekstranden aansnijden">⌗</button>
+        <button id="cropArtwork" type="button" title="Zelf een logo bijsnijden (ook met dubbelklik)">Bijsnijden</button><button id="trimSelectedVector" type="button" title="Lege transparante randen verwijderen, voor SVG of afbeelding" aria-label="Lege logo- of tekstranden aansnijden">Lege randen</button>
         <button id="deleteSelected" class="danger" aria-label="Verwijderen" title="Selectie verwijderen"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M3 6h18M9 6V3h6v3M5 6l1 15h12l1-15M10 10v7m4-7v7"/></svg></button>
         <span id="selectionColorStatus" class="selection-color-status" role="status"></span>
       </div>
 
       <p id="selectionHelp" class="field-help" style="margin:10px 0">Klik op een logo of tekst voor <strong>Kleiner, Groter, Kleur, Pipet en Dupliceren naar andere zijde</strong>. De knoppen verschijnen direct onder deze preview.</p>
-      </div><div class="editor-extra-scroll"><details class="subdetails" id="colorTools">
-        <summary>Vector & klantpreview</summary>
+      </div><div class="editor-extra-scroll">          <div class="subcard customer-preview-tools">
+            <div class="subcard-title">Klantpreview</div>
+            <label class="check"><input id="topGuideOn" type="checkbox"> Bovenstrook van 3 cm tonen</label>
+            <div class="field-help">Visuele hulplijn vanaf de bovenrand. De strook verandert het drukbestand niet.</div>
+            <div id="topGuideStatus" class="field-help"></div>
+          </div><details class="subdetails" id="colorTools">
+        <summary>Vectorbewerking (meer opties)</summary>
         <div class="subdetails-body">
           <div class="subcard">
             <div class="subcard-title">Geselecteerde afbeelding naar vector omzetten</div>
@@ -564,12 +570,7 @@
             <div class="mini-actions" style="margin-top:9px"><button id="vectorizeLogo" type="button">Toepassen als vector</button><button id="stopVectorExperiment" type="button">Voorbeeld stoppen</button><button id="restoreRasterLogo" type="button" disabled>Origineel herstellen</button></div>
             <div id="vectorStatus" class="field-help">Voor een wit logo kies je 1 kleur. Controleer het resultaat in de preview.</div>
           </div>
-          <div class="subcard">
-            <div class="subcard-title">Klantpreview</div>
-            <label class="check"><input id="topGuideOn" type="checkbox"> Bovenstrook van 3 cm tonen</label>
-            <div class="field-help">Visuele hulplijn vanaf de bovenrand. De strook verandert het drukbestand niet.</div>
-            <div id="topGuideStatus" class="field-help"></div>
-          </div>
+
         </div>
       </details>
 
@@ -690,21 +691,21 @@
 <script src="spatlap-preview-vector-export.js?v=batch3-colors-20261026"></script>
 <!-- Bump this version when the editor API changes so saved tabs load matching code. -->
 <script src="spatlap-preview-vector-editor.js?v=batch3-colors-20261026"></script>
-<script src="admin/designs/editor/vector-editing.js?v=open-fixes-20261027"></script>
-<script src="admin/designs/editor/history-and-feedback.js?v=batch3-colors-20261026"></script>
-<script src="admin/designs/editor/selection-and-controls.js?v=batch3-colors-20261026"></script>
-<script src="admin/designs/editor/import-and-vectorize.js?v=batch3-colors-20261026"></script>
-<script src="admin/designs/editor/text-and-objects.js?v=batch2-editor-20261026"></script>
-<script src="admin/designs/editor/layout-and-preview.js?v=batch3-colors-20261026"></script>
-<script src="admin/designs/editor/export.js?v=batch2-editor-20261026"></script>
-<script src="admin/designs/editor/storage-and-integration.js?v=crm-code-review-20261027"></script>
-<script src="admin/designs/editor/font-tools.js?v=batch2-editor-20261026"></script>
-<script src="admin/designs/editor/vector-islands.js?v=open-fixes-20261027"></script>
-<script src="admin/designs/editor/logo-colors.js?v=open-fixes-20261027"></script>
-<script src="admin/designs/editor/outline-tools.js?v=batch3-colors-20261026"></script>
-<script src="admin/designs/editor/placement-tools.js?v=open-fixes-20261027"></script>
-<script src="admin/designs/editor/runtime.js?v=batch3-colors-20261026"></script>
+<script src="admin/designs/editor/vector-editing.js?v=feedback-followup-20261028"></script>
+<script src="admin/designs/editor/history-and-feedback.js?v=feedback-followup-20261028"></script>
+<script src="admin/designs/editor/selection-and-controls.js?v=feedback-followup-20261028"></script>
+<script src="admin/designs/editor/import-and-vectorize.js?v=feedback-followup-20261028"></script>
+<script src="admin/designs/editor/text-and-objects.js?v=feedback-followup-20261028"></script>
+<script src="admin/designs/editor/layout-and-preview.js?v=feedback-followup-20261028"></script>
+<script src="admin/designs/editor/export.js?v=feedback-followup-20261028"></script>
+<script src="admin/designs/editor/storage-and-integration.js?v=feedback-followup-20261028"></script>
+<script src="admin/designs/editor/font-tools.js?v=feedback-followup-20261028"></script>
+<script src="admin/designs/editor/vector-islands.js?v=feedback-followup-20261028"></script>
+<script src="admin/designs/editor/logo-colors.js?v=feedback-followup-20261028"></script>
+<script src="admin/designs/editor/outline-tools.js?v=feedback-followup-20261028"></script>
+<script src="admin/designs/editor/placement-tools.js?v=feedback-followup-20261028"></script>
+<script src="admin/designs/editor/runtime.js?v=feedback-followup-20261028"></script>
 
-<script type="module" src="admin/designs/editor/bootstrap.js?v=crm-code-review-20261027"></script>
+<script type="module" src="admin/designs/editor/bootstrap.js?v=feedback-followup-20261028"></script>
 </body>
 </html>

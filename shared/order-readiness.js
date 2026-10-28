@@ -1,7 +1,7 @@
 import {orderDesignApproved} from './product-design-variants.js?v=batch1-variants-20261026';
-import {productionReleaseInfo} from './production-release.js?v=ui-batch234-20261027';
-import {inboundReadiness} from './inbound-readiness.js?v=ui-batch234-20261027';
-import {salesFunnel} from './sales-funnel.js?v=ui-batch234-20261027';
+import {productionReleaseInfo} from './production-release.js?v=feedback-followup-20261028';
+import {inboundReadiness} from './inbound-readiness.js?v=feedback-followup-20261028';
+import {salesFunnel} from './sales-funnel.js?v=feedback-followup-20261028';
 const date=value=>Boolean(value)&&Number.isFinite(Date.parse(value));
 // Read-only follow-up facts. Payment is never evidence of an approved design,
 // a sent document, an order at a supplier or actual production.

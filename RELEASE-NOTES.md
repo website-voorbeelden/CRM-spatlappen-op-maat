@@ -1,9 +1,7 @@
-# Rustigere CRM-werkplekken — 27 oktober 2026
+# CRM-feedback 28 oktober 2026
 
-Nieuwe dossierkop met drie belangrijke gegevens: betaling, wachttijd met expliciete startbasis en uitvoering/levering. Volledige fasebediening blijft via Meer bereikbaar. Onbekende prijzen worden niet als betaald of als definitief saldo gepresenteerd.
+Twaalf nieuwe feedbackpunten in gedeelde bron uitgewerkt. Ontwerptool: handmatig bijsnijden, instelbare contourkleur, directe bovenstrook en centreren, grotere maatknoppen, logo-drop, teruglink en variantgebonden opslag/nieuwe variant. Vectorstatus bij varianten, gecontroleerde optionele opruiming na bestellen. Bestaande orders met JSON uit eigen AI aanvullen met veldkeuzes; bevestigingsmail volgt betaallink; feedback standaard Verbetering.
 
-Dezelfde indeling is doorgetrokken naar Overzicht, klant- en inkoopdossiers, orderlijsten, betalingen, mail, documenten en financiële Analytics. Gedeelde kerngegevenspresentatie, horizontale tabonthulling en centrale CSS; financiële details en instellingen op verzoek. Bestaande acties, gegevensbescherming, bedrijfsafscheiding en opgeslagen voorkeuren blijven behouden.
+Inclusief eerdere gedeelde lokale wijzigingen sinds de vorige GitHub-upload: startpagina, betaalwachttijd, tabelbediening, eerdere feedbackbatches, Tikkie-meldingsdetails, dubbelen herkennen en ordervergelijking/samenvoegen. Zie docs/FEEDBACK-VERVOLG-20261028.md en docs/DUBBELE-ORDERS.md voor grenzen en open gebruikerscontrole.
 
-Bronreview uitgevoerd; uitsluitend het eerder toegestane bestaande Maatbetaalvoorbeeld handmatig bekeken. Geen automatische tests, checks, syntaxchecks of builds uitgevoerd. Overige schermen, beide bedrijven, mobiel en financiële randgevallen blijven voor gebruikerscontrole open. Taken blijven review/local en de bredere werkplek doing/local; dit is geen volledige financiële of functionele audit.
-
-Alleen upload naar de bestaande GitHub-branch crm-ui-batches-20261027, geen wijziging van main of productie-uitrol. Geen klantgegevens, privéconfiguratie, feedbackexports, operationele overdracht, lokale screenshots of back-ups. Bestaande deploymentconfiguratie en templates blijven behouden. De eerdere bronbatches en hun open controlepunten staan in de bovenliggende commit.
+Geen tests, automatische checks, syntaxchecks, builds of browser-QA in deze ronde op afspraak met de eigenaar. Gebruikerscontrole voor beide bedrijven, mobiel/MacBook, export, meerdere tabs, AI/mails en veilige optionele opruiming blijft open. Geen klantgegevens, feedbackexports, credentials, back-ups of lokale uitvoering meegeupload. Bestaande deploymentconfiguratie en documenttemplates behouden. Bronupload op aparte branch, geen wijziging van main of nieuwe livepublicatie.

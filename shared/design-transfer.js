@@ -40,7 +40,7 @@ export function portableDesign(value,sanitize){
  if(u.customFonts!==undefined)ui.customFonts=fontDescriptors(u.customFonts);
  if(Array.isArray(u.layerOrder))ui.layerOrder=[...new Set(u.layerOrder.filter(v=>typeof v==='string').slice(0,400).map(v=>v.slice(0,220)))];
  if(Array.isArray(u.snapExcluded))ui.snapExcluded=u.snapExcluded.filter(v=>typeof v==='string').slice(0,400).map(v=>v.slice(0,220));
- if(object(u.contour))ui.contour={on:u.contour.on===true,gap:number(u.contour.gap??1,0,10000,'Contourafstand'),width:number(u.contour.width??2,.001,10000,'Contourbreedte'),underHoles:u.contour.underHoles!==false};
+ if(object(u.contour))ui.contour={on:u.contour.on===true,gap:number(u.contour.gap??1,0,10000,'Contourafstand'),width:number(u.contour.width??2,.001,10000,'Contourbreedte'),underHoles:u.contour.underHoles!==false,color:color(u.contour.color??'#ffffff')};
  const texts=t.map(text);for(const entry of texts)requireTextFont(entry,ui.customFonts||[]);
  return {format:DESIGN_FORMAT,version:1,context:{customerId:null,orderId:null,itemId:null,designId:null},name:str(value.name,200),design:{flap,holes,logos:l.map(v=>logo(v,sanitize)),texts,ui}};
 }

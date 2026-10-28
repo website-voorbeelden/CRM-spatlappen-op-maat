@@ -99,11 +99,11 @@ function setLocalDesignName(name){$('localDesignName').value=name;const variantN
 
 function compactDesignState(){return {f:state.flap,h:state.holes,l:state.logos,t:state.texts,u:state.ui};}
 
-async function productModule(){return productDesignModule??=await import('../../product-designs.js?v=crm-code-review-20261027');}
+async function productModule(){return productDesignModule??=await import('../../product-designs.js?v=feedback-followup-20261028');}
 
 function normalizeIntegrationContext(value={}){
   const result={};
-  for(const key of ['customerId','orderId','itemId','designId']){
+  for(const key of ['customerId','orderId','itemId','designId','variantId']){
     const id=value?.[key];
     result[key]=id==null||id===''?null:String(id);
   }
@@ -207,12 +207,12 @@ async function performDesignSave(){
     const id=crmBinding?.designId||currentLocalDesignId||(crypto.randomUUID?.()||('d'+Date.now().toString(36)+Math.random().toString(36).slice(2)));
     const name=$('localDesignName').value.trim()||(crmBinding?crmBinding.variantName:`Ontwerp ${new Date().toLocaleString('nl-NL')}`);
     assertDurableLogoSources(state.logos);
-    const record={id,name,updatedAt:Date.now(),payload:JSON.parse(JSON.stringify(compactDesignState())),context:{...integrationContext}};
+    const record={id,name,updatedAt:Date.now(),payload:JSON.parse(JSON.stringify(compactDesignState())),context:{...integrationContext},vectorSummary:designVectorSummary()};
     if(crmBinding)await (await productModule()).saveProductDesign(crmBinding,record,await createPreviewPngBlob());
     else await writeLocalDesign(record);
     rememberPlacementAfterSave(record.payload);
     currentLocalDesignId=id;setLocalDesignName(name);
-    if(crmBinding){const url=new URL(location.href);url.searchParams.set('variant',crmBinding.variantId);url.searchParams.delete('copyVariant');url.searchParams.delete('revision');window.history.replaceState(null,'',url.href);}
+    if(crmBinding){integrationContext=normalizeIntegrationContext(crmBinding);syncProductReturnLink();const url=new URL(location.href);url.searchParams.set('orderId',crmBinding.orderId);url.searchParams.set('itemId',crmBinding.itemId);url.searchParams.set('variant',crmBinding.variantId);url.searchParams.delete('copyVariant');url.searchParams.delete('revision');window.history.replaceState(null,'',url.href);}
     location.hash='local='+encodeURIComponent(id);
     if(!crmBinding)await renderSavedDesigns();
     return id;
@@ -243,7 +243,12 @@ async function openSavedDesign(id){
     $('shareStatus').textContent='Dit ontwerp is niet meer aanwezig in deze browser.';activity.error(new Error('Dit ontwerp is niet meer aanwezig in deze opslag.'));return false;
   }
   currentLocalDesignId=id;
-  integrationContext=normalizeIntegrationContext(crmBinding||record.context);
+  if(!crmBinding&&record.context?.orderId&&record.context?.itemId){
+   integrationContext=normalizeIntegrationContext(record.context);syncProductReturnLink();
+   try{crmBinding=await (await productModule()).loadProductDesign(record.context.orderId,record.context.itemId,{variantId:'new'});}catch(error){crmBindingError=error;throw error;}
+   const url=new URL(location.href);url.searchParams.set('orderId',crmBinding.orderId);url.searchParams.set('itemId',crmBinding.itemId);url.searchParams.set('variant','new');window.history.replaceState(null,'',url.href);
+  }
+  integrationContext=normalizeIntegrationContext(crmBinding||record.context);syncProductReturnLink();
   if(crmBinding){state.flap.w=crmBinding.width?crmBinding.width/10:state.flap.w;state.flap.h=crmBinding.height?crmBinding.height/10:state.flap.h;if(!crmBinding.record||String(state.flap.qty??'').trim()!=='')state.flap.qty=String(crmBinding.quantity??'');if(state.flap.radiusAuto===true)state.flap.radius=SpatlapLayout.defaultRadius(state.flap.w,state.flap.h);syncUIFromState();render();}
   setLocalDesignName(record.name||'');
   location.hash='local='+encodeURIComponent(id);
@@ -362,7 +367,7 @@ async function initDesign(){
         currentLocalDesignId=crmBinding.record.id;$('localDesignName').value=crmBinding.record.name;loaded=true;
       }else loadFromQuery();
       if(!$('localDesignName').value)$('localDesignName').value=crmBinding.variantName;
-      integrationContext=normalizeIntegrationContext(crmBinding);
+      integrationContext=normalizeIntegrationContext(crmBinding);syncProductReturnLink();
       if(crmBinding.width)state.flap.w=crmBinding.width/10;
       if(crmBinding.height)state.flap.h=crmBinding.height/10;
       if(!crmBinding.record||String(state.flap.qty??'').trim()!=='')state.flap.qty=String(crmBinding.quantity??'');if(state.flap.radiusAuto===true)state.flap.radius=SpatlapLayout.defaultRadius(state.flap.w,state.flap.h);syncUIFromState();render();loaded=true;
@@ -399,4 +404,28 @@ async function initDesign(){
   updateHistoryButtons();
   if(loadFailure)activity.error(loadFailure);else activity.success('Ontwerptool klaar.');
   }catch(error){activity.error(error);throw error;}
+}
+
+function designVectorSummary(){
+ const entries=[...state.logos.map(isVectorLogo),...state.texts.filter(t=>String(t.text||'').trim()).map(()=>true),...(contourPath()?[true]:[])];
+ const vectors=entries.filter(Boolean).length;return {version:1,total:entries.length,vectors,level:!entries.length?'empty':vectors===entries.length?'vector':vectors?'mixed':'raster'};
+}
+function syncProductReturnLink(){
+ const context=crmBinding||integrationContext,link=$('returnToProduct'),copy=$('saveNewProductVariant');
+ if(!link||!copy)return;const bound=!!context?.orderId&&!!context?.itemId;
+ link.hidden=copy.hidden=!bound;if(bound){link.href='/admin/#orders/'+encodeURIComponent(context.orderId)+'/overview';link.textContent='← Naar order'+(crmBinding?.number?' #'+crmBinding.number:'');link.target='_blank';link.rel='noopener';}
+}
+async function saveAsNewProductVariant(){
+ if(activeDesignSave||previewActivities.size)return;
+ const context=crmBinding||integrationContext;if(!context?.orderId||!context?.itemId)return;
+ const activity=beginPreviewActivity('Nieuwe variant bewaren…',['saveNewProductVariant','headerSave']),workArea=document.querySelector('.app'),wasInert=workArea.inert;workArea.inert=true;
+ try{
+  const fresh=await (await productModule()).loadProductDesign(context.orderId,context.itemId,{variantId:'new'});
+  // Existing artwork remains untouched until the new binding is validated.
+  const measures=(await productModule()).designMeasurements(state.flap);
+  if(measures.width!==fresh.width||measures.height!==fresh.height||measures.quantity!==null&&measures.quantity!==fresh.quantity)throw Error('De ordermaat of het aantal is gewijzigd. Je artwork blijft staan. Controleer die eerst; er wordt niets overschreven.');
+  const record={id:fresh.designId,name:fresh.variantName,updatedAt:Date.now(),payload:JSON.parse(JSON.stringify(compactDesignState())),context:normalizeIntegrationContext(fresh),vectorSummary:designVectorSummary()};assertDurableLogoSources(state.logos);
+  await (await productModule()).saveProductDesign(fresh,record,await createPreviewPngBlob());crmBinding=fresh;crmBindingError=null;integrationContext=normalizeIntegrationContext(fresh);currentLocalDesignId=fresh.designId;setLocalDesignName(fresh.variantName);
+  const url=new URL(location.href);url.searchParams.set('orderId',fresh.orderId);url.searchParams.set('itemId',fresh.itemId);url.searchParams.set('variant',fresh.variantId);url.searchParams.delete('copyVariant');url.searchParams.delete('revision');url.hash='local='+encodeURIComponent(fresh.designId);window.history.replaceState(null,'',url.href);syncProductReturnLink();activity.success('Als nieuwe ontwerpvariant bij dezelfde order bewaard.');
+ }catch(error){activity.error(error);}finally{workArea.inert=wasInert;}
 }

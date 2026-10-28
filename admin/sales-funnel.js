@@ -1,12 +1,12 @@
 import {createWorkspaceNotifications} from './workspace/notifications.js?v=payment-alerts-20261027';
-import {captureMailPhaseUndo,undoMailPhase} from '../shared/funnel-phase-undo.js?v=ui-batch234-20261027';
+import {captureMailPhaseUndo,undoMailPhase} from '../shared/funnel-phase-undo.js?v=feedback-followup-20261028';
 import {createPhaseNoticePreference} from './workspace/phase-notice-preference.js?v=central-overview-20261027';
-import {orderReadiness} from '../shared/order-readiness.js?v=ui-batch234-20261027';
+import {orderReadiness} from '../shared/order-readiness.js?v=feedback-followup-20261028';
 import {taskListMarkup} from './workspace/task-list.js?v=excel-style-20261027';
-import {workQueue} from '../shared/work-queue.js?v=ui-batch234-20261027';
-import {funnelPhasesFor,funnelPhaseLabel,salesFunnel,registerFunnel,funnelMail,pendingFunnelMail,reviewFunnelMail} from '../shared/sales-funnel.js?v=ui-batch234-20261027';
+import {workQueue} from '../shared/work-queue.js?v=feedback-followup-20261028';
+import {funnelPhasesFor,funnelPhaseLabel,salesFunnel,registerFunnel,funnelMail,pendingFunnelMail,reviewFunnelMail} from '../shared/sales-funnel.js?v=feedback-followup-20261028';
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-export function createSalesFunnelUI({getState,company,openForm,mergeStoredState,render,toast,compose,requestSpecs,calculate,documentMail,payment,editOrder,releaseProduction,syncGmailPhase,isAutoPhaseSync}){
+export function createSalesFunnelUI({getState,company,openForm,mergeStoredState,render,toast,compose,requestSpecs,calculate,documentMail,payment,editOrder,releaseProduction,syncGmailPhase,isAutoPhaseSync,today=()=>new Date().toISOString().slice(0,10)}){
  const phaseNotice=createPhaseNoticePreference(company.id);
  const notifications=createWorkspaceNotifications({companyId:company.id,toast});
  let filter='';const funnelPhases=funnelPhasesFor(company.id);
@@ -56,7 +56,7 @@ export function createSalesFunnelUI({getState,company,openForm,mergeStoredState,
   openForm('Fase-meldingen',`<label class="check-row"><input type="checkbox" name="showPhaseNotices" ${phaseNotice.hidden()?'':'checked'}>Automatische fasemeldingen tonen</label><p>Alleen de meldingen in dit bedrijf en deze browser. Fases blijven bekende gegevens volgen.</p>`,async fd=>{if(!phaseNotice.setHidden(!fd.has('showPhaseNotices')))toast('Meldingskeuze alleen voor dit tabblad; bewaren in de browser is niet gelukt.');},{trackChanges:false});
  }
 
- function priorities(){return taskListMarkup(workQueue(getState(),company.id));}
+ function priorities(){return taskListMarkup(workQueue(getState(),company.id,{today:today()}));}
  function navigation(){const counts=Object.fromEntries(funnelPhases.map(([id])=>[id,0]));for(const o of getState().orders)counts[info(o).displayPhase]++;return `<details class="sidebar-funnel" open><summary>Fases <span>${getState().orders.length}</span></summary><div>${[['','Alle aanvragen & orders'],...funnelPhases,['followup','Opvolging nodig']].map(([id,label])=>`<button type="button" data-funnel-select="${id}" class="${filter===id?'selected':''}">${esc(label)} <small>${id==='followup'?getState().orders.filter(o=>info(o).followup).length:id?counts[id]:getState().orders.length}</small></button>`).join('')}</div></details>`;}
  function controls(){const counts=Object.fromEntries(funnelPhases.map(([id])=>[id,0]));for(const o of getState().orders)counts[info(o).displayPhase]++;return `<div class="funnel-filters"><label>Fase in de funnel<select data-funnel-filter><option value="">Alle fases</option>${funnelPhases.map(([id,label])=>`<option value="${id}" ${filter===id?'selected':''}>${label} (${counts[id]})</option>`).join('')}<option value="followup" ${filter==='followup'?'selected':''}>Opvolging nodig</option></select></label><p>Elke aanvraag blijft één dossier, van eerste contact tot levering. ${company.id==='maatwerkkunststof'?'08 Afgerond':'Geleverd / gearchiveerd'} toont ook afgeronde dossiers.</p></div>`;}
  function row(o,{compact=false}={}){const f=info(o);return `<div class="funnel-row"><span>${phaseMarkup(f)}</span><small>${f.missing.length?f.missing.length+' specificaties nog nodig':'Specificaties aanwezig'}${f.daysSinceContact!=null?' · '+f.daysSinceContact+' dagen sinds laatste registratie/verzending':''}</small>${compact?'<details class="order-row-next"><summary>Volgende actie</summary>':''}<div class="actions">${button(f.followup?'followup':f.next[0],f.followup?'Opvolgmail voorbereiden':f.next[1],o.id)}</div>${f.followup?'<small>Geen nieuw opgeslagen antwoord. Controleer ook het mailgesprek.</small>':''}${compact?'</details>':''}</div>`;}
@@ -94,5 +94,5 @@ export function createSalesFunnelUI({getState,company,openForm,mergeStoredState,
  if(['indication','followup'].includes(action)){const seed=funnelMail(getState(),o,company.id,action);return compose(o.id,'','','',{...seed,newMail:true,funnelPurpose:action});}
  }
  document.addEventListener('click',e=>{const b=e.target.closest('[data-funnel-action]');if(b)Promise.resolve().then(()=>act(b.dataset.funnelAction,b.dataset.id,b.dataset.funnelPhase||'')).catch(e=>toast(e.message));});
- return {queue:()=>workQueue(getState(),company.id),priorities,reviewMail,notifyMailPhase,summary:()=>filter?'<p class="form-help">Fase: '+esc(filter==='followup'?'Opvolging nodig':funnelPhases.find(([id])=>id===filter)?.[1]||'Alle aanvragen')+' · kies een andere fase via Menu → Aanvragen & orders.</p>':'',navigation,controls,row,panel,info,matches:o=>!filter||(filter==='followup'?info(o).followup:info(o).displayPhase===filter),get filter(){return filter;},reset(){filter='';},install(root){for(const b of root.querySelectorAll('[data-funnel-select]'))b.onclick=()=>{filter=b.dataset.funnelSelect;location.hash='orders';render();};const select=root.querySelector('[data-funnel-filter]');if(select)select.onchange=()=>{filter=select.value;render();};}};
+ return {queue:()=>workQueue(getState(),company.id,{today:today()}),priorities,reviewMail,notifyMailPhase,summary:()=>filter?'<p class="form-help">Fase: '+esc(filter==='followup'?'Opvolging nodig':funnelPhases.find(([id])=>id===filter)?.[1]||'Alle aanvragen')+' · kies een andere fase via Menu → Aanvragen & orders.</p>':'',navigation,controls,row,panel,info,matches:o=>!filter||(filter==='followup'?info(o).followup:info(o).displayPhase===filter),get filter(){return filter;},reset(){filter='';},install(root){for(const b of root.querySelectorAll('[data-funnel-select]'))b.onclick=()=>{filter=b.dataset.funnelSelect;location.hash='orders';render();};const select=root.querySelector('[data-funnel-filter]');if(select)select.onchange=()=>{filter=select.value;render();};}};
 }

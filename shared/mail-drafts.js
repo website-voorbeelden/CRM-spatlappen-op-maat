@@ -1,7 +1,7 @@
 import {replyReferences,validMessageId} from './mail-reply.js';
 import {validProvenance} from './provenance.js?v=provenance-colors-20261027';
 import {mailOwner,emailAddresses,assertMailStorage} from './mail-inbox.js?v=crm-code-review-20261027';
-import {checkMailText} from './mail-templates.js?v=mail-texts-20261027';
+import {checkMailText} from './mail-templates.js?v=feedback-followup-20261028';
 import {formProblem} from '../admin/form-guidance.js?v=crm-code-review-20261027';
 const validId=v=>typeof v==='string'&&/^[a-zA-Z0-9._-]{1,160}$/.test(v);
 export function prepareQuickReplyDraft(state,ownerId,input,{uid=()=>crypto.randomUUID(),now=new Date().toISOString()}={}){

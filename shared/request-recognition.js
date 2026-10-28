@@ -2,7 +2,7 @@ import {requestProductBlocks,cleanRequestProducts} from './request-products.js';
 import {customerEmailMatches} from './inquiry-customer.js';
 import {companyFor} from './companies.js';
 import {emailAddresses,conversationSignature} from './mail-inbox.js?v=crm-code-review-20261027';
-import {isFormInquiryCandidate,parseFormInquiry,inquiryText,inquiryRequirements,cleanInquirySpecs,specLabels,createInquiry} from './inquiries.js?v=ui-batch234-20261027';
+import {isFormInquiryCandidate,parseFormInquiry,inquiryText,inquiryRequirements,cleanInquirySpecs,specLabels,createInquiry} from './inquiries.js?v=feedback-followup-20261028';
 import {splitQuotedMail} from './mail-display.js';
 import {inquiryQuantity,inquiryColor} from './inquiry-quantity.js?v=inquiry-form-20261021';
 import {markProvenance} from './provenance.js?v=provenance-colors-20261027';

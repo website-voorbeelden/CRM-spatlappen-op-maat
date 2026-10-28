@@ -1,5 +1,5 @@
-import {items,planFor} from './roadmap.js?v=calm-workspaces-20261027';
-import {sourceUpdates} from './source-updates.js?v=calm-workspaces-20261027';
+import {items,planFor} from './roadmap.js?v=feedback-followup-20261028';
+import {sourceUpdates} from './source-updates.js?v=feedback-followup-20261028';
 export const taskStatuses={open:'Open',doing:'Mee bezig',blocked:'Geblokkeerd',review:'Gebouwd · jouw controle',done:'Afgerond'};
 export const taskDeliveries={unknown:'Niet vastgelegd',local:'Alleen lokaal',live:'Live gepubliceerd'};
 const fail=(message,status=400)=>{throw Object.assign(Error(message),{status});};

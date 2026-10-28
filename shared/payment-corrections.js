@@ -1,4 +1,4 @@
-import {validReceiptDate} from './manual-receipt.js?v=batch2-payments-20261023';
+import {validReceiptDate} from './manual-receipt.js?v=duplicate-review-20261028';
 export function correctPayment(state,id,expected,{kind,reason,amount,date,reference,correctionId},{now=new Date().toISOString()}={}){
  const payment=state.payments.find(p=>p.id===id);if(!payment||JSON.stringify(payment)!==expected)throw Error('De betaling is gewijzigd of al gecorrigeerd. Open de controle opnieuw.');
  reason=String(reason||'').trim();if(reason.length<8||reason.length>1000)throw Error('Beschrijf de correctiereden in 8–1000 tekens.');

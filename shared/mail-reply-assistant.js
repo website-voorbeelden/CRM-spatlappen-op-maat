@@ -1,7 +1,7 @@
 import {companyFor,displayOrderStage} from './companies.js';
 import {messageTime} from './mail-attention.js';
-import {inquiryRequirements} from './inquiries.js?v=ui-batch234-20261027';
-import {funnelPayment} from './sales-funnel.js?v=ui-batch234-20261027';
+import {inquiryRequirements} from './inquiries.js?v=feedback-followup-20261028';
+import {funnelPayment} from './sales-funnel.js?v=feedback-followup-20261028';
 
 const text=(value,max=2000)=>String(value??'').replace(/\0/g,'').slice(0,max);
 const pick=(record,keys)=>Object.fromEntries(keys.filter(key=>record?.[key]!==undefined).map(key=>[key,record[key]]));

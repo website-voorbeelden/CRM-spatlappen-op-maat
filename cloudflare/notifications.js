@@ -4,7 +4,7 @@ import {notificationIdentity,authReady} from './auth.js';
 import {validatePushSubscription,vapidConfig,sendWebPush} from './web-push.js';
 import {checkTikkiePayments,tikkieReady} from './tikkie.js';
 import {applyTikkiePayments} from '../shared/tikkie-payments.js';
-import {isTikkieReceipt,isRecentTikkieReceipt} from '../shared/payment-notifications.js';
+import {isTikkieReceipt,isRecentTikkieReceipt,paymentPushSummary} from '../shared/payment-notifications.js';
 import {runWeeklyReports} from './weekly-reports.js';
 import {activePushDevices as currentDevices,pushDeviceIsCurrent,removePushDeviceIfCurrent} from './push-devices.js';
 import {reportDeviceStatus,registerReportDevice,forgetReportDevice,runWeeklyReportPush} from './report-push.js';
@@ -120,7 +120,8 @@ async function drain(env,state){
   // be recalled, but a stale device snapshot must not start a new offer.
   const live=await pushDeviceIsCurrent(env,device);
   if(!live){await env.DB.prepare("UPDATE crm_notification_deliveries SET status='cancelled',lease_until=0,lease_token=NULL WHERE event_id=? AND device_id=? AND lease_token=?").bind(row.event_id,row.device_id,token).run();continue;}
-  let status=0;try{status=await sendWebPush(env,device,{version:1,companyId:companyFromEnv(env).id,eventId:row.event_id,orderId:row.order_id,createdAt:row.created_at},row.event_id);}catch{/* Do not log subscriptions, keys or provider response bodies. */}
+  const payment=state.payments.find(p=>p.id===row.payment_id&&p.orderId===row.order_id),summary=paymentPushSummary(state,payment);
+  let status=0;try{status=await sendWebPush(env,device,{version:1,companyId:companyFromEnv(env).id,eventId:row.event_id,orderId:row.order_id,createdAt:row.created_at,...(summary?{paymentSummary:summary}:{})},row.event_id);}catch{/* Do not log subscriptions, keys, customer details or provider response bodies. */}
   const accepted=status>=200&&status<300,permanent=[400,404,410,413].includes(status),attempts=row.attempts+1;
   await env.DB.prepare('UPDATE crm_notification_deliveries SET status=?,attempts=?,next_at=?,lease_until=0,lease_token=NULL WHERE event_id=? AND device_id=? AND lease_token=?').bind(accepted?'accepted':permanent||attempts>=8?'failed':'pending',attempts,now()+Math.min(3600,60*2**attempts),row.event_id,row.device_id,token).run();
   if([404,410].includes(status))await removePushDeviceIfCurrent(env,device);

@@ -1,7 +1,9 @@
+import {createHomeWorkspace} from './home.js?v=home-layout-20261028';
 import {sectionTabsMarkup,syncSectionTabs} from './section-tabs.js?v=calm-workspaces-20261027';
 import {keyFactsMarkup} from './key-facts.js?v=calm-workspaces-20261027';
 // Same current application state and existing forms; no settings/draft store.
 export function createOverviewSettings(context){
+ const home=createHomeWorkspace(context);
  function renderSettings(){
   const {state,esc,button,runtime}=context;
   const tabs=[
@@ -24,6 +26,7 @@ export function createOverviewSettings(context){
   context.shell(context.heading('Instellingen','Kies wat je wilt aanpassen.')+sectionTabsMarkup('settings',tabs,key,'Instellingen'),'settings',{section:key,facts:{archivedCustomerCount:state.customers.filter(c=>c.archived).length,archivedOrderCount:state.orders.filter(o=>o.archived).length}});
  }
  function renderDashboard(){
+  if(!context.route()[1]){context.shell(home.markup(),'dashboard',{section:'home'});home.mount(document.querySelector('#app'));return;}
   const {state,esc,button,euro}=context,queue=context.funnelUI.queue(),active=state.orders.filter(o=>!o.archived&&o.stage!=='Afgerond');
   const outstanding=state.orders.filter(o=>!o.archived).reduce((sum,o)=>sum+Math.max(0,context.totals(o).balance),0),incomplete=state.orders.some(o=>!o.archived&&(!context.totals(o).priceKnown||o.shippingKnown!==true));
   const cards=keyFactsMarkup([

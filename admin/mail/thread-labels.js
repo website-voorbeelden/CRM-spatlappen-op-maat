@@ -1,4 +1,4 @@
-import {installGmailLabelReview} from './gmail-label-review.js?v=ui-batch234-20261027';
+import {installGmailLabelReview} from './gmail-label-review.js?v=feedback-followup-20261028';
 import {mailThreadLabels,threadLabels,setThreadLabels} from '../../shared/mail-thread-labels.js?v=batch4-crm-20261026';
 const esc=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
 export function createThreadLabels({getState,mergeStoredState,toast,request,company}){

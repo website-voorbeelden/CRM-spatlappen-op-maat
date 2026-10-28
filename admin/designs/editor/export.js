@@ -384,7 +384,7 @@ function addPdfColourInfo(pdf,design){
   for(const logo of design.logos)line(logo.printColors?`${logo.name}: ${logo.printColors.join(', ')}`:`${logo.name}: kleuren volgens het SVG-logo; geen automatische kleurmeting.`);
   for(const t of design.texts)line(`Tekst: ${t.color||'#FFFFFF'}`);
   for(const obj of [...design.logos,...design.texts])if(outlineStyle(obj))line(`Randlijn: ${obj.outline.color} · ${obj.outline.width*10} mm`);
-  if(design.ui?.contour?.on)line('Contourlijn: #FFFFFF');
+  if(design.ui?.contour?.on)line('Contourlijn: '+normalizeHex(design.ui.contour.color||'#ffffff'));
   pdf.setFontSize(9);line('Kleuren zijn RGB / HEX. Er zijn geen Pantone- of steunkleuren ingesteld. Deze informatiepagina hoort niet bij het te printen artwork.');
 }
 

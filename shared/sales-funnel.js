@@ -1,8 +1,8 @@
 import {salesPhaseSignal,adoptedGmailPhase} from './sales-phase-signal.js?v=open-fixes-20261027';
-import {productionReleaseInfo} from './production-release.js?v=ui-batch234-20261027';
-import {mailTemplates,fillMailTemplate,templateContext} from './mail-templates.js?v=mail-texts-20261027';
+import {productionReleaseInfo} from './production-release.js?v=feedback-followup-20261028';
+import {mailTemplates,fillMailTemplate,templateContext} from './mail-templates.js?v=feedback-followup-20261028';
 import {companyFor} from './companies.js';
-import {inquiryRequirements} from './inquiries.js?v=ui-batch234-20261027';
+import {inquiryRequirements} from './inquiries.js?v=feedback-followup-20261028';
 export const funnelPhases=[['new','Nieuwe aanvragen'],['specs','Specificaties opgevraagd'],['pricing','Prijs berekenen'],['indication','Prijsindicatie verstuurd'],['quote','Offerte verstuurd'],['confirmation','Orderbevestiging · wacht op betaling'],['paid','Betaald'],['released','Productie vrijgegeven'],['production','In productie'],['delivered','Geleverd / gearchiveerd']];
 export const funnelPhasesFor=companyId=>companyFor(companyId).salesPhases||funnelPhases;
 export function funnelDisplayPhase(phase,companyId){return companyId==='maatwerkkunststof'&&['confirmation','paid','released'].includes(phase)?'received':phase;}

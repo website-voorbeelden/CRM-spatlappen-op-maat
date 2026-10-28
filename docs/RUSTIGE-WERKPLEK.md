@@ -1,3 +1,5 @@
+> Correctie28oktober: de prominente teller gebruikt uitsluitend de eerste huidige positieve ontvangst (betaling of aanbetaling), zonder aanvraagfallback en zonder reset bij een restbetaling. Geen betalingsdrempel of volledige prijs nodig om een feitelijke ontvangst te dateren; betaaldstatus blijft apart. Geen ontvangst → Nog geen betaling, onbruikbare gegevens → controleren. Teller stopt op werkelijke leverdatum; afgerond zonder datum geen doorlopende teller. Gedeeld via shared/order-payment-wait.js bij dossierkop, orderlijst, werkvoorraad/klantdossier en kaart. Aanvraagdatum/-ouderdom bij details en bestaande taakprioriteit; afgesproken levertermijn ongewijzigd. Alleen bron, geen tests/build/browsercontrole/publicatie; eigen controle open.
+
 # Belangrijke informatie eerst — gedeelde CRM-werkplek
 
 27 oktober 2026. Philippe vraagt de gedachte achter de nieuwe dossierkop door het CRM heen toe te passen. Lokale bronronde voor beide bedrijven. Deze afspraak gaat vóór oudere dichte fase-/cijferstroken, de brede Excelrichting en meerdere even belangrijke knoppen. Het is geen opdracht bedrijfsprocessen, bedragen of opgeslagen voorkeuren stil te veranderen.

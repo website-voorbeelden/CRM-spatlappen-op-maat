@@ -1,0 +1,27 @@
+# Mogelijke dubbelen en gecontroleerd samenvoegen
+
+28 oktober 2026. Gedeelde implementatie voor beide bedrijven. Brongebouwd, gebruikerscontrole open. Publicatie apart vastleggen.
+
+Bij nieuwe klant/order/handmatige of AI-ontvangst controleert de gewone opslag actuele records. Naam/e-mail/telefoon geven mogelijke klantmatches; vergelijkbare productwoorden, bekende maten (ook omgewisselde breedte/hoogte) en documentnummers geven orderaanwijzingen. Zelfde bedrag en ontvangstdatum bij dezelfde of mogelijk dubbele klant geeft een betaalwaarschuwing, ook over orders heen. Geen bewijs dat twee ontvangsten werkelijk dezelfde banktransactie zijn. Andere naam, uiteenlopende maten of ontbrekende gegevens kunnen herkenning beperken; geen volledige fraudedetectie of algemene semantische AI-analyse.
+
+Bestaande harde bescherming voor exact klant-/ordernummer en provider-externalId blijft. Een mogelijke match vraagt bewuste bevestiging in het open formulier, met links naar bestaande dossiers; invoer en bestanden blijven staan. Wijziging van de invoer of waarschuwing vraagt opnieuw bevestigen. Gewone handmatige betaalinvoer toont de controle vooraf; een verouderde betaalbasis vraagt actueel saldo met behouden invoer. Bewust Dupliceren vraagt apart bevestiging en kopieert geen betalingen/bijlagen. Automatische formulierintake stopt een mogelijke productdubbel voor handmatige beoordeling. Lokale import, offline synchronisatie en andere oudere specifieke invoerroutes zijn geen volledig nieuw deduplicatieplatform; bestaande eigen controles blijven, nummerreservering geldt daar ook.
+
+## Bediening
+
+Order → Meer → Vergelijken en samenvoegen. Kies de andere order van dezelfde klant en welk dossier blijft. Koppel elke bronproductregel aan dezelfde doelregel, of kies bewust Extra product. Gekoppelde aantallen worden niet opgeteld. Bekijk verschillen naast elkaar. Tegenstrijdige gevulde waarden hebben geen standaardkeuze; lege aanvulling wordt als voorstel getoond en kan anders gekozen worden. Breedte/hoogte en samenhangende verzend-/levertijdvelden worden als groep gekozen. Geen nieuwe contact-/bedrijfsidentiteit door samenvoegen.
+
+Beoordeel elke ontvangst afzonderlijk aan de hand van de bank: werkelijk ontvangen of dubbele registratie. Een providerontvangst blijft meetellen; het providerdossier moet het blijvende dossier zijn. Handmatige dubbele registratie gaat uitsluitend via bestaand betaalcorrectielog uit het saldo, zonder bank/Tikkie-actie. Samenvatting toont het gekozen ontvangen totaal. Alle bestanden en hun IDs/bytes blijven behouden; alleen ondersteunde dossier-/productkoppelingen verplaatsen. Gegenereerde inhoud en verzonden mailtekst worden niet herschreven. Twee documenten worden niet automatisch ongeldig verklaard; controleer dubbele facturen apart.
+
+De bronorder verdwijnt als losse order en telt daardoor niet nogmaals mee in order-/betaaltotalen. Ordernummer blijft gereserveerd, globale zoekbalk vindt de oude nummeralias, oude dossierlinks verwijzen door. Meer → Samenvoeghistorie toont oorspronkelijke orders, betaal-/bestandsmetadata en gemaakte keuzes. Geen automatische herstelactie over een hele administratie. Bestaande betaalcorrectie kan bewust apart hersteld worden; dat kan een dubbele ontvangst terugbrengen en vraagt opnieuw controle.
+
+## Veiligheidsgrenzen
+
+Geen samenvoeging tussen verschillende klanten/bedrijven. Btw-geboekte/voorbereide dossiers, gezamenlijke inkoop, voorraad-/kosten-/ontwerpkoppelingen, bronconcepten/betaallinks, websiteaanvraag als bron en onbekende verwijzingen worden geblokkeerd met uitleg. Kies waar mogelijk het gekoppelde dossier als blijvend; anders blijft afzonderlijke afhandeling nodig. Geen koppelingen blind losmaken om de blokkade te omzeilen. Ook servercontrole op bestaand Tikkie-journal van de verdwijnende order, met voorwaarde in de bestaande atomaire commit. Geen database-/journalmigratie.
+
+Volledige actuele statebasis wordt bij de uiteindelijke transactie opnieuw vergeleken: bij wijziging niets samenvoegen, invoer blijft staan, vergelijking met actuele gegevens opnieuw openen. Ondersteunde directe mail-/intake-/klantadresverwijzingen worden gericht bijgewerkt; onbekende verwijzingen geven een blokkade. Nieuwe samenvoeghistorie onder state.orderMerges; reguliere back-up neemt die mee. Bewaarlimiet 2000 registraties, geen automatische opschoning.
+
+## Oorzaakanalyse en eigen controle
+
+De twee specifiek door Philippe genoemde online dossiers alleen gericht en read-only onderzocht. Herkomstmarkeringen wezen op twee afzonderlijke AI-invoermomenten op opeenvolgende dagen, waarvan het eerste oorspronkelijke ordernummer ontbrak. Gelijke klant/product/bedrag/ontvangstdatum en overlappende documentnummers; één echte Tikkie-ontvangst, één zonder providerkenmerk. Verschillen in maatvolgorde en vrije specificaties. Dit verklaart waarom de bestaande nummercontrole onvoldoende was; geen bewijs van twee echte ontvangsten. Geen klantinhoud/IDs/persoonsgegevens in deze documentatie; geen dossiers of betalingen door de bouwer gewijzigd/samengevoegd.
+
+Philippe controleert beide bedrijven: mogelijk dubbel versus bewuste herhaalorder, andere aantallen/maatvolgorde, AI-bestanden/invoerbehoud, twee echte ontvangsten versus dubbele registratie, ontbreken/herkomst van bankbewijs, productmapping, conflicterende velden, bestanden/mail/alias/historie, twee tabbladen, fout/herhaling en blokkades bij btw/voorraad/Tikkie. Geen automatische tests, checks, syntaxchecks of browser-QA uitgevoerd. Een publicatie is geen geslaagde gebruikerscontrole.

@@ -1,12 +1,12 @@
 import {handleNotifications} from './notifications.js';
 import {handleWeeklyReports} from './weekly-reports.js';
-import {handleOnlineAssistant,hostedAgentReady} from './assistant.js';
-import {validateTaskProgress} from '../shared/planning/progress.js?v=build-triage-20261021';
+import {handleOnlineAssistant,hostedAgentReady} from './assistant.js?v=feedback-followup-20261028';
+import {validateTaskProgress} from '../shared/planning/progress.js?v=feedback-followup-20261028';
 import {handleMarketing} from './marketing.js';
 import {websiteAnalytics} from './site-analytics.js';
 import {websiteJourney} from './website-journey.js';
 import {companyFromEnv} from '../shared/companies.js';
-import {validateBusinessState} from '../shared/state-validation.js';
+import {validateBusinessState} from '../shared/state-validation.js?v=feedback-followup-20261028';
 import {authReady,localBypass,authenticated} from './auth.js';
 import {tikkieReady,validateJournal} from './tikkie.js';
 import {documentsReady} from './documents.js';
@@ -103,10 +103,18 @@ async function commit(env,body) {
     if (!f) fail('Bestand ontbreekt bij document '+(doc.name||doc.id)+'. Er is niets opgeslagen.');
     if (doc.size!==undefined&&doc.size!==f.size) fail('Bestandsgrootte wijkt af bij '+(doc.name||doc.id)+'.');
   }
+  const knownMerges=new Set((current.records.state?.main?.orderMerges||[]).map(m=>m.id));
+  const mergedSources=(nextState?.orderMerges||[]).filter(m=>!knownMerges.has(m.id)).map(m=>m.sourceOrderId);
+  if(mergedSources.length>20)fail('Voeg orders afzonderlijk samen.');
+  for(const sourceId of mergedSources){
+    const linked=await db.prepare('SELECT id FROM crm_tikkie_requests WHERE order_id=? LIMIT 1').bind(sourceId).first();
+    if(linked)fail('De bronorder heeft bewaarde Tikkie-betaalhistorie. Kies dat dossier als de order die blijft. Er is niets samengevoegd.',409);
+  }
   const revision=body.revision+1, now=new Date().toISOString();
   const guard='EXISTS (SELECT 1 FROM crm_workspace WHERE id=1 AND revision=? AND commit_token=?)';
   const guardArgs=[revision,body.id];
-  const queries=[db.prepare('UPDATE crm_workspace SET revision=?,commit_token=?,updated_at=? WHERE id=1 AND revision=?').bind(revision,body.id,now,body.revision)];
+  const mergeGuard=mergedSources.length?` AND NOT EXISTS (SELECT 1 FROM crm_tikkie_requests WHERE order_id IN (${mergedSources.map(()=>'?').join(',')}))`:'';
+  const queries=[db.prepare('UPDATE crm_workspace SET revision=?,commit_token=?,updated_at=? WHERE id=1 AND revision=?'+mergeGuard).bind(revision,body.id,now,body.revision,...mergedSources)];
   // Collapse repeated writes and submit manifests/chunks as bounded JSON batches,
   // rather than spending two D1 queries per file in a larger migration.
   const cleared=new Set(),pending=new Map();

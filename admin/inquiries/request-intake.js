@@ -1,6 +1,6 @@
 import {customerEmailMatches} from '../../shared/inquiry-customer.js';
-import {recognizeRequest,requestMissing,requestReviewBasis,saveRecognizedRequest,requestNumericFields} from '../../shared/request-recognition.js?v=ui-batch234-20261027';
-import {specLabels} from '../../shared/inquiries.js?v=ui-batch234-20261027';
+import {recognizeRequest,requestMissing,requestReviewBasis,saveRecognizedRequest,requestNumericFields} from '../../shared/request-recognition.js?v=feedback-followup-20261028';
+import {specLabels} from '../../shared/inquiries.js?v=feedback-followup-20261028';
 import {emailAddresses} from '../../shared/mail-inbox.js?v=crm-code-review-20261027';
 import {formProblem} from '../form-guidance.js?v=crm-code-review-20261027';
 const esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));

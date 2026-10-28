@@ -1,4 +1,4 @@
-import {normalizeMailReplyContext,replyInstructions,parseMailReplySuggestion} from './mail-reply-assistant.js?v=ui-batch234-20261027';
+import {normalizeMailReplyContext,replyInstructions,parseMailReplySuggestion} from './mail-reply-assistant.js?v=feedback-followup-20261028';
 
 export async function runMailReplyAssistant({connection,companyId,requestId,context,message,guidance='',history=[],model,signal,fetchImpl,consumeResponse}){
  const clean=normalizeMailReplyContext(context,companyId);

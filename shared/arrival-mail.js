@@ -1,4 +1,4 @@
-import {funnelPayment} from './sales-funnel.js?v=ui-batch234-20261027';
+import {funnelPayment} from './sales-funnel.js?v=feedback-followup-20261028';
 import {documentReplyContext} from './document-mail-context.js?v=crm-code-review-20261027';
 export function arrivalMail(state,id,company,{euro}){
  if(company.id!=='spatlappen')throw Error('Deze aankomstmail hoort bij Spatlappen.');

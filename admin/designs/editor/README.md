@@ -1,3 +1,7 @@
+> Nieuwe feedbackronde28oktober: handmatig SVG/raster bijsnijden, contourkleur, directe bovenstrook, logo-drop/grotere maatstappen, orderteruglink en nieuwe-variant-save. Klassieke helpervolgorde behouden; variant-CAS bij product-designs beperkt tot eigen variant/maat/klant. Zie docs/FEEDBACK-VERVOLG-20261028.md voor grenzen/eigen controle. Geen tests/build/browsercontrole.
+
+> Feedbackbatch3,28oktober: selectiebalk-CSS nu één eigenaar met wrap op beschikbare breedte; latere nowrap/shrink:0-conflictregels verwijderd. Knoppen en maatgroep begrensd/omlopend; desktopcanvas kan bij te weinig hoogte scrollen. Bestaande bar.offsetHeight/fitPreviewFrame/render/resize en scriptvolgorde ongewijzigd. Dit vervangt de oudere afspraak één rij tot480px waar die uitloop geeft. Zie ../../../docs/FEEDBACK-BATCH3-20261028.md (projectroot/docs). Geen tests/build/browsercontrole; eigen MacBook-/dropdown-/canvascontrole open.
+
 # Spatlap-editor: vindplaatsen en laadvolgorde
 
 De vaste ingang blijft `/spatlap-preview.html`. De HTML bevat de schermstructuur; code/opmaak staan hier. Bestaande URL’s, hashontwerpen, lokale ontwerp-ID’s en `window.SpatlapPreview` blijven hetzelfde.

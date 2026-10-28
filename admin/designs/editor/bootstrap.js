@@ -1,8 +1,8 @@
 import {installCustomDesignShortcuts} from '../custom-shortcuts.js?v=batch2-editor-20261026';
-import {installFeedback} from '../../feedback.js?v=crm-code-review-20261027';
+import {installFeedback} from '../../feedback.js?v=feedback-followup-20261028';
 import {installDesignShortcuts} from '../shortcuts.js?v=20261018-activity-1';
 import {installDesignUsage} from '../usage.js';
-import {installDesignTransfer} from '../transfer.js?v=batch2-editor-20261026';
+import {installDesignTransfer} from '../transfer.js?v=feedback-followup-20261028';
 import {installSelectionColors} from '../selection-color.js?v=20261018-color-palette-8';
 import {runSavedDesignDownload} from './saved-download.js?v=four-parts-20261026';
 if(savedDesignExportMode){void runSavedDesignDownload();}else{

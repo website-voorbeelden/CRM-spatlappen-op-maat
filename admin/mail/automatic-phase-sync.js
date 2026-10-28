@@ -1,7 +1,7 @@
-import {gmailPhaseContext} from '../../shared/gmail-phase-context.js?v=ui-batch234-20261027';
-import {funnelPhasesFor,funnelPhaseLabel} from '../../shared/sales-funnel.js?v=ui-batch234-20261027';
+import {gmailPhaseContext} from '../../shared/gmail-phase-context.js?v=feedback-followup-20261028';
+import {funnelPhasesFor,funnelPhaseLabel} from '../../shared/sales-funnel.js?v=feedback-followup-20261028';
 import {gmailPhaseSuggestions} from '../../shared/gmail-labels.js';
-import {phaseAutoConfirmation,phaseResolveConfirmation} from '../../shared/gmail-phase-auto.js?v=ui-batch234-20261027';
+import {phaseAutoConfirmation,phaseResolveConfirmation} from '../../shared/gmail-phase-auto.js?v=feedback-followup-20261028';
 import {markProvenance} from '../../shared/provenance.js?v=provenance-colors-20261027';
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 export function createAutomaticPhaseSync({company,runtime,getState,loadState,mergeStoredState,request,openForm,toast,render,isEditing}){
