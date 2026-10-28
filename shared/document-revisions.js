@@ -26,14 +26,14 @@ export function revisionSource(state,id,companyId){
  return {document,payload:structuredClone(g.payload),revision:current+1,seriesId:g.seriesId||g.generationId,signature:JSON.stringify([order,family])};
 }
 export function canReviseDocument(state,id,companyId){try{revisionSource(state,id,companyId);return true;}catch{return false;}}
-export function appendDocumentRevision(state,id,expected,{companyId,payload,date,files,generationId,now=new Date().toISOString()}){
+export function appendDocumentRevision(state,id,expected,{companyId,payload,date,files,generationId,templateRevision,now=new Date().toISOString()}){
  const source=revisionSource(state,id,companyId);if(source.signature!==expected)throw Error('De order of documentversie is ondertussen gewijzigd. Open Aanpassen opnieuw.');
  if(payload?.kind!==source.payload.kind||payload?.number!==source.payload.number||!/^\d{4}-\d{2}-\d{2}$/.test(date)||(!Number.isFinite(Date.parse(date))||new Date(date).toISOString().slice(0,10)!==date))throw Error('Controleer documenttype, nummer en datum.');
  if(!generationId||state.documents.some(d=>d.generated?.generationId===generationId)||!Array.isArray(files)||files.length!==2||new Set(files.map(f=>f.type)).size!==2||!files.some(f=>f.type==='application/pdf')||!files.some(f=>f.type==='application/vnd.openxmlformats-officedocument.wordprocessingml.document'))throw Error('PDF en Word moeten samen als nieuwe versie worden bewaard.');
  if(new Set(files.map(f=>f.id)).size!==2||files.some(f=>!f.id||state.documents.some(d=>d.id===f.id)||!Number.isSafeInteger(f.size)||f.size<=0))throw Error('De nieuwe bestanden zijn ongeldig.');
  const added=files.map(file=>{
   const previous=state.documents.find(d=>documentSeriesKey(d)===documentSeriesKey(source.document)&&d.type===file.type);
-  return {...file,...(previous?{name:documentDownloadName(state.documents,previous)}:{}),ownerId:source.document.ownerId,category:source.document.category,date,createdAt:now,generated:{kind:payload.kind,number:payload.number,generationId,seriesId:source.seriesId,revision:source.revision,revisionOf:source.document.generated.generationId,payload:structuredClone(payload)}};
+  return {...file,...(previous?{name:documentDownloadName(state.documents,previous)}:{}),ownerId:source.document.ownerId,category:source.document.category,date,createdAt:now,generated:{...(templateRevision?{templateRevision}:{}),kind:payload.kind,number:payload.number,generationId,seriesId:source.seriesId,revision:source.revision,revisionOf:source.document.generated.generationId,payload:structuredClone(payload)}};
  });
  state.documents.push(...added);
  return {documents:added,revision:source.revision};

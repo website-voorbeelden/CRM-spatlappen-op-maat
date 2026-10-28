@@ -1,3 +1,4 @@
+import {validateDocumentTemplates} from './document-templates.js?v=document-templates-20261028';
 import {termsDocumentFor} from './company-documents.js?v=ui-batch234-20261027';
 import {validateDesignVariants} from './product-design-variants.js?v=batch1-variants-20261026';
 import {validateInquiryAttribution} from './inquiry-mail-metadata.js';
@@ -37,6 +38,7 @@ export function validateBusinessState(state) {
   }
  }
  visit(state);
+ validateDocumentTemplates(state.documentTemplates);
  if(state.mailThreadLabels!==undefined){const entries=state.mailThreadLabels;if(!Array.isArray(entries)||entries.length>1000||new Set(entries.map(entry=>entry?.key)).size!==entries.length||entries.some(entry=>!entry||typeof entry.key!=='string'||!entry.key||entry.key.length>2048||!id(entry.ownerId)||!Array.isArray(entry.labels)||entry.labels.length>4||new Set(entry.labels).size!==entry.labels.length||entry.labels.some(label=>!['handled','followup','price-high','price-extreme'].includes(label))||!Number.isFinite(Date.parse(entry.updatedAt))||Object.keys(entry).some(key=>!['key','ownerId','labels','updatedAt'].includes(key))))fail('Controleer de labels bij het mailgesprek.');}
  if(state.mailReplyGuidance!==undefined){const entries=state.mailReplyGuidance;if(!Array.isArray(entries)||entries.length>1000||new Set(entries.map(entry=>entry?.key)).size!==entries.length||entries.some(entry=>!entry||typeof entry.key!=='string'||!entry.key||entry.key.length>1024||!id(entry.ownerId)||typeof entry.notes!=='string'||entry.notes.length>6000||!Number.isFinite(Date.parse(entry.updatedAt))||Object.keys(entry).some(key=>!['key','ownerId','notes','updatedAt'].includes(key))))fail('Controleer de werkinstructies bij het mailgesprek.');}
 

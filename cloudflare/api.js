@@ -6,7 +6,7 @@ import {handleMarketing} from './marketing.js';
 import {websiteAnalytics} from './site-analytics.js';
 import {websiteJourney} from './website-journey.js';
 import {companyFromEnv} from '../shared/companies.js';
-import {validateBusinessState} from '../shared/state-validation.js?v=feedback-followup-20261028';
+import {validateBusinessState} from '../shared/state-validation.js?v=document-templates-20261028';
 import {authReady,localBypass,authenticated} from './auth.js';
 import {tikkieReady,validateJournal} from './tikkie.js';
 import {documentsReady} from './documents.js';

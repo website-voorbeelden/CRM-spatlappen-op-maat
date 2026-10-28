@@ -1,5 +1,5 @@
-import {updated,planFor} from '../../shared/planning/roadmap.js?v=feedback-followup-20261028';
-import {taskBaseline,taskSourceEvents,taskStatuses,taskDeliveries,taskFilters,taskMatchesFilter} from '../../shared/planning/progress.js?v=feedback-followup-20261028';
+import {updated,planFor} from '../../shared/planning/roadmap.js?v=document-templates-20261028';
+import {taskBaseline,taskSourceEvents,taskStatuses,taskDeliveries,taskFilters,taskMatchesFilter} from '../../shared/planning/progress.js?v=document-templates-20261028';
 import {readBuildTasks,saveBuildTask} from './build-task-store.js?v=feedback-followup-20261028';
 import {isReviewMode} from '../offline/review.js';
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));

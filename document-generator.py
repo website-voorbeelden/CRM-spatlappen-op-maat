@@ -1,7 +1,10 @@
 """Fill the retained Word template; run with the configured document runtime."""
 import base64
+import binascii
 import copy
 import json
+import io
+from collections import Counter
 import os
 import re
 import subprocess
@@ -9,7 +12,7 @@ import sys
 import tempfile
 from decimal import Decimal, ROUND_HALF_UP
 from pathlib import Path
-from zipfile import ZipFile
+from zipfile import ZipFile, BadZipFile
 from lxml import etree
 
 ROOT = Path(__file__).resolve().parent
@@ -412,6 +415,9 @@ def build_packing_slip(payload, target, template_root=TEMPLATE_ROOT):
         if not slots['delivery_notes']:
             for paragraph in list(body.findall('w:p', NS)):
                 if '{{delivery_notes}}' in ''.join(paragraph.xpath('.//w:t/text()', namespaces=NS)):
+                    heading = paragraph.getprevious()
+                    if heading is not None and heading.tag == TAG('p') and ''.join(heading.xpath('.//w:t/text()', namespaces=NS)).strip() == 'Opmerkingen voor ontvanger':
+                        body.remove(heading)
                     body.remove(paragraph)
         fill_invoice_text(body, slots)
         if '{{' in ''.join(doc.xpath('//w:t/text()', namespaces=NS)):
@@ -422,8 +428,90 @@ def build_packing_slip(payload, target, template_root=TEMPLATE_ROOT):
                                 if info.filename == 'word/document.xml' else source.read(info.filename))
 
 
-def build(payload, target, company_id=COMPANY):
-    template_root = company_templates(company_id)
+TEMPLATE_FILES = {'packing': 'packing-slip.docx', 'invoice': 'invoice.docx', 'confirmation': 'order-confirmation.docx'}
+
+def template_kind(kind):
+    key = 'confirmation' if kind in ('quote', 'proforma') else kind
+    if key not in TEMPLATE_FILES:
+        raise ValueError('Kies een bekend documenttype.')
+    return key
+
+def validated_template(template, kind, company_id):
+    """Bounded OOXML inspection, no extraction, conversion, links or writes."""
+    if not isinstance(template, dict) or template.get('companyId') != company_id:
+        raise ValueError('Deze template hoort niet bij dit bedrijf.')
+    encoded = template.get('data')
+    if not isinstance(encoded, str) or not 0 < len(encoded) <= 533336:
+        raise ValueError('Kies een Word-template van maximaal 400 kB.')
+    try:
+        data = base64.b64decode(encoded, validate=True)
+        if not 0 < len(data) <= 400000:
+            raise ValueError('Kies een Word-template van maximaal 400 kB.')
+        with ZipFile(io.BytesIO(data)) as upload, ZipFile(company_templates(company_id) / TEMPLATE_FILES[kind]) as original:
+            entries = upload.infolist()
+            names = [i.filename for i in entries]
+            if len(entries) > 300 or len(set(names)) != len(names) or sum(i.file_size for i in entries) > 8000000:
+                raise ValueError('Deze Word-template is te groot of onbruikbaar.')
+            if not {'word/document.xml', '[Content_Types].xml', 'word/settings.xml'}.issubset(names):
+                raise ValueError('Dit is geen bruikbare Word-template (.docx).')
+            def xml(package, name):
+                raw = package.read(name)
+                if b'<!DOCTYPE' in raw.upper() or b'<!ENTITY' in raw.upper():
+                    raise ValueError('Deze template bevat niet-ondersteunde XML.')
+                return etree.fromstring(raw, parser=etree.XMLParser(resolve_entities=False, no_network=True, load_dtd=False))
+            def fields(root):
+                tokens = re.findall(r'{{.*?}}', ''.join(root.xpath('.//w:t/text()', namespaces=NS)))
+                tags = root.xpath('.//w:sdtPr/w:tag/@w:val', namespaces=NS)
+                return Counter(tokens), Counter(tags)
+            for entry in entries:
+                name = entry.filename
+                if entry.flag_bits & 1 or name.startswith('/') or '\\' in name or '..' in name.split('/') or name.lower().endswith(('.bin', '.exe', '.js')) or any(x in name.lower() for x in ('activex/', 'embeddings/', 'vbaproject')):
+                    raise ValueError('Gebruik een gewone .docx zonder macro’s of ingesloten bestanden.')
+                if name.endswith(('.xml', '.rels')):
+                    root = xml(upload, name)
+                    if root.xpath('//*[local-name()="altChunk"]') or any('macroenabled' in str(v).lower() for node in root.iter() for v in node.attrib.values()):
+                        raise ValueError('Actieve Word-inhoud wordt niet ondersteund.')
+                    instructions = [''.join(paragraph.xpath('.//w:instrText/text()', namespaces=NS)) for paragraph in root.xpath('.//w:p[.//w:instrText]', namespaces=NS)] + root.xpath('.//w:fldSimple/@w:instr', namespaces=NS)
+                    if any(not re.match(r'^\s*(PAGE|NUMPAGES|SECTIONPAGES|DATE|TIME)\b', instruction, re.I) for instruction in instructions):
+                        raise ValueError('Gebruik alleen gewone tekst, CRM-invulvelden en eenvoudige pagina-/datumvelden; gekoppelde of uitvoerbare Word-velden zijn niet toegestaan.')
+                    if name.endswith('.rels'):
+                        for relationship in root:
+                            if relationship.get('TargetMode') == 'External':
+                                target = relationship.get('Target', '')
+                                if not relationship.get('Type', '').endswith('/hyperlink') or not target.lower().startswith(('https://', 'mailto:')):
+                                    raise ValueError('Externe afbeeldingen, bestanden en koppelingen naar lokale bestanden zijn niet toegestaan. Voeg afbeeldingen in Word in het document in.')
+                    if name.startswith('word/') and (name == 'word/document.xml' or re.fullmatch(r'word/(header|footer)\d+\.xml', name)):
+                        old = xml(original, name) if name in original.namelist() else etree.Element(TAG('p'))
+                        if fields(root) != fields(old):
+                            raise ValueError('Behoud de oorspronkelijke invulvelden en inhoudsbesturingselementen.')
+            body = xml(upload, 'word/document.xml').find('w:body', NS)
+            old_body = xml(original, 'word/document.xml').find('w:body', NS)
+            if body is None:
+                raise ValueError('De Word-template heeft geen documentinhoud.')
+            # The existing generator addresses specific table rows/cells. Keep
+            # those slots and their fields in place; typography remains editable.
+            def structure(root):
+                return [[[(bool(cell.find('.//w:t', NS) is not None), fields(cell)) for cell in row.findall('w:tc', NS)] for row in table.findall('w:tr', NS)] for table in root.findall('w:tbl', NS)]
+            if structure(body) != structure(old_body):
+                raise ValueError('De producttabellen of invulvelden zijn verplaatst. Behoud rijen, kolommen en invulvelden van de gedownloade template.')
+        return data
+    except (BadZipFile, KeyError, etree.XMLSyntaxError, TypeError, binascii.Error):
+        raise ValueError('Dit bestand is geen geldige Word-template (.docx).')
+
+def template_request(payload, company_id=COMPANY):
+    kind = template_kind(payload.get('templateKind'))
+    action = payload.get('templateRequest')
+    if action == 'download':
+        data = (company_templates(company_id) / TEMPLATE_FILES[kind]).read_bytes()
+        return {'templateProtocol': 1, 'data': base64.b64encode(data).decode()}
+    if action == 'validate':
+        validated_template(payload.get('template'), kind, company_id)
+        return {'templateProtocol': 1, 'valid': True}
+    raise ValueError('Onbekende templateactie.')
+
+
+def build(payload, target, company_id=COMPANY, template_root=None):
+    template_root = template_root or company_templates(company_id)
     spec = DOCUMENT_TYPES.get(payload.get('kind'))
     if spec is None:
         raise ValueError('Kies offerte, orderbevestiging, proforma, factuur of pakbon.')
@@ -614,12 +702,21 @@ def preview_pdf(payload):
 
 
 def render(payload, company_id=COMPANY):
+    if payload.get('templateRequest'):
+        return template_request(payload, company_id)
     runtime_path = Path(os.environ.get('CRM_DOCUMENT_RUNTIME', str(ROOT / '.local/document-runtime.json')))
     runtime = json.loads(runtime_path.read_text())
     with tempfile.TemporaryDirectory(prefix='spatlappen-document-') as directory:
         work = Path(directory)
         docx = work / 'orderbevestiging.docx'
-        build(payload, docx, company_id)
+        template_root = None
+        if payload.get('template') is not None:
+            kind = template_kind(payload.get('kind'))
+            data = validated_template(payload['template'], kind, company_id)
+            template_root = work / 'templates'
+            template_root.mkdir()
+            (template_root / TEMPLATE_FILES[kind]).write_bytes(data)
+        build(payload, docx, company_id, template_root)
         profile = (work / 'office-profile').as_uri()
         env = dict(os.environ)
         if runtime.get('fontDirectories'):
@@ -648,7 +745,7 @@ def render(payload, company_id=COMPANY):
                            check=True, capture_output=True, timeout=30)
             previews = [base64.b64encode(path.read_bytes()).decode()
                         for path in sorted(work.glob('page-*.png'), key=lambda p: int(p.stem.split('-')[-1]))]
-        return {'pdf': base64.b64encode(pdf.read_bytes()).decode(),
+        return {'templateProtocol': 1, 'pdf': base64.b64encode(pdf.read_bytes()).decode(),
                 **({'docx': base64.b64encode(docx.read_bytes()).decode()} if payload.get('formats') != ['pdf'] else {}), 'pages': actual_pages, 'previews': previews,
                 'filename': DOCUMENT_TYPES[payload['kind']]['file'] + '_' + payload['number']}
 

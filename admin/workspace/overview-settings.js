@@ -10,6 +10,7 @@ export function createOverviewSettings(context){
    {key:'gmail',label:'Gmail',content:context.inboxUI.settingsMarkup()},
    {key:'sending',label:'Verzenden & handtekening',content:context.emailSettingsMarkup(runtime,context.company)},
    {key:'templates',label:'Mailtemplates',content:context.templatesUI.settingsMarkup()},
+   {key:'documents',label:'Documenttemplates',content:context.documentTemplates.markup()},
    {key:'mobile',label:'Telefoon & meldingen',content:context.mobileNotifications.markup()},
    {key:'preferences',label:'Voorkeuren',content:context.usageUI.markup().replace('data-ux-usage>','data-ux-usage open>')},
    {key:'backup',label:'Back-up & herstel',content:`<section class="panel"><h2>${runtime.mode==='cloud'?'Back-up van centrale opslag':'Opslag in deze browser'}</h2><p>${runtime.mode==='cloud'?'Klanten, orders en betalingen worden centraal opgeslagen. Een volledige back-up bevat ook je bestanden, feedback, opgeslagen '+(context.company.tool==='design'?'ontwerpen':'berekeningen')+' en het bouwlog.':'Gegevens en bestanden staan in deze browser. Browsergegevens wissen verwijdert deze opslag. Maak regelmatig een volledige back-up, ook van je '+(context.company.tool==='design'?'ontwerpen':'berekeningen')+'.'}</p><div class="actions">${button('export','Download volledige back-up','',true)}${button('import','Back-up terugzetten')}</div></section>${context.migrationPanel(runtime)}`},
@@ -20,8 +21,8 @@ export function createOverviewSettings(context){
   if(mounted&&context.hasActiveFormEdits(mounted)){
    // A template/archive action can render while another tab still has a dirty
    // or busy mail form. Refresh only these read-only lists, never that form.
-   for(const tab of tabs.filter(tab=>['templates','archive'].includes(tab.key)))mounted.querySelector(`[data-section-panel="${tab.key}"]`).innerHTML=tab.content;
-   context.templatesUI.installSettings(mounted);syncSectionTabs(document.querySelector('#app'),'settings',key);return;
+   for(const tab of tabs.filter(tab=>['templates','documents','archive'].includes(tab.key)))mounted.querySelector(`[data-section-panel="${tab.key}"]`).innerHTML=tab.content;
+   context.templatesUI.installSettings(mounted);context.documentTemplates.install(mounted);syncSectionTabs(document.querySelector('#app'),'settings',key);return;
   }
   context.shell(context.heading('Instellingen','Kies wat je wilt aanpassen.')+sectionTabsMarkup('settings',tabs,key,'Instellingen'),'settings',{section:key,facts:{archivedCustomerCount:state.customers.filter(c=>c.archived).length,archivedOrderCount:state.orders.filter(o=>o.archived).length}});
  }

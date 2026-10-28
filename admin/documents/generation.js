@@ -38,6 +38,6 @@ export async function renderConfirmation(payload){
  const response=await fetch('/__local/documents/render',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
  const result=await response.json().catch(()=>({error:'De documentomzetter is niet bereikbaar. Probeer opnieuw.'}));
  if(!response.ok||result.error)throw Error(result.error||'Het document kon niet worden gemaakt.');
- return {pdf:generatedBlob(result.pdf,'application/pdf'),docx:result.docx&&!(payload.formats?.length===1&&payload.formats[0]==='pdf')?generatedBlob(result.docx,'application/vnd.openxmlformats-officedocument.wordprocessingml.document'):null,pages:result.pages,previews:result.previews||[],downloads:result.downloads||{}};
+ return {templateProtocol:result.templateProtocol,pdf:generatedBlob(result.pdf,'application/pdf'),docx:result.docx&&!(payload.formats?.length===1&&payload.formats[0]==='pdf')?generatedBlob(result.docx,'application/vnd.openxmlformats-officedocument.wordprocessingml.document'):null,pages:result.pages,previews:result.previews||[],downloads:result.downloads||{}};
  });
 }

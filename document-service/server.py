@@ -129,7 +129,7 @@ class Handler(BaseHTTPRequestHandler):
                 # The authenticated backend token selects the company. Ignore
                 # any company claimed by an untrusted browser document payload.
                 result = generator.preview_pdf(payload) if preview else generator.render(payload, self.company_id)
-                if not preview:
+                if not preview and not payload.get('templateRequest'):
                     result['downloads'] = {fmt: cache_download(base64.b64decode(result[fmt], validate=True),
                         result['filename'] + '.' + fmt, mimetypes.guess_type('document.' + fmt)[0] or 'application/octet-stream', self.company_id)
                         for fmt in ('pdf', 'docx') if fmt in result}

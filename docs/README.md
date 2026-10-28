@@ -1,3 +1,5 @@
+> Nieuw28oktober: [Word-documenttemplates aanpassen](DOCUMENTTEMPLATES.md), lokale bron; documentservice-uitrol en eigen controle open.
+
 > Nieuwe ronde28oktober: [twaalf feedbackpunten](FEEDBACK-VERVOLG-20261028.md), brongebouwd; eigen controle open.
 
 > 28 oktober: [Dubbelen herkennen en orders samenvoegen](DUBBELE-ORDERS.md), brongebouwd; gebruikerscontrole open.

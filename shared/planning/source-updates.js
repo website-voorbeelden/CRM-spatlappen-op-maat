@@ -2001,5 +2001,61 @@ export const sourceUpdates = [
     "delivery": "local",
     "note": "Twaalf nieuwe online feedbackpunten brongebouwd: bijsnijkader/dubbelklik, directe bovenstrook, contourkleur, bevestigingsmail op betaallink, bestaande order gericht via JSON/AI aanvullen, orderteruglink en variantgebonden save/nieuwe variant, feedbackdefault, grotere maatknoppen, bovenstrookbalans, logo-drop, optionele veilige voorstelopruiming en vectorstatus. Geen bestaande klantdata/ontwerpen/betalingen of feedbackstatussen gewijzigd. Gebruikerscontrole blijft open; opruimen nergens aangezet.",
     "evidence": "Gerichte read-only feedbackuitlezing en bronlezing/bewerking; geen tests/checks/syntaxchecks/builds/browser-/DOMcontrole/provideracties. Zie docs/FEEDBACK-VERVOLG-20261028.md voor bron/grenzen/eigen controle. GitHubupload volgt afzonderlijk, geen nieuwe livepublicatie."
+  },
+  {
+    "id": "feedback28-followup-twelve-github",
+    "taskId": "feedback28-followup-twelve",
+    "companies": [
+      "spatlappen",
+      "maatwerkkunststof"
+    ],
+    "at": "2026-10-28T08:15:50.125Z",
+    "author": "Codex",
+    "status": "review",
+    "delivery": "local",
+    "note": "Op expliciet verzoek GitHubbronupload voltooid op aparte branch crm-feedback-20261028, inclusief twaalf nieuwe feedbackpunten en eerdere lokale wijzigingen. Main en livecode niet bijgewerkt. Gebruikerscontrole/feedbackafhandeling open; bestaande klantdata en ontwerpen behouden, opruimen nergens ingeschakeld.",
+    "evidence": "Commit316ea4b32649f061628e0bc7c74a9363941bc630; tree d4c6597ae1582843dce185d085e2f166971a0493 identiek aan voorbereide lokale Git-tree. Branch teruggelezen; main cb21b05505e29888b15f8342c7fd09819bfdb528 ongewijzigd. 157bestanden, geen verwijderingen; privédata/config/exports/back-ups uitgesloten. Alleen uploadintegriteit/Git-administratie, geen tests/checks/builds/browsercontrole. Zie work/github-feedback-20261028 en docs/FEEDBACK-VERVOLG-20261028.md."
+  },
+  {
+    "id": "document-template-manager-source-20261028",
+    "taskId": "document-template-manager-20261028",
+    "companies": [
+      "spatlappen",
+      "maatwerkkunststof"
+    ],
+    "at": "2026-10-28T11:25:38.263Z",
+    "author": "Codex",
+    "status": "review",
+    "delivery": "local",
+    "note": "Instellingen → Documenttemplates: actieve Word-template downloaden, upload met structuurcontrole, versies/standaard terugzetten; bedrijf/CAS/back-up en renderrevisie bewaakt. CRM/converterbron gebouwd. Documentservice-uitrol of lokale handlerherstart en eigen gebruikerscontrole nog open; niets gepubliceerd/gepusht.",
+    "evidence": "Uitsluitend bron gelezen/bewerkt en bouwadministratie. Geen tests/checks/syntaxchecks/build/browser-/DOMcontrole of conversieproef. Geen klant-, order-, betaal- of documentgegevens gewijzigd. Zie docs/DOCUMENTTEMPLATES.md."
+  },
+  {
+    "id": "document-template-maat-default-20261028",
+    "taskId": "document-template-manager-20261028",
+    "companies": [
+      "spatlappen",
+      "maatwerkkunststof"
+    ],
+    "at": "2026-10-28T11:38:43.721Z",
+    "author": "Codex",
+    "status": "review",
+    "delivery": "local",
+    "note": "Nieuwe aangeleverde TJ Worx-pakbon uitsluitend Maatwerkkunststof. Lege productvoorbeeldrij lokaal aangevuld met bestaande velden, PAGE/NUMPAGES behouden. Voorlopige Spatlappen-vervanging teruggezet vanuit eigen archief; oudere documenten/eigen uploads intact. GitHub/live en service-uitrol nog open.",
+    "evidence": "Alleen OOXML-bron gelezen en smal bewerkt; origineel behouden. Geen tests/checks/render/conversie/build/browser-QA. Eigen visuele/PDF-/meerpagina-controle open. Zie docs/DOCUMENTTEMPLATES.md."
+  },
+  {
+    "id": "document-template-compare-20261028",
+    "taskId": "document-template-manager-20261028",
+    "companies": [
+      "spatlappen",
+      "maatwerkkunststof"
+    ],
+    "at": "2026-10-28T11:42:31.605Z",
+    "author": "Codex",
+    "status": "review",
+    "delivery": "local",
+    "note": "Nieuwe Maat-pakbon: dezelfde16velden en tabelopbouw als vorige; leeg apart opmerkingenkopje wordt mee verborgen. Spatstandaard behouden. Gebruiker vraagt bronvergelijking en GitHubupload; geen verdere tests na verduidelijking. Eigen controle/live-uitrol open.",
+    "evidence": "Bronvergelijking. Vóór verduidelijking3JS-syntaxchecks en validatie6defaults geslaagd; oude document-revisions-test faalde op achterhaalde Maatbeperking regel20. Geen volledige testclaim, geen browser/build/conversieproef. Zie docs/DOCUMENTTEMPLATES.md."
   }
 ];

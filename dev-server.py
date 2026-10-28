@@ -179,7 +179,7 @@ class Handler(SimpleHTTPRequestHandler):
                 response = json.loads(result.stdout)
                 if result.returncode or response.get('error'):
                     status = 400
-                elif path != '/__local/documents/preview':
+                elif path != '/__local/documents/preview' and not payload.get('templateRequest'):
                     number = payload['number']
                     response['downloads'] = {fmt: cache_download(base64.b64decode(response[fmt]),
                         response.get('filename', 'Orderbevestiging_' + number) + '.' + fmt, content_type)

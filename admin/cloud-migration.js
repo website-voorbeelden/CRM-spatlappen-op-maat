@@ -1,7 +1,7 @@
-import {validateTaskProgressList} from '../shared/planning/progress.js?v=feedback-followup-20261028';
+import {validateTaskProgressList} from '../shared/planning/progress.js?v=document-templates-20261028';
 import {openBrowserDatabase,openDesignDatabase,cloudRequest,uploadCloudFile,readCloudFile,commitCloud,blobDigest,storageRuntime} from './cloud-storage.js?v=crm-code-review-20261027';
 
-import {validateBusinessState} from '../shared/state-validation.js?v=feedback-followup-20261028';
+import {validateBusinessState} from '../shared/state-validation.js?v=document-templates-20261028';
 import {companyFor} from '../shared/companies.js';
 function read(db,names) {
   return new Promise((resolve,reject)=>{

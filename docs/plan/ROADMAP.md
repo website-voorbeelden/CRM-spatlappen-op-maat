@@ -142,6 +142,17 @@ Eerst deze basis afmaken voordat we meer functies toevoegen.
 
 De implementatie is aanwezig. Controleer de bediening zelf; publicatie staat apart en open vervolgwerk blijft als eigen taak staan.
 
+### Word-documenttemplates zelf vervangen
+
+- **ID:** `document-template-manager-20261028`
+- **Voor:** Spatlappen en Maatwerkkunststof
+- **Doel:** Pakbon, factuur en offerte/bevestiging/proforma per bedrijf downloaden, extern aanpassen en opnieuw uploaden.
+- **Omvang / status:** Brongebouwd · service-uitrol en eigen controle open
+- **Volgende stap:** Instellingen → Documenttemplates. Bron voor CRM en converter aanwezig; lokale serverherstart of online documentservice-uitrol apart nodig, geen publicatie/push in deze ronde. Gebruiker controleert downloaden, Word-bewerking, upload, documentvoorbeeld, oude versies, bedrijfsafscheiding, invoerbehoud en multi-tabconflict.
+- **Klaar wanneer:** Eerdere uploads en gegenereerde bestanden behouden; actieve keuze CAS, terugzetten, begrensde DOCX-structuurcontrole en protocolbewaking. Max400kB/versie en10versies per bedrijf, geen automatische archivering. Geen tests/checks/build/browsercontrole uitgevoerd.
+- **Eerst nodig:** Geen aparte stap in dit plan.
+- **Vindplaatsen:** `admin/documents/templates.js`, `shared/document-templates.js`, `document-generator.py`, `document-service/server.py`, `docs/DOCUMENTTEMPLATES.md`
+
 ### Nieuwe feedback28oktober · twaalf vervolgpunten
 
 - **ID:** `feedback28-followup-twelve`

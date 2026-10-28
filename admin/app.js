@@ -1,3 +1,4 @@
+import {createDocumentTemplates} from './documents/templates.js?v=document-templates-20261028';
 import {createOrderAiUpdate} from './orders/ai-update.js?v=feedback-followup-20261028';
 import {cleanupOrderedVariants} from '../shared/design-variant-cleanup.js?v=feedback-followup-20261028';
 import {createDuplicateGuard,duplicateBaseline} from './orders/duplicate-guard.js?v=duplicate-review-20261028';
@@ -21,9 +22,9 @@ import {createAutomaticPhaseSync} from './mail/automatic-phase-sync.js?v=feedbac
 import {createPhaseLabelSync} from './mail/phase-label-sync.js?v=feedback-followup-20261028';
 import {saveOnlineAssistantPlan} from './assistant/online-plan.js?v=feedback-launcher-20261020';
 import {vatProtectedOrder} from '../shared/vat-ledger.js?v=feedback28-batch2-20261028';
-import {createOverviewSettings} from './workspace/overview-settings.js?v=home-layout-20261028';
+import {createOverviewSettings} from './workspace/overview-settings.js?v=document-templates-20261028';
 import {installSectionTabs,syncSectionTabs} from './workspace/section-tabs.js?v=calm-workspaces-20261027';
-import {createGeneratedDocumentForms} from './documents/generated-forms.js?v=feedback-followup-20261028';
+import {createGeneratedDocumentForms} from './documents/generated-forms.js?v=document-templates-20261028';
 import {createDocumentWorkspace} from './documents/library-workspace.js?v=calm-workspaces-20261027';
 import {createCustomerDossier} from './customers/dossier.js?v=calm-workspaces-20261027';
 import {createOrderWorkspace} from './orders/workspace.js?v=feedback-followup-20261028';
@@ -67,7 +68,7 @@ import {createWorkspaceSearch,searchLauncherMarkup} from './search/workspace-sea
 import {documentReplyContext,documentReplyChoices} from '../shared/document-mail-context.js?v=crm-code-review-20261027';
 import {createCustomerViews} from './customers/views.js?v=feedback-followup-20261028';
 import {navigationMarkup,workspaceContextMarkup} from './workspace/navigation.js?v=home-20261028';
-import {createBuildTasks} from './workspace/development-plan.js?v=feedback-followup-20261028';
+import {createBuildTasks} from './workspace/development-plan.js?v=document-templates-20261028';
 import {markProvenance} from '../shared/provenance.js?v=provenance-colors-20261027';
 import {provenanceText,markFormSources,markGeneratedMail,mailFormProvenance,formRecordProvenance} from './provenance-ui.js?v=provenance-colors-20261027';
 import {installSidebar,createUsagePreferences} from "./workspace/preferences.js?v=table-guides-20261028";
@@ -85,7 +86,7 @@ import {costingPickerMarkup,installCostingPickers,readCostingLink,validateCostin
 import {formProblem,focusFormField,showFormProblem,textFormValues,changedFormValues,restoreFormValues,validateForm,installFormGuidance,hasActiveFormEdits,installFormEditProtection} from './form-guidance.js?v=crm-code-review-20261027';
 import {documentRemovalInfo,removeDocument} from '../shared/document-removal.js?v=crm-code-review-20261027';
 import {documentBundles,documentFormat,documentVersionGroups} from "./documents/library.js?v=workspace-search-20261017";
-import {canReviseDocument,appendDocumentRevision,documentVersion,documentVersionLabel,documentDownloadName} from '../shared/document-revisions.js?v=batch4-editor-20261023';
+import {canReviseDocument,appendDocumentRevision,documentVersion,documentVersionLabel,documentDownloadName} from '../shared/document-revisions.js?v=document-templates-20261028';
 import {openDocumentRevision} from './documents/revision-editor.js?v=crm-code-review-20261027';
 import {createCategoryPreferences,installCategoryReorder,documentLayoutToolbar,documentLayoutAttributes} from "./documents/layout.js?v=calm-workspaces-20261027";
 import {previewDocument,createDocumentPreview} from "./documents/preview.js?v=batch2-payments-20261023";
@@ -105,7 +106,7 @@ import {applyAssistantPlan,assistantSnapshot} from '../shared/assistant-domain.j
 import {createSessionUndo} from './session-undo.js';
 import {companyFor,toolUrl} from '../shared/companies.js?v=analytics-workspace-20261024';
 import {openCrmDatabase,storageRuntime,startCloudRefresh} from './cloud-storage.js?v=crm-code-review-20261027';
-import {migrationPanel,installMigration,backupBlob,parseBackup,readCloudPackage,replaceDesigns,readBrowserPackage} from './cloud-migration.js?v=feedback-followup-20261028';
+import {migrationPanel,installMigration,backupBlob,parseBackup,readCloudPackage,replaceDesigns,readBrowserPackage} from './cloud-migration.js?v=document-templates-20261028';
 import {ensureCustomerNumbers} from "./customers/numbers.js?v=documents-flexible-20261010";
 import {defaultOrderSearch,defaultCustomerSearch,searchOrderItems,orderDossierLabel,searchCustomers,orderFilterError,quoteOutcomeOptions} from "./workspace/dossier-search.js?v=feedback-followup-20261028";
 import {installFeedback} from './feedback.js?v=feedback-followup-20261028';
@@ -113,7 +114,7 @@ import { renderDeliveryMap, renderOrdersMap } from "./orders/delivery-map.js?v=d
 import { importLocalOrders } from './local-import.js?v=duplicate-review-20261028';
 import {supplierInvoices,invoiceFinance,supplierFinance,physicalQuantity,syncSupplierInvoiceCosts,itemCostTotal} from "./purchases/costs.js?v=invoices-20261009-2";
 import {customerAiPrompt,orderAiPrompt,supplierAiPrompt,parseAiAnswer,normalizeAiOrder,normalizeAiSupplier,aiOrderDates,aiSupplierKeys} from './ai-import.js?v=maat-cleanup-20261021';
-import {documentTypes,nextDocumentNumber,addressParts,renderConfirmation,customerDocumentItems,packingSlipItems} from "./documents/generation.js?v=product-thickness-20261021";
+import {documentTypes,nextDocumentNumber,addressParts,customerDocumentItems,packingSlipItems} from "./documents/generation.js?v=document-templates-20261028";
 import {paymentBasis,requestedAmount,applyTikkiePayments} from "./orders/payment-workflow.js?v=mobile-push-20261023";
 import {createPaymentsWorkspace} from './payments/workspace.js?v=calm-workspaces-20261027';
 
@@ -321,7 +322,7 @@ const appContext={
  get releaseMarkup(){return releaseMarkup;},
  get removeDocument(){return removeDocument;},
  get render(){return render;},
- get renderConfirmation(){return renderConfirmation;},
+ get renderConfirmation(){return documentTemplates.render;},
  get renderDeliveryMap(){return renderDeliveryMap;},
  get renderOrder(){return renderOrder;},
  get renderOrdersMap(){return renderOrdersMap;},
@@ -358,6 +359,7 @@ const appContext={
  get syncSupplierInvoiceCosts(){return syncSupplierInvoiceCosts;},
  get templateContext(){return templateContext;},
  get templatesUI(){return templatesUI;},
+ get documentTemplates(){return documentTemplates;},
  get textFormValues(){return textFormValues;},
  get toast(){return toast;},
  get today(){return today;},
@@ -372,6 +374,7 @@ const appContext={
  get validateCostingSources(){return validateCostingSources;},
  get validateForm(){return validateForm;},
 };
+const documentTemplates=createDocumentTemplates(appContext);
 const duplicateGuard=createDuplicateGuard(appContext);
 const orderMerge=createOrderMerge(appContext);
 const orderAiUpdate=createOrderAiUpdate(appContext);
@@ -522,7 +525,7 @@ function shell(content,page,details={}){
  const section=details.section||(record?requestedSection||(page==='orders'?orderView.tab:'details'):reference?requestedSection||'orders':page==='orders'?orderSearch.mode==='prices'?'prices':'list':['customers','purchases'].includes(page)?'list':'');
  const filters=details.filters||(!id&&page==='orders'?{...orderSearch,sort,direction:ascending?'asc':'desc'}:!id&&page==='customers'?customerSearch:page==='order-map'?{stage:orderMapFilter}:{});
  currentAssistantPageContext=assistantPageContext({companyId:company.id,page,section,filters,facts:details.facts||{},visible:details.visible,selected:record?{entity:page==='orders'?'order':'customer',id:record.id,label:page==='orders'?'Order #'+(record.sourceNumber||record.number):record.company}:undefined,reference:reference?{id:reference.id,label:reference.name}:undefined});
- inboxUI.beforeRender?.();feedback.beforeRender();assistant.beforeRender();$('#app').innerHTML=`<div class="shell"><header class="crm-mobile-header"><button type="button" data-mobile-menu aria-controls="crm-navigation" aria-expanded="false">☰ Menu</button><a class="crm-mobile-home" href="#dashboard" data-home-link aria-label="${esc(company.name)} — naar start">${esc(company.name)}</a><div data-ai-mobile-launcher-slot></div><div data-feedback-mobile-launcher-slot></div></header><button type="button" class="crm-mobile-backdrop" data-mobile-backdrop aria-label="Menu sluiten"></button><aside id="crm-navigation"><button type="button" data-sidebar-toggle aria-controls="crm-navigation" title="Zijbalk inklappen">«</button><button type="button" class="crm-mobile-close" data-mobile-close>← Menu sluiten</button><a class="brand" href="#dashboard" data-home-link aria-label="${esc(company.name)} — naar start">${esc(company.brand)}<span class="brand-dot">.</span><small>CRM / ORDERBEHEER</small><small>Versie ${esc(runtime.release || "2.0.0")}</small></a><div class="crm-sidebar-tools">${assistant.enabled?'<div data-ai-launcher-slot></div>':''}<div data-ai-feedback-slot></div></div><nav aria-label="Hoofdnavigatie">${navigationMarkup({company,page,ordersNavigation:page==='orders'&&!record?funnelUI.navigation():''})}</nav><div class="session-undo"><button type="button" data-action="session-undo" disabled>↶ Stap terug</button><small data-undo-label></small><small data-undo-help></small></div><div class="local">${runtime.mode==='cloud'?(runtime.local?'Cloudflare · lokaal testen':'Centrale CRM-opslag')+'<br>D1 + privébestanden in R2':'Lokale ontwikkelversie<br>Opslag in deze browser'}<br>Maak regelmatig een back-up${runtime.mode==='cloud'?'<br><button class="offline-entry" type="button" data-offline-review>Offline-modus</button><br><a href="/admin/offline/">Klanten offline invullen</a>':''}</div>${runtime.authEnabled?'<div class="session-undo"><button type="button" data-action="logout">Uitloggen</button></div>':''}</aside><main class="${page==='orders'&&section==='mail'?'mail-focused-page':['orders','customers'].includes(page)&&section==='documents'?'document-focused-page':''}"><div class="workspace-toolbar">${workspaceContextMarkup({company,page})}${page==='dashboard'&&!id?'':searchLauncherMarkup()}${page==='development'?'':'<div class="ai-export-toolbar"><button type="button" data-action="ai-export" title="Kopieer opgeslagen pagina- of dossiergegevens voor een AI">Exporteren voor AI ↗</button></div>'}</div>${runtime.offlineReview?reviewBannerMarkup(runtime):''}${content}</main></div>`;installHomeLinks($('#app'),{canNavigate:()=>page==='dashboard'&&!id||!editingLocally(),onBlocked:()=>toast('Sla je openstaande bewerking eerst op of annuleer die.')});installMobileUI($('#app'));installSidebar($('#app'),company.id);installGuidedActions($('#app'),{'create-order':()=>orderForm(null,route()[0]==='customers'?route()[1]:undefined),'create-customer':()=>customerForm(),'reset-orders':()=>{funnelUI.reset();const mode=orderSearch.mode;orderSearch=defaultOrderSearch();orderSearch.mode=mode;if(mode==='prices'){orderSearch.visibility='all';orderSearch.expanded=true;}renderOrdersList();},'reset-customers':()=>{customerSearch=defaultCustomerSearch(dossierPreferences.customerSort());renderCustomersList();}},{onError:e=>toast(e.message)});orderTerms.install($('#app'));refreshUndoButton();renderDocumentImages();assistant.mount($('#app'),page);feedback.mount($('#app'));inboxUI.install($('#app'));inventoryUI.install($('#app'));funnelUI.install($('#app'));automaticPhaseSync.mount();if(page==='settings'){mobileNotifications.install($('#app'));installEmailSettings($('#app'),company);templatesUI.installSettings($('#app'));usageUI.install($('#app'));inboxUI.installSettings($('#app'));}}
+ inboxUI.beforeRender?.();feedback.beforeRender();assistant.beforeRender();$('#app').innerHTML=`<div class="shell"><header class="crm-mobile-header"><button type="button" data-mobile-menu aria-controls="crm-navigation" aria-expanded="false">☰ Menu</button><a class="crm-mobile-home" href="#dashboard" data-home-link aria-label="${esc(company.name)} — naar start">${esc(company.name)}</a><div data-ai-mobile-launcher-slot></div><div data-feedback-mobile-launcher-slot></div></header><button type="button" class="crm-mobile-backdrop" data-mobile-backdrop aria-label="Menu sluiten"></button><aside id="crm-navigation"><button type="button" data-sidebar-toggle aria-controls="crm-navigation" title="Zijbalk inklappen">«</button><button type="button" class="crm-mobile-close" data-mobile-close>← Menu sluiten</button><a class="brand" href="#dashboard" data-home-link aria-label="${esc(company.name)} — naar start">${esc(company.brand)}<span class="brand-dot">.</span><small>CRM / ORDERBEHEER</small><small>Versie ${esc(runtime.release || "2.0.0")}</small></a><div class="crm-sidebar-tools">${assistant.enabled?'<div data-ai-launcher-slot></div>':''}<div data-ai-feedback-slot></div></div><nav aria-label="Hoofdnavigatie">${navigationMarkup({company,page,ordersNavigation:page==='orders'&&!record?funnelUI.navigation():''})}</nav><div class="session-undo"><button type="button" data-action="session-undo" disabled>↶ Stap terug</button><small data-undo-label></small><small data-undo-help></small></div><div class="local">${runtime.mode==='cloud'?(runtime.local?'Cloudflare · lokaal testen':'Centrale CRM-opslag')+'<br>D1 + privébestanden in R2':'Lokale ontwikkelversie<br>Opslag in deze browser'}<br>Maak regelmatig een back-up${runtime.mode==='cloud'?'<br><button class="offline-entry" type="button" data-offline-review>Offline-modus</button><br><a href="/admin/offline/">Klanten offline invullen</a>':''}</div>${runtime.authEnabled?'<div class="session-undo"><button type="button" data-action="logout">Uitloggen</button></div>':''}</aside><main class="${page==='orders'&&section==='mail'?'mail-focused-page':['orders','customers'].includes(page)&&section==='documents'?'document-focused-page':''}"><div class="workspace-toolbar">${workspaceContextMarkup({company,page})}${page==='dashboard'&&!id?'':searchLauncherMarkup()}${page==='development'?'':'<div class="ai-export-toolbar"><button type="button" data-action="ai-export" title="Kopieer opgeslagen pagina- of dossiergegevens voor een AI">Exporteren voor AI ↗</button></div>'}</div>${runtime.offlineReview?reviewBannerMarkup(runtime):''}${content}</main></div>`;installHomeLinks($('#app'),{canNavigate:()=>page==='dashboard'&&!id||!editingLocally(),onBlocked:()=>toast('Sla je openstaande bewerking eerst op of annuleer die.')});installMobileUI($('#app'));installSidebar($('#app'),company.id);installGuidedActions($('#app'),{'create-order':()=>orderForm(null,route()[0]==='customers'?route()[1]:undefined),'create-customer':()=>customerForm(),'reset-orders':()=>{funnelUI.reset();const mode=orderSearch.mode;orderSearch=defaultOrderSearch();orderSearch.mode=mode;if(mode==='prices'){orderSearch.visibility='all';orderSearch.expanded=true;}renderOrdersList();},'reset-customers':()=>{customerSearch=defaultCustomerSearch(dossierPreferences.customerSort());renderCustomersList();}},{onError:e=>toast(e.message)});orderTerms.install($('#app'));refreshUndoButton();renderDocumentImages();assistant.mount($('#app'),page);feedback.mount($('#app'));inboxUI.install($('#app'));inventoryUI.install($('#app'));funnelUI.install($('#app'));automaticPhaseSync.mount();if(page==='settings'){mobileNotifications.install($('#app'));installEmailSettings($('#app'),company);templatesUI.installSettings($('#app'));documentTemplates.install($('#app'));usageUI.install($('#app'));inboxUI.installSettings($('#app'));}}
 function refreshUndoButton(){
  const control=$('[data-action=session-undo]');if(!control)return;
  const info=sessionUndo.status();control.disabled=info.busy||!info.count;
