@@ -1,3 +1,7 @@
+Nieuwste ronde: [Rustige werkplek door het CRM](RUSTIGE-WERKPLEK.md) — gedeelde kerngegevens, meer ruimte en details op verzoek. Lokaal; eigen controle/publicatie apart.
+
+Nieuwste dossierkop: [Order in één oogopslag](ORDER-IN-EEN-OOGOPSLAG.md) — betaling, wachttijd en uitvoering/levering; fases via Meer. Bron lokaal, beperkte toegestane Maatweergave bekeken; eigen controle/publicatie apart.
+
 Nieuw27oktober: [opmaakbatches2–4](BATCHES2-4-OPMAAK-20261027.md) en [algemene voorwaarden bij Maatorder/mail](ALGEMENE-VOORWAARDEN-BIJ-ORDER.md). Bron lokaal/review, gebruikerscontrole en publicatie apart.
 
 - [Vier opmaakbatches](VIER-OPMAAKBATCHES-20261027.md) — batches1–4 lokaal brongebouwd voor eigen controle; nieuwste batch2aanvulling bij hervatten na productbewerking.

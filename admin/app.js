@@ -1,7 +1,7 @@
 import {orderPaymentStatusLabel} from '../shared/order-payment-status.js?v=ui-batch3-followup-20261027';
 import {orderExtraFilterLabels,extraFilterSummary} from './workspace/list-filters.js?v=ui-batch3-followup-20261027';
 import {createOrderTerms} from './documents/order-terms.js?v=ui-batch234-20261027';
-import {orderListMarkup} from './orders/list.js?v=ui-batch3-followup-20261027';
+import {orderListMarkup} from './orders/list.js?v=calm-workspaces-20261027';
 import {createMobileNotifications} from './notifications/client.js?v=payment-alerts-20261027';
 import {createPaymentNotifications} from './payments/notifications.js?v=payment-alerts-20261027';
 import {storeTransaction,synchronousTransactionResult} from './workspace/transactions.js?v=crm-code-review-20261027';
@@ -14,20 +14,20 @@ import {createAutomaticPhaseSync} from './mail/automatic-phase-sync.js?v=ui-batc
 import {createPhaseLabelSync} from './mail/phase-label-sync.js?v=ui-batch234-20261027';
 import {saveOnlineAssistantPlan} from './assistant/online-plan.js?v=feedback-launcher-20261020';
 import {vatProtectedOrder} from '../shared/vat-ledger.js';
-import {createOverviewSettings} from './workspace/overview-settings.js?v=mobile-push-20261023';
-import {installSectionTabs,syncSectionTabs} from './workspace/section-tabs.js';
+import {createOverviewSettings} from './workspace/overview-settings.js?v=calm-workspaces-20261027';
+import {installSectionTabs,syncSectionTabs} from './workspace/section-tabs.js?v=calm-workspaces-20261027';
 import {createGeneratedDocumentForms} from './documents/generated-forms.js?v=ui-batch234-20261027';
-import {createDocumentWorkspace} from './documents/library-workspace.js?v=ui-batch234-20261027';
-import {createCustomerDossier} from './customers/dossier.js?v=crm-code-review-20261027';
-import {createOrderWorkspace} from './orders/workspace.js?v=ui-batch3-followup-20261027';
+import {createDocumentWorkspace} from './documents/library-workspace.js?v=calm-workspaces-20261027';
+import {createCustomerDossier} from './customers/dossier.js?v=calm-workspaces-20261027';
+import {createOrderWorkspace} from './orders/workspace.js?v=calm-workspaces-20261027';
 import {createOrderPlanning} from './orders/planning.js?v=ui-batch234-20261027';
 import {createOrderAddresses,deliveryEditBasis} from './orders/addresses.js?v=crm-code-review-20261027';
 import {createProductImages} from './products/images.js?v=ui-batch234-20261027';
-import {createPurchaseWorkspace} from './purchases/batch-workspace.js?v=delivery-map-20261021';
+import {createPurchaseWorkspace} from './purchases/batch-workspace.js?v=calm-workspaces-20261027';
 import {createMailAttachments} from './mail/attachments.js';
 import {createMailComposer} from './mail/composer.js?v=ui-batch4-followup-20261027';
 import {createAiImportFlow} from './inquiries/ai-import-flow.js?v=central-overview-20261027';
-import {createAnalyticsWorkspace} from './analytics/workspace.js?v=ui-batch234-20261027';
+import {createAnalyticsWorkspace} from './analytics/workspace.js?v=calm-workspaces-20261027';
 import {financialChartMarkup,mountFinancialChart} from './analytics/financial-chart.js?v=analytics-workspace-20261024';
 import {invoicePaymentSelection,invoicePaymentNote} from '../shared/invoice-payments.js';
 import {invoicePaymentsMarkup} from './documents/payment-selection.js?v=batch2-payments-20261023';
@@ -44,7 +44,7 @@ import {guardPurchaseLink,latePurchase,batchDocumentKinds} from '../shared/purch
 import {transitAcknowledgement,installTransitWarning,batchDocumentsMarkup,batchArchiveButton,installPurchaseWorkflow} from './purchases/workflow.js';
 import {htmlSignatureMessage,signatureFrame} from '../shared/mail-signature.js?v=signatures-20261021';
 import {fulfilmentMarkup,installFulfilment} from './orders/fulfilment.js?v=ui-batch234-20261027';
-import {replaceBuildTasks} from './workspace/build-task-store.js?v=ui-batch4-followup-20261027';
+import {replaceBuildTasks} from './workspace/build-task-store.js?v=calm-workspaces-20261027';
 import {preferredOpenPurchase,isOpenPurchase} from '../shared/purchase-default.js';
 import {sampleOrderFields,readSampleFields,sampleOrderSummary} from './products/sample-order.js';
 import {customerExecutionDetails,readExecutionFields} from '../shared/product-specifications.js?v=product-thickness-20261021';
@@ -58,9 +58,9 @@ import {mountGoogleAnalytics} from './analytics/google.js?v=weekly-analytics-202
 import {orderReadiness} from '../shared/order-readiness.js?v=ui-batch234-20261027';
 import {createWorkspaceSearch,searchLauncherMarkup} from './search/workspace-search.js?v=stable-search-20261017';
 import {documentReplyContext,documentReplyChoices} from '../shared/document-mail-context.js?v=crm-code-review-20261027';
-import {createCustomerViews} from './customers/views.js?v=ui-batch3-followup-20261027';
+import {createCustomerViews} from './customers/views.js?v=calm-workspaces-20261027';
 import {navigationMarkup,workspaceContextMarkup} from './workspace/navigation.js?v=ui-batch1-20261027';
-import {createBuildTasks} from './workspace/development-plan.js?v=ui-batch4-followup-20261027';
+import {createBuildTasks} from './workspace/development-plan.js?v=calm-workspaces-20261027';
 import {markProvenance} from '../shared/provenance.js?v=provenance-colors-20261027';
 import {provenanceText,markFormSources,markGeneratedMail,mailFormProvenance,formRecordProvenance} from './provenance-ui.js?v=provenance-colors-20261027';
 import {installSidebar,createUsagePreferences} from "./workspace/preferences.js?v=ui-batch1-20261027";
@@ -80,7 +80,7 @@ import {documentRemovalInfo,removeDocument} from '../shared/document-removal.js?
 import {documentBundles,documentFormat,documentVersionGroups} from "./documents/library.js?v=workspace-search-20261017";
 import {canReviseDocument,appendDocumentRevision,documentVersion,documentVersionLabel,documentDownloadName} from '../shared/document-revisions.js?v=batch4-editor-20261023';
 import {openDocumentRevision} from './documents/revision-editor.js?v=crm-code-review-20261027';
-import {createCategoryPreferences,installCategoryReorder,documentLayoutToolbar,documentLayoutAttributes} from "./documents/layout.js?v=workflow-ux-20261015";
+import {createCategoryPreferences,installCategoryReorder,documentLayoutToolbar,documentLayoutAttributes} from "./documents/layout.js?v=calm-workspaces-20261027";
 import {previewDocument,createDocumentPreview} from "./documents/preview.js?v=batch2-payments-20261023";
 import {loading} from './loading.js';
 import {createAiExportUI} from './ai-export.js?v=payments-overview-20261027';
@@ -90,7 +90,7 @@ import {prepareQuickReplyDraft,saveQuickReplyDraft} from '../shared/mail-drafts.
 import {mailOwner,mailOwnerSignature,assertMailStorage} from '../shared/mail-inbox.js?v=crm-code-review-20261027';
 import {standardTemplateMail,templateContext,checkMailText} from '../shared/mail-templates.js?v=mail-texts-20261027';
 import {createMailTemplatesUI} from "./mail/templates.js?v=provenance-colors-20261027";
-import {createMailInboxUI,request as gmailRequest} from './mail-inbox.js?v=ui-batch234-20261027';
+import {createMailInboxUI,request as gmailRequest} from './mail-inbox.js?v=calm-workspaces-20261027';
 import {emailAvailable,emailRequest,emailSettingsMarkup,installEmailSettings,openInlineEmailSettings,pdfEmailAttachment} from './email-service.js?v=crm-code-review-20261027';
 import {installAssistant} from './assistant.js?v=ui-batch234-20261027';
 import {assistantPageContext} from '../shared/assistant-page-context.js?v=payments-overview-20261027';
@@ -98,7 +98,7 @@ import {applyAssistantPlan,assistantSnapshot} from '../shared/assistant-domain.j
 import {createSessionUndo} from './session-undo.js';
 import {companyFor,toolUrl} from '../shared/companies.js?v=analytics-workspace-20261024';
 import {openCrmDatabase,storageRuntime,startCloudRefresh} from './cloud-storage.js?v=crm-code-review-20261027';
-import {migrationPanel,installMigration,backupBlob,parseBackup,readCloudPackage,replaceDesigns,readBrowserPackage} from './cloud-migration.js?v=ui-batch4-followup-20261027';
+import {migrationPanel,installMigration,backupBlob,parseBackup,readCloudPackage,replaceDesigns,readBrowserPackage} from './cloud-migration.js?v=calm-workspaces-20261027';
 import {ensureCustomerNumbers} from "./customers/numbers.js?v=documents-flexible-20261010";
 import {defaultOrderSearch,defaultCustomerSearch,searchOrderItems,orderDossierLabel,searchCustomers,orderFilterError,quoteOutcomeOptions} from "./workspace/dossier-search.js?v=ui-batch3-followup-20261027";
 import {installFeedback} from './feedback.js?v=crm-code-review-20261027';
@@ -108,7 +108,7 @@ import {supplierInvoices,invoiceFinance,supplierFinance,physicalQuantity,syncSup
 import {customerAiPrompt,orderAiPrompt,supplierAiPrompt,parseAiAnswer,normalizeAiOrder,normalizeAiSupplier,aiOrderDates,aiSupplierKeys} from './ai-import.js?v=maat-cleanup-20261021';
 import {documentTypes,nextDocumentNumber,addressParts,renderConfirmation,customerDocumentItems,packingSlipItems} from "./documents/generation.js?v=product-thickness-20261021";
 import {paymentBasis,requestedAmount,applyTikkiePayments} from "./orders/payment-workflow.js?v=mobile-push-20261023";
-import {createPaymentsWorkspace} from './payments/workspace.js?v=ui-batch3-followup-20261027';
+import {createPaymentsWorkspace} from './payments/workspace.js?v=calm-workspaces-20261027';
 
 // Live getters preserve state replacement and route changes across asynchronous feature actions.
 const appContext={
@@ -532,7 +532,7 @@ document.addEventListener('click',async e=>{
   notifyDataChanged();render();toast('Teruggedraaid: '+result.label);
  }catch(error){failed=true;toast('Stap terug: '+error.message);await refreshExternalState();}finally{finishLoading({error:failed});}
 });
-const heading=(title,sub,buttons='')=>`<div class="top"><div><h1>${title}</h1><span class="muted">${sub}</span></div><div class="actions">${buttons}</div></div>`;
+const heading=(title,sub,buttons='')=>`<header class="top page-heading"><div><h1>${title}</h1><span class="muted">${sub}</span></div><div class="actions">${buttons}</div></header>`;
 const button=(action,text,id='',primary=false)=>`<button type="button" data-action="${action}" data-id="${esc(id)}" class="${primary?'primary':''}">${text}</button>`;
 function ordersTable(list){return orderListMarkup({esc,badge,euro,totals,purchase,customer,company,funnelUI,planningSummary,paymentStatus,orderDossierLabel,guidanceMarkup,route},list,{sort,ascending});}
 function sortedOrders(list){

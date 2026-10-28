@@ -1,3 +1,4 @@
+import {revealSelectedTab} from './tab-visibility.js?v=calm-workspaces-20261027';
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const keyFor=(tabs,key)=>tabs.some(tab=>tab.key===key)?key:tabs[0].key;
 // Panels stay mounted. Changing a tab never replaces a form or its draft.
@@ -14,6 +15,7 @@ export function syncSectionTabs(root,page,requested){
  for(const tab of tabs){const selected=tab===active;tab.setAttribute('aria-selected',String(selected));tab.tabIndex=selected?0:-1;tab.classList.toggle('selected',selected);}
  for(const panel of workspace.querySelectorAll('[data-section-panel]'))panel.hidden=panel.dataset.sectionPanel!==key;
  if(focusTab)active.focus({preventScroll:true});
+ revealSelectedTab(workspace);
  return key;
 }
 export function installSectionTabs(){

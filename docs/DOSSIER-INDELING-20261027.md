@@ -1,3 +1,5 @@
+> Nieuwste correctie: de dichte fase-/geldregel vervangen door drie grotere gegevens voor betaling, wachttijd met startbasis en uitvoering/levering. Geen bedrag/marge of dubbele fases in de kop; uitgebreide fasebediening via Meer. Zie [Order in één oogopslag](ORDER-IN-EEN-OOGOPSLAG.md). Bestaand Maatvoorbeeld met toestemming voor/na bekeken, Meer/disclosure open/dicht; andere betaalgevallen/mobiel/beide bedrijven blijven open. Alleen lokaal, geen automatische tests/builds of publicatie. De oudere kopbeschrijving hieronder is historie.
+
 # Rustiger dossier: indeling verder uitgewerkt
 
 27 oktober 2026. Philippe vindt de Exact-geïnspireerde preview nog onvoldoende uitgewerkt en vraagt verder te optimaliseren. Alleen lokaal bronwerk. De huidige CRM-preview is niet door Codex geopend, uitgelezen of visueel beoordeeld. Dit is geen claim dat het resultaat gelijk is aan Exact of door de gebruiker goedgekeurd is.

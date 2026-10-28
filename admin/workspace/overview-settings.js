@@ -1,4 +1,5 @@
-import {sectionTabsMarkup,syncSectionTabs} from './section-tabs.js';
+import {sectionTabsMarkup,syncSectionTabs} from './section-tabs.js?v=calm-workspaces-20261027';
+import {keyFactsMarkup} from './key-facts.js?v=calm-workspaces-20261027';
 // Same current application state and existing forms; no settings/draft store.
 export function createOverviewSettings(context){
  function renderSettings(){
@@ -24,15 +25,19 @@ export function createOverviewSettings(context){
  }
  function renderDashboard(){
   const {state,esc,button,euro}=context,queue=context.funnelUI.queue(),active=state.orders.filter(o=>!o.archived&&o.stage!=='Afgerond');
-  const outstanding=state.orders.filter(o=>!o.archived).reduce((sum,o)=>sum+Math.max(0,context.totals(o).balance),0),incomplete=state.orders.some(o=>!o.archived&&(!context.totals(o).priceKnown||o.shippingKnown===false));
-  const cards=`<div class="cards">${[['Open aanvragen & orders',active.length],['Te ontvangen incl. btw',incomplete?(outstanding>0?euro(outstanding)+' · voorlopig':'Nog te bepalen'):euro(outstanding)],['Acties voor jou',queue.tasks.length],['Met prioriteit',queue.high]].map(([label,value])=>`<div class="card"><span class="muted">${label}</span><strong>${value}</strong></div>`).join('')}</div>`;
+  const outstanding=state.orders.filter(o=>!o.archived).reduce((sum,o)=>sum+Math.max(0,context.totals(o).balance),0),incomplete=state.orders.some(o=>!o.archived&&(!context.totals(o).priceKnown||o.shippingKnown!==true));
+  const cards=keyFactsMarkup([
+   {label:'Te doen',value:queue.tasks.length,detail:queue.high?queue.high+' met prioriteit':'Jouw volgende acties',href:'#dashboard/tasks'},
+   {label:'Lopende dossiers',value:active.length,detail:'Aanvragen en orders',href:'#dashboard/orders'},
+   {label:'Te ontvangen incl. btw',value:incomplete?(outstanding>0?euro(outstanding)+' · voorlopig':'Nog te bepalen'):euro(outstanding),detail:incomplete?'Prijsafspraken nog niet compleet':'Van niet-gearchiveerde dossiers',href:'#analytics/financial'}
+  ],{esc,label:'Vandaag in één oogopslag'});
   const tabs=[
    {key:'tasks',label:'Te doen'+(queue.tasks.length?' ('+queue.tasks.length+')':''),content:context.funnelUI.priorities()},
    {key:'orders',label:'Lopende orders ('+active.length+')',content:`<section class="panel"><div class="section-heading"><h2>Lopende aanvragen & orders</h2><a href="#orders">Alle aanvragen & orders →</a></div>${context.ordersTable(context.sortedOrders(active))}</section>`},
    {key:'activity',label:'Activiteiten',content:`<section class="panel"><h2>Recente activiteiten</h2>${state.activities.slice(0,10).map(a=>`<div class="activity">${esc(a.message)}<small>${new Date(a.time).toLocaleString('nl-NL')}</small></div>`).join('')||'<p class="muted">Je activiteiten verschijnen hier zodra je begint.</p>'}</section>`}
   ];
   const key=tabs.some(tab=>tab.key===context.route()[1])?context.route()[1]:'tasks';
-  context.shell(context.heading('Overzicht','Lopende aanvragen, orders en openstaande bedragen.',button('ai-customer','AI prompt')+button('new-order','Nieuwe klantorder','',true)+`<details class="quiet-menu"><summary>Meer</summary><div>${button('new-customer','Nieuwe klant')}</div></details>`)+cards+sectionTabsMarkup('dashboard',tabs,key,'Overzicht'),'dashboard',{section:key,facts:{openOrderCount:active.length,actionCount:queue.tasks.length,highPriorityCount:queue.high,pricingActionCount:queue.pricing,followupActionCount:queue.followup,outstandingInCents:outstanding,inProductionCount:active.filter(o=>o.stage==='In productie').length,...(context.company.tool==='design'?{waitingApprovalCount:active.filter(o=>o.stage==='Wachten op goedkeuring').length}:{})},visible:{entity:'order',ids:[...new Set([...queue.tasks.map(t=>t.orderId),...context.sortedOrders(active).map(o=>o.id)])].slice(0,20),total:active.length}});
+  context.shell(context.heading('Overzicht','Wat vraagt jouw aandacht?',button('new-order','Nieuwe klantorder','',true)+`<details class="quiet-menu"><summary>Meer</summary><div>${button('new-customer','Nieuwe klant')}${button('ai-customer','AI prompt')}</div></details>`)+cards+sectionTabsMarkup('dashboard',tabs,key,'Overzicht'),'dashboard',{section:key,facts:{openOrderCount:active.length,actionCount:queue.tasks.length,highPriorityCount:queue.high,pricingActionCount:queue.pricing,followupActionCount:queue.followup,outstandingInCents:outstanding,inProductionCount:active.filter(o=>o.stage==='In productie').length,...(context.company.tool==='design'?{waitingApprovalCount:active.filter(o=>o.stage==='Wachten op goedkeuring').length}:{})},visible:{entity:'order',ids:[...new Set([...queue.tasks.map(t=>t.orderId),...context.sortedOrders(active).map(o=>o.id)])].slice(0,20),total:active.length}});
  }
  return {renderSettings,renderDashboard};
 }

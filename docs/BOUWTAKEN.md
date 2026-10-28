@@ -1,3 +1,7 @@
+> Algemene ronde27oktober: crm-calm-workspaces-20261027 review/local, crm-central-css-20261027 review/local en consistent-workspace doing/local via bronlog. Gedeelde belangrijke-informatie-eerstindeling op de belangrijkste werkplekken; bestaande Maatbetaalvoorbeeld bekeken, overige controles open. Geen automatische tests/builds/publicatie, opgeslagen gebruikersstatus/feedback behouden. Zie RUSTIGE-WERKPLEK.md.
+
+> Nieuwste dossierkop27oktober: crm-polish-batch2-20261027 review/local en consistent-workspace doing/local via bronlog. Drie leesbare gegevens, fases via Meer, geld/marge uit kop. Beperkte lokale Maatweergave met expliciete toestemming bekeken, geen automatische tests/builds; andere betaalgevallen/mobiel/beide bedrijven en publicatie open. Zie ORDER-IN-EEN-OOGOPSLAG.md. Bestaande opgeslagen voortgang/feedback behouden.
+
 > 27oktober: crm-polish-batch2/3/4-20261027 en crm-order-terms-20261027 bronreview/local via scripts/build-task.mjs. Batches2–4 lokaal uitgewerkt; eigen controle beide bedrijven/mobiel en publicatie apart. consistent-workspace doing/local wegens bredere scope. Zie BATCHES2-4-OPMAAK-20261027.md en ALGEMENE-VOORWAARDEN-BIJ-ORDER.md. Geen tests/checks/build/browsercontrole of feedbackresolve.
 
 # Bouwtaken in het CRM

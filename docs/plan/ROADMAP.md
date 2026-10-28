@@ -131,6 +131,17 @@ Eerst deze basis afmaken voordat we meer functies toevoegen.
 
 De implementatie is aanwezig. Controleer de bediening zelf; publicatie staat apart en open vervolgwerk blijft als eigen taak staan.
 
+### Belangrijke informatie eerst in de gedeelde CRM-werkplekken
+
+- **ID:** `crm-calm-workspaces-20261027`
+- **Voor:** Spatlappen en Maatwerkkunststof
+- **Doel:** De rustige dossiergedachte doorzetten: enkele relevante gegevens met ruimte, één hoofdactie en details op verzoek.
+- **Omvang / status:** Lokaal brongebouwd · eigen controle open
+- **Volgende stap:** Gedeelde kerngegevens en horizontale tabonthulling, centrale CSS-eigenaren. Overzicht, orderlijsten/betaling/kosten, klant/inkoop, ontvangsten, mail/documenten en financiële Analytics aangepast; instellingen/overige CRM-schermen gedeelde basis. Bronprojecties/acties/invoer/waarschuwingen behouden; geen nieuwe financiële engine/opslag/provideractie. Alleen bestaand Maatbetaalvoorbeeld bekeken; overige schermen/beide bedrijven/mobiel en onbekende/volledige/deel/nul/overbetalingen, historie/lange gegevens/filters/Meer/focus/invoerbehoud door Philippe. Geen automatische tests/builds/brede QA of publicatie. Bredere werkproces-/code-/financiële audit blijft open.
+- **Klaar wanneer:** Belangrijke informatie herkenbaar zonder herhaalde statussen of rijen onbekende bedragen. Alle bestaande acties/gegevens/bedrijfs-/CAS-/invoergrenzen behouden. Ontbrekende gegevens en actieve waarschuwingen zichtbaar. Bestaande voorkeuren/feedback/gebruikersstatus niet resetten. Alleen lokale bron; geen volledig visueel/functioneel akkoord claimen.
+- **Eerst nodig:** Geen aparte stap in dit plan.
+- **Vindplaatsen:** `admin/workspace/key-facts.js`, `admin/workspace/tab-visibility.js`, `admin/workspace/overview-settings.js`, `admin/orders/list.js`, `admin/orders/key-facts.js`, `admin/orders/payment-view.js`, `admin/orders/workspace.js`, `admin/customers/views.js`, `admin/purchases/batch-workspace.js`, `admin/payments/workspace.js`, `admin/mail-workspace.js`, `admin/documents/library-workspace.js`, `admin/documents/layout.js`, `admin/analytics/workspace.js`, `admin/style.css`, `docs/RUSTIGE-WERKPLEK.md`
+
 ### Opmaakbatch 1/4 — Gedeelde basis en navigatie
 
 - **ID:** `crm-polish-batch1-20261027`
@@ -147,11 +158,11 @@ De implementatie is aanwezig. Controleer de bediening zelf; publicatie staat apa
 - **ID:** `crm-polish-batch2-20261027`
 - **Voor:** Spatlappen en Maatwerkkunststof
 - **Doel:** Kop, hoofdactie, producten/dossierdetails en ontwerpvarianten verfijnen op gedeelde basis.
-- **Omvang / status:** Aanvullen/varianten lokaal · jouw controle open
-- **Volgende stap:** Vervolg27oktober: aanvraagformulier hervat alleen zelf gewijzigde velden na Productregels bewerken, geen ongewijzigde oude productmaten terugzetten. Bewust leegmaken/herhaalde uitstap/vinkjes behouden; opgeslagen afwijkende aanvraagwaarden expliciet melden, niet synchroniseren. Opslag vergelijkt ook klantkoppeling en relevante actuele productvelden; aanvraagbasis blijft tijdens uitstap bewaakt. Geen automatische tests/checks/build/browsercontrole/publicatie; eigen controle beide bedrijven open. Aanvraagchecklist direct aanklikbaar/focus, productregel gericht bewerken, inquiry- en klantreviewinstallatie ook op ordertabs. Geldige finale ontwerpvariant prominent, voorstellen/versiehistorie behouden; stale keuze/maat/aantal/metadata zichtbaar, previewlabel geen besteld voorstel. Bestaande approval/signatures/JSON/PNG/CAS leidend. Bekende ontvangst bij onbekend saldo zichtbaar. Alleen lokaal bronwerk; geen tests/checks/syntaxchecks/builds/browser-/DOMcontrole of providerproef/publicatie. Philippe beoordeelt beide bedrijven en mobiel zelf. Bestaande gebruikersstatus/feedback/data/IDs/CAS blijven leidend.
-- **Klaar wanneer:** Philippe beoordeelt beide bedrijven/desktop/mobiel; bronwerk, eigen controle en publicatie apart. Gegevens/IDs/transacties/CAS behouden. Geen automatische QA- of visuele claim.
+- **Omvang / status:** Dossierkop/aanvullen/varianten lokaal · eigen controle open
+- **Volgende stap:** Nieuwste27oktober: dichte fase-/geldregel vervangen door drie leesbare gegevens voor betaling, wachttijd met expliciete startbasis en uitvoering/levering. Geen prijsbadge/dubbele fase/marge in kop; uitgebreide fasebediening via Meer, dezelfde acties/tabs. Bestaande totalen/ontvangsten/planning leidend, onbekende prijs geen betaaldclaim of verzonnen teller. Alleen bestaande Maatweergave voor/na en read-only disclosure open/dicht met expliciete toestemming bekeken; geen automatische tests/checks/builds, brede QA of publicatie. Andere betaalgevallen/beide bedrijven/mobiel open. Eerder aanvullen/variantenwerk behouden: gewijzigde velddelta na producteditor, bewuste leegmaak/vinkjes/herhaalde uitstap en relevante actuele product-/aanvraag-/klantbasis bij CAS. Checklist direct aanklikbaar/focus en klantreview op ordertabs; geldige finale variant prominent, voorstellen/historie en stale waarschuwingen behouden. Geen state-/goedkeurings-/financiële migratie of feedbackresolve.
+- **Klaar wanneer:** Eigen controle beide bedrijven/mobiel/lange waarden, volledige/deel/nul/overbetaling en ontvangst bij onbekende prijs/verzending; juiste wachttijdbasis en leverdatumstop/ontbrekende of afwijkende datum. Tabs/Meer/disclosure/focus/invoerbehoud en eerder aanvullen-/variantenwerk behouden. Alleen Maatvoorbeeld visueel bekeken; geen algemeen functioneel akkoord. Bronwerk, gebruikerscontrole en publicatie apart; bestaande IDs/CAS/gebruikersstatus leidend.
 - **Eerst nodig:** Geen aparte stap in dit plan.
-- **Vindplaatsen:** `admin/inquiry-ui.js`, `admin/orders/workspace.js`, `admin/orders/overview.js`, `admin/orders/money-summary.js`, `admin/products/design-variants.js`, `admin/products/images.js`, `admin/sales-funnel.js`, `admin/style.css`, `docs/BATCHES2-4-OPMAAK-20261027.md`, `shared/inquiry-edit.js`
+- **Vindplaatsen:** `admin/inquiry-ui.js`, `admin/orders/workspace.js`, `admin/orders/overview.js`, `admin/products/design-variants.js`, `admin/products/images.js`, `admin/sales-funnel.js`, `admin/style.css`, `docs/BATCHES2-4-OPMAAK-20261027.md`, `shared/inquiry-edit.js`, `admin/orders/header.js`, `admin/orders/key-facts.js`, `admin/orders/progress.js`, `docs/ORDER-IN-EEN-OOGOPSLAG.md`
 
 ### Opmaakbatch 3/4 — Overzichtslijsten en betalingen
 

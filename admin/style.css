@@ -63,6 +63,7 @@
   --font-ui: 13px;
   --font-body: 14px;
   --font-heading: 24px;
+  --font-metric: 24px;
   --leading: 1.5;
   --space-1: 4px;
   --space-2: 8px;
@@ -4126,6 +4127,11 @@ input[readonly],textarea[readonly] {
   padding: 18px;
   background: #f8fafd;
 }
+.document-library .document-group:has(.document-category-actions[open]) {
+  position: relative;
+  z-index: 2;
+  overflow: visible;
+}
 .document-library .document-group-heading {
   align-items: center;
   flex-wrap: wrap;
@@ -7577,8 +7583,10 @@ select.source-mark option {
   border-color: #aabfe8;
 }
 .section-tabs {
-  margin: 0 0 22px;
+  margin: 0 0 24px;
   flex-wrap: nowrap;
+  overflow-x: auto;
+  scrollbar-width: thin;
 }
 .section-tabs button {
   flex: none;
@@ -9116,7 +9124,24 @@ input::placeholder,textarea::placeholder {
   background: var(--control-hover-bg);
 }
 .shell .top,.shell .order-header {
-  margin-bottom: 22px;
+  margin-bottom: 24px;
+}
+.shell .page-heading {
+  align-items: flex-start;
+  gap: 20px 28px;
+}
+.page-heading>div:first-child {
+  flex: 1 1 260px;
+  min-width: 0;
+}
+.page-heading .muted {
+  display: block;
+  margin-top: 8px;
+  max-width: 68ch;
+}
+.page-heading>.actions {
+  flex: 0 1 auto;
+  gap: 8px;
 }
 .shell h1,.shell .order-header h1 {
   font-size: var(--font-heading);
@@ -9147,8 +9172,8 @@ input::placeholder,textarea::placeholder {
   box-shadow: none;
 }
 .shell :is(.panel,.order-surface) {
-  padding: 22px;
-  margin-bottom: 20px;
+  padding: 24px;
+  margin-bottom: 24px;
   background: var(--surface);
 }
 .shell :is(.panel,.order-surface)>.section-heading {
@@ -9173,19 +9198,26 @@ input::placeholder,textarea::placeholder {
   cursor: pointer;
 }
 .shell :is(.order-grid,.order-layout,.columns,.finance-grid,.customer-address-grid) {
-  gap: 20px;
+  gap: 24px;
 }
 .shell .cards {
-  gap: 16px;
+  grid-template-columns: repeat(auto-fit,minmax(min(100%,220px),1fr));
+  gap: 0;
   margin-bottom: 24px;
-  background: transparent;
+  background: var(--surface);
   border: 0;
+  border-radius: var(--radius-surface);
 }
 .shell .cards .card {
-  border: 1px solid var(--line);
-  padding: 18px 20px;
-  background: var(--surface);
-  border-radius: var(--radius-surface);
+  min-width: 0;
+  border: 0;
+  border-left: 1px solid var(--line);
+  padding: 22px 24px;
+  background: transparent;
+  border-radius: 0;
+}
+.shell .cards .card:first-child {
+  border-left: 0;
 }
 .shell .cards .card>span {
   display: block;
@@ -9196,8 +9228,8 @@ input::placeholder,textarea::placeholder {
   border: 0;
 }
 .shell .cards .card>strong {
-  font-size: 27px;
-  font-weight: 400;
+  font-size: var(--font-metric);
+  font-weight: 600;
   margin: 10px 0 0;
   padding: 0;
   font-variant-numeric: tabular-nums;
@@ -9218,7 +9250,7 @@ input::placeholder,textarea::placeholder {
   border-bottom: 1px solid var(--list-heading-line);
 }
 .shell :is(th,td) {
-  padding: 12px;
+  padding: 16px 14px;
   border-right: 0;
   border-bottom: 1px solid var(--row-line);
   vertical-align: top;
@@ -9604,7 +9636,7 @@ input::placeholder,textarea::placeholder {
 }
 .shell .work-task {
   align-items: start;
-  padding: 16px 12px;
+  padding: 20px 14px;
   margin: 0;
   border: 0;
   border-bottom: 1px solid var(--row-line);
@@ -9820,11 +9852,13 @@ input::placeholder,textarea::placeholder {
     margin-bottom: 16px;
   }
   .shell .cards {
-    gap: 12px;
+    gap: 0;
     grid-template-columns: repeat(2,minmax(0,1fr));
   }
   .shell .cards .card {
-    padding: 15px;
+    padding: 18px;
+    border: 0;
+    border-top: 1px solid var(--line);
   }
   .shell .cards .card>strong {
     font-size: 24px;
@@ -9994,21 +10028,22 @@ input::placeholder,textarea::placeholder {
   }
 }
 
-/* Compact dossier header; expanded controls keep their existing actions. */
-.shell .order-dossier-header {
-  padding: 16px 20px 0;
+/* Dossier identity, three readable facts, then navigation. Detailed phase
+ * controls are opened from Meer; finance belongs in the relevant tab. */
+.shell .dossier-header {
+  padding: 20px 24px 0;
   margin-bottom: 16px;
   border: 1px solid var(--line);
   border-radius: var(--radius-surface);
   background: var(--surface);
   color: var(--text);
 }
-.shell .order-dossier-header>.breadcrumb {
-  margin-bottom: 10px;
+.shell .dossier-header>.breadcrumb {
+  margin-bottom: 16px;
   font-size: 12px;
 }
-.shell .order-dossier-header>.order-header {
-  margin-bottom: 14px;
+.shell .dossier-header>.order-header {
+  margin-bottom: 0;
   align-items: flex-start;
   gap: 12px;
 }
@@ -10016,34 +10051,164 @@ input::placeholder,textarea::placeholder {
   flex: 1 1 220px;
   min-width: 0;
 }
-.shell .order-dossier-header .order-header h1 {
-  font-size: 22px;
+.shell .dossier-header .order-header h1 {
+  font-size: var(--font-heading);
   margin: 0;
   font-weight: 500;
   overflow-wrap: anywhere;
 }
-.shell .order-dossier-header .order-header p {
+.shell .dossier-header .order-header p {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 5px 14px;
-  font-size: 12px;
-  margin: 5px 0 0;
+  gap: 6px 20px;
+  font-size: var(--font-ui);
+  margin: 8px 0 0;
   color: var(--text-muted);
 }
-.shell .order-dossier-header .order-header .badge {
-  margin-left: 0;
-}
-.order-context-bar {
+.workspace-key-facts {
   display: grid;
-  grid-template-columns: minmax(0,1fr) minmax(0,1.4fr);
+  grid-template-columns: repeat(3,minmax(0,1fr));
   align-items: start;
-  gap: 8px 24px;
-  padding: 10px 0;
-  border-top: 1px solid var(--line);
+  gap: 24px;
+  padding: 24px;
+  margin: 0 0 24px;
+  color: var(--text);
+  background: var(--surface);
+  border-radius: var(--radius-surface);
 }
-.order-context-bar:has(.order-progress-details[open],.order-money-details[open]) {
+.workspace-key-facts[data-columns="2"] {
+  grid-template-columns: repeat(2,minmax(0,1fr));
+}
+.workspace-key-facts[data-columns="1"] {
   grid-template-columns: minmax(0,1fr);
+}
+.workspace-key-facts.is-inset {
+  padding: 26px 0;
+  margin: 0;
+  background: transparent;
+  border-radius: 0;
+}
+.workspace-key-fact {
+  min-width: 0;
+  padding-left: 24px;
+  border-left: 1px solid var(--line);
+}
+.workspace-key-fact:first-child {
+  padding-left: 0;
+  border-left: 0;
+}
+.workspace-key-fact dt {
+  font-size: var(--font-ui);
+  line-height: 1.4;
+  color: var(--text-muted);
+  margin-bottom: 10px;
+}
+.workspace-key-fact dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.workspace-key-fact .workspace-key-value {
+  font-size: var(--font-metric);
+  line-height: 1.25;
+  font-weight: 600;
+  letter-spacing: -.35px;
+  color: var(--text);
+}
+.workspace-key-value>a {
+  color: inherit;
+  text-decoration: none;
+}
+.workspace-key-value>a:hover,.workspace-key-value>a:focus-visible {
+  color: var(--primary-hover);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.workspace-key-fact[data-tone=success] .workspace-key-value {
+  color: var(--success-text);
+}
+.workspace-key-fact[data-tone=warning] .workspace-key-value {
+  color: var(--warning-text);
+}
+.workspace-key-fact .workspace-key-detail {
+  margin-top: 9px;
+  font-size: var(--font-ui);
+  line-height: 1.5;
+  color: var(--text-muted);
+}
+.purchase-list {
+  width: 100%;
+}
+.purchase-list td:first-child {
+  min-width: 190px;
+}
+.purchase-list td small {
+  display: block;
+  margin-top: 7px;
+  color: var(--text-muted);
+}
+.row-details {
+  margin-top: 10px;
+  font-size: var(--font-small);
+  text-align: start;
+}
+.row-details>summary {
+  cursor: pointer;
+  color: var(--primary);
+  padding: 4px 0;
+}
+.row-details>div {
+  margin-top: 8px;
+  line-height: 1.6;
+}
+.receipt-state[data-tone=success] {
+  color: var(--success-text);
+}
+.receipt-state[data-tone=warning] {
+  color: var(--warning-text);
+}
+.order-payments-layout {
+  display: grid;
+  grid-template-columns: minmax(0,1fr);
+  gap: 0;
+}
+.order-payments-layout>div {
+  min-width: 0;
+}
+.workspace-help {
+  margin: 16px 0;
+  font-size: var(--font-ui);
+  color: var(--text-muted);
+}
+.workspace-help>summary {
+  padding: 8px 0;
+  color: var(--primary);
+  cursor: pointer;
+}
+.workspace-help>p {
+  max-width: 72ch;
+  line-height: 1.65;
+}
+.order-header-history {
+  border-top: 1px solid var(--line);
+  padding: 14px 0 18px;
+  color: var(--text);
+  background: var(--surface);
+}
+.order-header-history>summary {
+  cursor: pointer;
+  padding: 5px 0;
+  color: var(--primary);
+  font-size: var(--font-ui);
+}
+.order-header-history>summary:hover,.order-header-history>summary:focus-visible {
+  color: var(--primary-hover);
+  background: var(--row-hover);
+}
+.order-header-history .order-progress-expanded {
+  padding: 16px 0 0;
+  margin: 0;
+  border-top: 0;
 }
 .shell .order-command.order-progress {
   display: block;
@@ -10117,81 +10282,20 @@ input::placeholder,textarea::placeholder {
   color: var(--text-muted);
   margin-bottom: 0;
 }
-.shell .order-money-details {
-  min-width: 0;
-  margin: 0;
-  border: 0;
-  color: var(--text);
-  background: transparent;
-}
-.order-money-details>summary {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 6px 14px;
-  cursor: pointer;
-  list-style: none;
-  padding: 6px 0;
-  font-size: 12px;
-  color: var(--text);
-  background: transparent;
-}
-.order-money-details>summary::-webkit-details-marker {
-  display: none;
-}
-.order-money-details>summary::after {
-  content: '▾';
-  color: var(--primary);
-}
-.order-money-details[open]>summary::after {
-  content: '▴';
-}
-.order-money-details>summary:hover {
-  color: var(--text);
-  background: var(--row-hover);
-}
-.order-money-preview {
-  display: flex;
-  gap: 6px 18px;
-  flex-wrap: wrap;
-  min-width: 0;
-  color: var(--text);
-}
-.order-money-preview strong {
-  font-weight: 600;
-  color: var(--text);
-}
-.order-money-preview .amount-outstanding {
-  color: #982737;
-  font-weight: 600;
-}
-.order-money-label {
-  margin-left: auto;
-  color: var(--primary);
-  font-size: 12px;
-}
-.shell .order-money-details .order-indicators {
-  padding: 12px 0 16px;
-  gap: 14px;
-  border-top: 1px solid var(--line);
-}
-.shell .order-dossier-header>.order-tabs {
+.shell .dossier-header>.order-tabs {
   flex-wrap: nowrap;
   overflow-x: auto;
   scrollbar-width: thin;
-  margin: 0 -20px;
-  padding: 0 20px;
+  margin: 0 -24px;
+  padding: 0 24px;
   border-top: 1px solid var(--line);
   border-bottom: 0;
   gap: 20px;
 }
-.shell .order-dossier-header>.order-tabs button {
+.shell .dossier-header>.order-tabs button {
   flex: none;
   min-height: 44px;
   padding: 10px 2px;
-}
-.shell .mail-focused-page .order-context-bar,.shell .document-focused-page .order-context-bar {
-  display: none;
 }
 .shell .sales-funnel.sales-funnel-compact {
   padding: 0 0 16px;
@@ -10283,30 +10387,51 @@ input::placeholder,textarea::placeholder {
   padding: 8px;
   margin: 8px 0 0;
 }
-@media(max-width:1000px) {
-  .order-context-bar {
-    grid-template-columns: minmax(0,1fr);
-  }
-}
 @media(max-width:760px) {
-  .shell .order-dossier-header {
+  .shell .dossier-header {
     padding: 14px 16px 0;
   }
-  .shell .order-dossier-header .order-header h1 {
+  .shell .dossier-header .order-header h1 {
     font-size: 21px;
   }
-  .shell .order-dossier-header .order-header .actions {
+  .shell .dossier-header .order-header .actions {
     width: auto;
   }
-  .shell .order-dossier-header>.order-tabs {
+  .shell .dossier-header>.order-tabs {
     margin: 0 -16px;
     padding: 0 16px;
     gap: 16px;
   }
-  .shell .order-dossier-header>.order-tabs button {
+  .shell .dossier-header>.order-tabs button {
     min-height: 44px;
   }
-  .order-progress-details>summary,.order-money-details>summary {
+  .workspace-key-facts,.workspace-key-facts[data-columns] {
+    grid-template-columns: minmax(0,1fr);
+    gap: 18px;
+    padding: 20px;
+  }
+  .workspace-key-facts.is-inset {
+    padding: 22px 0;
+  }
+  .workspace-key-fact,.workspace-key-fact:first-child {
+    display: grid;
+    grid-template-columns: minmax(100px,.75fr) minmax(0,1.5fr);
+    column-gap: 16px;
+    padding: 0;
+    border-left: 0;
+  }
+  .workspace-key-fact dt {
+    grid-row: 1 / 3;
+    margin: 3px 0 0;
+  }
+  .workspace-key-fact .workspace-key-value {
+    font-size: 21px;
+  }
+  .workspace-key-fact .workspace-key-detail {
+    grid-column: 2;
+    margin-top: 5px;
+  }
+  .order-progress-details>summary,.order-header-history>summary {
     min-height: 44px;
   }
   .shell .sales-funnel-compact .actions {
@@ -10323,16 +10448,6 @@ input::placeholder,textarea::placeholder {
 @media(max-width:550px) {
   .order-progress-details {
     margin-left: auto;
-  }
-  .order-money-preview {
-    flex-basis: 100%;
-    gap: 5px 12px;
-  }
-  .order-money-label {
-    margin-left: 0;
-  }
-  .shell .order-money-details .order-indicators {
-    grid-template-columns: repeat(2,minmax(0,1fr));
   }
   .shell .sales-funnel-compact .actions>button.primary {
     flex: 1;

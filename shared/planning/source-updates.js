@@ -1651,5 +1651,103 @@ export const sourceUpdates = [
     "delivery": "local",
     "note": "Op expliciet verzoek gedeelde bron inclusief opmaakbatches1–4 en Maatvoorwaarden voorbereid voor GitHub op aparte branch crm-ui-batches-20261027 vanaf bestaande main. Alleen bronbestanden, publieke assets en productdocumentatie; privéconfiguratie, klantgegevens, feedbackexports, operationele overdracht, uitvoer en back-ups uitgesloten. Bestaande deploymentconfiguratie behouden; geen productiebranch wijzigen. Vier batches blijven review/local, brede werkplekscope en gebruikerscontrole open.",
     "evidence": "Uitsluitend bron-/pakketlezing, Git-administratie en bouwadministratie. Geen tests/checks/syntaxchecks/builds/browsercontrole, providerproef, datamutatie of livepublicatie. Bronpakketoverdracht is geen functioneel akkoord; uploadresultaat en commit volgen in de lokale overdracht. Bestaande wijzigingen, gegevens en opgeslagen gebruikersstatus behouden."
+  },
+  {
+    "id": "assistant-local-startup-20261027",
+    "taskId": "chatgpt-cloud-sign-in",
+    "companies": [
+      "spatlappen",
+      "maatwerkkunststof"
+    ],
+    "at": "2026-10-27T13:32:45.000Z",
+    "author": "Codex",
+    "status": "review",
+    "delivery": "live",
+    "note": "Gebruiker meldt ERR_CONNECTION_REFUSED bij lokaal instellen. Bronroute verwijst naar lokaal bedrijfs-CRM. Alleen proces-/poortmetadata gelezen: geen listener op3010/3011/3030. Bestaande gedeelde starter opnieuw gestart; startuitvoer bevestigt hulpdienst en beide CRM-adressen. Geen applicatiecode gewijzigd. Review/live van de eerder gepubliceerde originfix behouden; dit is uitsluitend lokaal dienstenherstel, geen nieuwe livepublicatie of bevestigde ChatGPT-verbinding.",
+    "evidence": "Bronlezing en lokale dienststart; geen HTTPverzoeken/browser-/DOMcontrole, tests/checks/builds, ChatGPT-aanmelding, AI-vraag of providerproef. Eerste start geblokkeerd door sandbox EPERM, daarna gewone lokale starter met benodigde poorttoegang gestart. Geen bestaande server gestopt; geen klantgegevens of private configuratie onderzocht/gewijzigd. Eigen instel-/aanmeld-/browsercontrole blijft open. Geen GitHubupload of productie-uitrol."
+  },
+  {
+    "companies": [
+      "spatlappen",
+      "maatwerkkunststof"
+    ],
+    "at": "2026-10-27T13:55:17.000Z",
+    "author": "Codex",
+    "delivery": "local",
+    "id": "order-key-facts-20261027",
+    "taskId": "crm-polish-batch2-20261027",
+    "status": "review",
+    "note": "Nieuwe dossierkop: klant/order/acties, drie grotere gegevens (betaling, wachttijd met startbasis, uitvoering/levering), afzonderlijke tabs. Dichte fase-/geldregel, prijsbadge en marge uit kop; uitgebreide fases via Meer met dezelfde registraties/bronmarkering/stappenlinks. Bestaande totalen/ontvangsten en betaal-/aanbetalingsprojecties, onbekende prijs geen betaaldclaim; levering stopt teller, datumafwijking niet verbergen. Geen financiële/fasewrites. Centrale CSS-eigenaar herwerkt, oude context-/geldregels verwijderd. Eerder aanvullen/variantenwerk behouden.",
+    "evidence": "Op expliciete toestemming alleen bestaande lokale Maatvoorbeeldweergave voor/na bekeken en read-only Meer/disclosure open/dicht in eigen tab; oorspronkelijke tabs/invoer behouden. Geen betaling/formulier/klantgegevens gewijzigd. Geen automatische tests/checks/syntaxchecks/builds, brede QA, providerproef, GitHubupload of livepublicatie. Andere betaalgevallen/beide bedrijven/mobiel/datumafwijkingen/focus/invoerbehoud blijven open. Zie docs/ORDER-IN-EEN-OOGOPSLAG.md; afbeelding uitsluitend lokaal in work/order-key-facts-20261027/maat-header.png."
+  },
+  {
+    "companies": [
+      "spatlappen",
+      "maatwerkkunststof"
+    ],
+    "at": "2026-10-27T13:55:17.000Z",
+    "author": "Codex",
+    "delivery": "local",
+    "id": "order-key-facts-workspace-20261027",
+    "taskId": "consistent-workspace",
+    "status": "doing",
+    "note": "Dossierbovenkant verder vereenvoudigd na gebruikersfeedback: betaling, wachttijd en uitvoering/levering krijgen prioriteit. Fases op verzoek via Meer; bedragen/marge blijven bij bestaande onderdelen. Gedeelde bron/centrale CSS en bestaande transacties/gegevens/CAS behouden. Brede werkplek- en code-/werkprocesaudit plus andere gebruikerscontrole blijven open; geen historische taken of feedback afgevinkt.",
+    "evidence": "Beperkte lokale Maatweergave met expliciete toestemming bekeken, inclusief open/dicht van fasegegevens. Geen automatische tests/checks/builds of brede browser-QA; geen formulier-/betaal-/mail-/provideractie, GitHubupload of publicatie. Geen mobiele of volledige betaalgevallencontrole. Bouwfase/gebruikerscontrole/publicatie gescheiden. Zie docs/ORDER-IN-EEN-OOGOPSLAG.md."
+  },
+  {
+    "companies": [
+      "spatlappen",
+      "maatwerkkunststof"
+    ],
+    "at": "2026-10-27T14:25:05.000Z",
+    "author": "Codex",
+    "delivery": "local",
+    "id": "calm-workspaces-20261027",
+    "taskId": "crm-calm-workspaces-20261027",
+    "status": "review",
+    "note": "Gedeelde belangrijke-informatie-eerstindeling doorgetrokken naar Overzicht, orderlijsten/betaling/kosten, klant/inkoop, ontvangsten, mail/documenten en financiële Analytics. Centrale kerngegevens/dossierkop/ruimte/cijfergroepen/rijen en horizontale tabonthulling. Eén hoofdactie, herhaalde gegevens/instellingen op verzoek, actieve waarschuwingen behouden. Orderbetaling alleen definitief bij expliciet bekende verzending; nul en onbekend onderscheiden, geen totalen/fase/ontvangsten wijzigen. Pure betalingspresentatie uit factory gehaald; geen nieuwe engine/store/provider.",
+    "evidence": "Bronlezing/bewerking en bouwadministratie. Alleen het bestaande toegestane Maatbetaalvoorbeeld in een eigen tab bekeken; oorspronkelijke tabs/invoer behouden. Geen automatische tests/checks/syntaxchecks/builds, brede browser-QA, providerproef, data-/formulier-/betaal-/mail-/Gmailactie, GitHubupload of livepublicatie. Andere schermen/beide bedrijven/mobiel/betaalgevallen en focus/invoer/filters/Meer/waarschuwingen blijven eigen controle. Zie docs/RUSTIGE-WERKPLEK.md; afbeelding uitsluitend lokaal work/calm-workspaces-20261027/betalingen.png."
+  },
+  {
+    "companies": [
+      "spatlappen",
+      "maatwerkkunststof"
+    ],
+    "at": "2026-10-27T14:25:05.000Z",
+    "author": "Codex",
+    "delivery": "local",
+    "id": "calm-css-20261027",
+    "taskId": "crm-central-css-20261027",
+    "status": "review",
+    "note": "Bestaande centrale eigenaars herwerkt voor gedeelde workspace-key-facts/dossier-header/metricfont en rustigere rijen/koppen/cijfergroepen. Geen extra sheet, inline vaste presentatie of gedateerde override toegevoegd. De eerdere orderkerngegevenspresentatie hergebruikt op meerdere schermen; tab-visibility deelt alleen horizontale onthulling zonder focus-/paginasprong. Historische componentuitzonderingen en volledige mobiele/contrastcontrole blijven open.",
+    "evidence": "Bronlezing/bewerking en bouwadministratie. Alleen het bestaande toegestane Maatbetaalvoorbeeld in een eigen tab bekeken; oorspronkelijke tabs/invoer behouden. Geen automatische tests/checks/syntaxchecks/builds, brede browser-QA, providerproef, data-/formulier-/betaal-/mail-/Gmailactie, GitHubupload of livepublicatie. Andere schermen/beide bedrijven/mobiel/betaalgevallen en focus/invoer/filters/Meer/waarschuwingen blijven eigen controle. Zie docs/RUSTIGE-WERKPLEK.md; afbeelding uitsluitend lokaal work/calm-workspaces-20261027/betalingen.png."
+  },
+  {
+    "companies": [
+      "spatlappen",
+      "maatwerkkunststof"
+    ],
+    "at": "2026-10-27T14:25:05.000Z",
+    "author": "Codex",
+    "delivery": "local",
+    "id": "calm-workspaces-general-20261027",
+    "taskId": "consistent-workspace",
+    "status": "doing",
+    "note": "Rustige dossiergedachte breder doorgevoerd in belangrijke werkplekken en gemeenschappelijke basis, met aparte reviewtaak crm-calm-workspaces-20261027. Alle acties/gegevens/bedrijfs-/CAS-/invoergrenzen en bestaande feedback/voorkeuren behouden. Bredere werkprocesvereenvoudiging, herstel/login/conflicten en sluitende financiële/visuele audit blijven open; geen historische taken of gebruikersstatus afgevinkt.",
+    "evidence": "Bronlezing/bewerking en bouwadministratie. Alleen het bestaande toegestane Maatbetaalvoorbeeld in een eigen tab bekeken; oorspronkelijke tabs/invoer behouden. Geen automatische tests/checks/syntaxchecks/builds, brede browser-QA, providerproef, data-/formulier-/betaal-/mail-/Gmailactie, GitHubupload of livepublicatie. Andere schermen/beide bedrijven/mobiel/betaalgevallen en focus/invoer/filters/Meer/waarschuwingen blijven eigen controle. Zie docs/RUSTIGE-WERKPLEK.md; afbeelding uitsluitend lokaal work/calm-workspaces-20261027/betalingen.png."
+  },
+  {
+    "id": "github-calm-source-20261028",
+    "taskId": "consistent-workspace",
+    "companies": [
+      "spatlappen",
+      "maatwerkkunststof"
+    ],
+    "at": "2026-10-28T01:34:47.087Z",
+    "author": "Codex",
+    "status": "doing",
+    "delivery": "local",
+    "note": "Op expliciet verzoek de nieuwere dossierkop en rustige gedeelde werkplekken voorbereid voor upload naar bestaande GitHub-branch crm-ui-batches-20261027. Gewijzigde bron gelezen op concrete blokkades: imports/context, bekende versus onbekende bedragen, bestaande acties/tabbediening en centrale CSS. Geen concrete uploadblokkade gevonden. Alleen publieke bron/assets/productdocumentatie; klantgegevens, privéconfiguratie, operationele overdracht, feedbackexports, werkuitvoer en deploymentconfiguratie uitgesloten. Geen main-/productiewijziging. Bestaande taken blijven review/local; brede werkplek doing/local en eigen controle open.",
+    "evidence": "Bron-/difflezing en Git-/pakketadministratie; geen automatische tests/checks/syntaxchecks/builds, nieuwe browser-QA of provider-/data-/mail-/betaalactie. Alleen het eerdere beperkte Maatvoorbeeld is handmatig bekeken. Uploadresultaat volgt in lokale overdracht; GitHubbron is geen functioneel akkoord of livepublicatie. Andere schermen/beide bedrijven/mobiel/historische en betaalrandgevallen blijven open. Bestaande gegevens, wijzigingen, opgeslagen status en feedback behouden."
   }
 ];

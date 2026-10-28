@@ -1,3 +1,7 @@
+## 27 oktober 2026 — dossierkop op belangrijke informatie richten
+
+Gebruiker verwerpt de dichte fase-/geldregel: te veel nevenschikkende informatie en onbekende bedragen. Klant/order/acties, drie grotere kerngegevens (betaling, wachttijd met startbasis, uitvoering/levering) en afzonderlijke tabs. Fases & voortgang via Meer, bestaande financiële onderdelen behouden. Geen nieuwe financiële regels of workflowwrites. Gedeelde bron, centrale CSS-eigenaar; beperkte lokale Maatweergave met expliciete toestemming bekeken. Geen automatische tests/builds/brede QA/publicatie; overige gevallen/mobiel/gebruikercontrole open. Zie ../ORDER-IN-EEN-OOGOPSLAG.md. Oudere kopbesluiten zijn vervangen.
+
 ## 27 oktober 2026 — Opmaakbatches2–4 en voorwaardenbijlage
 
 Philippe vraagt alle drie vervolgbatches en levert de voorwaarden-PDF. Expliciet alleen Maatwerkkunststof. Eén vaste bedrijfsdocumentallowlist, originele PDF, uitsluitend op gekozen toevoeging een gewone orderbijlage. Geen algemene automatische mailbijlage, geen upload op naam gelijkstellen, geen schijnbestand in clipboard. Browserafhankelijke kopie/drag met downloadterugval; daadwerkelijke mail via gewone preview/bevestiging. Exact één PDFpad uitzonderen bij toekomstige Maatbuild, niet alle PDFs toelaten; Spatasset vóór oplevering verwijderen. Presentatie blijft in featuremodules/centrale CSS, actuele state/CAS/versies blijven leidend. Bron lokaal/review; gebruiker test zelf en publicatie apart. Zie ../BATCHES2-4-OPMAAK-20261027.md en ../ALGEMENE-VOORWAARDEN-BIJ-ORDER.md.

@@ -1,3 +1,4 @@
+import {revealSelectedTab} from '../workspace/tab-visibility.js?v=calm-workspaces-20261027';
 // Feature implementation. context provides live dependencies from workspace composition.
 // Keep state reads through context.state; never cache a separate dossier snapshot here.
 export function createCustomerDossier(context){
@@ -38,6 +39,7 @@ function customerAddresses(c){
 function renderCustomer(id){
  const c=context.customer(id);if(!c){location.hash='customers';return;}
  const view=context.customerViews.dossier(context.state,c,context.route()[2]);context.shell(view.markup,'customers',view.details);
+ revealSelectedTab(context.$('#app'));
  if(context.route()[2]==='website')context.websiteDossier.mount(context.$('#customer-content'));
 }
 
