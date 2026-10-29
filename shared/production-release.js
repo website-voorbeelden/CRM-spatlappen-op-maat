@@ -1,6 +1,7 @@
+import {usableOrderPaymentLink} from './order-payment-link.js?v=feedback29-batch3-followup';
 import {orderDesignApproved} from './product-design-variants.js?v=batch1-variants-20261026';
 import {inquiryRequirements} from './inquiries.js?v=feedback-followup-20261028';
-export function productionReleaseInfo(state,o,companyId,{payment,percentage=o.productionDepositPercent??50}){
+export function productionReleaseInfo(state,o,companyId,{payment,percentage=o.productionDepositPercent??50,today}){
  const purchase=(o.items||[]).some(i=>i.productionSource!=='local')?(state.purchases||[]).find(p=>p.id===o.purchaseId):null;
  const physical=['Onderweg','Binnen in Nederland'].includes(purchase?.status)||Boolean(purchase?.shippedDate||purchase?.arrivedDate)||['In productie','Onderweg naar Nederland','Binnen in Nederland','Verzonden','Afgerond'].includes(o.stage)||Boolean(o.productionDate||o.transitDate||o.arrivedDate||o.shippedDate||o.deliveredDate);
  const active=companyId==='spatlappen'&&!o.archived&&!physical;
@@ -8,6 +9,7 @@ export function productionReleaseInfo(state,o,companyId,{payment,percentage=o.pr
  if(!Number.isInteger(percentage)||percentage<1||percentage>100)reasons.push('Kies een aanbetaling van 1–100%.');
  const sampleZero=o.isSample&&payment.known&&payment.total===0;
  if(o.shippingKnown!==true)reasons.push('De verzendprijs moet expliciet bekend zijn, ook bij gratis verzending.');
+ if(payment.valid===false||!Number.isSafeInteger(payment.paid))reasons.push('Controleer de geregistreerde ontvangstbedragen.');
  if(!payment.known)reasons.push('Product- en verzendprijs moeten bekend zijn.');
  else if(!sampleZero&&payment.total<=0)reasons.push('Controleer de prijsafspraak; nul heeft alleen een aparte teststukroute.');
  const required=payment.known?Math.round(payment.total*percentage/100):null;
@@ -15,8 +17,8 @@ export function productionReleaseInfo(state,o,companyId,{payment,percentage=o.pr
  if(companyId==='spatlappen'&&!orderDesignApproved(state,o))reasons.push('Ontwerpgoedkeuring ontbreekt.');
  if(specs.missing.length)reasons.push('Productspecificaties zijn nog onvolledig.');
  if(!active)reasons.push('Deze order is al in uitvoering of afgehandeld.');
- const requested=(o.paymentLinks||[]).filter(l=>l.amountInCents>0).at(-1)?.amountInCents;
- return {active,eligible:active&&!reasons.length,automatic:active&&!reasons.length&&!sampleZero,reasons,required,sampleZero,percentage,receivedPercent:payment.known&&payment.total>0?payment.paid/payment.total*100:null,linkDifference:requested!=null&&required!=null&&requested!==required,requested,signature:JSON.stringify([o,state.payments.filter(p=>p.orderId===o.id),approved])};
+ const request=payment.known?(o.paymentLinks||[]).filter(link=>usableOrderPaymentLink(link,{today,total:payment.total})).slice().sort((a,b)=>String(a.createdAt||'').localeCompare(String(b.createdAt||''))).at(-1):null,requested=request?.amountInCents,requestedReceived=Number.isSafeInteger(request?.paidInCents)&&request.paidInCents>=0?request.paidInCents:null,requestedRemaining=requestedReceived==null?null:Math.max(0,requested-requestedReceived);
+ return {active,eligible:active&&!reasons.length,automatic:active&&!reasons.length&&!sampleZero,reasons,required,sampleZero,percentage,receivedPercent:payment.known&&payment.total>0?payment.paid/payment.total*100:null,requestedReceived,requestedRemaining,linkDifference:requested!=null&&required!=null&&requested!==required,requested,signature:JSON.stringify([o,state.payments.filter(p=>p.orderId===o.id),approved])};
 }
 export function releaseProduction(state,id,expected,companyId,{payment,percentage,date}){
  const o=state.orders.find(o=>o.id===id);if(!o)throw Error('Deze order bestaat niet meer.');

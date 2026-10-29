@@ -1,7 +1,9 @@
-# Word-documenttemplates en Maatwerkkunststof-pakbon
+# Gedeelde CRM-feedback en invoer-btw — 29 oktober 2026
 
-Instellingen → Documenttemplates: huidige Word downloaden, extern aanpassen, uploaden en eerdere versie/standaard terugzetten. Versies per bedrijf in bestaande CRM-opslag en volledige back-up. Begrensde servervalidatie, protocolbewaking en template-revisiecontrole bij documentopslag. Bestaande documenten en eigen templatekeuzes blijven behouden.
+Vijf feedbackbatches en de vervolgverbeteringen voor beide CRM-bedrijven. Invoer-btw apart van marge en uitgaande geldbasis, inbegrepen transport eenmaal verdeeld; zendingbetalingen en artikelkosten; productgerichte orderwerkplek en feedbackvoortgang; aanbetalingsvoorstel met standaard 50%, bruikbare betaalbasis en factuurrevisies met ontvangstkeuze en directe bedragen; editorzoom, maat-/aantalsynchronisatie, fontvoorbeelden/import/meetcache, kopiebewaring en SVG-kleursegmenten.
 
-Alleen Maatwerkkunststof krijgt de aangeleverde neutrale TJ Worx-pakbon met PAGE/NUMPAGES. Lege productvoorbeeldrij aangevuld met bestaande variabelen; dezelfde16velden en tabelopbouw als vorige. Afzonderlijk leeg opmerkingenkopje wordt mee weggelaten. Spatlappen behoudt zijn standaard.
+Optionele veilige variantopruiming en aparte bevestigde fysieke cloudverwijdering. Migratie 0006 voegt uitsluitend een lege wachtrijtabel/index toe; bestaande records en bestanden worden niet aangepast. Opruimen staat niet automatisch aan. Historische onbekende cloudbestanden en complexe SVG-effecten blijven begrensd. Eigen route-/telefoonaccountinrichting en gebruikerscontrole zijn afzonderlijke stappen.
 
-CRM en documentservice moeten samen worden uitgerold; deze GitHubupload is geen livepublicatie. Geen klantgegevens, privéconfiguratie, feedbackexports, back-ups of ingevulde klantvoorbeelden toegevoegd. Open gebruikerscontrole en begrenzingen in docs/DOCUMENTTEMPLATES.md. Geen volledige geslaagde testclaim: vóór verduidelijking beperkte syntax/defaultvalidatie; oude document-revisions-test heeft achterhaalde Maatbeperking. Daarna uitsluitend gevraagde bronvergelijking, geen verdere tests/build/browsercontrole.
+Geen klantgegevens, privéfeedback, back-ups, credentials of lokale runtimeconfiguratie in deze bronupload. Vorige ontwerpen, factuurversies, gegevens en expliciete instellingen behouden. Geen tests/checks/syntaxchecks of browser-/functionele QA uitgevoerd. Alleen bronvergelijking en noodzakelijke verpakking/servercompile bij publicatie. Bron aanwezig is geen gebruikersakkoord of garantie van foutloze werking.
+
+Details: docs/VIJF-FEEDBACKBATCHES-20261029.md en docs/FEEDBACK29-RESTPUNTEN.md. Publicatiestatus wordt afzonderlijk vastgelegd.

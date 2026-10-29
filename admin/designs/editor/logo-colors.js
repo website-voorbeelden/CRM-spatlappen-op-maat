@@ -33,10 +33,12 @@ async function separatePaletteIslands(logo,color){
  if(paletteSplitBusy){toast('De kleursegmenten worden al herkend.');return;}paletteSplitBusy=true;
  const expected=JSON.stringify([logo,state.flap]),activity=beginPreviewActivity('Losse vectordelen herkennen…');
  try{
-  await previewPaintTick();const result=await splitVectorIslands(logo.svgMarkup,color);
+  const isCurrent=()=>state.selectedType==='logo'&&state.selected===logo.id&&itemById(logo.id,'logo')===logo&&JSON.stringify([logo,state.flap])===expected;
+  await previewPaintTick();const result=await splitVectorIslands(logo.svgMarkup,color,{isCurrent});
+  const skipped=result.skipped?' Overgeslagen: '+result.reasons.join('; ')+'.':'';
   if(state.selectedType!=='logo'||state.selected!==logo.id||itemById(logo.id,'logo')!==logo||JSON.stringify([logo,state.flap])!==expected)throw Error('Het logo of de spatlap is gewijzigd. Kies de kleur opnieuw.');
-  if(!result.split){activity.cancel('Deze kleur heeft geen extra bewerkbare segmenten. Lijnen en uitsnedes blijven ongewijzigd.');return;}
-  pushHistory();rememberVectorOriginal(logo);clearVectorEditing();applyVectorRoot(logo,result.root);syncSelectionControls();render();activity.success(result.parts+' kleursegmenten beschikbaar bij Meer. Gaten blijven bij de buitenvorm en de contouren blijven vector.'+(result.skipped?' Lijnen, andere kleuren of uitsnedes zijn overgeslagen.':''));
+  if(!result.split){activity.cancel('Deze kleur heeft geen extra bewerkbare segmenten.'+skipped);return;}
+  pushHistory();rememberVectorOriginal(logo);clearVectorEditing();applyVectorRoot(logo,result.root);syncSelectionControls();render();activity.success(result.parts+' kleursegmenten beschikbaar bij Meer. Gaten blijven bij de buitenvorm en de contouren blijven vector.'+(result.clipped?' Bij '+result.clipped+' vorm(en) is de zichtbare uitsnede in contouren omgezet.':'')+skipped);
  }catch(error){activity.error(error);}finally{paletteSplitBusy=false;}
 }
 function syncLogoPalette(){
@@ -53,7 +55,7 @@ function syncLogoPalette(){
    const remove=document.createElement('button');remove.type='button';remove.textContent='Deze kleur weghalen';remove.onclick=()=>{if(window.confirm('Alle zichtbare vullingen en lijnen met '+color+' uit dit logo weghalen? Andere kleuren blijven behouden.'))try{changeLogoPalette(logo,color,null);}catch(error){toast(error.message);}};more.append(remove);
    const details=document.createElement('details'),partsTitle=document.createElement('summary');partsTitle.textContent='Losse delen bewerken';details.append(partsTitle);
    const split=document.createElement('button');split.type='button';split.textContent='Losse eilanden herkennen';split.onclick=()=>separatePaletteIslands(logo,color);details.append(split);
-   const note=document.createElement('p');note.className='field-help';note.textContent='Herkent gevulde kleursegmenten met hun gaten, ook bij overlappende kaders. Aangrenzende ondoorzichtige vormen van dezelfde kleur worden samengenomen als hun lagen naast elkaar staan. Transparante vormen worden afzonderlijk behandeld; lijnen en uitsnedes blijven ongewijzigd. Kies daarna een deel om het te verplaatsen of te kleuren.';details.append(note);
+   const note=document.createElement('p');note.className='field-help';note.textContent='Herkent gevulde kleursegmenten met hun gaten. Eenvoudige vaste uitsnedes en relatieve uitsnedes op één vorm worden omgezet naar hun zichtbare contouren; verborgen delen zitten daarna niet in het segment. Bij een volledig ondoorzichtig éénkleurig logo kunnen verbonden vormen ook over groepsgrenzen samenkomen. In meerkleurige logo’s worden alleen naastliggende lagen van dezelfde kleur samengenomen. Transparante vormen blijven afzonderlijk; lijnen, relatieve uitsnedes op groepen en complexere constructies worden overgeslagen. Kies daarna een deel om het te verplaatsen of te kleuren. Ongedaan of Oorspronkelijk vectorlogo herstelt de eerdere vormen.';details.append(note);
    for(const id of new Set(entries.map(entry=>entry.piece))){const button=document.createElement('button');button.type='button';button.textContent='Deel '+id.replace(/^p/,'');button.onclick=()=>{if(itemById(logo.id,'logo')!==logo){toast('Kies het logo opnieuw.');return;}if(vectorEditingLogoId!==logo.id)$('toggleVectorParts').click();vectorPieceApi?.select(id);$('vectorAdvanced').open=true;};details.append(button);}
    more.append(details);row.append(label,apply,more);host.append(row);
   }

@@ -1,5 +1,5 @@
 import {displayOrderStage} from '../../shared/companies.js';
-import {orderPaymentFact} from './key-facts.js?v=feedback-followup-20261028';
+import {orderPaymentFact} from './key-facts.js?v=feedback-five-20261029';
 // Presentation only. The coordinator supplies the current projections and sort.
 export function orderListMarkup(context,list,{sort,ascending}){
  const {esc,badge,euro,totals,purchase,customer,company,funnelUI,planningSummary,orderDossierLabel,guidanceMarkup,route}=context;

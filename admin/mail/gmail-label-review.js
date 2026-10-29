@@ -1,5 +1,5 @@
 import {gmailPhaseSuggestions} from '../../shared/gmail-labels.js';
-import {funnelPhaseLabel,salesFunnel} from '../../shared/sales-funnel.js?v=feedback-followup-20261028';
+import {funnelPhaseLabel,salesFunnel} from '../../shared/sales-funnel.js?v=feedback29-batch3-followup';
 // Read only, on an explicit click. Phase changes use the existing reviewed form.
 export function installGmailLabelReview(host,{thread,orderId,request,company,getState}){
  if(!thread?.mailbox||!thread?.threadId)return;

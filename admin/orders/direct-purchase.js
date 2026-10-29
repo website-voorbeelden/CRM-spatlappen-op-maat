@@ -1,5 +1,5 @@
 import {applyDirectPurchase,orderSupplierFiles,supplierFileMetadata,singleOrderPurchase} from '../../shared/direct-purchase.js?v=direct-purchase-20261021';
-import {validateBusinessState} from '../../shared/state-validation.js?v=feedback-followup-20261028';
+import {validateBusinessState} from '../../shared/state-validation.js?v=feedback29-batch1-followup';
 
 export function createDirectPurchase(context){
  const esc=value=>context.esc(value);

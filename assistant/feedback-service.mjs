@@ -2,6 +2,7 @@ import {mkdir,readFile,writeFile,rename,unlink,open,chmod} from 'node:fs/promise
 import path from 'node:path';
 import {homedir} from 'node:os';
 import {randomUUID} from 'node:crypto';
+import {validFeedbackDevelopment} from '../shared/feedback-development.js?v=feedback-five-20261029';
 import {feedbackMarkdown} from '../admin/feedback.js';
 
 export const defaultFeedbackDirectory=()=>process.env.CRM_FEEDBACK_DIRECTORY||path.join(homedir(),'Documents','Codex','CRM-feedback');
@@ -13,6 +14,7 @@ export function validateFeedback(records){
   if(!r||typeof r.id!=='string'||!/^[-a-zA-Z0-9_]{1,100}$/.test(r.id)||ids.has(r.id)||typeof r.createdAt!=='string'||!Number.isFinite(Date.parse(r.createdAt))||!['bug','improvement','unnecessary'].includes(r.kind)||!['open','resolved'].includes(r.status)||typeof r.message!=='string'||!r.message.trim()||r.message.length>10000||typeof r.details!=='string'||r.details.length>10000||typeof r.context?.route!=='string'||!r.context.route.startsWith('#')||typeof r.context.page!=='string'||JSON.stringify(r.context).length>30000)throw Error('Ongeldige feedbackmelding.');
   if(r.updatedAt!==undefined&&(typeof r.updatedAt!=='string'||!Number.isFinite(Date.parse(r.updatedAt))))throw Error('Ongeldige wijzigingsdatum.');
   if(r.resolution!==undefined&&(typeof r.resolution!=='string'||r.resolution.length>2000))throw Error('Ongeldige afhandelnotitie.');
+  if(r.development!==undefined&&!validFeedbackDevelopment(r.development))throw Error('Ongeldige bouwvoortgang bij feedback.');
   ids.add(r.id);
  }
  if(Buffer.byteLength(JSON.stringify(records))>6_000_000)throw Error('De feedbacklijst is te groot. Archiveer afgehandelde meldingen.');
@@ -41,6 +43,7 @@ export function createFeedbackService(directory=defaultFeedbackDirectory()){
  }
  return {
   list:read,
+  work:async(company,updates)=>mutate(company,records=>{if(!Array.isArray(updates)||updates.length>1000)throw Error('Ongeldige bouwupdates.');for(const update of updates){if(!validFeedbackDevelopment(update.development))throw Error('Ongeldige bouwupdate.');const report=records.find(r=>r.id===update.id);if(!report)throw Error('Melding ontbreekt: '+update.id);report.development=structuredClone(update.development);}return {updated:updates.length};}),
   import:async(company,input)=>{const incoming=validateFeedback(structuredClone(input).map(r=>({...r,details:r.details||''})));return mutate(company,records=>{const ids=new Set(records.map(r=>r.id));let added=0;for(const r of incoming)if(!ids.has(r.id)){records.push(r);ids.add(r.id);added++;}return {added,total:records.length};});},
   create:async(company,input)=>{const report={...structuredClone(input),status:'open',details:input.details||''};validateFeedback([report]);return mutate(company,records=>{if(records.some(r=>r.id===report.id))throw Error('Deze melding bestaat al.');records.push(report);return report;});},
   status:async(company,{id,status,expectedVersion,resolution=''})=>mutate(company,records=>{const r=records.find(r=>r.id===id);if(!r)throw Error('Melding niet gevonden.');if(expectedVersion!==(r.updatedAt||r.createdAt))throw Object.assign(Error('Deze melding is inmiddels gewijzigd. Herlaad de feedbacklijst.'),{status:409});if(!['open','resolved'].includes(status))throw Error('Ongeldige status.');r.status=status;r.updatedAt=new Date().toISOString();r.resolution=resolution;return r;})

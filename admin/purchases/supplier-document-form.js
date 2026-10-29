@@ -1,7 +1,8 @@
+import {importCostFields,readImportCostFields} from './import-cost-fields.js?v=feedback29-batch1-followup';
 import {supplierInvoiceBasis} from '../../shared/supplier-invoices.js?v=feedback28-batch2-20261028';
-import {supplierDocumentAiMarkup,installSupplierDocumentAi} from './document-ai.js?v=feedback28-batch2-20261028';
+import {supplierDocumentAiMarkup,installSupplierDocumentAi} from './document-ai.js?v=feedback29-batch1-followup';
 import {provenanceFor,markProvenance} from '../../shared/provenance.js?v=provenance-colors-20261027';
-import {vatDate} from '../../shared/vat-ledger.js?v=feedback28-batch2-20261028';
+import {vatDate} from '../../shared/vat-ledger.js?v=feedback-five-20261029';
 
 export function createSupplierDocumentForm(context,{purchase,lineFields,updateTotal,persist}){
  function open(purchaseId,invoiceId){
@@ -24,7 +25,7 @@ export function createSupplierDocumentForm(context,{purchase,lineFields,updateTo
    <p class="form-help">Vervangt deze factuur een al ingevoerde offerte voor dezelfde producten? Bewerk dan dat bestaande document, zodat dezelfde stuks niet dubbel gekoppeld worden.</p><h3>Inkoopregels koppelen</h3><p class="form-help">1 paar = 2 fysieke stuks. Alleen leveranciersproducten uit deze zending zijn selecteerbaar. Bij volledige dekking wordt de kostprijs bijgewerkt. Een onbekende koppeling laat je leeg.</p>
    <div id="supplier-lines">${(invoice.lines||[]).map(l=>lineFields(p,l)).join('')}</div>
    ${context.button('add-supplier-line','Inkoopregel toevoegen',purchaseId)}
-   ${context.area('notes','Afspraken / notities',invoice.notes)}
+   <details class="form-details"><summary>Gezamenlijke kosten & invoer-btw · vervangt zendingbedragen</summary><div class="fields">${context.field('freight','Transport excl. btw (€)',p.freight==null?'':p.freight/100,'number','min="0" step="0.01"')}${context.field('extraCosts','Inklaring / overige kosten (€)',p.extraCosts==null?'':p.extraCosts/100,'number','min="0" step="0.01"')}</div>${importCostFields(context,p)}<p class="form-help">Bestaande zendingbedragen blijven staan. Een AI-voorstel is een nieuw totaal voor deze zending, geen bedrag om erbij op te tellen.</p></details>${context.area('notes','Afspraken / notities',invoice.notes)}
    <label>Origineel document / overige bijlagen<input type="file" name="attachments" multiple></label>
    <p class="form-help">Nieuwe bijlagen: maximaal 20 bestanden, 15 MB per bestand en 30 MB samen. Bestaande bestanden en betalingen blijven behouden.</p>`,async fd=>{
     if(context.company.tool==='costing')await context.validateCostingSources(form);
@@ -46,12 +47,18 @@ export function createSupplierDocumentForm(context,{purchase,lineFields,updateTo
     if(!['offer','invoice'].includes(value.kind))throw context.formProblem('Kies factuur of offerte / pro forma.',{field:'kind'});
     if(value.date&&!vatDate(value.date))throw context.formProblem('Controleer de documentdatum.',{field:'date'});
     context.formRecordProvenance(form,value);
-    await persist(p.id,value,fd.getAll('attachments'),{expectedBasis});
+    const purchaseDraft={provenance:structuredClone(p.provenance||{}),...readImportCostFields(context,fd)};for(const key of ['freight','extraCosts']){const raw=fd.get(key);purchaseDraft[key]=raw===''?null:context.cents(raw);if(purchaseDraft[key]!=null&&(!Number.isSafeInteger(purchaseDraft[key])||purchaseDraft[key]<0))throw context.formProblem('Controleer dit zendingbedrag.',{field:key});}context.formRecordProvenance(form,purchaseDraft);
+    await persist(p.id,value,fd.getAll('attachments'),{expectedBasis,purchaseDraft});
    });
   const form=context.$('#dialog form');
   // total is displayed in EUR, while the stored invoice uses cents. Bind the
   // display value; formRecordProvenance re-signs the final stored value.
   context.markFormSources(form,invoice);
+  for(const key of ['freight','extraCosts','importVat','importVatRecoverable','importVatIncludedInSupplierPayments','importVatEvidence','freightIncludedInProductCosts']){
+   const input=form.elements.namedItem(key),source=provenanceFor(p,key);if(!input||!source)continue;
+   const value=['freight','extraCosts','importVat'].includes(key)?p[key]/100:input.type==='checkbox'?p[key]:String(p[key]);
+   context.markFormSources(input.closest('label'),markProvenance({[key]:value},[key],source.source,{mode:source.mode,at:source.at}));
+  }
   const source=provenanceFor(invoice,'total');if(source)context.markFormSources(form,markProvenance({total:invoice.total/100},['total'],source.source,{mode:source.mode,at:source.at}));
   for(const row of form.querySelectorAll('.supplier-line')){const line=invoice.lines.find(l=>l.id===row.dataset.sourceLine);if(line)context.markFormSources(row,line);}
   const installPickers=()=>context.installCostingPickers(form,{company:context.company,direction:'purchase',getOriginal:el=>(invoice.lines||[]).find(l=>l.id===el.dataset.sourceLine),onChange:updateTotal,canPush:()=>form.elements.kind.value==='offer'&&!(invoice.payments||[]).length});

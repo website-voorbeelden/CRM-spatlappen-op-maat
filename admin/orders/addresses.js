@@ -1,4 +1,5 @@
-import {createCustomerContactEditor} from '../customers/contact-editor.js?v=crm-code-review-20261027';
+import {orderContactDetails} from '../../shared/customer-contact.js?v=feedback29-batch2-followup';
+import {createCustomerContactEditor} from '../customers/contact-editor.js?v=feedback29-batch2-followup';
 // Keep a draft bound to the data it was opened with, including the one-order
 // customer synchronisation. Re-rendering must not silently renew its baseline.
 export function deliveryEditBasis(data,order){return JSON.stringify([order,data.customers.find(customer=>customer.id===order.customerId),data.orders.filter(candidate=>candidate.customerId===order.customerId).map(candidate=>candidate.id).sort()]);}
@@ -15,7 +16,8 @@ function billingDetails(o,c){
 }
 
 function orderContactBlock(o,c){
- return `<section class="order-surface"><div class="section-heading"><h2>Contactgegevens klant</h2><button type="button" data-order-contact="${context.esc(o.id)}">Contactgegevens aanpassen</button></div>${context.orderSummaryRows([['Contactpersoon',context.esc(c?.contact||c?.company||'Nog niet ingevuld')],['E-mail',context.esc(c?.email||'Nog niet ingevuld')],['Telefoon',context.esc(c?.phone||'Nog niet ingevuld')]])}<p class="form-help">Deze gegevens horen bij het klantdossier en gelden ook voor andere orders van deze klant.</p></section>`;
+ const contact=orderContactDetails(c,o);
+ return `<section class="order-surface"><div class="section-heading"><h2>Contactgegevens bij deze order</h2><button type="button" data-order-contact="${context.esc(o.id)}">Contactgegevens aanpassen</button></div>${contact.missing?'<p class="notice danger">De gekozen contactpersoon ontbreekt. Controleer het klantdossier.</p>':''}${context.orderSummaryRows([['Contactpersoon',context.esc(contact.name||'Nog niet ingevuld')],['E-mail',context.esc(contact.email||'Nog niet ingevuld')],['Telefoon',context.esc(contact.phone||'Nog niet ingevuld')]])}<p class="form-help">${contact.person?'Gekozen contactpersoon voor deze order. Wijzigingen gelden ook bij andere orders met deze contactpersoon.':'Standaardgegevens uit het klantdossier. Wijzigingen gelden ook voor andere orders van deze klant.'}</p></section>`;
 }
 
 function billingBlock(o,c){

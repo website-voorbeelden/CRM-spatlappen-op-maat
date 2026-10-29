@@ -6,7 +6,7 @@ export function changeCustomerNumber(state,id,number,expected){
  c.number=number;
 }
 export function setCustomerNumberPreferences(state,{start,padding},expected){
- if(JSON.stringify([state.customerNumberStart??1,state.customerNumberPadding??4])!==expected)throw Error('De nummerinstellingen zijn gewijzigd. Open de keuze opnieuw.');
+ if(JSON.stringify([state.customerNumberStart??1,state.customerNumberPadding??0])!==expected)throw Error('De nummerinstellingen zijn gewijzigd. Open de keuze opnieuw.');
  if(!Number.isSafeInteger(start)||start<1||start>999999999||!Number.isInteger(padding)||padding<0||padding>8)throw Error('Kies een startnummer van 1–999999999 en 0–8 posities.');
  state.customerNumberStart=start;state.customerNumberPadding=padding;
 }

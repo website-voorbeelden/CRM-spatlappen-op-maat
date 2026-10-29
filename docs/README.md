@@ -1,3 +1,17 @@
+Nieuw29oktober: [Resterende feedback verder uitgewerkt](FEEDBACK29-RESTPUNTEN.md): feedbackstatus en mobiel typen, directe factuurbedragen, minder fontwerk, kopie-foutafhandeling en relatieve SVG-clips. Alleen lokaal; oorspronkelijke gebruiksklachten, grenzen en eigen controle blijven open.
+
+Nieuw29oktober: [Batch 5 verder uitgewerkt](FEEDBACK29-BATCH5-VERVOLG.md): vooraf beoordelen van variantopruiming, bewaakte cloudverwijdering en uitgebreidere SVG-segmentatie. Lokaal; drie meldingen gedeeltelijk, eigen controle en cloudinrichting open.
+
+Nieuw29oktober: [Batch 4 verder uitgewerkt](FEEDBACK29-BATCH4-VERVOLG.md): ontwerp/order bewaren, maat- en zoomfeedback, fontvergelijking en vindbare kopie. Lokaal; eigen controle en oorspronkelijke gebruiksklachten open.
+
+Nieuw29oktober: [Batch 3 verder uitgewerkt](FEEDBACK29-BATCH3-VERVOLG.md): aanbetalingsvoorstellen, bruikbare betaalverzoeken, factuurrevisie/ontvangstselectie en betaalbescherming. Lokaal; eigen controle open.
+
+Nieuw29oktober: [Batch 2 verder uitgewerkt](FEEDBACK29-BATCH2-VERVOLG.md): ordercontact/factuurmail, planning, feedbackfilters/afhandelen en nummerstandaard. Lokaal; eigen controle open.
+
+> Feedback29oktober: vijf batches na vergelijking van73meldingen. Nieuw lokaal zendingbetaaloverzicht/artikelkosten, productgerichte orderwerkplek/directe acties, onafhankelijke feedbackbouwstatus, factuurrevisie, editor3200%/verticale maatstappen/bevestigde ordermaatsync en bewaakte cloudopruimvoorbereiding. Centrale CRM-CSS behouden; lokale invoer-btw niet overschreven. Zie docs/VIJF-FEEDBACKBATCHES-20261029.md (projectroot). Alleen bronwerk/bouwadministratie, geen tests/checks/build/browsercontrole/publicatie; gebruikerscontrole en gedeeltelijke grenzen open.
+
+> Invoer-btw29oktober: gedeelde zendingvelden en beide AI-routes, terugvorderbaar buiten marge/in uitgaande geldbasis; ingebed transport eenmaal herverdeeld. Bestaande opslag/CAS/back-up, geen datamigratie. Zie docs/INKOOP-INVOER-BTW.md (vanuit docs: INKOOP-INVOER-BTW.md). Alleen lokaal bronwerk, geen tests/build/browsercontrole/publicatie; eigen controle open.
+
 > Nieuw28oktober: [Word-documenttemplates aanpassen](DOCUMENTTEMPLATES.md), lokale bron; documentservice-uitrol en eigen controle open.
 
 > Nieuwe ronde28oktober: [twaalf feedbackpunten](FEEDBACK-VERVOLG-20261028.md), brongebouwd; eigen controle open.

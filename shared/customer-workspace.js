@@ -1,4 +1,4 @@
-import {funnelPayment} from './sales-funnel.js?v=feedback-followup-20261028';
+import {funnelPayment} from './sales-funnel.js?v=feedback29-batch3-followup';
 import {workQueue} from './work-queue.js?v=feedback-followup-20261028';
 
 // Read-only views of the existing dossier. No second task list or stored totals.

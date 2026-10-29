@@ -1,4 +1,4 @@
-import {keyFactsMarkup} from '../workspace/key-facts.js?v=calm-workspaces-20261027';
+import {keyFactsMarkup} from '../workspace/key-facts.js?v=feedback-five-20261029';
 import {moneyBasisBadge} from '../workspace/money.js?v=money-basis-20261021';
 
 // Existing read-only payment projections and action identifiers.

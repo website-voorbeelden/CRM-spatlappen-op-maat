@@ -99,7 +99,7 @@ function setLocalDesignName(name){$('localDesignName').value=name;const variantN
 
 function compactDesignState(){return {f:state.flap,h:state.holes,l:state.logos,t:state.texts,u:state.ui};}
 
-async function productModule(){return productDesignModule??=await import('../../product-designs.js?v=feedback-followup-20261028');}
+async function productModule(){return productDesignModule??=await import('../../product-designs.js?v=feedback29-batch4-followup');}
 
 function normalizeIntegrationContext(value={}){
   const result={};
@@ -193,30 +193,39 @@ function saveCurrentLocally(){
   activeDesignSave=performDesignSave().then(id=>{activity.success('Ontwerp bewaard.');return id;},error=>{activity.error(error);throw error;}).finally(()=>activeDesignSave=null);return activeDesignSave;
 }
 
+function confirmProductMeasurementChange(binding,measurements){
+ const changed=measurements.width!==binding.width||measurements.height!==binding.height||measurements.quantity!==null&&measurements.quantity!==binding.quantity;
+ if(!changed)return null;
+ if(!confirm('De productmaat of het aantal is gewijzigd.\n\nOrder: '+binding.width+' × '+binding.height+' mm · '+binding.quantity+' stuks\nOntwerp: '+measurements.width+' × '+measurements.height+' mm · '+(measurements.quantity??binding.quantity)+' stuks\n\nDeze maat en dit aantal ook bij de order bewaren? Alle varianten delen die productgegevens. De definitieve ontwerpkeuze vervalt en andere varianten kunnen opnieuw maatcontrole vragen. Prijsafspraken en marges kunnen hierdoor veranderen; een oude berekende inkoopprijs moet opnieuw worden gecontroleerd. Eerdere bestanden en betalingen blijven behouden.'))throw Error('Niet opgeslagen. Je ontwerp en ingevoerde maten blijven hier staan; de order is behouden.');
+ return {signature:binding.signature,measurements};
+}
+function applyProductMeasurementDisplay(measurements){
+ state.flap.w=measurements.width/10;state.flap.h=measurements.height/10;state.flap.qty=measurements.quantity===null?'':String(measurements.quantity);syncUIFromState();render();
+}
+
 async function performDesignSave(){
   await previewReady;
   if(crmBindingError)throw crmBindingError;
-  const workArea=document.querySelector('.app'),inert=workArea.inert;workArea.inert=true;
+  const workArea=document.querySelector('.app'),inert=workArea.inert,originalFlap=state.flap,originalMeasures={w:state.flap.w,h:state.flap.h,qty:state.flap.qty};let normalised=false,committed=false;workArea.inert=true;
   $('shareStatus').textContent=crmBinding?'Ontwerp en voorbeeld bewaren bij het product…':'Ontwerp bewaren…';
   try{
-    await previewPaintTick();
-    if(crmBinding){
-      const measurements=(await productModule()).designMeasurements(state.flap);
-      state.flap.w=measurements.width/10;state.flap.h=measurements.height/10;state.flap.qty=measurements.quantity===null?'':String(measurements.quantity);syncUIFromState();render();
-    }
+    clearArtworkFontPreview();await previewPaintTick();
+    let measurementConfirmation=null;
+    if(crmBinding){const measurements=(await productModule()).designMeasurements(state.flap);measurementConfirmation=confirmProductMeasurementChange(crmBinding,measurements);normalised=true;applyProductMeasurementDisplay(measurements);}
     const id=crmBinding?.designId||currentLocalDesignId||(crypto.randomUUID?.()||('d'+Date.now().toString(36)+Math.random().toString(36).slice(2)));
     const name=$('localDesignName').value.trim()||(crmBinding?crmBinding.variantName:`Ontwerp ${new Date().toLocaleString('nl-NL')}`);
     assertDurableLogoSources(state.logos);
     const record={id,name,updatedAt:Date.now(),payload:JSON.parse(JSON.stringify(compactDesignState())),context:{...integrationContext},vectorSummary:designVectorSummary()};
-    if(crmBinding)await (await productModule()).saveProductDesign(crmBinding,record,await createPreviewPngBlob());
+    if(crmBinding){await (await productModule()).saveProductDesign(crmBinding,record,await createPreviewPngBlob(),{measurementConfirmation});}
     else await writeLocalDesign(record);
+    committed=true;
     rememberPlacementAfterSave(record.payload);
     currentLocalDesignId=id;setLocalDesignName(name);
     if(crmBinding){integrationContext=normalizeIntegrationContext(crmBinding);syncProductReturnLink();const url=new URL(location.href);url.searchParams.set('orderId',crmBinding.orderId);url.searchParams.set('itemId',crmBinding.itemId);url.searchParams.set('variant',crmBinding.variantId);url.searchParams.delete('copyVariant');url.searchParams.delete('revision');window.history.replaceState(null,'',url.href);}
     location.hash='local='+encodeURIComponent(id);
     if(!crmBinding)await renderSavedDesigns();
     return id;
-  }finally{workArea.inert=inert;}
+  }finally{try{if(normalised&&!committed&&state.flap===originalFlap){Object.assign(state.flap,originalMeasures);syncUIFromState();render();}}finally{workArea.inert=inert;}}
 }
 
 async function renderSavedDesigns(){
@@ -418,14 +427,14 @@ function syncProductReturnLink(){
 async function saveAsNewProductVariant(){
  if(activeDesignSave||previewActivities.size)return;
  const context=crmBinding||integrationContext;if(!context?.orderId||!context?.itemId)return;
- const activity=beginPreviewActivity('Nieuwe variant bewaren…',['saveNewProductVariant','headerSave']),workArea=document.querySelector('.app'),wasInert=workArea.inert;workArea.inert=true;
+ const activity=beginPreviewActivity('Nieuwe variant bewaren…',['saveNewProductVariant','headerSave']),workArea=document.querySelector('.app'),wasInert=workArea.inert,originalFlap=state.flap,originalMeasures={w:state.flap.w,h:state.flap.h,qty:state.flap.qty};let normalised=false,committed=false;workArea.inert=true;
  try{
   const fresh=await (await productModule()).loadProductDesign(context.orderId,context.itemId,{variantId:'new'});
-  // Existing artwork remains untouched until the new binding is validated.
-  const measures=(await productModule()).designMeasurements(state.flap);
-  if(measures.width!==fresh.width||measures.height!==fresh.height||measures.quantity!==null&&measures.quantity!==fresh.quantity)throw Error('De ordermaat of het aantal is gewijzigd. Je artwork blijft staan. Controleer die eerst; er wordt niets overschreven.');
+  if(!context.customerId||fresh.customerId!==context.customerId)throw Error('De klantkoppeling van deze order is veranderd. Je ontwerp blijft hier staan. Open de order opnieuw voordat je een variant bij deze klant bewaart.');
+  clearArtworkFontPreview();
+  const measures=(await productModule()).designMeasurements(state.flap),measurementConfirmation=confirmProductMeasurementChange(fresh,measures);normalised=true;applyProductMeasurementDisplay(measures);
   const record={id:fresh.designId,name:fresh.variantName,updatedAt:Date.now(),payload:JSON.parse(JSON.stringify(compactDesignState())),context:normalizeIntegrationContext(fresh),vectorSummary:designVectorSummary()};assertDurableLogoSources(state.logos);
-  await (await productModule()).saveProductDesign(fresh,record,await createPreviewPngBlob());crmBinding=fresh;crmBindingError=null;integrationContext=normalizeIntegrationContext(fresh);currentLocalDesignId=fresh.designId;setLocalDesignName(fresh.variantName);
+  await (await productModule()).saveProductDesign(fresh,record,await createPreviewPngBlob(),{measurementConfirmation});committed=true;crmBinding=fresh;crmBindingError=null;integrationContext=normalizeIntegrationContext(fresh);currentLocalDesignId=fresh.designId;setLocalDesignName(fresh.variantName);
   const url=new URL(location.href);url.searchParams.set('orderId',fresh.orderId);url.searchParams.set('itemId',fresh.itemId);url.searchParams.set('variant',fresh.variantId);url.searchParams.delete('copyVariant');url.searchParams.delete('revision');url.hash='local='+encodeURIComponent(fresh.designId);window.history.replaceState(null,'',url.href);syncProductReturnLink();activity.success('Als nieuwe ontwerpvariant bij dezelfde order bewaard.');
- }catch(error){activity.error(error);}finally{workArea.inert=wasInert;}
+ }catch(error){activity.error(error);}finally{try{if(normalised&&!committed&&state.flap===originalFlap){Object.assign(state.flap,originalMeasures);syncUIFromState();render();}}finally{workArea.inert=wasInert;}}
 }

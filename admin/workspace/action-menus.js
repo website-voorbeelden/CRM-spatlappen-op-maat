@@ -3,6 +3,12 @@ const selector='details.quiet-menu,details.order-more';
 // Native disclosures stay native. Only action menus share this behaviour;
 // filters, histories, form fields and ordinary details keep their own state.
 export function installActionMenus(root){
+ for(const menu of root.querySelectorAll(selector)){
+  const content=menu.querySelector(':scope>div');if(!content||content.querySelector('details,input,select,textarea,label'))continue;
+  const actions=[...content.children].filter(child=>child.matches('button,a')&&!child.hidden);
+  if(!actions.length&&!content.textContent.trim()){menu.remove();continue;}
+  if(actions.length===1&&content.children.length===1){menu.replaceWith(actions[0]);}
+ }
  const openMenus=()=>[...root.querySelectorAll(selector)].filter(menu=>menu.open);
  function clicked(event){
   if(event.defaultPrevented)return;

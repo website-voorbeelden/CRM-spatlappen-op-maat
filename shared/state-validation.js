@@ -1,3 +1,4 @@
+import {validatePurchaseImportCosts} from './purchase-import-costs.js?v=feedback29-batch1-followup';
 import {validateDocumentTemplates} from './document-templates.js?v=document-templates-20261028';
 import {termsDocumentFor} from './company-documents.js?v=ui-batch234-20261027';
 import {validateDesignVariants} from './product-design-variants.js?v=batch1-variants-20261026';
@@ -5,7 +6,7 @@ import {validateInquiryAttribution} from './inquiry-mail-metadata.js';
 import {validateWebsiteContacts,websiteUuid} from './website-dossier.js';
 import {supplierFileMetadata} from './direct-purchase.js?v=direct-purchase-20261021';
 import {validGmailSalesPhase} from './sales-phase-signal.js?v=open-fixes-20261027';
-import {validateVatLedger} from './vat-ledger.js?v=feedback28-batch2-20261028';
+import {validateVatLedger} from './vat-ledger.js?v=feedback-five-20261029';
 import {readVatClassification} from './vat-review.js';
 import {validateNamedCosts} from './named-costs.js';
 import {productImageTypes} from './product-primary-image.js';
@@ -38,6 +39,7 @@ export function validateBusinessState(state) {
   }
  }
  visit(state);
+ for(const p of state.purchases||[])try{validatePurchaseImportCosts(p,state);}catch(error){fail(error.message);}
  validateDocumentTemplates(state.documentTemplates);
  if(state.mailThreadLabels!==undefined){const entries=state.mailThreadLabels;if(!Array.isArray(entries)||entries.length>1000||new Set(entries.map(entry=>entry?.key)).size!==entries.length||entries.some(entry=>!entry||typeof entry.key!=='string'||!entry.key||entry.key.length>2048||!id(entry.ownerId)||!Array.isArray(entry.labels)||entry.labels.length>4||new Set(entry.labels).size!==entry.labels.length||entry.labels.some(label=>!['handled','followup','price-high','price-extreme'].includes(label))||!Number.isFinite(Date.parse(entry.updatedAt))||Object.keys(entry).some(key=>!['key','ownerId','labels','updatedAt'].includes(key))))fail('Controleer de labels bij het mailgesprek.');}
  if(state.mailReplyGuidance!==undefined){const entries=state.mailReplyGuidance;if(!Array.isArray(entries)||entries.length>1000||new Set(entries.map(entry=>entry?.key)).size!==entries.length||entries.some(entry=>!entry||typeof entry.key!=='string'||!entry.key||entry.key.length>1024||!id(entry.ownerId)||typeof entry.notes!=='string'||entry.notes.length>6000||!Number.isFinite(Date.parse(entry.updatedAt))||Object.keys(entry).some(key=>!['key','ownerId','notes','updatedAt'].includes(key))))fail('Controleer de werkinstructies bij het mailgesprek.');}

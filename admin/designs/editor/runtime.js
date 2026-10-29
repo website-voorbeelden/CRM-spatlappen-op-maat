@@ -106,7 +106,7 @@ $('zoomReset').onclick=()=>setPreviewZoom(1);
 $('previewWrap').addEventListener('wheel',event=>{
   if(!event.ctrlKey&&!event.metaKey)return;
   event.preventDefault();
-  setPreviewZoom(previewZoom*(event.deltaY<0?1.15:1/1.15),event.clientX,event.clientY);
+  if(!event.deltaY||document.querySelector('.app')?.inert)return;queuePreviewZoom(event.deltaY<0?1.15:1/1.15,event.clientX,event.clientY);
 },{passive:false});
 const previewPanWrap=$('previewWrap');
 
@@ -585,13 +585,16 @@ $('selectionRatioLock').onclick=()=>{
 };
 
 for(const [id,axis] of [['selectionWidth','w'],['selectionHeight','h']]){
-  $(id).addEventListener('change',()=>{
-    const value=Number($(id).value),box=SpatlapLayout.union(allSelectedRefs().map(layoutBox).filter(Boolean));
-    if(!box||!Number.isFinite(value)||value<.1||value>10000){toast('Vul een maat tussen 0,1 en 10000 cm in.');$(id).blur();syncSelectionDimensions();return;}
-    const current=axis==='w'?box.right-box.left:box.bottom-box.top;
-    $(id).blur();if(current>0){if(selectionRatioLocked||allSelectedRefs().some(ref=>ref.type==='text'))scaleSelectedObjects(value/current,'Selectie op maat gezet');else resizeLogoSelection(axis,value/current);}syncSelectionDimensions();
-  });
-  $(id).addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();e.currentTarget.blur();}});
+ const input=$(id);
+ input.addEventListener('input',()=>{input.setCustomValidity('');input.removeAttribute('aria-invalid');delete input.dataset.invalidSelection;paintSelectionDimensionError();});
+ input.addEventListener('change',()=>{
+  const value=Number(input.value),box=SpatlapLayout.union(allSelectedRefs().map(layoutBox).filter(Boolean));
+  if(!box||input.value.trim()===''||!Number.isFinite(value)||value<.1||value>10000){const message='Vul een maat tussen 0,1 en 10000 cm in.';input.setCustomValidity(message);input.setAttribute('aria-invalid','true');input.dataset.invalidSelection=JSON.stringify(allSelectedRefs());$('selectionDimensionError').textContent=message;toast(message);return;}
+  input.setCustomValidity('');input.removeAttribute('aria-invalid');delete input.dataset.invalidSelection;paintSelectionDimensionError();
+  const current=axis==='w'?box.right-box.left:box.bottom-box.top;
+  if(current>0&&Math.abs(value-current)>.000001){if(selectionRatioLocked||allSelectedRefs().some(ref=>ref.type==='text'))scaleSelectedObjects(value/current,'Selectie op maat gezet');else resizeLogoSelection(axis,value/current);}syncSelectionDimensions();
+ });
+ input.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();input.dispatchEvent(new Event('change',{bubbles:true}));if(input.checkValidity())finishSelectionSizing();}});
 }
 
 $('quickAddLogo').onclick=()=>$('file').click();
@@ -846,18 +849,26 @@ $('copyLocalUrl').onclick=async()=>{
   }catch(err){showLocalLink(id,'Ontwerp bewaard, maar kopiëren lukte niet.');}
 };
 $('openCopy').onclick=async()=>{
- const popup=window.open('about:blank','_blank');if(popup)popup.opener=null;
+ if(activeDesignSave||previewActivities.size||document.querySelector('.app')?.inert){toast('Wacht tot de huidige handeling klaar is. Je ontwerp blijft staan.');return;}
+ let popup=null;
+ // Some browsers throw rather than returning null when opening is blocked.
+ // Saving and the durable fallback link remain available in either case.
+ try{popup=window.open('about:blank','_blank');if(popup)popup.opener=null;}catch{}
  const activity=beginPreviewActivity('Losse kopie maken…',['openCopy']);
  try{
   clearArtworkFontPreview();
   const id=crypto.randomUUID(),record={id,name:('Kopie van '+($('localDesignName').value||'ontwerp')).slice(0,200),updatedAt:Date.now(),payload:JSON.parse(JSON.stringify(compactDesignState())),context:normalizeIntegrationContext({})};
-  assertDurableLogoSources(record.payload.l);await writeLocalDesign(record);
   const url=new URL(location.href),mode=url.searchParams.get('storage');url.search='';url.hash='local='+encodeURIComponent(id);if(mode==='cloud')url.searchParams.set('storage','cloud');
-  const link=document.createElement('a');link.href=url.href;link.target='_blank';link.rel='noopener';link.textContent='Open de nieuwe ontwerpkopie';$('shareStatus').replaceChildren(document.createTextNode('Losse kopie bewaard. '),link);
-  // Closing or navigating the new tab while storage is busy must not turn a
-  // successful save into an error, or replace a page the user opened there.
-  try{if(popup&&!popup.closed&&popup.location.href==='about:blank')popup.location.replace(url.href);}catch{}
-  activity.success('Losse kopie bewaard; het oorspronkelijke ontwerp is behouden.');
+  assertDurableLogoSources(record.payload.l);await writeLocalDesign(record);
+  // From this point the copy exists. A redraw must not turn a committed save
+  // into a failed-save message or close the user's successful copy tab.
+  let redrawFailed=false;
+  try{
+   const link=document.createElement('a');link.href=url.href;link.target='_blank';link.rel='noopener';link.textContent='Open de nieuwe ontwerpkopie';$('shareStatus').replaceChildren(document.createTextNode('Losse kopie bewaard. '),link);
+   const resultLink=$('openCopyResult');if(resultLink){resultLink.href=url.href;resultLink.hidden=false;}render();
+  }catch{redrawFailed=true;}
+  let opened=false;try{if(popup&&!popup.closed&&popup.location.href==='about:blank'){popup.location.replace(url.href);opened=true;}}catch{}
+  activity.success((opened?'Losse kopie bewaard en nieuwe tab geopend.':'Losse kopie bewaard. Gebruik Open bewaarde kopie bovenaan; je browser opende geen nieuwe tab.')+(redrawFailed?' De huidige preview kon niet opnieuw worden getekend.':''));
  }catch(error){try{if(popup&&!popup.closed&&popup.location.href==='about:blank')popup.close();}catch{}activity.error(error);}
 };
 $('copyUrl').onclick=async()=>{
@@ -929,7 +940,7 @@ window.SpatlapPreview=Object.freeze({
 });
 
 // Comfortable dimension controls use the existing input/change resize path.
-for(const button of document.querySelectorAll('[data-dimension-step]'))button.onclick=event=>{event.preventDefault();const [id,direction]=button.dataset.dimensionStep.split(':'),input=$(id);if(input.disabled||previewActivities.size)return;try{input.stepUp(Number(direction));input.dispatchEvent(new Event('change',{bubbles:true}));}catch(error){toast(error.message);}};
+for(const button of document.querySelectorAll('[data-dimension-step]'))button.onclick=event=>{event.preventDefault();const [id,direction]=button.dataset.dimensionStep.split(':'),input=$(id);if(input.disabled||previewActivities.size||document.querySelector('.app')?.inert)return;try{input.stepUp(Number(direction)*(event.shiftKey?100:10));input.dispatchEvent(new Event('input',{bubbles:true}));input.dispatchEvent(new Event('change',{bubbles:true}));}catch(error){toast(error.message);}};
 const logoDrop=$('logoDropTarget');logoDrop.classList.add('logo-drop-target');logoDrop.insertAdjacentHTML('beforeend','<span class="field-help">Of sleep logo’s hierheen (PNG, JPG, WebP, SVG of PDF).</span>');
 for(const type of ['dragenter','dragover'])logoDrop.addEventListener(type,event=>{if(!event.dataTransfer?.types.includes('Files'))return;event.preventDefault();logoDrop.classList.add('is-dragover');});
 logoDrop.addEventListener('dragleave',event=>{if(!logoDrop.contains(event.relatedTarget))logoDrop.classList.remove('is-dragover');});

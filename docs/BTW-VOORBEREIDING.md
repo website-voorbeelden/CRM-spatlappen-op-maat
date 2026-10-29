@@ -1,3 +1,7 @@
+> Batch3vervolg29oktober: factuurrevisie bewaakt ook veranderende orderontvangsten; actieve btw-boeking blijft blokkeren. Eigen toelichting en geselecteerde ontvangstvermelding apart, actualiseren betaalstand alleen bewust. Eventueel geladen nieuw ordertarief bewaart passende actuele afwijkingsreden. Geen btw-boeking/correctie/aangifte gewijzigd; zie FEEDBACK29-BATCH3-VERVOLG.md. Lokaal, geen tests/conversie/browsercontrole/publicatie.
+
+> Aanvulling29oktober: aparte purchase.importVat/importVatRecoverable en bewijsreferentie voor kosten-/uitgavenweergave; geen tweede fiscale boeking. Oudere uitspraak dat er geen btw-veld op de zending is, is hiermee vervangen. Bestaand vatLedger blijft de kwartaal-/bewijsadministratie. Zie INKOOP-INVOER-BTW.md; lokaal bronwerk, eigen controle open.
+
 > Aanvulling28oktober: gekoppelde zending en werkelijk betaalde btw met datum/betaalbewijs in dezelfde boeking; vanuit inkoop terugvinden/bewerken. Meta-informatie verandert geen aftrek-/kwartaalsom of kostprijs. Leverancierrecord + uploads één bron; bestaande file:-boekingen als alias behouden, geen migratie. Historische offerteboekingen krijgen controlepunt. Zie FEEDBACK-BATCH2-20261028.md; lokale bronreview, eigen controle en publicatie open. Geen tests/checks/build/browsercontrole of fiscale beoordeling.
 
 # Btw-voorbereiding per kwartaal

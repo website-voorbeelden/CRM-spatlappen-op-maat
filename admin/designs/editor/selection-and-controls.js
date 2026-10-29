@@ -1,3 +1,5 @@
+const PREVIEW_ZOOM_MIN=.5,PREVIEW_ZOOM_MAX=32;
+let pendingPreviewZoom=null,previewZoomFrame=0;
 // Classic editor helpers; loaded before runtime.js. See README.md for the shared state contract.
 function updateMobilePreviewTop(){
   const mobile=window.matchMedia('(max-width:700px)').matches;
@@ -11,7 +13,7 @@ function fitPreviewFrame(){
     const card=wrap.closest('.canvas-card'),fixed=wrap.closest('.preview-fixed');
     if(card&&fixed){const style=getComputedStyle(card),padding=parseFloat(style.paddingTop)+parseFloat(style.paddingBottom),overhead=Math.max(0,fixed.offsetHeight-wrap.offsetHeight);height=Math.min(height,Math.max(80,card.clientHeight-padding-overhead-96));}
   }
-  document.documentElement.style.setProperty(mobile?'--mobile-preview-h':'--adaptive-preview-h',height+'px');updateMobilePreviewTop();
+  document.documentElement.style.setProperty(mobile?'--mobile-preview-h':'--adaptive-preview-h',height+'px');updateMobilePreviewTop();updatePreviewZoomControls();
 }
 
 function scaleFactor(){
@@ -25,15 +27,25 @@ function scaleFactor(){
   return Math.max(.1,Math.min(maxW/w,maxH/h))*previewZoom;
 }
 
+function updatePreviewZoomControls(){
+ $('zoomLevel').textContent=Math.round(previewZoom*100)+'%';$('zoomOut').disabled=previewZoom<=PREVIEW_ZOOM_MIN;$('zoomIn').disabled=previewZoom>=PREVIEW_ZOOM_MAX;$('zoomLevel').title='Previewzoom · 50% tot 3200% · verandert geen productmaat';
+}
+function queuePreviewZoom(factor,clientX,clientY){
+ if(!Number.isFinite(factor)||factor<=0)return;
+ pendingPreviewZoom={value:Math.max(PREVIEW_ZOOM_MIN,Math.min(PREVIEW_ZOOM_MAX,(pendingPreviewZoom?.value??previewZoom)*factor)),clientX,clientY};
+ if(previewZoomFrame)return;previewZoomFrame=requestAnimationFrame(()=>{previewZoomFrame=0;const next=pendingPreviewZoom;pendingPreviewZoom=null;if(next&&!document.querySelector('.app')?.inert&&!document.querySelector('dialog[open]'))setPreviewZoom(next.value,next.clientX,next.clientY);});
+}
 function setPreviewZoom(value,clientX,clientY){
+ if(previewZoomFrame)cancelAnimationFrame(previewZoomFrame);previewZoomFrame=0;pendingPreviewZoom=null;
+ if(!Number.isFinite(value))return;
   const wrap=$('previewWrap'),stage=$('stage');
   const before=stage.getBoundingClientRect(),box=wrap.getBoundingClientRect();
   const selectedBox=clientX==null&&clientY==null?SpatlapLayout.union(allSelectedRefs().map(ref=>layoutElement(ref)?.getBoundingClientRect()).filter(Boolean)):null;
   const x=clientX??(selectedBox?(selectedBox.left+selectedBox.right)/2:box.left+box.width/2),y=clientY??(selectedBox?(selectedBox.top+selectedBox.bottom)/2:box.top+box.height/2);
   const fractionX=before.width?(x-before.left)/before.width:.5;
   const fractionY=before.height?(y-before.top)/before.height:.5;
-  const next=Math.max(.5,Math.min(8,Math.round(value*100)/100));
-  if(next===previewZoom)return;
+  const next=Math.max(PREVIEW_ZOOM_MIN,Math.min(PREVIEW_ZOOM_MAX,Math.round(value*100)/100));
+  if(next===previewZoom){updatePreviewZoomControls();return;}
   previewZoom=next;
   render();
   $('zoomLevel').textContent=Math.round(previewZoom*100)+'%';

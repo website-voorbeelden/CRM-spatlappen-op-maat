@@ -1,5 +1,5 @@
 import {loading} from '../loading.js';
-import {validateVatLedger,vatBoxes,vatSettings,vatSources,vatFingerprint,vatQuarter,vatPeriodReport,vatEntryIssues,prepareVatPeriod} from '../../shared/vat-ledger.js?v=feedback28-batch2-20261028';
+import {validateVatLedger,vatBoxes,vatSettings,vatSources,vatFingerprint,vatQuarter,vatPeriodReport,vatEntryIssues,prepareVatPeriod} from '../../shared/vat-ledger.js?v=feedback-five-20261029';
 import {createVatEntryUI} from './vat-entry.js?v=feedback28-batch2-20261028';
 import {vatWorkspaceTabs} from './vat-layout.js';
 const clone=value=>structuredClone(value);

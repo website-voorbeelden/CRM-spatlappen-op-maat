@@ -2,12 +2,12 @@
 <html lang="nl" class="preview-booting">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content" />
 <title>Spatlap Preview Tool</title>
 <link rel="icon" type="image/svg+xml" href="spatlap-preview-favicon.svg?v=1">
 <link rel="stylesheet" href="print-assets/fonts.css?v=four-parts-20261026">
 
-<link rel="stylesheet" href="admin/designs/editor/editor.css?v=feedback-followup-20261028">
+<link rel="stylesheet" href="admin/designs/editor/editor.css?v=feedback29-restpunten">
 <script src="number-inputs.js?v=save-status-20261010" defer></script>
 </head>
 <body>
@@ -39,7 +39,7 @@
       <button id="reset" class="iconbtn" title="Opnieuw beginnen" aria-label="Opnieuw beginnen">↻</button>
     </div>
     <div class="header-preview-controls">
-      <div class="toolbar-actions" id="previewToolbar"><button id="openCopy" type="button">↗ Kopie openen</button></div>
+      <div class="toolbar-actions" id="previewToolbar"><button id="openCopy" type="button">↗ Kopie openen</button><a id="openCopyResult" target="_blank" rel="noopener" hidden>Open bewaarde kopie ↗</a></div>
       <div class="layout-tools" aria-label="Selectie en uitlijnen">
         <button id="headerAddLogo" type="button">＋ Logo toevoegen</button>
         <button id="headerAddText" type="button">＋ Tekst invoegen</button>
@@ -514,7 +514,8 @@
         <span id="selectionLabel" class="selection-label" hidden></span>
         <button id="shrinkSelected" type="button" title="Selectie proportioneel 10% kleiner" aria-label="Selectie 10% kleiner">−</button>
         <button id="growSelected" type="button" title="Selectie proportioneel 10% groter" aria-label="Selectie 10% groter">+</button>
-        <span class="selection-dimensions"><label title="Breedte selectie in cm; verhouding volgens instellingen links">B <button type="button" class="dimension-step" data-dimension-step="selectionWidth:-1" aria-label="Selectiebreedte verkleinen">−</button><input id="selectionWidth" type="number" min="0.1" max="10000" step="0.1" aria-label="Breedte selectie in centimeter"><button type="button" class="dimension-step" data-dimension-step="selectionWidth:1" aria-label="Selectiebreedte vergroten">+</button></label><span aria-hidden="true">×</span><label title="Hoogte selectie in cm; verhouding volgens instellingen links">H <button type="button" class="dimension-step" data-dimension-step="selectionHeight:-1" aria-label="Selectiehoogte verkleinen">−</button><input id="selectionHeight" type="number" min="0.1" max="10000" step="0.1" aria-label="Hoogte selectie in centimeter"><button type="button" class="dimension-step" data-dimension-step="selectionHeight:1" aria-label="Selectiehoogte vergroten">+</button></label></span>
+        <span class="selection-dimensions"><label title="Breedte selectie in cm; verhouding volgens instellingen links">B <input id="selectionWidth" type="number" min="0.1" max="10000" step="0.01" aria-label="Breedte selectie in centimeter" aria-describedby="selectionDimensionError"><span class="dimension-steppers"><button type="button" class="dimension-step" title="0,1 cm erbij · Shift: 1 cm" data-dimension-step="selectionWidth:1" aria-label="Selectiebreedte vergroten">+</button><button type="button" class="dimension-step" title="0,1 cm eraf · Shift: 1 cm" data-dimension-step="selectionWidth:-1" aria-label="Selectiebreedte verkleinen">−</button></span></label><span aria-hidden="true">×</span><label title="Hoogte selectie in cm; verhouding volgens instellingen links">H <input id="selectionHeight" type="number" min="0.1" max="10000" step="0.01" aria-label="Hoogte selectie in centimeter" aria-describedby="selectionDimensionError"><span class="dimension-steppers"><button type="button" class="dimension-step" title="0,1 cm erbij · Shift: 1 cm" data-dimension-step="selectionHeight:1" aria-label="Selectiehoogte vergroten">+</button><button type="button" class="dimension-step" title="0,1 cm eraf · Shift: 1 cm" data-dimension-step="selectionHeight:-1" aria-label="Selectiehoogte verkleinen">−</button></span></label></span>
+        <small id="selectionDimensionError" class="selection-dimension-error" role="alert"></small>
         <button id="selectionMoveMode" type="button" aria-label="Verder met verplaatsen" title="Verder met pijltjes verplaatsen (Esc na maat invoeren)">✥</button>
         <button id="selectionColor" type="button" aria-label="Kleur selectie aanpassen" title="Kleur selectie aanpassen"><span class="selection-color-chip" aria-hidden="true"></span></button>
         <select id="selectionPaint" aria-label="Kleur toepassen op" hidden><option value="fill">Vulling</option><option value="stroke">Lijn</option></select>
@@ -693,19 +694,19 @@
 <script src="spatlap-preview-vector-editor.js?v=batch3-colors-20261026"></script>
 <script src="admin/designs/editor/vector-editing.js?v=feedback-followup-20261028"></script>
 <script src="admin/designs/editor/history-and-feedback.js?v=feedback-followup-20261028"></script>
-<script src="admin/designs/editor/selection-and-controls.js?v=feedback-followup-20261028"></script>
+<script src="admin/designs/editor/selection-and-controls.js?v=feedback29-batch4-followup"></script>
 <script src="admin/designs/editor/import-and-vectorize.js?v=feedback-followup-20261028"></script>
-<script src="admin/designs/editor/text-and-objects.js?v=feedback-followup-20261028"></script>
-<script src="admin/designs/editor/layout-and-preview.js?v=feedback-followup-20261028"></script>
+<script src="admin/designs/editor/text-and-objects.js?v=feedback29-restpunten"></script>
+<script src="admin/designs/editor/layout-and-preview.js?v=feedback29-restpunten"></script>
 <script src="admin/designs/editor/export.js?v=feedback-followup-20261028"></script>
-<script src="admin/designs/editor/storage-and-integration.js?v=feedback-followup-20261028"></script>
-<script src="admin/designs/editor/font-tools.js?v=feedback-followup-20261028"></script>
-<script src="admin/designs/editor/vector-islands.js?v=feedback-followup-20261028"></script>
-<script src="admin/designs/editor/logo-colors.js?v=feedback-followup-20261028"></script>
+<script src="admin/designs/editor/storage-and-integration.js?v=feedback29-batch4-followup"></script>
+<script src="admin/designs/editor/font-tools.js?v=feedback29-restpunten"></script>
+<script src="admin/designs/editor/vector-islands.js?v=feedback29-restpunten"></script>
+<script src="admin/designs/editor/logo-colors.js?v=feedback29-restpunten"></script>
 <script src="admin/designs/editor/outline-tools.js?v=feedback-followup-20261028"></script>
 <script src="admin/designs/editor/placement-tools.js?v=feedback-followup-20261028"></script>
-<script src="admin/designs/editor/runtime.js?v=feedback-followup-20261028"></script>
+<script src="admin/designs/editor/runtime.js?v=feedback29-restpunten"></script>
 
-<script type="module" src="admin/designs/editor/bootstrap.js?v=feedback-followup-20261028"></script>
+<script type="module" src="admin/designs/editor/bootstrap.js?v=feedback29-restpunten"></script>
 </body>
 </html>

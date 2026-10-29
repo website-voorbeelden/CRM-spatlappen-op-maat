@@ -1,3 +1,5 @@
+> Feedback29oktober: feedback29-batch1 t/m feedback29-batch4 review/local; feedback29-batch5 doing/local wegens bredere SVG-/historische cloudrestscope. Per73volledige Melding-IDs aparte privébouwstatus, gebruikersafhandeling behouden; geen tests/build/browsercontrole/publicatie. Zie VIJF-FEEDBACKBATCHES-20261029.md.
+
 > Batch3 feedback28oktober: feedback28-batch3-insights review/local via scripts/build-task.mjs. Alle drie nieuwe feedbackbatches nu lokaal brongebouwd voor Jouw controle; geen automatische feedbackresolve/opgeslagen statuswijziging, geen functioneel/visueel akkoord of publicatie. Historische restscope en Word-pakbonaanlevering open. Zie FEEDBACK-BATCH3-20261028.md.
 
 > Batch2 feedback28oktober: feedback28-batch2-purchases review/local via scripts/build-task.mjs. Betaalde btw vanuit inkoop en afgebakende AI-documentinvoer lokaal brongebouwd; eigen controle/feedbackafhandeling open. Batch1 blijft review/local, batch3 open/local. Bestaande opgeslagen status/opmerkingen behouden. Zie FEEDBACK-BATCH2-20261028.md.

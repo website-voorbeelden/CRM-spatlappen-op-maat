@@ -1,5 +1,5 @@
 import {addressParts} from './document-address.js';
-import {documentSeriesKey,documentVersion} from './document-revisions.js';
+import {documentSeriesKey,documentVersion} from './document-revisions.js?v=feedback29-batch3-followup';
 import {inboundReadiness} from './inbound-readiness.js?v=feedback-followup-20261028';
 import {customerExecutionDetails} from './product-specifications.js';
 

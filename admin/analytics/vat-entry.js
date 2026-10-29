@@ -1,4 +1,4 @@
-import {vatBoxes,vatFingerprint,vatSources,saveVatEntry} from '../../shared/vat-ledger.js?v=feedback28-batch2-20261028';
+import {vatBoxes,vatFingerprint,vatSources,saveVatEntry} from '../../shared/vat-ledger.js?v=feedback-five-20261029';
 import {decimalNumber} from '../../shared/decimal-input.js';
 const clone=v=>structuredClone(v),blankLine=()=>({box:'',baseCents:0,vatCents:0,deductCents:0});
 export function createVatEntryUI(context,{refresh}){

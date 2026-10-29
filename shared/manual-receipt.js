@@ -4,7 +4,7 @@ export function validReceiptDate(value){return typeof value==='string'&&/^\d{4}-
 export function manualReceiptBasis(state,orderId){
  const order=state.orders.find(o=>o.id===orderId);if(!order)throw Error('Deze order bestaat niet meer.');
  const customer=state.customers.find(c=>c.id===order.customerId),customerIds=new Set([order.customerId,...(customer?duplicateCustomers(state,customer).map(c=>c.id):[])]),orderIds=new Set(state.orders.filter(o=>customerIds.has(o.customerId)).map(o=>o.id));
- return JSON.stringify([order.customerId,order.vat,order.packagePrice,order.shippingKnown,order.shippingCharge,order.productionDepositPercent,(order.items||[]).map(i=>[i.id,i.quantity,i.price]),state.payments.filter(p=>orderIds.has(p.orderId)).map(p=>[p.id,p.orderId,p.amount,p.date,p.reference,p.externalId]).sort((a,b)=>String(a[0]).localeCompare(String(b[0])))]);
+ return JSON.stringify([order.customerId,order.vat,order.packagePrice,order.shippingKnown,order.shippingCharge,order.productionDepositPercent,order.leadTimeBasis,order.leadTimeDepositPercent,(order.items||[]).map(i=>[i.id,i.quantity,i.price]),state.payments.filter(p=>orderIds.has(p.orderId)).map(p=>[p.id,p.orderId,p.amount,p.date,p.reference,p.externalId]).sort((a,b)=>String(a[0]).localeCompare(String(b[0])))]);
 }
 export function similarReceipts(state,orderId,{amount,date}){return duplicatePayments(state,{orderId,amount,date});}
 export function appendManualReceipt(state,orderId,expected,receipt,{acknowledged=false,requiresReview=false,today}={}){

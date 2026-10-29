@@ -1,5 +1,5 @@
 import {gmailPhaseContext} from '../../shared/gmail-phase-context.js?v=feedback-followup-20261028';
-import {funnelPhasesFor,funnelPhaseLabel} from '../../shared/sales-funnel.js?v=feedback-followup-20261028';
+import {funnelPhasesFor,funnelPhaseLabel} from '../../shared/sales-funnel.js?v=feedback29-batch3-followup';
 import {gmailPhaseSuggestions} from '../../shared/gmail-labels.js';
 import {phaseAutoConfirmation,phaseResolveConfirmation} from '../../shared/gmail-phase-auto.js?v=feedback-followup-20261028';
 import {markProvenance} from '../../shared/provenance.js?v=provenance-colors-20261027';

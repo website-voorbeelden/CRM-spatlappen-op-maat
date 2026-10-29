@@ -1,5 +1,5 @@
 import {installTableGuides} from './table-guides.js?v=table-guides-20261028';
-import {installActionMenus} from './action-menus.js?v=ui-batch1-20261027';
+import {installActionMenus} from './action-menus.js?v=feedback-five-20261029';
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 let menuCleanup=()=>{};
 export function installSidebar(root,companyId){

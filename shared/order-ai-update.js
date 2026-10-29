@@ -1,6 +1,6 @@
 import {cleanInquirySpecs} from './inquiries.js?v=feedback-followup-20261028';
 import {markProvenance} from './provenance.js?v=provenance-colors-20261027';
-import {validateBusinessState} from './state-validation.js?v=feedback-followup-20261028';
+import {validateBusinessState} from './state-validation.js?v=feedback29-batch1-followup';
 const orderFields=['notes','expectedDate','leadTimeMinWeeks','leadTimeMaxWeeks','leadTimeBasis','leadTimeStartDate'];
 const addressFields=['source','recipient','address','country','instructions'];
 const itemFields=['description','quantity','width','height','thickness','diameter','holeDiameter','material','shape','printColors','specs'];

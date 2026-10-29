@@ -21,7 +21,7 @@ export function createInquiryUI({getState,mergeStoredState,company,openForm,rend
    return f.complete?`<div class="complete">${content}</div>`:`<button type="button" class="missing" data-inquiry-edit="${esc(id)}" data-inquiry-field="${esc(f.key)}" aria-label="${esc(f.label)} aanvullen of controleren">${content}<span aria-hidden="true">→</span></button>`;
   }).join('');
   const fields=`<div class="inquiry-checks">${fieldRows}</div>${sourced.inquirySourcePage?`<details><summary>Herkomst aanvraag</summary><p>Product: ${esc(order.inquiryProduct||'Niet opgegeven')}<br>Websitepagina: ${esc(sourced.inquirySourcePage)}</p></details>`:''}<small>Aanvraaggegevens zijn geen prijsafspraak of productieopdracht.</small>`;
-  if(compact)return `<details class="order-surface dossier-details inquiry-checklist"><summary><span>Aanvraaggegevens</span><small>${status}${order.items.length>1?' · per product':''}</small></summary><div class="dossier-details-body"><div class="actions">${editButton}</div>${fields}</div></details>`;
+  if(compact&&!data.missing.length)return `<details class="order-surface dossier-details inquiry-checklist"><summary><span>Aanvraaggegevens</span><small>${status}${order.items.length>1?' · per product':''}</small></summary><div class="dossier-details-body"><div class="actions">${editButton}</div>${fields}</div></details>`;
   return `<section class="inquiry-checklist"><div class="section-heading"><div><h3>Aanvraaggegevens</h3><p>${status}${order.items.length>1?' · controleer per product':''}</p></div>${editButton}</div>${fields}</section>`;
  }
 

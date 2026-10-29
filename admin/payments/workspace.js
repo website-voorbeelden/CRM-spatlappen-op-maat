@@ -1,4 +1,4 @@
-import {keyFactsMarkup} from '../workspace/key-facts.js?v=calm-workspaces-20261027';
+import {keyFactsMarkup} from '../workspace/key-facts.js?v=feedback-five-20261029';
 import {captureReceiptFocus,restoreReceiptFocus} from './list-focus.js?v=ui-batch3-followup-20261027';
 import {paymentOverviewRows,selectPayments,paymentOverviewTotals} from '../../shared/payment-overview.js?v=payments-overview-20261027';
 // The feature keeps only view filters; every paint reads the live central state.

@@ -1,7 +1,7 @@
 // A generation produces two stored files. Group only its exact identity; never
 // merge uploads, other orders, document numbers or separate generation events.
 import {documentTypes} from "./generation.js";
-import {documentSeriesKey,documentVersion} from "../../shared/document-revisions.js";
+import {documentSeriesKey,documentVersion} from "../../shared/document-revisions.js?v=feedback29-restpunten";
 export function documentFormat(file){return /\.pdf$/i.test(file.name)?'PDF':/\.docx$/i.test(file.name)?'Word':'';}
 export function documentBundles(files){
  const candidates=new Map(),single=[];

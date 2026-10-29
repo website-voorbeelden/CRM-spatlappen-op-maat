@@ -1,3 +1,4 @@
+import {documentVersion,documentSeriesKey} from './document-revisions.js?v=feedback29-batch3-followup';
 // Preparation ledger: actual source amounts, explicit classification, no filing API.
 import {supplierInvoices} from './supplier-invoices.js';
 export const vatBoxes=[['1a','Binnenland · hoog'],['1b','Binnenland · laag'],['1c','Bijzonder forfait / overige tarieven · geen buitenlandse btw'],['1d','Privégebruik'],['1e','Binnenland · 0% / niet bij jou belast'],['2a','Binnenlandse inkoop · btw naar jou verlegd'],['3a','Uitvoer buiten EU'],['3b','Leveringen/diensten binnen EU'],['3c','Installatie / afstandsverkopen binnen EU'],['4a','Inkoop buiten EU / invoer met artikel 23'],['4b','Inkoop binnen EU'],['5b','Nederlandse voorbelasting / betaalde invoer-btw'],['outside','Buiten deze Nederlandse aangifte']];
@@ -32,7 +33,9 @@ export function vatSources(state){
   }else if(doc.supplierDocument?.kind==='invoice'){const source=doc.supplierDocument;sources.push({key:'file:'+doc.id,kind:'uploaded',label:'Leveranciersfactuur · '+doc.name,documentNumber:source.reference||'',counterparty:source.supplier||'',date:vatDate(source.date)?source.date:'',orderId:doc.ownerId,documentIds:[doc.id],signature:vatFingerprint([doc.id,doc.ownerId,doc.name,doc.size,source]),seed:null});
   }else if(doc.category==='invoice'&&!doc.generated){sources.push({key:'file:'+doc.id,kind:'uploaded',label:doc.name,documentNumber:'',date:vatDate(doc.date)?doc.date:'',documentIds:[doc.id],signature:vatFingerprint([doc.id,doc.ownerId,doc.name,doc.size,doc.date]),seed:null});}
  }
- for(const [key,docs] of groups){
+ for(const [key,allDocs] of groups){
+  let docs=allDocs;
+  const latest=new Map();for(const file of docs){const key=documentSeriesKey(file);latest.set(key,Math.max(latest.get(key)||0,documentVersion(file)));}docs=docs.filter(file=>documentVersion(file)===latest.get(documentSeriesKey(file)));
   docs.sort((a,b)=>a.id.localeCompare(b.id));const doc=docs[0],g=doc.generated,p=g.payload,order=state.orders.find(o=>o.id===doc.ownerId),customer=state.customers.find(c=>c.id===order?.customerId),seed=invoiceSeed(p);
   const conflict=new Set(docs.map(d=>vatFingerprint([d.generated.generationId,d.generated.payload,d.generated.vatReason??null,d.date]))).size!==1;
   sources.push({key,kind:'invoice',label:g.number,documentNumber:g.number,date:vatDate(doc.date)?doc.date:'',orderId:order?.id||'',counterparty:p?.fields?.billing_company||customer?.company||'',counterpartyVat:customer?.vatNumber||'',documentIds:docs.map(d=>d.id),signature:vatFingerprint(docs.map(d=>[d.id,d.generated,d.date,d.size])),seed,hardIssue:conflict,issue:conflict?'Twee verschillende factuurbronnen met hetzelfde nummer.':!seed?'Factuurbedragen ontbreken in de bewaarde bron.':''});

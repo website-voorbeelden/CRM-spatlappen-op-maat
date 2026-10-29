@@ -1,4 +1,4 @@
-import {aiExportScopes,buildAiExport} from '../shared/ai-export.js?v=payments-overview-20261027';
+import {aiExportScopes,buildAiExport} from '../shared/ai-export.js?v=feedback29-batch1-followup';
 import {loading} from './loading.js';
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 export function createAiExportUI({getState,getContext,openForm,downloadBlob,toast}){

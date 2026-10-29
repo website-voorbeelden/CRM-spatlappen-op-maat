@@ -1,5 +1,5 @@
 import {canonicalOrderId} from './duplicate-records.js?v=duplicate-review-20261028';
-import {documentSeriesKey,documentVersion} from './document-revisions.js';
+import {documentSeriesKey,documentVersion} from './document-revisions.js?v=feedback29-batch3-followup';
 export const searchTypes={all:'Alles',order:'Orders',customer:'Klanten',document:'Documenten',mail:'E-mail',purchase:'Inkoop',stock:'Voorraad',page:'Pagina’s'};
 export const normalizeSearch=value=>String(value??'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9@]+/g,' ').trim().replace(/\s+/g,' ');
 const text=v=>Array.isArray(v)?v.map(text).filter(Boolean).join(' · '):typeof v==='string'||typeof v==='number'?String(v):'';

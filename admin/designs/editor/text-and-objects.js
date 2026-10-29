@@ -52,7 +52,7 @@ function updateFontPreviews(){
       const preview=$(previewId);if(!preview)continue;
       const font=preview.dataset.comparisonFont||$(fieldId).value;
       const family=font.split(',')[0].replace(/['"]/g,'').trim();
-      preview.textContent=firstWord($(textId).value);
+      const sample=firstWord($(textId).value);preview.textContent=preview.dataset.uppercase==='true'?sample.toLocaleUpperCase('nl-NL'):sample;
       preview.style.fontFamily=printFontFamily(font);
       preview.style.fontWeight=String(fontIsSingle(font)?400:textWeight($(weightId).value));
       preview.style.letterSpacing=(textTracking($(trackingId).value)*26/Math.max(.5,Number($(sizeId).value)||5))+'px';
@@ -62,8 +62,6 @@ function updateFontPreviews(){
   apply();
   if(document.fonts?.status==='loading'){
     if(!updateFontPreviews.waiting){updateFontPreviews.waiting=true;document.fonts.ready.then(()=>{updateFontPreviews.waiting=false;apply();}).catch(()=>{updateFontPreviews.waiting=false;});}
-  }else{
-    apply();
   }
 }
 
@@ -286,10 +284,19 @@ function renderLists(){
 function installFontGalleries(){
  for(const [fieldId,previewId]of [['textFont','textFontPreview'],['editTextFont','editTextFontPreview']]){
   const select=$(fieldId),preview=$(previewId),gallery=document.createElement('details');gallery.className='subdetails font-gallery';
-  const summary=document.createElement('summary');summary.textContent='Lettertypen vergelijken · veelgebruikt eerst';const grid=document.createElement('div');grid.className='font-gallery-grid';gallery.append(summary,grid);select.after(gallery);
-  const restore=()=>{clearArtworkFontPreview();delete preview.dataset.comparisonFont;updateFontPreviews();};
-  function populate(){grid.replaceChildren();const options=[...select.options].filter(o=>o.value&&!o.textContent.includes('alleen preview')).sort((a,b)=>(Number(fontUsage[b.value])||0)-(Number(fontUsage[a.value])||0));for(const option of options){const button=document.createElement('button');button.type='button';button.textContent=option.textContent;button.style.fontFamily=printFontFamily(option.value);button.style.fontWeight=fontIsSingle(option.value)?'400':'700';button.title=option.textContent;const sample=()=>{preview.dataset.comparisonFont=option.value;updateFontPreviews();if(fieldId==='editTextFont')previewArtworkFont(option.value);};button.onpointerenter=sample;button.onfocus=sample;button.onclick=()=>{restore();select.value=option.value;select.dispatchEvent(new Event('change',{bubbles:true}));gallery.open=false;};grid.append(button);}}
-  select.addEventListener('fontoptionschange',()=>{restore();if(gallery.open)populate();});gallery.addEventListener('toggle',()=>{if(gallery.open)populate();else restore();});gallery.addEventListener('pointerleave',restore);gallery.addEventListener('focusout',event=>{if(!gallery.contains(event.relatedTarget))restore();});select.addEventListener('change',()=>{rememberFont(select.value);restore();});
+  const summary=document.createElement('summary');summary.textContent='Lettertypen vergelijken · veelgebruikt eerst';const grid=document.createElement('div');grid.className='font-gallery-grid';
+  const capsLabel=document.createElement('label');capsLabel.className='check';const caps=document.createElement('input');caps.type='checkbox';caps.checked=preview.dataset.uppercase==='true';capsLabel.append(caps,document.createTextNode('Alleen het lettertypevoorbeeld in HOOFDLETTERS'));caps.onchange=()=>{preview.dataset.uppercase=String(caps.checked);updateFontPreviews();};gallery.append(summary,capsLabel,grid);select.after(gallery);
+  let comparisonFrame=0,pendingFont='',fontObserver=null;
+  const restore=()=>{if(comparisonFrame)cancelAnimationFrame(comparisonFrame);comparisonFrame=0;pendingFont='';clearArtworkFontPreview();delete preview.dataset.comparisonFont;updateFontPreviews();};
+  const compare=font=>{pendingFont=font;if(comparisonFrame)return;comparisonFrame=requestAnimationFrame(()=>{comparisonFrame=0;const font=pendingFont;pendingFont='';if(!gallery.open||!font||preview.dataset.comparisonFont===font)return;preview.dataset.comparisonFont=font;updateFontPreviews();if(fieldId==='editTextFont')previewArtworkFont(font);});};
+  function populate(){
+   fontObserver?.disconnect();fontObserver=null;grid.replaceChildren();
+   const paintSample=button=>{button.style.fontFamily=printFontFamily(button.dataset.galleryFont);button.style.fontWeight=fontIsSingle(button.dataset.galleryFont)?'400':'700';};
+   if(typeof IntersectionObserver==='function'){const observer=new IntersectionObserver(entries=>{if(!gallery.open||fontObserver!==observer)return;for(const entry of entries)if(entry.isIntersecting){paintSample(entry.target);observer.unobserve(entry.target);}},{rootMargin:'100px 0px'});fontObserver=observer;}
+   const options=[...select.options].filter(o=>o.value&&!o.textContent.includes('alleen preview')).sort((a,b)=>(Number(fontUsage[b.value])||0)-(Number(fontUsage[a.value])||0));
+   for(const option of options){const button=document.createElement('button');button.type='button';button.textContent=option.textContent;button.dataset.galleryFont=option.value;button.title=option.textContent;button.onpointerenter=()=>{paintSample(button);compare(option.value);};button.onfocus=()=>{paintSample(button);compare(option.value);};button.onclick=()=>{restore();select.value=option.value;select.dispatchEvent(new Event('change',{bubbles:true}));gallery.open=false;select.focus({preventScroll:true});};grid.append(button);if(fontObserver)fontObserver.observe(button);else paintSample(button);}
+  }
+  select.addEventListener('fontoptionschange',()=>{restore();if(gallery.open)populate();});gallery.addEventListener('toggle',()=>{if(gallery.open)populate();else{fontObserver?.disconnect();fontObserver=null;restore();}});gallery.addEventListener('pointerleave',restore);gallery.addEventListener('focusout',event=>{if(!gallery.contains(event.relatedTarget))restore();});gallery.addEventListener('keydown',event=>{if(event.key==='Escape'){event.preventDefault();event.stopPropagation();gallery.open=false;restore();summary.focus({preventScroll:true});}});select.addEventListener('change',()=>{rememberFont(select.value);restore();});
  }
  const help=document.createElement('details');help.className='subdetails';const title=document.createElement('summary');title.textContent='Tekst als vectorcontouren / hulp voor AI';help.append(title);
  const text=document.createElement('p');text.className='field-help';text.textContent='Voor bewerkbare tekst gebruik je Eigen lettertype importeren. Als alternatief kun je tekst als SVG-contouren importeren via Logo toevoegen. Dat blijft vector, maar is daarna geen bewerkbare tekst meer. Gebruik alleen lettertypen waarvoor je gebruiksrechten hebt.';help.append(text);

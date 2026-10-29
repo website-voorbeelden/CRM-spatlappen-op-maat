@@ -2057,5 +2057,243 @@ export const sourceUpdates = [
     "delivery": "local",
     "note": "Nieuwe Maat-pakbon: dezelfde16velden en tabelopbouw als vorige; leeg apart opmerkingenkopje wordt mee verborgen. Spatstandaard behouden. Gebruiker vraagt bronvergelijking en GitHubupload; geen verdere tests na verduidelijking. Eigen controle/live-uitrol open.",
     "evidence": "Bronvergelijking. Vóór verduidelijking3JS-syntaxchecks en validatie6defaults geslaagd; oude document-revisions-test faalde op achterhaalde Maatbeperking regel20. Geen volledige testclaim, geen browser/build/conversieproef. Zie docs/DOCUMENTTEMPLATES.md."
+  },
+  {
+    "id": "document-template-github-20261028",
+    "taskId": "document-template-manager-20261028",
+    "companies": [
+      "spatlappen",
+      "maatwerkkunststof"
+    ],
+    "at": "2026-10-28T11:45:35.962Z",
+    "author": "Codex",
+    "status": "review",
+    "delivery": "local",
+    "note": "Bron en alleen Maat-pakbon geüpload naar GitHubbranch crm-documenttemplates-20261028, commit20f93171b7cf401207e81d15b455d257f0650760. Spatstandaard behouden. Geen main/livewijziging; documentservice-uitrol en eigen gebruikerscontrole open.",
+    "evidence": "24blob-hashes en remote Git-tree gelijk aan voorbereid lokaal bronpakket; branch via index.html teruggelezen. Geen verdere tests/build/browser-/conversiecontrole na verduidelijking bronvergelijking. GitHubupload is geen livepublicatie."
+  },
+  {
+    "id": "document-template-live-20261028",
+    "taskId": "document-template-manager-20261028",
+    "companies": [
+      "spatlappen",
+      "maatwerkkunststof"
+    ],
+    "at": "2026-10-28T12:38:02.224Z",
+    "author": "Codex",
+    "status": "review",
+    "delivery": "live",
+    "note": "Gepubliceerd op beide bestaande CRM-domeinen, release crm-documenttemplates-20261028. Nieuwe pakbon alleen Maatwerkkunststof. Converter via GitHub main bijgewerkt; service meldt templateProtocol1/document-templates-20261028. Eigen controle open, eerdere bestanden/eigen overrides behouden.",
+    "evidence": "Cloudflare Production/main: Spatfe29fa8e-cac6-45f1-9481-fd9ebc146c0f; Maat3606a8c4-dee0-4a73-be34-9f104aeb9d9a. Renderstatus200 ready/templateProtocol1. Alleen noodzakelijke publicatieverpakking/Functionscompile en beheermetadata, geen tests/browser-/functionele/conversie-QA. Herstelpunten/publicatiebewijs lokaal vastgelegd."
+  },
+  {
+    "id": "purchase-import-vat-source-20261029",
+    "taskId": "purchase-import-vat-20261029",
+    "companies": [
+      "spatlappen",
+      "maatwerkkunststof"
+    ],
+    "at": "2026-10-29T03:03:19.338Z",
+    "author": "Codex",
+    "status": "review",
+    "delivery": "local",
+    "note": "Gedeelde inkoopvelden importVat/importVatRecoverable/bewijs en transport-in-productbasis; beide AI-invoerroutes inclusief parser/review/atomair opslaan, validator/back-up/AI-export en marge-/kosten-/uitgavenweergave aangepast. Vooral Spatlappen-importbestellingen; bestaande bedragen/records niet gewijzigd. Btw-register blijft fiscale bron, geen automatische aangifteboeking. Zie docs/INKOOP-INVOER-BTW.md.",
+    "evidence": "Alleen bronlezing/bewerking en bouwadministratie; geen tests/checks/syntaxchecks/build/browser-/DOMcontrole of provideractie, geen GitHub/livepublicatie. Eigen controle beide bedrijven, beide AI-routes, opslag/heropenen/back-up, false/nul/onbekend/bewijs, inbegrepen transport/verdeelsleutel/centen, marge/uitgaven en CAS open. Bestaande data/IDs/bestanden/Git-staging/gebruikersstatus behouden."
+  },
+  {
+    "id": "feedback29-batch1-source",
+    "taskId": "feedback29-batch1",
+    "companies": [
+      "spatlappen",
+      "maatwerkkunststof"
+    ],
+    "at": "2026-10-29T06:29:31.547Z",
+    "author": "Codex",
+    "status": "review",
+    "delivery": "local",
+    "note": "Klantbetalingen & levering-tab met bekend/ontbrekend bedrag en mailvoorbereiding; volledige artikelkostencategorieën sluiten in centen aan op ordermarge. Bestaande lokale invoer-btw, twee AI-routes en inbegrepen transport behouden. Google Routes bestond al; sleutel/activering en eigen controle open. Zie docs/VIJF-FEEDBACKBATCHES-20261029.md. Bestaande invoer-btw behouden. Volledige feedback-IDmatrix uitsluitend privé; Open/Afgehandeld door gebruiker niet gewijzigd.",
+    "evidence": "Uitsluitend bron-/documentvergelijking/bewerking en feedback-/bouwadministratie. Geen tests/checks/syntaxchecks/build/browser-/DOM-/conversie-/visuele QA, runtimeherstart/provider-/mail-/betaalproef, echte klant-/order-/ontwerp-/bestandsmutatie, GitHubupload/livepublicatie. Eigen controle beide bedrijven, invoer/CAS/bedragen/varianten/bewijs/export en genoemde grenzen open. Alleen primaire API-documentatie geraadpleegd voor cloudopruimcontract, geen serviceactie. Bestaande Git-staging/gebruikersstatus/feedbackhistorie behouden."
+  },
+  {
+    "id": "feedback29-batch2-source",
+    "taskId": "feedback29-batch2",
+    "companies": [
+      "spatlappen",
+      "maatwerkkunststof"
+    ],
+    "at": "2026-10-29T06:29:31.547Z",
+    "author": "Codex",
+    "status": "review",
+    "delivery": "local",
+    "note": "Adaptieve drie feiten, producten/prijzen voorop, directe producteditor, ruimere korte dossierkolom met contact/bestemming/mail-/betaalouderdom. Singletonactiemenu’s direct, documentcategorieacties zichtbaar. Feedback volledige ID en aparte bouwstatus/export; busy/foutafhandeling bij Afgehandeld. Oorspronkelijke gebruikersfout niet zonder gebruikersproef bewezen opgelost. Zie docs/VIJF-FEEDBACKBATCHES-20261029.md. Bestaande invoer-btw behouden. Volledige feedback-IDmatrix uitsluitend privé; Open/Afgehandeld door gebruiker niet gewijzigd.",
+    "evidence": "Uitsluitend bron-/documentvergelijking/bewerking en feedback-/bouwadministratie. Geen tests/checks/syntaxchecks/build/browser-/DOM-/conversie-/visuele QA, runtimeherstart/provider-/mail-/betaalproef, echte klant-/order-/ontwerp-/bestandsmutatie, GitHubupload/livepublicatie. Eigen controle beide bedrijven, invoer/CAS/bedragen/varianten/bewijs/export en genoemde grenzen open. Alleen primaire API-documentatie geraadpleegd voor cloudopruimcontract, geen serviceactie. Bestaande Git-staging/gebruikersstatus/feedbackhistorie behouden."
+  },
+  {
+    "id": "feedback29-batch3-source",
+    "taskId": "feedback29-batch3",
+    "companies": [
+      "spatlappen",
+      "maatwerkkunststof"
+    ],
+    "at": "2026-10-29T06:29:31.547Z",
+    "author": "Codex",
+    "status": "review",
+    "delivery": "local",
+    "note": "Standaard50%-productievrijgave en bevestiging/linkfase bestonden. Aanbetalingsvoorstel volgt expliciete afspraak, anders50%. Ontvangstselectie op factuur zichtbaar. Nieuwste gegenereerde ongebokte factuur als versie bewerken met behoud van bestanden/nummer; btw-bron kiest nieuwste versie per serie en onafhankelijke conflicten blijven blokkeren. Geen fictieve versturing bij bestaande factuur. Zie docs/VIJF-FEEDBACKBATCHES-20261029.md. Bestaande invoer-btw behouden. Volledige feedback-IDmatrix uitsluitend privé; Open/Afgehandeld door gebruiker niet gewijzigd.",
+    "evidence": "Uitsluitend bron-/documentvergelijking/bewerking en feedback-/bouwadministratie. Geen tests/checks/syntaxchecks/build/browser-/DOM-/conversie-/visuele QA, runtimeherstart/provider-/mail-/betaalproef, echte klant-/order-/ontwerp-/bestandsmutatie, GitHubupload/livepublicatie. Eigen controle beide bedrijven, invoer/CAS/bedragen/varianten/bewijs/export en genoemde grenzen open. Alleen primaire API-documentatie geraadpleegd voor cloudopruimcontract, geen serviceactie. Bestaande Git-staging/gebruikersstatus/feedbackhistorie behouden."
+  },
+  {
+    "id": "feedback29-batch4-source",
+    "taskId": "feedback29-batch4",
+    "companies": [
+      "spatlappen",
+      "maatwerkkunststof"
+    ],
+    "at": "2026-10-29T06:29:31.547Z",
+    "author": "Codex",
+    "status": "review",
+    "delivery": "local",
+    "note": "3200%-zoom met bestaande ankers, verticale plus/min rechts naast maat, leesbare orderteruglink. Maat/aantal uit ontwerp na expliciete bevestiging in dezelfde transactie naar order; variant-/klantbasis en leveranciershoeveelheden blijven bewaakt, definitieve ontwerpkeuze vervalt. Andere ontwerpen/bestanden blijven staan. Zie docs/VIJF-FEEDBACKBATCHES-20261029.md. Bestaande invoer-btw behouden. Volledige feedback-IDmatrix uitsluitend privé; Open/Afgehandeld door gebruiker niet gewijzigd.",
+    "evidence": "Uitsluitend bron-/documentvergelijking/bewerking en feedback-/bouwadministratie. Geen tests/checks/syntaxchecks/build/browser-/DOM-/conversie-/visuele QA, runtimeherstart/provider-/mail-/betaalproef, echte klant-/order-/ontwerp-/bestandsmutatie, GitHubupload/livepublicatie. Eigen controle beide bedrijven, invoer/CAS/bedragen/varianten/bewijs/export en genoemde grenzen open. Alleen primaire API-documentatie geraadpleegd voor cloudopruimcontract, geen serviceactie. Bestaande Git-staging/gebruikersstatus/feedbackhistorie behouden."
+  },
+  {
+    "id": "feedback29-batch5-source",
+    "taskId": "feedback29-batch5",
+    "companies": [
+      "spatlappen",
+      "maatwerkkunststof"
+    ],
+    "at": "2026-10-29T06:29:31.547Z",
+    "author": "Codex",
+    "status": "doing",
+    "delivery": "local",
+    "note": "Paper.js-segmentatie bestond; globale grens512onderdelen en correcte overslaanmelding toegevoegd. Cloudopruimbron met tombstonewachtrij, CAS-guard tegen opnieuw koppelen, aparte bevestigde fysieke R2-delete en herstelbare retry. Vereist nieuwe migratie/publicatie, niet uitgevoerd. Historisch niet-geregistreerde orphanbytes en onbeperkte SVG-effecten open. Zie docs/VIJF-FEEDBACKBATCHES-20261029.md. Bestaande invoer-btw behouden. Volledige feedback-IDmatrix uitsluitend privé; Open/Afgehandeld door gebruiker niet gewijzigd.",
+    "evidence": "Uitsluitend bron-/documentvergelijking/bewerking en feedback-/bouwadministratie. Geen tests/checks/syntaxchecks/build/browser-/DOM-/conversie-/visuele QA, runtimeherstart/provider-/mail-/betaalproef, echte klant-/order-/ontwerp-/bestandsmutatie, GitHubupload/livepublicatie. Eigen controle beide bedrijven, invoer/CAS/bedragen/varianten/bewijs/export en genoemde grenzen open. Alleen primaire API-documentatie geraadpleegd voor cloudopruimcontract, geen serviceactie. Bestaande Git-staging/gebruikersstatus/feedbackhistorie behouden."
+  },
+  {
+    "id": "feedback29-batch1-followup-source",
+    "taskId": "feedback29-batch1",
+    "companies": [
+      "spatlappen",
+      "maatwerkkunststof"
+    ],
+    "at": "2026-10-29T06:44:42.745Z",
+    "author": "Codex",
+    "status": "review",
+    "delivery": "local",
+    "note": "Gericht batch1vervolg: gedeelde financiële guard voor zendinglijst/aankomstmail, drie kerngegevens/filter/zoekterugkeer, één passende actie, onbekende artikelposten zichtbaar, aparte btw-betaalbron tegen dubbel tellen en gedeeltelijke AI-transportvoorstellen correct bewaren. Bestaande invoer-btw/andere batches/data behouden. Google-activering en eigen controle open; zie docs/FEEDBACK29-BATCH1-VERVOLG.md.",
+    "evidence": "Uitsluitend bron-/documentlezing en bewerking plus bouwadministratie. Geen tests/checks/syntaxchecks/build/browser-/DOM-/visuele QA, echte route-/provider-/mail-/betaalproef, runtimeherstart/GitHubupload/publicatie of zakelijke gegevens-/bestandsmutatie. Privé-IDmatrix alleen zeven batch1punten bijgewerkt, gebruikersstatus behouden. Googleconfig/credentials niet uitgelezen. Eigen controle beide bedrijven, bedragen/ontbrekend/nul/overbetaling/mixed/afgerond, filters/terugkeer, mailconcept, componentkosten/btw-betaalbron, twee AI-routes/CAS/invoer/bijlagen/back-up open."
+  },
+  {
+    "id": "feedback29-batch2-followup-source",
+    "taskId": "feedback29-batch2",
+    "companies": [
+      "spatlappen",
+      "maatwerkkunststof"
+    ],
+    "at": "2026-10-29T08:56:37.015Z",
+    "author": "Codex",
+    "status": "review",
+    "delivery": "local",
+    "note": "Batch2 gericht verder uitgewerkt: gekozen contactpersoon consistent tonen en direct bewerken met order-/contactbasis, factuurmail direct, planningwaarschuwingen/aanvraagtekorten zichtbaar. Feedback ID-/bouw-/batchfilters, selectie-export, stabiele controls en bewaakte statusopslag met expliciete fouten. Productprijs/verzending en aanvraagdatum verduidelijkt; geen voorloopnullen als nummerinstelling ontbreekt. Bestaande wijzigingen/gegevens behouden. Zie docs/FEEDBACK29-BATCH2-VERVOLG.md. Oorspronkelijke feedbackknopfout blijft gedeeltelijk; eigen controle open.",
+    "evidence": "Alleen bron-/documentlezing en gerichte bewerking plus bouw-/feedbackadministratie. Geen tests/checks/syntaxchecks/build/browser-/DOM-/visuele QA, runtimeherstart/provider-/mail-/betaalactie/GitHubupload/publicatie/migratie of zakelijke data-/bestandsmutatie. Privé alleen19batch2developmenttags bijgewerkt, gebruikersstatus/afhandelnotities en andere batches behouden. Bestaande Git-index ongemoeid. Eigen controle beide bedrijven/desktop/mobiel/keyboard, ordercontact/factuurmail/invoer/CAS, vroege order/verzending/ontvangsten, planning, menu/nummering, feedback ID/filters/export/status/fout/conflict/offline open."
+  },
+  {
+    "id": "feedback29-batch3-followup-source",
+    "taskId": "feedback29-batch3",
+    "companies": [
+      "spatlappen",
+      "maatwerkkunststof"
+    ],
+    "at": "2026-10-29T09:13:51.651Z",
+    "author": "Codex",
+    "status": "review",
+    "delivery": "local",
+    "note": "Batch3vervolg: aanbetalingsdoel minus ontvangen als voorstel bij ontvangst/link; geldige volledige betaalbasis en bruikbare link-/documentbasis voor50%-vrijgave/fase/mail. Factuurrevisie met bewuste ontvangst-/betaalstandactualisatie, eigen notitie apart,500tekengrens, PDF/Word en ontvangst-/btw-/serie-/CASbewaking. Factuur aanwezig geen verplichte mailstap; correctiedatum uiterlijk vandaag. Bestaande bron/data behouden. Meldingen11/62gedeeltelijk en eigen controle open. Zie docs/FEEDBACK29-BATCH3-VERVOLG.md.",
+    "evidence": "Alleen bron-/documentlezing/bewerking en feedback-/bouwadministratie. Geen tests/checks/syntaxchecks/build/browser-/DOM-/visuele QA/conversie/provider-/mail-/betaalactie/herstart/GitHubupload/publicatie/migratie of zakelijke data-/bestandsmutatie. Alleen16batch3developmenttags bijgewerkt; gebruikersstatus/afhandeling/andere batches en Git-index behouden. Eigen controle beide bedrijven/invoer/bankbedragen/50%-grens/afwijkende afspraak en basis, linkstatus/mail/reply, factuur nieuw/revisie/ontvangstselectie/oude notitie/tekstlimiet/PDF-Word/btw/serie/template/twee tabs open. Telefoonconfig/bezorging en losse/geboekte facturen blijven gedeeltelijk."
+  },
+  {
+    "id": "feedback29-batch4-followup-source",
+    "taskId": "feedback29-batch4",
+    "companies": [
+      "spatlappen",
+      "maatwerkkunststof"
+    ],
+    "at": "2026-10-29T09:34:18.912Z",
+    "author": "Codex",
+    "status": "review",
+    "delivery": "local",
+    "note": "Batch4vervolg: dezelfde mm-basis voor gewone/newvariant-save/PNG/JSON, oorspronkelijke klantguard en invoerherstel bij annuleren/fout; voorraad-/leveranciersaantallen en oude calculatorprijs bewaakt. Zoomgebaren per frame/grensfeedback, maatfout bij veld/verticale stappen/Enter, fontloads en hover per frame/hoofdlettervoorbeeld/Escape, Kopie openen met blijvende bovenlink/popupfallback. Klassieke volgorde en eerdere code/data behouden. Zie docs/FEEDBACK29-BATCH4-VERVOLG.md. Meldingen32/34/42gedeeltelijk; eigen controle open.",
+    "evidence": "Uitsluitend bron-/documentlezing en bewerking plus feedback-/bouwadministratie. Geen tests/checks/syntaxchecks/build/browser-/DOM-/visuele QA/prestatiemeting/conversie/PNG-/PDF-/productieproef, herstart/provider/GitHubupload/publicatie/migratie of zakelijke data-/bestandsmutatie. Alleen28batch4developmenttags/matrixregels bijgewerkt; gebruikersstatus/afhandeling/andere batches/Git-index behouden. Eigen controle meerdere tabs/klant/variant/mm/aantal/leeg/voorraad-leverancier-kosten/invoer/CAS/goedkeuring, zoom/selectie/cursor/trackpad/reset/maat/Shift/Enter/undo, fonts/voorbeeld/import/export, kopie/popup, klein scherm/mobiel/keyboard open. Geen bewijs van opgeloste oorspronkelijke prestatie-/mobiele-/knopklacht."
+  },
+  {
+    "id": "feedback29-batch5-followup-source",
+    "taskId": "feedback29-batch5",
+    "companies": [
+      "spatlappen",
+      "maatwerkkunststof"
+    ],
+    "at": "2026-10-29T09:52:56.099Z",
+    "author": "Codex",
+    "status": "doing",
+    "delivery": "local",
+    "note": "Batch5vervolg: read-only opruimplan voor bevestiging/uitvoering met namen/revisies/unieke bestanden/bekende KB/behoudredenen en actuele klant/besteldatum/product/referentiebasis. Complete finale metadata en generated/goedkeuringsbewijs beschermd. Cloud alle objectaliassen/recordreferenties/objectsleutels bewaakt, danglingrefs in CAS geweigerd, volledige backup met fresh upload mogelijk. Consistente revisie-/pagina-/claimbasis en bladeren voorbij behouden objecten. SVG éénkleurig opaque over groepsgrenzen en eenvoudige vaste userSpaceOnUse-clips als zichtbare vectorcontouren, curves/gaten/transformaties/laagvolgorde/bronbewaking/undo behouden. Zie docs/FEEDBACK29-BATCH5-VERVOLG.md. Alle drie meldingen gedeeltelijk; historische onbekende cloudbytes, migratie/publicatie en bredere SVG-effecten open.",
+    "evidence": "Uitsluitend bron-/documentlezing en bewerking, officiële Paper.js-API-documentatie en feedback-/bouwadministratie. Geen tests/checks/syntaxchecks/build/browser-/DOM-/visuele QA/SVG-/PNG-/PDF-/converter-/productieproef/prestatiemeting, runtimeherstart/provideractie/GitHubupload/publicatie/migratie of zakelijke data-/bestandsmutatie. Geen echte bytes verwijderd of opruiming aangezet. Alleen3batch5developmenttags/matrixregels, gebruikersstatus/afhandeling/andere batches en Git-index behouden. Eigen controle beide bedrijven/twee tabs/plan/bewijs/referenties/invoer/CAS/cloudclaim/retry/volledige back-up/clip-/kleur-/transform-/undo-/exportrandgevallen open."
+  },
+  {
+    "id": "feedback29-restpunten-batch2-source",
+    "taskId": "feedback29-batch2",
+    "companies": [
+      "spatlappen",
+      "maatwerkkunststof"
+    ],
+    "at": "2026-10-29T10:31:14.008Z",
+    "author": "Codex",
+    "status": "review",
+    "delivery": "local",
+    "note": "Feedbackstatus na bevestigde commit direct in zichtbare lijst, oude kaart niet bij mislukte refresh; versie-/notitiebewaking en filters blijven. Mobiel actieve cursorregel/IME/handmatige-scroll en scrollbare feedbackbody met bereikbare footer; geen invoeropslag erbij. Zie docs/FEEDBACK29-RESTPUNTEN.md. Oorspronkelijke klachten/eigen controle en beschreven restscope blijven open; geen gebruikersafhandeling.",
+    "evidence": "Uitsluitend handmatige bron-/documentlezing en bewerking, primaire W3C-SVGdocumentatie en feedback-/bouwadministratie. Geen tests/checks/syntaxchecks/build/browser-/DOM-/visuele QA/font-/SVG-/factuur-/PNG-/PDF-/converter-/productieproef/prestatiemeting, herstart/provideractie/migratie/GitHubupload/publicatie of zakelijke data-/bestandsmutatie. Alleen7developmenttags/matrixregels; gebruikersstatus/afhandeling/andere meldingen/Git-index behouden. Eigen controle beide bedrijven/statusrefresh/mobilecaret/IME/factuurbedragen/prijsvorm/betaalstand/bevestiging/btw-CASconflict/fontload/hover/keyboard/kopie/relatieve clip/undo/export open.24/62/70niet gewijzigd; historische onbekende bytes/cloudinrichting en telefoon-/Googleactivering apart."
+  },
+  {
+    "id": "feedback29-restpunten-batch3-source",
+    "taskId": "feedback29-batch3",
+    "companies": [
+      "spatlappen",
+      "maatwerkkunststof"
+    ],
+    "at": "2026-10-29T10:31:14.008Z",
+    "author": "Codex",
+    "status": "review",
+    "delivery": "local",
+    "note": "Factuurrevisie met directe aantallen/stukprijzen/verzending/producttotaal, live netto/btw/bruto/restant/overbetaling, strikte centen/generatorgrenzen en bewuste financiële bevestiging; gedeelde appendvalidatie. Order/ontvangsten/oude versies/nummer/boekings-/serie-/CASbescherming behouden, geüploade/geboekte scope open. Zie docs/FEEDBACK29-RESTPUNTEN.md. Oorspronkelijke klachten/eigen controle en beschreven restscope blijven open; geen gebruikersafhandeling.",
+    "evidence": "Uitsluitend handmatige bron-/documentlezing en bewerking, primaire W3C-SVGdocumentatie en feedback-/bouwadministratie. Geen tests/checks/syntaxchecks/build/browser-/DOM-/visuele QA/font-/SVG-/factuur-/PNG-/PDF-/converter-/productieproef/prestatiemeting, herstart/provideractie/migratie/GitHubupload/publicatie of zakelijke data-/bestandsmutatie. Alleen7developmenttags/matrixregels; gebruikersstatus/afhandeling/andere meldingen/Git-index behouden. Eigen controle beide bedrijven/statusrefresh/mobilecaret/IME/factuurbedragen/prijsvorm/betaalstand/bevestiging/btw-CASconflict/fontload/hover/keyboard/kopie/relatieve clip/undo/export open.24/62/70niet gewijzigd; historische onbekende bytes/cloudinrichting en telefoon-/Googleactivering apart."
+  },
+  {
+    "id": "feedback29-restpunten-batch4-source",
+    "taskId": "feedback29-batch4",
+    "companies": [
+      "spatlappen",
+      "maatwerkkunststof"
+    ],
+    "at": "2026-10-29T10:31:14.008Z",
+    "author": "Codex",
+    "status": "review",
+    "delivery": "local",
+    "note": "Fonts op zichtbaarheid/nabijheid/focus/hover en observerguard, één meetcanvas/max200herbruikbare metingen met fontloadinvalidatie, getoonde font ook in selectiegrenzen. Kopie openen vangt popup/opener-excepties en meldt postcommitredrawfout apart; duurzame fallback blijft. Mobiel cursorregel/scrollbody/IME/invoer beschermd; originele klachten nog onbeoordeeld. Zie docs/FEEDBACK29-RESTPUNTEN.md. Oorspronkelijke klachten/eigen controle en beschreven restscope blijven open; geen gebruikersafhandeling.",
+    "evidence": "Uitsluitend handmatige bron-/documentlezing en bewerking, primaire W3C-SVGdocumentatie en feedback-/bouwadministratie. Geen tests/checks/syntaxchecks/build/browser-/DOM-/visuele QA/font-/SVG-/factuur-/PNG-/PDF-/converter-/productieproef/prestatiemeting, herstart/provideractie/migratie/GitHubupload/publicatie of zakelijke data-/bestandsmutatie. Alleen7developmenttags/matrixregels; gebruikersstatus/afhandeling/andere meldingen/Git-index behouden. Eigen controle beide bedrijven/statusrefresh/mobilecaret/IME/factuurbedragen/prijsvorm/betaalstand/bevestiging/btw-CASconflict/fontload/hover/keyboard/kopie/relatieve clip/undo/export open.24/62/70niet gewijzigd; historische onbekende bytes/cloudinrichting en telefoon-/Googleactivering apart."
+  },
+  {
+    "id": "feedback29-restpunten-batch5-source",
+    "taskId": "feedback29-batch5",
+    "companies": [
+      "spatlappen",
+      "maatwerkkunststof"
+    ],
+    "at": "2026-10-29T10:31:14.008Z",
+    "author": "Codex",
+    "status": "doing",
+    "delivery": "local",
+    "note": "Eenvoudige relatieve objectBoundingBox-clip op één gevulde vorm: bronbounds vóór eigen transform/boolean en clipfractie via dezelfde vectorruimte. Vaste clips/curves/gaten/laagvolgorde/bronbewaking/undo behouden; groepsclips/percentages/lengtematen en complexere effecten overslaan. Geen nieuwe cloudactie of wijziging van melding24. Zie docs/FEEDBACK29-RESTPUNTEN.md. Oorspronkelijke klachten/eigen controle en beschreven restscope blijven open; geen gebruikersafhandeling.",
+    "evidence": "Uitsluitend handmatige bron-/documentlezing en bewerking, primaire W3C-SVGdocumentatie en feedback-/bouwadministratie. Geen tests/checks/syntaxchecks/build/browser-/DOM-/visuele QA/font-/SVG-/factuur-/PNG-/PDF-/converter-/productieproef/prestatiemeting, herstart/provideractie/migratie/GitHubupload/publicatie of zakelijke data-/bestandsmutatie. Alleen7developmenttags/matrixregels; gebruikersstatus/afhandeling/andere meldingen/Git-index behouden. Eigen controle beide bedrijven/statusrefresh/mobilecaret/IME/factuurbedragen/prijsvorm/betaalstand/bevestiging/btw-CASconflict/fontload/hover/keyboard/kopie/relatieve clip/undo/export open.24/62/70niet gewijzigd; historische onbekende bytes/cloudinrichting en telefoon-/Googleactivering apart."
   }
 ];

@@ -1,6 +1,6 @@
 import {orderDesignApproved} from './product-design-variants.js?v=batch1-variants-20261026';
 import {companyFor} from './companies.js';
-import {salesFunnel} from './sales-funnel.js?v=feedback-followup-20261028';
+import {salesFunnel} from './sales-funnel.js?v=feedback29-batch3-followup';
 const knownDate=value=>typeof value==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(value)&&Number.isFinite(Date.parse(value));
 export const executionStages=['Besteld bij leverancier','In productie','Onderweg naar Nederland','Binnen in Nederland','Verzonden','Afgerond'];
 export function orderExecution(o){

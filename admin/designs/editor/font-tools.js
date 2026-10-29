@@ -1,5 +1,6 @@
 // Temporary font experiments never mutate artwork or history until a choice is applied.
 let fontPreviewOverride=null,fontHoverRevision=0,customFontReady=Promise.resolve(),fontOptionsSignature='',pendingTextFrame=0,fontUsage={};
+const fontPreviewLoads=new Map();
 try{fontUsage=JSON.parse(localStorage.getItem('spatlap-font-use-v1')||'{}');if(!fontUsage||typeof fontUsage!=='object'||Array.isArray(fontUsage))fontUsage={};}catch{}
 function fontIsSingle(font){return ['Metal Mania','Rye','Germania One','Bungee','Fredericka the Great','Ewert'].includes(SpatlapVectorExport.firstFamily(font))||/^CRMFont_/.test(SpatlapVectorExport.firstFamily(font));}
 function sortFontOptions(select){if(!select)return;const value=select.value;for(const option of [...select.options].sort((a,b)=>(Number(fontUsage[b.value])||0)-(Number(fontUsage[a.value])||0)))select.append(option);select.value=value;}
@@ -10,7 +11,7 @@ function syncCustomFontOptions(){
  for(const id of ['textFont','editTextFont']){const select=$(id),value=select.value;select.querySelectorAll('[data-custom-font]').forEach(option=>option.remove());for(const font of fonts){const option=new Option(font.name+' · eigen font',font.family);option.dataset.customFont='1';select.add(option);}if([...select.options].some(o=>o.value===value))select.value=value;sortFontOptions(select);select.dispatchEvent(new Event('fontoptionschange'));}
 }
 function restoreDesignFonts(){
- const ui=state.ui;syncCustomFontOptions();customFontReady=SpatlapVectorExport.ensureCustomFonts(ui?.customFonts||[]).then(()=>{if(state.ui===ui){SpatlapVectorExport.discardUnusedCustomFonts(ui?.customFonts||[]);syncSelectionControls();render();}});customFontReady.catch(error=>{if(state.ui===ui)toast(error.message);});return customFontReady;
+ const ui=state.ui;syncCustomFontOptions();customFontReady=SpatlapVectorExport.ensureCustomFonts(ui?.customFonts||[]).then(()=>{if(state.ui===ui){invalidateTextInkMetrics();SpatlapVectorExport.discardUnusedCustomFonts(ui?.customFonts||[]);syncSelectionControls();render();}});customFontReady.catch(error=>{if(state.ui===ui)toast(error.message);});return customFontReady;
 }
 function displayTextObject(text){return state.selectedType==='text'&&state.selected===text.id&&fontPreviewOverride?.id===text.id?{...text,font:fontPreviewOverride.font,weight:fontIsSingle(fontPreviewOverride.font)?400:text.weight}:text;}
 function refreshTextArtwork(text){
@@ -23,8 +24,10 @@ function refreshTextArtwork(text){
 function scheduleTextArtwork(text){if(pendingTextFrame)cancelAnimationFrame(pendingTextFrame);pendingTextFrame=requestAnimationFrame(()=>{pendingTextFrame=0;if(itemById(text.id,'text')===text){refreshTextArtwork(text);const index=state.texts.indexOf(text),label=$('textList').children[index]?.querySelector('span');if(label)label.textContent='Tekst '+(index+1)+': '+text.text.substring(0,24);}});}
 function previewArtworkFont(font){
  const text=state.selectedType==='text'?itemById(state.selected,'text'):null;if(!text)return;
+ if(fontPreviewOverride?.id===text.id&&fontPreviewOverride.font===font)return;
  const revision=++fontHoverRevision; fontPreviewOverride={id:text.id,font};const badge=$('experimentBadge');badge.hidden=false;badge.textContent='Lettertypevoorbeeld · nog niet gekozen';refreshTextArtwork(text);
- document.fonts.load(`${fontIsSingle(font)?400:textWeight(text.weight)} 30px ${printFontFamily(font)}`).then(()=>{if(revision===fontHoverRevision&&itemById(text.id,'text')===text)refreshTextArtwork(text);}).catch(()=>{});
+ const key=`${fontIsSingle(font)?400:textWeight(text.weight)} 30px ${printFontFamily(font)}`;if(document.fonts.check(key))return;let pending=fontPreviewLoads.get(key);if(!pending){pending=document.fonts.load(key);fontPreviewLoads.set(key,pending);if(fontPreviewLoads.size>128)fontPreviewLoads.delete(fontPreviewLoads.keys().next().value);pending.catch(()=>{if(fontPreviewLoads.get(key)===pending)fontPreviewLoads.delete(key);});}
+ pending.then(()=>{if(revision===fontHoverRevision&&itemById(text.id,'text')===text){invalidateTextInkMetrics();refreshTextArtwork(text);}}).catch(()=>{});
 }
 function clearArtworkFontPreview(){fontHoverRevision++;const id=fontPreviewOverride?.id;fontPreviewOverride=null;let compared=false;for(const key of ['textFontPreview','editTextFontPreview']){const preview=$(key);if(preview?.dataset.comparisonFont){delete preview.dataset.comparisonFont;compared=true;}}if(compared)updateFontPreviews();const badge=$('experimentBadge');if(badge){badge.hidden=!vectorExperiment;badge.textContent='Vectorvoorbeeld · nog niet toegepast';}const text=id&&itemById(id,'text');if(text)refreshTextArtwork(text);}
 function refreshCustomFontManager(){
@@ -38,6 +41,7 @@ function refreshCustomFontManager(){
  }
 }
 function installFontTools(){
+ document.fonts.addEventListener?.('loadingdone',invalidateTextInkMetrics);
  const controls=$('textControls').querySelector('.subdetails-body');
  const caps=document.createElement('button');caps.type='button';caps.textContent='Tekst in HOOFDLETTERS';caps.onclick=()=>{const text=itemById(state.selected,'text');if(!text||text.text===text.text.toLocaleUpperCase('nl'))return;clearArtworkFontPreview();pushHistory();text.text=text.text.toLocaleUpperCase('nl');syncSelectionControls();render();};controls.prepend(caps);
  const help=document.createElement('details');help.className='subdetails';const summary=document.createElement('summary');summary.textContent='Eigen lettertype importeren';help.append(summary);

@@ -1,5 +1,6 @@
+import {paymentRequestDay,usableOrderPaymentLink} from './order-payment-link.js?v=feedback29-batch3-followup';
 import {salesPhaseSignal,adoptedGmailPhase} from './sales-phase-signal.js?v=open-fixes-20261027';
-import {productionReleaseInfo} from './production-release.js?v=feedback-followup-20261028';
+import {productionReleaseInfo} from './production-release.js?v=feedback29-batch3-followup';
 import {mailTemplates,fillMailTemplate,templateContext} from './mail-templates.js?v=feedback-followup-20261028';
 import {companyFor} from './companies.js';
 import {inquiryRequirements} from './inquiries.js?v=feedback-followup-20261028';
@@ -9,7 +10,15 @@ export function funnelDisplayPhase(phase,companyId){return companyId==='maatwerk
 export const funnelPhaseLabel=(phase,companyId)=>funnelPhasesFor(companyId).find(([id])=>id===funnelDisplayPhase(phase,companyId))?.[1]||funnelPhases.find(([id])=>id===phase)?.[1]||phase;
 const phaseIds=new Set([...funnelPhases.map(([id])=>id),'invoice','welcome','received']),day=86400000;
 const timestamp=value=>Number.isFinite(Date.parse(value))?Date.parse(value):0;
-export function funnelPayment(state,o){const known=o.items.length>0&&(o.packagePrice!=null||o.items.every(i=>Number.isSafeInteger(i.price)))&&o.shippingKnown!==false;const net=(o.packagePrice??o.items.reduce((s,i)=>s+i.quantity*(i.price||0),0))+(o.shippingCharge||0),total=net+Math.round(net*(o.vat??21)/100),paid=state.payments.filter(p=>p.orderId===o.id).reduce((n,p)=>n+p.amount,0);return {known,total,paid,fullyPaid:known&&total>0&&paid>=total};}
+export function funnelPayment(state,o){
+ const items=o.items||[],receipts=state.payments.filter(p=>p.orderId===o.id);
+ const itemBasis=items.length>0&&items.every(i=>Number.isSafeInteger(i.quantity)&&i.quantity>0&&(o.packagePrice!=null||Number.isSafeInteger(i.price)&&i.price>=0));
+ const products=o.packagePrice??items.reduce((s,i)=>s+i.quantity*(i.price??0),0),shipping=o.shippingCharge??0,vat=o.vat??21,net=products+shipping,total=net+Math.round(net*vat/100),paid=receipts.reduce((n,p)=>n+p.amount,0);
+ const valid=receipts.every(p=>Number.isSafeInteger(p.amount))&&Number.isSafeInteger(paid)&&paid>=0;
+ const known=itemBasis&&Number.isSafeInteger(products)&&products>=0&&o.shippingKnown===true&&Number.isSafeInteger(o.shippingCharge)&&o.shippingCharge>=0&&Number.isFinite(vat)&&vat>=0&&vat<=100&&Number.isSafeInteger(total)&&total>=0&&valid;
+ return {known,total,paid,valid,fullyPaid:known&&total>0&&paid>=total};
+}
+function orderDocumentPrepared(state,orderId,kind){return state.documents.some(d=>d.ownerId===orderId&&(d.generated?.kind||d.category)===kind&&(/\.pdf$/i.test(d.name||'')||d.type==='application/pdf'));}
 function mailPhase(state,draft){const doc=state.documents.find(x=>x.id===draft.documentId),kind=doc?.generated?.kind||doc?.category;return ({quote:'quote',confirmation:'confirmation',invoice:'invoice'})[kind]||draft.funnelPurpose||'';}
 // Require a known acceptance, then use explicit document/mail purposes only.
 export function automaticFunnelMailPhase(state,draft){if(draft.status!=='accepted'||!timestamp(draft.sentAt))return '';const phase=mailPhase(state,draft);return ['specs','indication','quote','confirmation'].includes(phase)?phase:'';}
@@ -24,10 +33,9 @@ export function salesFunnel(state,o,companyId,{now=Date.now(),followupDays=o.sal
  if(o.productionReleasedDate||o.stage==='Productie vrijgegeven')phase='released';
  if(['In productie','Onderweg naar Nederland','Binnen in Nederland','Verzonden'].includes(o.stage)||o.productionDate)phase='production';
  if(o.archived||o.deliveredDate||o.stage==='Afgerond')phase='delivered';
- const release=productionReleaseInfo(state,o,companyId,{payment});
- const calendar=Object.fromEntries(new Intl.DateTimeFormat('en',{timeZone:'Europe/Amsterdam',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date(now)).map(part=>[part.type,part.value])),paymentDay=calendar.year+'-'+calendar.month+'-'+calendar.day;
- const confirmationPrepared=state.documents.some(d=>d.ownerId===o.id&&(d.generated?.kind||d.category)==='confirmation'&&(/\.pdf$/i.test(d.name||'')||d.type==='application/pdf'));
- const paymentPrepared=companyId==='spatlappen'&&payment.known&&payment.total>payment.paid&&confirmationPrepared&&(o.paymentLinks||[]).some(link=>Number.isSafeInteger(link.amountInCents)&&link.amountInCents>0&&link.url&&(!link.expiryDate||/^\d{4}-\d{2}-\d{2}$/.test(link.expiryDate)&&link.expiryDate>=paymentDay)&&!['CLOSED','EXPIRED','closed','expired'].includes(link.status));
+ const paymentDay=paymentRequestDay(now),release=productionReleaseInfo(state,o,companyId,{payment,today:paymentDay});
+ const confirmationPrepared=orderDocumentPrepared(state,o.id,'confirmation');
+ const paymentPrepared=companyId==='spatlappen'&&payment.known&&payment.total>payment.paid&&confirmationPrepared&&(o.paymentLinks||[]).some(link=>usableOrderPaymentLink(link,{today:paymentDay,total:payment.total})&&(!link.documentId||state.documents.some(d=>d.id===link.documentId&&d.ownerId===o.id&&(d.generated?.kind||d.category)==='confirmation'&&(/\.pdf$/i.test(d.name||'')||d.type==='application/pdf'))));
  const signal=salesPhaseSignal(state,o,funnelDisplayPhase(phase,companyId),events,{automatic:release.automatic,paymentPrepared});
  const selected=o.salesFunnel?.selection?.basis===signal.basis;
  if(selected){signal.phase=o.salesFunnel.selection.phase;phase=signal.phase;}
@@ -43,8 +51,8 @@ export function salesFunnel(state,o,companyId,{now=Date.now(),followupDays=o.sal
  const inbound=(state.incomingEmails||[]).filter(m=>m.orderId===o.id&&m.direction!=='outgoing').reduce((n,m)=>Math.max(n,timestamp(m.receivedAt)),0);
  const waiting=['specs','indication','quote','confirmation','invoice'].includes(phase)&&sent&&inbound<=timestamp(sent.at),days=sent?Math.max(0,Math.floor((now-timestamp(sent.at))/day)):null;
  const followup=Boolean(waiting&&days>=followupDays),invoiceSent=events.some(e=>e.phase==='invoice');
- const invoicePrepared=state.documents.some(d=>d.ownerId===o.id&&(d.generated?.kind||d.category)==='invoice'&&(/\.pdf$/i.test(d.name||'')||d.type==='application/pdf'));
- const actions={welcome:['specs','Specificaties controleren'],received:['confirmation','Orderbevestiging voorbereiden'],new:['specs','Specificaties opvragen'],specs:['specs','Specificaties controleren'],pricing:['calculate','Prijs berekenen'],indication:['quote','Offerte voorbereiden'],quote:['confirmation','Orderbevestiging voorbereiden'],confirmation:['payment','Betaling registreren'],invoice:['payment','Betaling registreren'],paid:!payment.fullyPaid?['payment','Betaling controleren']:invoiceSent?['production','Productiestart registreren']:['invoice',invoicePrepared?'Factuur mailen':'Factuur maken'],released:(o.items.some(i=>i.productionSource!=='local')?['purchase','Inkoopbestelling controleren']:['production','Productiestart registreren']),production:['delivery','Levering registreren'],delivered:['view','Dossier bekijken']};
+ const invoicePrepared=orderDocumentPrepared(state,o.id,'invoice');
+ const actions={welcome:['specs','Specificaties controleren'],received:['confirmation','Orderbevestiging voorbereiden'],new:['specs','Specificaties opvragen'],specs:['specs','Specificaties controleren'],pricing:['calculate','Prijs berekenen'],indication:['quote','Offerte voorbereiden'],quote:['confirmation','Orderbevestiging voorbereiden'],confirmation:['payment','Betaling registreren'],invoice:['payment','Betaling registreren'],paid:!payment.fullyPaid?['payment','Betaling controleren']:invoiceSent||invoicePrepared?['production','Productiestart registreren']:['invoice',invoicePrepared?'Factuur mailen':'Factuur maken'],released:(o.items.some(i=>i.productionSource!=='local')?['purchase','Inkoopbestelling controleren']:['production','Productiestart registreren']),production:['delivery','Levering registreren'],delivered:['view','Dossier bekijken']};
  const next=['new','welcome','specs'].includes(phase)&&!requirements.missing.length?['calculate','Prijs berekenen']:actions[phase]||actions.new;
  const automaticMail=!selected&&!gmail&&last?.source==='mail'&&['specs','indication','quote','confirmation'].includes(last.phase)&&phase===last.phase?{id:last.id,phase:last.phase}:null;
  return {phase,signal,gmail,automaticMail,automaticPricing:automaticPricing&&phase==='pricing'&&!selected&&!gmail,automaticRelease:release.automatic,paymentPrepared,confirmationPrepared,displayPhase:funnelDisplayPhase(phase,companyId),label:funnelPhaseLabel(phase,companyId),payment,missing:requirements.missing,fields:requirements.fields,invoicePrepared,invoiceSent,sentAt:sent?.at||'',daysSinceContact:days,hasSavedReply:!!sent&&inbound>timestamp(sent.at),followup,next,events};
@@ -58,7 +66,7 @@ export function registerFunnel(state,id,{phase,at,note='',expected,followupDays=
  if(phase==='released'){const info=productionReleaseInfo(state,o,companyId,{payment});if(!info.eligible)throw Error(info.reasons.join(' '));o.productionDepositPercent=info.percentage;}
  const release=productionReleaseInfo(state,o,companyId,{payment}),released=companyId==='spatlappen'&&release.eligible&&(Boolean(o.productionReleasedDate)||release.automatic);
  if((phase==='paid'||phase==='production'&&!released)&&!payment.fullyPaid)throw Error('Registreer eerst de volledige betaling en controleer prijzen en verzendkosten.');
- if(phase==='production'&&!released&&!o.invoiceSentDate&&!(o.salesFunnel?.events||[]).some(e=>e.phase==='invoice')&&!funnelMailEvents(state,o).some(e=>e.phase==='invoice'))throw Error('Registreer eerst dat de factuur is verstuurd.');
+ if(phase==='production'&&!released&&!orderDocumentPrepared(state,o.id,'invoice')&&!o.invoiceSentDate&&!(o.salesFunnel?.events||[]).some(e=>e.phase==='invoice')&&!funnelMailEvents(state,o).some(e=>e.phase==='invoice'))throw Error('Bewaar eerst de factuur-PDF bij deze order.');
  const event={id:uuid(),phase,at,recordedAt:new Date().toISOString(),note:String(note).slice(0,2000)};o.salesFunnel??={events:[]};o.salesFunnel.events.push(event);o.salesFunnel.followupDays=followupDays;
  const key={quote:'quoteSentDate',confirmation:'confirmationSentDate',invoice:'invoiceSentDate',released:'productionReleasedDate',production:'productionDate',delivered:'deliveredDate'}[phase];if(key)o[key]=at.slice(0,10);
  if(phase==='released')o.stage='Productie vrijgegeven';if(phase==='production')o.stage='In productie';if(phase==='delivered'){o.stage='Afgerond';o.archived=true;}

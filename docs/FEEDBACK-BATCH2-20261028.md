@@ -1,3 +1,5 @@
+> Aanvulling29oktober: aparte purchase.importVat/importVatRecoverable en bewijsreferentie voor kosten-/uitgavenweergave; geen tweede fiscale boeking. Oudere uitspraak dat er geen btw-veld op de zending is, is hiermee vervangen. Bestaand vatLedger blijft de kwartaal-/bewijsadministratie. Zie INKOOP-INVOER-BTW.md; lokaal bronwerk, eigen controle open.
+
 # Feedback28oktober — batch 2: inkoop, betaalde btw en AI-invoer
 
 Status: lokaal brongebouwd, **Jouw controle**. Geen functioneel/visueel akkoord, GitHubpush of livelevering. Bouwtaak `feedback28-batch2-purchases`. Batch1 blijft review/local; batch3 is nog gepland. Dit betreft uitsluitend de twee nieuwe inkoopmeldingen uit DRIE-FEEDBACKBATCHES-20261028.md.

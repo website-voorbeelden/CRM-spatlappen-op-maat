@@ -18,3 +18,23 @@ export function updateCustomerContact(state,customerId,expected,input,{orderId='
  for(const key of changes)customer[key]=values[key];
  return {...Object.fromEntries(customerContactKeys.map(key=>[key,customer[key]||''])),changed:changes.length>0};
 }
+
+// Read the chosen contact as recorded; missing fields stay unknown.
+export function orderContactDetails(customer,order){
+ const person=order?.contactId?customer?.contacts?.find(person=>person.id===order.contactId):null;
+ return {person,missing:Boolean(order?.contactId&&!person),name:order?.contactId?person?.name||'':customer?.contact||customer?.company||'',email:order?.contactId?person?.email||'':customer?.email||'',phone:order?.contactId?person?.phone||'':customer?.phone||''};
+}
+const personKeys=['name','email','phone'];
+export const customerPersonSignature=person=>JSON.stringify(personKeys.map(key=>person[key]||''));
+export function updateSelectedOrderContact(state,orderId,{customerId,contactId,signature},input){
+ const order=state.orders.find(order=>order.id===orderId),customer=state.customers.find(customer=>customer.id===customerId),person=customer?.contacts?.find(person=>person.id===contactId);
+ if(!order||order.customerId!==customerId||order.contactId!==contactId||!person)throw Error('De order of contactkeuze is intussen gewijzigd. Je invoer blijft staan; open de actuele contactgegevens opnieuw.');
+ const values=Object.fromEntries(personKeys.map(key=>[key,String(input[key]||'').trim()]));
+ for(const key of personKeys)if(values[key].length>(key==='phone'?100:200))throw Object.assign(Error('Dit contactveld is te lang.'),{field:key});
+ if(!values.name)throw Object.assign(Error('Vul de naam van de contactpersoon in.'),{field:'name'});
+ if(values.email&&!/^[^\s@<>]+@[^\s@<>]+\.[^\s@<>]+$/.test(values.email))throw Object.assign(Error('Vul een geldig e-mailadres in.'),{field:'email'});
+ if(customerPersonSignature(person)!==signature)throw Error('Deze contactpersoon is intussen aangepast. Je invoer blijft staan; open de actuele gegevens opnieuw.');
+ const changed=personKeys.some(key=>(person[key]||'')!==values[key]);
+ if(changed)Object.assign(person,values);
+ return {changed};
+}

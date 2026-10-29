@@ -1,10 +1,72 @@
 # Ontwikkelplan — beide CRM’s
 
-Bijgewerkt: 2026-10-28. Automatisch gemaakt uit `shared/planning/roadmap.js` met `npm run plan`. Bewerk de bron, niet dit bestand.
+Bijgewerkt: 2026-10-29. Automatisch gemaakt uit `shared/planning/roadmap.js` met `npm run plan`. Bewerk de bron, niet dit bestand.
 
 Dit is een geordende planning, geen opdracht om alles tegelijk uit te voeren. De volgorde binnen Eerstvolgend is het vertrekpunt; de gebruiker kan die bijstellen. Dezelfde taakcatalogus staat in beide CRM’s onder **Beheer → Bouwtaken**, gefilterd op bedrijf. Actuele afvinkstatus, publicatie en opmerkingen staan in de aparte CRM-planningopslag; deze gegenereerde catalogus is daarvan geen live export.
 
 ## Eerstvolgend
+
+### Feedback29oktober · batch 1/5 — Zending, klantbetalingen en artikelkosten
+
+- **ID:** `feedback29-batch1`
+- **Voor:** Beide bedrijven; editor gericht op Spatlappen.
+- **Stand:** Lokaal brongebouwd · jouw controle
+- **Vervolg:** Klantbetalingen & levering-tab met bekend/ontbrekend bedrag en mailvoorbereiding; volledige artikelkostencategorieën sluiten in centen aan op ordermarge. Bestaande lokale invoer-btw, twee AI-routes en inbegrepen transport behouden. Google Routes bestond al; sleutel/activering en eigen controle open. Volledige ID-matrix uitsluitend privé; eigen gebruikerscontrole open.
+
+- **Vervolg29oktober:** betaalbasis/mail gelijkgetrokken, filters/zoeken terugkeer, onbekende artikelkosten zichtbaar, btw-betaalbron en gedeeltelijk AI-voorstel aangesloten. Zie `docs/FEEDBACK29-BATCH1-VERVOLG.md`; eigen controle en Google-activering open.
+
+### Feedback29oktober · batch 2/5 — Orderwerkplek, directe acties en feedbackvoortgang
+
+- **ID:** `feedback29-batch2`
+- **Voor:** Beide bedrijven; editor gericht op Spatlappen.
+- **Stand:** Lokaal brongebouwd · jouw controle
+- **Vervolg:** Adaptieve drie feiten, producten/prijzen voorop, directe producteditor, ruimere korte dossierkolom met contact/bestemming/mail-/betaalouderdom. Singletonactiemenu’s direct, documentcategorieacties zichtbaar. Feedback volledige ID en aparte bouwstatus/export; busy/foutafhandeling bij Afgehandeld. Oorspronkelijke gebruikersfout niet zonder gebruikersproef bewezen opgelost. Volledige ID-matrix uitsluitend privé; eigen gebruikerscontrole open.
+
+- **Vervolg29oktober:** gekozen contact/factuurmail direct, planningwaarschuwingen zichtbaar; feedbackfilters/ID/selectie-export en bewaakte afhandeling; nummerdefault zonder voorloopnullen bij ontbrekende voorkeur. Zie `docs/FEEDBACK29-BATCH2-VERVOLG.md`. Melding3 gedeeltelijk, eigen controle open.
+
+- **Restpuntenvervolg29oktober:** Feedbackstatus na bevestigde commit direct in zichtbare lijst, oude kaart niet bij mislukte refresh; versie-/notitiebewaking en filters blijven. Mobiel actieve cursorregel/IME/handmatige-scroll en scrollbare feedbackbody met bereikbare footer; geen invoeropslag erbij. Zie `docs/FEEDBACK29-RESTPUNTEN.md`. Alleen lokaal, eigen controle/afhandeling apart.
+
+### Feedback29oktober · batch 3/5 — Aanbetaling, fases en facturen
+
+- **ID:** `feedback29-batch3`
+- **Voor:** Beide bedrijven; editor gericht op Spatlappen.
+- **Stand:** Lokaal brongebouwd · jouw controle
+- **Vervolg:** Standaard50%-productievrijgave en bevestiging/linkfase bestonden. Aanbetalingsvoorstel volgt expliciete afspraak, anders50%. Ontvangstselectie op factuur zichtbaar. Nieuwste gegenereerde ongebokte factuur als versie bewerken met behoud van bestanden/nummer; btw-bron kiest nieuwste versie per serie en onafhankelijke conflicten blijven blokkeren. Geen fictieve versturing bij bestaande factuur. Volledige ID-matrix uitsluitend privé; eigen gebruikerscontrole open.
+
+- **Vervolg29oktober:** aanbetalingsrestvoorstel en bruikbare links; factuurrevisie met bewuste actualisatie ontvangsten/betaalstand, aparte notitie/tekstlimiet/PDF-Word en actuele basisbewaking; geen verplichte mailtaak bij aanwezige factuur. Zie `docs/FEEDBACK29-BATCH3-VERVOLG.md`. Meldingen11/62gedeeltelijk en eigen controle open.
+
+- **Restpuntenvervolg29oktober:** Factuurrevisie met directe aantallen/stukprijzen/verzending/producttotaal, live netto/btw/bruto/restant/overbetaling, strikte centen/generatorgrenzen en bewuste financiële bevestiging; gedeelde appendvalidatie. Order/ontvangsten/oude versies/nummer/boekings-/serie-/CASbescherming behouden, geüploade/geboekte scope open. Zie `docs/FEEDBACK29-RESTPUNTEN.md`. Alleen lokaal, eigen controle/afhandeling apart.
+
+### Feedback29oktober · batch 4/5 — Editorbediening en maat synchroniseren
+
+- **ID:** `feedback29-batch4`
+- **Voor:** Beide bedrijven; editor gericht op Spatlappen.
+- **Stand:** Lokaal brongebouwd · jouw controle
+- **Vervolg:** 3200%-zoom met bestaande ankers, verticale plus/min rechts naast maat, leesbare orderteruglink. Maat/aantal uit ontwerp na expliciete bevestiging in dezelfde transactie naar order; variant-/klantbasis en leveranciershoeveelheden blijven bewaakt, definitieve ontwerpkeuze vervalt. Andere ontwerpen/bestanden blijven staan. Volledige ID-matrix uitsluitend privé; eigen gebruikerscontrole open.
+
+- **Vervolg29oktober:** productbewaring/klant-/aantalbasis en invoerbehoud, zoom/maatfeedback, fontvoorbeeld/hoofdletters en kopie-fallback. Zie `docs/FEEDBACK29-BATCH4-VERVOLG.md`. Meldingen32/34/42gedeeltelijk; eigen controle en prestatie-/exportbeoordeling open.
+
+- **Restpuntenvervolg29oktober:** Fonts op zichtbaarheid/nabijheid/focus/hover en observerguard, één meetcanvas/max200herbruikbare metingen met fontloadinvalidatie, getoonde font ook in selectiegrenzen. Kopie openen vangt popup/opener-excepties en meldt postcommitredrawfout apart; duurzame fallback blijft. Mobiel cursorregel/scrollbody/IME/invoer beschermd; originele klachten nog onbeoordeeld. Zie `docs/FEEDBACK29-RESTPUNTEN.md`. Alleen lokaal, eigen controle/afhandeling apart.
+
+### Feedback29oktober · batch 5/5 — SVG-segmenten en aantoonbare opslagopruiming
+
+- **ID:** `feedback29-batch5`
+- **Voor:** Beide bedrijven; editor gericht op Spatlappen.
+- **Stand:** Lokaal brongebouwd · restscope open
+- **Vervolg:** Paper.js-segmentatie bestond; globale grens512onderdelen en correcte overslaanmelding toegevoegd. Cloudopruimbron met tombstonewachtrij, CAS-guard tegen opnieuw koppelen, aparte bevestigde fysieke R2-delete en herstelbare retry. Vereist nieuwe migratie/publicatie, niet uitgevoerd. Historisch niet-geregistreerde orphanbytes en onbeperkte SVG-effecten open. Volledige ID-matrix uitsluitend privé; eigen gebruikerscontrole open.
+
+
+- **Vervolg29oktober:** opruimplan en bevestigingsbasis, alle cloudaliassen/records/revisie/paginering/claim, éénkleurige SVG-groepsgrenzen en eenvoudige vaste clipcontouren. Zie `docs/FEEDBACK29-BATCH5-VERVOLG.md`. Meldingen24/35/41gedeeltelijk; doing/local, eigen controle/migratie/publicatie open.
+
+- **Restpuntenvervolg29oktober:** Eenvoudige relatieve objectBoundingBox-clip op één gevulde vorm: bronbounds vóór eigen transform/boolean en clipfractie via dezelfde vectorruimte. Vaste clips/curves/gaten/laagvolgorde/bronbewaking/undo behouden; groepsclips/percentages/lengtematen en complexere effecten overslaan. Geen nieuwe cloudactie of wijziging van melding24. Zie `docs/FEEDBACK29-RESTPUNTEN.md`. Alleen lokaal, eigen controle/afhandeling apart.
+
+### Invoer-btw en inbegrepen transport — 29 oktober 2026
+
+- **ID:** `purchase-import-vat-20261029`
+- **Voor:** Beide bedrijven; uitgangspunt Spatlappen-importbestellingen.
+- **Status:** Lokaal brongebouwd, Jouw controle. Opslag, twee AI-invoerroutes, marge en uitgaande geldbasis aangepast. Geen bestaande bedragen ingevuld of gemigreerd.
+- **Volgende stap:** Eigen gebruikerscontrole volgens `docs/INKOOP-INVOER-BTW.md`; geen tests/build/browsercontrole of publicatie uitgevoerd. Catalogus en dit overzicht administratief bijgewerkt zonder generator te draaien.
+
 
 Eerst deze basis afmaken voordat we meer functies toevoegen.
 

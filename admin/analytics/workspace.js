@@ -1,4 +1,4 @@
-import {keyFactsMarkup} from '../workspace/key-facts.js?v=calm-workspaces-20261027';
+import {keyFactsMarkup} from '../workspace/key-facts.js?v=feedback-five-20261029';
 import {createOrderMapWorkspace} from '../orders/map-workspace.js?v=feedback-followup-20261028';
 import {createProductMetrics} from './product-metrics.js?v=product-thickness-20261021';
 import {moneyBasisBadge} from '../workspace/money.js?v=money-basis-20261021';

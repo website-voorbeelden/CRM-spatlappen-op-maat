@@ -3,7 +3,7 @@ import {websiteDossierSlot} from '../analytics/dossier.js?v=inquiry-headers-2026
 import {searchCustomers} from "../workspace/dossier-search.js?v=feedback-followup-20261028";
 import {customerSortOptions} from "../workspace/dossier-preferences.js?v=ui-batch3-followup-20261027";
 import {customerWorkspace} from '../../shared/customer-workspace.js?v=feedback-followup-20261028';
-import {keyFactsMarkup} from '../workspace/key-facts.js?v=calm-workspaces-20261027';
+import {keyFactsMarkup} from '../workspace/key-facts.js?v=feedback-five-20261029';
 
 // Presentation only. Forms, transactions and routing remain with the app coordinator.
 export function createCustomerViews({dossierPreferences,company,esc,button,badge,euro,date,heading,searchSelect,guidanceMarkup,documentVersionGroups,customerWithSources,provenanceText,ordersTable,sortedOrders,customerAddressSummary,customerAddresses,documents,documentsForOwner,inboxUI,today=()=>new Date().toISOString().slice(0,10)}){

@@ -1,4 +1,5 @@
-import {automaticFunnelMailPhase,salesFunnel} from '../../shared/sales-funnel.js?v=feedback-followup-20261028';
+import {usableOrderPaymentLink} from '../../shared/order-payment-link.js?v=feedback29-batch3-followup';
+import {automaticFunnelMailPhase,salesFunnel} from '../../shared/sales-funnel.js?v=feedback29-batch3-followup';
 import {createCustomerContactEditor} from '../customers/contact-editor.js?v=crm-code-review-20261027';
 import {installSignatureChoice} from './signature-choice.js';
 import {renderSenderSignature,signatureForSender} from '../../shared/mail-signature-profiles.js';
@@ -56,8 +57,9 @@ async function emailDraftForm(id,documentId='',linkId='',draftId='',resume={},op
  // replace an explicit choice, saved draft, reply, or resumed handwritten text.
  const pristine=!draft&&!resume.body&&!resume.subject&&!resume.replyMessageId;
  if(pristine&&owner.order&&!Object.hasOwn(resume,'paymentLinkId')&&!linkId){
-  const recent=links.filter(l=>l.url&&l.expiryDate>=context.today()&&Date.parse(l.createdAt)>=Date.now()-86400000&&(!selectedDoc||!l.documentId||l.documentId===selectedDoc.id)).sort((a,b)=>String(b.createdAt).localeCompare(String(a.createdAt)));
-  const currentTotal=context.totals(o),freshConfirmation=selectedDoc||files.find(d=>(d.generated?.kind||d.category)==='confirmation'&&(Date.parse(d.createdAt)>=Date.now()-86400000||d.date===context.today()));
+  const currentTotal=context.totals(o);
+  const recent=links.filter(l=>usableOrderPaymentLink(l,{today:context.today(),...(currentTotal.priceKnown&&o.shippingKnown===true?{total:currentTotal.total}:{})})&&l.expiryDate>=context.today()&&Date.parse(l.createdAt)>=Date.now()-86400000&&(!selectedDoc||!l.documentId||l.documentId===selectedDoc.id)).sort((a,b)=>String(b.createdAt).localeCompare(String(a.createdAt)));
+  const freshConfirmation=selectedDoc||files.find(d=>(d.generated?.kind||d.category)==='confirmation'&&(Date.parse(d.createdAt)>=Date.now()-86400000||d.date===context.today()));
   const pair=recent.map(link=>({link,doc:files.find(d=>d.id===link.documentId)||(!link.documentId&&currentTotal.priceKnown&&o.shippingKnown===true&&link.basisTotal===currentTotal.total?freshConfirmation:null)})).find(pair=>(pair.doc?.generated?.kind||pair.doc?.category)==='confirmation'&&(!selectedDoc||pair.doc.id===selectedDoc.id));
   if(pair){selectedDoc=pair.doc;wantedDocument=pair.doc.id;selectedLink=pair.link;wantedLink=pair.link.id;}
  }

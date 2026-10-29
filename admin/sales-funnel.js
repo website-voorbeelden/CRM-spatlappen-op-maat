@@ -1,10 +1,10 @@
 import {createWorkspaceNotifications} from './workspace/notifications.js?v=payment-alerts-20261027';
 import {captureMailPhaseUndo,undoMailPhase} from '../shared/funnel-phase-undo.js?v=feedback-followup-20261028';
 import {createPhaseNoticePreference} from './workspace/phase-notice-preference.js?v=central-overview-20261027';
-import {orderReadiness} from '../shared/order-readiness.js?v=feedback-followup-20261028';
+import {orderReadiness} from '../shared/order-readiness.js?v=feedback29-batch3-followup';
 import {taskListMarkup} from './workspace/task-list.js?v=excel-style-20261027';
 import {workQueue} from '../shared/work-queue.js?v=feedback-followup-20261028';
-import {funnelPhasesFor,funnelPhaseLabel,salesFunnel,registerFunnel,funnelMail,pendingFunnelMail,reviewFunnelMail} from '../shared/sales-funnel.js?v=feedback-followup-20261028';
+import {funnelPhasesFor,funnelPhaseLabel,salesFunnel,registerFunnel,funnelMail,pendingFunnelMail,reviewFunnelMail} from '../shared/sales-funnel.js?v=feedback29-batch3-followup';
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 export function createSalesFunnelUI({getState,company,openForm,mergeStoredState,render,toast,compose,requestSpecs,calculate,documentMail,payment,editOrder,releaseProduction,syncGmailPhase,isAutoPhaseSync,today=()=>new Date().toISOString().slice(0,10)}){
  const phaseNotice=createPhaseNoticePreference(company.id);

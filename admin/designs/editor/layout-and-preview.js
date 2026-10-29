@@ -224,21 +224,30 @@ function layoutRefs(){return [...state.logos.map(obj=>({id:obj.id,type:'logo'}))
 
 function layoutElement(ref){return [...$('flap').querySelectorAll('[data-layout-id]')].find(el=>el.dataset.layoutId===ref.id&&el.dataset.layoutType===ref.type);}
 
+let textInkContext=null;
+const textInkMetrics=new Map();
+function invalidateTextInkMetrics(){textInkMetrics.clear();}
 function textInkRect(text,el){
   const rect=el.getBoundingClientRect();
-  // The tight single-line ink calculation is not valid for wrapped/turned text.
   if(/[\r\n]/.test(text.text)||artworkRotation(text)||text.flipX)return rect;
-  const ctx=document.createElement('canvas').getContext('2d'),px=parseFloat(getComputedStyle(el).fontSize);
-  ctx.font=`${textWeight(text.weight)} 1000px ${printFontFamily(text.font)}`;
-  const spacing=textTracking(text.tracking)/text.size*1000,hasSpacing='letterSpacing' in ctx;if(hasSpacing)ctx.letterSpacing=spacing+'px';
-  const m=ctx.measureText(text.text),scale=px/1000,ascent=m.fontBoundingBoxAscent??800,descent=m.fontBoundingBoxDescent??200,baseline=rect.top+rect.height/2+(ascent-descent)*scale/2;
+  const px=parseFloat(getComputedStyle(el).fontSize),spacing=textTracking(text.tracking)/text.size*1000;
+  const key=JSON.stringify([text.text,text.font,textWeight(text.weight),spacing]);let measured=textInkMetrics.get(key);
+  if(!measured){
+    const ctx=textInkContext??=document.createElement('canvas').getContext('2d');
+    ctx.font=`${textWeight(text.weight)} 1000px ${printFontFamily(text.font)}`;
+    const hasSpacing='letterSpacing' in ctx;if(hasSpacing)ctx.letterSpacing=spacing+'px';
+    if('fontKerning' in ctx)ctx.fontKerning=spacing?'none':'auto';
+    measured={metrics:ctx.measureText(text.text),hasSpacing};textInkMetrics.set(key,measured);
+    if(textInkMetrics.size>200)textInkMetrics.delete(textInkMetrics.keys().next().value);
+  }
+  const {metrics:m,hasSpacing}=measured,scale=px/1000,ascent=m.fontBoundingBoxAscent??800,descent=m.fontBoundingBoxDescent??200,baseline=rect.top+rect.height/2+(ascent-descent)*scale/2;
   const left=rect.left-m.actualBoundingBoxLeft*scale,right=rect.left+(m.actualBoundingBoxRight+(hasSpacing?0:spacing*Math.max(0,[...text.text].length-1)))*scale;
   return {left,right,top:baseline-m.actualBoundingBoxAscent*scale,bottom:baseline+m.actualBoundingBoxDescent*scale};
 }
 
 function layoutBox(ref){
   const el=layoutElement(ref);if(!el)return null;
-  const obj=itemById(ref.id,ref.type),r=ref.type==='text'&&obj?.tightBounds?textInkRect(obj,el):el.getBoundingClientRect(),f=$('flap').getBoundingClientRect();
+  const obj=itemById(ref.id,ref.type),r=ref.type==='text'&&obj?.tightBounds?textInkRect(displayTextObject(obj),el):el.getBoundingClientRect(),f=$('flap').getBoundingClientRect();
   return {left:(r.left-f.left)/f.width*state.flap.w,right:(r.right-f.left)/f.width*state.flap.w,top:(r.top-f.top)/f.height*state.flap.h,bottom:(r.bottom-f.top)/f.height*state.flap.h};
 }
 
@@ -249,6 +258,7 @@ function showLayoutGuides(guides){
   guides.forEach(g=>{if(g.axis==='gap'){const line=document.createElement('div');line.className='layout-guide layout-gap';Object.assign(line.style,{left:g.start/state.flap.w*100+'%',top:g.y/state.flap.h*100+'%',width:(g.end-g.start)/state.flap.w*100+'%'});const label=document.createElement('span');label.textContent=Number(g.gap.toFixed(1))+' cm';line.append(label);$('flap').append(line);return;}const el=document.createElement('div');el.className='layout-guide '+(g.axis==='x'?'vertical':'horizontal');el.style[g.axis==='x'?'left':'top']=(g.value/(g.axis==='x'?state.flap.w:state.flap.h)*100)+'%';$('flap').append(el);});
 }
 
+function paintSelectionDimensionError(){const invalid=['selectionWidth','selectionHeight'].map(id=>$(id)).find(input=>input.getAttribute('aria-invalid')==='true');const message=$('selectionDimensionError');if(message)message.textContent=invalid?invalid.validationMessage||'Controleer de selectieafmeting.':'';}
 function syncSelectionDimensions(){
   const textSelected=allSelectedRefs().some(ref=>ref.type==='text'),locked=selectionRatioLocked||textSelected,lock=$('selectionRatioLock');
   $('selectionRatioDescription').textContent=locked?' Verhouding behouden (standaard).':' Breedte en hoogte afzonderlijk aanpassen.';lock.textContent=locked?'🔒':'🔓';lock.setAttribute('aria-pressed',String(locked));lock.setAttribute('aria-label',locked?'Verhouding vergrendeld':'Vrij schalen');lock.title=textSelected?'Tekst schaalt proportioneel':locked?'Klik om breedte en hoogte afzonderlijk te wijzigen':'Klik om verhouding te vergrendelen';
@@ -256,8 +266,11 @@ function syncSelectionDimensions(){
   const box=SpatlapLayout.union(allSelectedRefs().map(layoutBox).filter(Boolean));
   for(const [id,value] of [['selectionWidth',box?box.right-box.left:0],['selectionHeight',box?box.bottom-box.top:0]]){
     const input=$(id);input.disabled=!box||!!vectorEditingLogoId;
-    if(document.activeElement!==input)input.value=box?Number(value.toFixed(2)):'';
+    const invalidHere=!input.disabled&&input.dataset.invalidSelection===JSON.stringify(allSelectedRefs());
+    if(!invalidHere){input.setCustomValidity('');input.removeAttribute('aria-invalid');delete input.dataset.invalidSelection;if(document.activeElement!==input)input.value=box?Number(value.toFixed(2)):'';}
+    for(const button of document.querySelectorAll('[data-dimension-step^="'+id+':"]'))button.disabled=input.disabled;
   }
+  paintSelectionDimensionError();
 }
 
 function resizeLogoSelection(axis,factor){

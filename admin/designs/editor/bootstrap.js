@@ -1,5 +1,5 @@
 import {installCustomDesignShortcuts} from '../custom-shortcuts.js?v=batch2-editor-20261026';
-import {installFeedback} from '../../feedback.js?v=feedback-followup-20261028';
+import {installFeedback} from '../../feedback.js?v=feedback29-restpunten';
 import {installDesignShortcuts} from '../shortcuts.js?v=20261018-activity-1';
 import {installDesignUsage} from '../usage.js';
 import {installDesignTransfer} from '../transfer.js?v=feedback-followup-20261028';

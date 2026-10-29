@@ -1,3 +1,4 @@
+import {inventoryOf,orderStockCount} from '../shared/inventory.js';
 import {openCrmDatabase} from './cloud-storage.js?v=crm-code-review-20261027';
 import {supplierInvoices,physicalQuantity} from './purchases/costs.js';
 import {productDesignVariants,currentFinalVariant,designVariantBasis,variantMatchesProduct} from '../shared/product-design-variants.js?v=batch1-variants-20261026';
@@ -52,7 +53,7 @@ export async function loadProductDesign(orderId,itemId,{variantId='',copyVariant
  }
  return binding;
 }
-export async function saveProductDesign(binding,record,preview){
+export async function saveProductDesign(binding,record,preview,{measurementConfirmation=null}={}){
  if(!(preview instanceof Blob)||preview.type!=='image/png'||!preview.size)throw Error('Het ontwerpvoorbeeld kon niet worden gemaakt. Er is nog niets opgeslagen.');
  const measurements=designMeasurements(record.payload.f),db=await openCrmDatabase(),now=new Date().toISOString(),day=new Intl.DateTimeFormat('sv-SE',{timeZone:'Asia/Makassar'}).format(new Date()),designDocumentId=crypto.randomUUID(),designPreviewId=crypto.randomUUID();
  const stored={...structuredClone(record),id:binding.designId,context:{customerId:binding.customerId,orderId:binding.orderId,itemId:binding.itemId,designId:binding.designId,variantId:binding.variantId}};
@@ -75,9 +76,31 @@ export async function saveProductDesign(binding,record,preview){
    if(legacySourceBasis&&variants[0])variants[0].sourceBasis={...legacySourceBasis};
    if(binding.variantNew?old||variants.length>=100:!old)throw Error('De ontwerpkeuze is gewijzigd of er zijn al 100 varianten. Open de order opnieuw.');
    if(variants.some(v=>v.id!==binding.variantId&&v.name.toLocaleLowerCase('nl')===name.toLocaleLowerCase('nl')))throw Error('Deze ontwerpnaam bestaat al bij het product. Kies een andere naam.');
-   if((item.designVariants?.length||binding.variantNew&&variants.length)&&(measurements.width!==item.width||measurements.height!==item.height||measurements.quantity!==null&&measurements.quantity!==item.quantity))throw Error('Varianten delen dezelfde productmaat en hetzelfde aantal. Pas die zo nodig eerst bij de order aan en open de variant opnieuw.');
-   if(measurements.quantity!==null&&item.costSource==='supplierInvoice'&&measurements.quantity!==item.quantity){const lines=(next.purchases||[]).flatMap(p=>supplierInvoices(p).flatMap(inv=>(inv.lines||[]).filter(l=>l.itemId===item.id))),quantity=lines.reduce((sum,line)=>sum+physicalQuantity(line),0);if(measurements.quantity<quantity)throw Error('Er zijn al '+quantity+' stuks gekoppeld aan leveranciersfacturen. Pas eerst de inkoopregels aan.');item.purchaseCostQuantity=quantity;item.purchaseCostTotal=lines.reduce((sum,l)=>sum+l.quantity*l.price,0);if(measurements.quantity!==quantity)item.cost=null;}
-   if(!item.designVariants&&variants.length){const legacy=variants[0],preview=next.documents.find(d=>d.id===legacy.previewId);if(preview?.imageRole==='approved'&&preview.productDesignPreview&&legacy.updatedAt&&variantMatchesProduct(item,legacy)){item.designFinalVariantId=legacy.id;item.designFinalUpdatedAt=legacy.updatedAt;item.designFinalBasis=designVariantBasis(item,legacy);}}
+   const changed=measurements.width!==item.width||measurements.height!==item.height||measurements.quantity!==null&&measurements.quantity!==item.quantity;
+   if(changed&&(!measurementConfirmation||measurementConfirmation.signature!==binding.signature||JSON.stringify(measurementConfirmation.measurements)!==JSON.stringify(measurements)))throw Error('Bevestig eerst dat de gewijzigde maat of het aantal ook bij de order wordt bijgewerkt. Je ontwerp blijft staan.');
+   if(changed){
+    for(const key of ['designFinalVariantId','designFinalUpdatedAt','designFinalBasis','designFinalChosenAt'])delete item[key];
+    for(const doc of next.documents)if(doc.ownerId===o.id&&doc.itemId===item.id&&doc.imageRole==='approved'){doc.imageRole='reference';doc.approvalRevokedAt=now;}
+    next.activities.unshift({id:crypto.randomUUID(),message:'Productmaat/aantal vanuit ontwerp gewijzigd: '+item.width+' × '+item.height+' mm / '+item.quantity+' stuks → '+measurements.width+' × '+measurements.height+' mm / '+(measurements.quantity??item.quantity)+' stuks. Ontwerpkeuze opnieuw controleren.',time:now});
+   }
+   if(measurements.quantity!==null&&measurements.quantity!==item.quantity){
+    const issued=orderStockCount(inventoryOf(next),o.id,item.id);
+    if(!Number.isSafeInteger(issued)||issued<0)throw Error('Controleer de voorraaduitgifte voor deze productregel voordat je het aantal wijzigt.');
+    if(measurements.quantity<issued)throw Error('Er zijn al '+issued+' stuks uit voorraad uitgegeven. Verwerk eerst een eventuele voorraadretour.');
+    const matches=(next.purchases||[]).flatMap(p=>supplierInvoices(p).flatMap(inv=>(inv.lines||[]).filter(l=>l.itemId===item.id)));
+    if(matches.some(line=>!line.orderId))throw Error('Een leveranciersregel mist de orderkoppeling. Controleer die eerst voordat je het aantal wijzigt.');
+    const lines=matches.filter(line=>line.orderId===o.id),quantity=lines.reduce((sum,line)=>sum+physicalQuantity(line),0);
+    if(!Number.isSafeInteger(quantity)||quantity<0)throw Error('Controleer de aantallen op de gekoppelde leveranciersregels.');
+    if(measurements.quantity<quantity)throw Error('Er zijn al '+quantity+' stuks gekoppeld aan leveranciersdocumenten. Pas eerst de inkoopregels aan.');
+    if(item.costSource==='supplierInvoice'){
+     const total=lines.reduce((sum,line)=>sum+line.quantity*line.price,0);
+     if(lines.some(line=>!Number.isSafeInteger(line.price)||line.price<0)||!Number.isSafeInteger(total)||total<0)throw Error('Controleer eerst de prijzen op de gekoppelde leveranciersregels.');
+     item.purchaseCostQuantity=quantity;item.purchaseCostTotal=total;item.cost=quantity>0&&measurements.quantity===quantity?Math.round(total/quantity):null;
+    }
+   }
+   if(changed&&item.costSource==='calculator'){item.cost=null;delete item.costSource;delete item.calculatedCostTotal;}
+
+   if(!changed&&!item.designVariants&&variants.length){const legacy=variants[0],preview=next.documents.find(d=>d.id===legacy.previewId);if(preview?.imageRole==='approved'&&preview.productDesignPreview&&legacy.updatedAt&&variantMatchesProduct(item,legacy)){item.designFinalVariantId=legacy.id;item.designFinalUpdatedAt=legacy.updatedAt;item.designFinalBasis=designVariantBasis(item,legacy);}}
    const revisions=old?[...(old.revisions||[]),{documentId:old.documentId,previewId:old.previewId,updatedAt:old.updatedAt,...(old.legacy?{legacy:true}:{}),...(old.sourceBasis?{sourceBasis:{...old.sourceBasis}}:{})}]:[];
    if(revisions.length>500)throw Error('Deze variant heeft 500 revisies. Maak een nieuwe variant; bestaande versies blijven bewaard.');
    const variant={id:binding.variantId,name,designId:binding.designId,documentId:designDocumentId,previewId:designPreviewId,updatedAt:now,sourceBasis:{...measurements},vectorSummary:record.vectorSummary||null,revisions};
@@ -92,7 +115,7 @@ export async function saveProductDesign(binding,record,preview){
   }catch(error){tx.abort();reject(error);}};tx.oncomplete=resolve;
  });
  binding.signature=productDesignSignature(savedItem,binding.variantId);binding.width=savedItem.width;binding.height=savedItem.height;binding.quantity=savedItem.quantity;binding.variantNew=false;binding.variantName=name;binding.record=stored;binding.sourceNeedsReview=false;binding.legacyDocumentId=null;
- const channel=typeof BroadcastChannel==='function'?new BroadcastChannel('spatlappen-crm-changes'):null;channel?.postMessage('changed');channel?.close();return {record:stored,item:savedItem};
+ try{const channel=typeof BroadcastChannel==='function'?new BroadcastChannel('spatlappen-crm-changes'):null;try{channel?.postMessage('changed');}finally{channel?.close();}}catch{/* Notification cannot undo a committed design save. */}return {record:stored,item:savedItem};
 }
 
 export async function readProductDesignVectorStatus(orderId,itemId,documentId){

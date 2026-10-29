@@ -1,6 +1,6 @@
 import {orderExecution} from '../../shared/order-progress.js?v=feedback-followup-20261028';
 import {orderPaymentWait} from '../../shared/order-payment-wait.js?v=payment-wait-20261028';
-import {keyFactsMarkup} from '../workspace/key-facts.js?v=calm-workspaces-20261027';
+import {keyFactsMarkup} from '../workspace/key-facts.js?v=feedback-five-20261029';
 
 const calendarDate=value=>typeof value==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(value)&&Number.isFinite(Date.parse(value+'T12:00:00Z'))&&new Date(value+'T12:00:00Z').toISOString().slice(0,10)===value;
 
@@ -10,6 +10,7 @@ export function orderPaymentFact(context,order,totals){
  const complete=totals.priceKnown&&order.shippingKnown===true;
  const fullyPaid=complete&&totals.total>0&&totals.paid>=totals.total;
  const payment={label:'Betaling',value:'Nog geen betaling',detail:'Orderprijs nog invullen',tone:'neutral',tab:'payments'};
+ if(!Number.isSafeInteger(totals.paid)||(context.state.payments||[]).some(p=>p.orderId===order.id&&!Number.isSafeInteger(p.amount)))return {...payment,value:'Betalingen controleren',detail:'Een ontvangstbedrag is ongeldig; controleer de geregistreerde betalingen.',tone:'warning'};
  if(totals.paid<0){payment.value='Betalingen controleren';payment.detail='Netto ontvangen '+context.euro(totals.paid);payment.tone='warning';}
  else if(!complete){
   if(totals.paid>0){payment.value='Betaling ontvangen';payment.detail=context.euro(totals.paid)+' incl. btw ontvangen · '+(totals.priceKnown?'verzendprijs':'orderprijs')+' nog invullen';}
@@ -41,7 +42,14 @@ export function orderKeyFacts(context,order,totals){
  else if(execution.delivered){delivery.value='Afgerond';delivery.detail='Leverdatum nog vastleggen';}
  else if(to&&calendarDate(today)&&to<today){delivery.detail='Leverdatum verstreken · '+context.date(to);delivery.tone='warning';}
  else if(calendarDate(order.shippedDate))delivery.detail='Verzonden op '+context.date(order.shippedDate)+(to?' · verwacht '+context.date(to):'');
- return [payment,wait,delivery];
+ const quantity=order.items.reduce((sum,item)=>sum+(Number.isFinite(item.quantity)?item.quantity:0),0);
+ const noPayment=totals.paid===0&&!(context.state.payments||[]).some(p=>p.orderId===order.id&&(!Number.isSafeInteger(p.amount)||p.amount<0))&&!(context.state.payments||[]).some(p=>p.orderId===order.id&&p.amount>0);
+ const relevantPayment=noPayment?(totals.priceKnown?{label:'Verkoopprijs',value:context.euro(order.shippingKnown===true?totals.net:context.productRevenue(order))+' excl. btw',detail:order.shippingKnown===true?'Producten en verzending':'Productprijs bekend · verzending nog aanvullen',tone:'neutral',tab:'costs'}:{label:'Producten',value:quantity?quantity+' stuks':'Aanvraag',detail:order.items.length?order.items.length+' productregel'+(order.items.length===1?'':'s'):'Productgegevens nog aanvullen',tone:'neutral',tab:'overview'}):payment;
+ const start=calendarDate(order.date)?order.date:'',age=start&&calendarDate(today)&&start<=today?Math.round((Date.parse(today+'T12:00:00Z')-Date.parse(start+'T12:00:00Z'))/86400000):null;
+ const relevantWait=noPayment?{label:'Sinds aanvraag',value:age==null?'Datum aanvullen':age+' '+(age===1?'dag':'dagen'),detail:start?'Aanvraag '+context.date(start):'Aanvraagdatum nog onbekend',tone:'neutral',tab:'overview'}:wait;
+ const hasDelivery=execution.started||from||to||delivered||execution.delivered;
+ const relevantDelivery=!hasDelivery?{label:totals.priceKnown||!noPayment?'Producten':'Klant',value:totals.priceKnown||!noPayment?(quantity?quantity+' stuks':'Gegevens aanvullen'):(context.customer(order.customerId)?.company||'Klant onbekend'),detail:totals.priceKnown||!noPayment?order.items.length+' productregel'+(order.items.length===1?'':'s'):(order.inquiryProduct||'Nieuwe aanvraag'),tone:'neutral',tab:'overview'}:delivery;
+ return [relevantPayment,relevantWait,relevantDelivery];
 }
 
 export function orderKeyFactsMarkup(context,order,totals){

@@ -1,6 +1,11 @@
+import {funnelPayment} from '../shared/sales-funnel.js?v=feedback29-batch3-followup';
+import {paymentDepositSuggestion} from '../shared/payment-deposit-suggestion.js?v=feedback29-batch3-followup';
+import {safeTikkieUrl} from '../shared/order-payment-link.js?v=feedback29-batch3-followup';
+import {installDesignStorage} from './products/design-storage.js?v=feedback29-batch5-followup';
+import {embeddedFreightShare} from '../shared/purchase-import-costs.js?v=feedback29-batch1-followup';
 import {createDocumentTemplates} from './documents/templates.js?v=document-templates-20261028';
 import {createOrderAiUpdate} from './orders/ai-update.js?v=feedback-followup-20261028';
-import {cleanupOrderedVariants} from '../shared/design-variant-cleanup.js?v=feedback-followup-20261028';
+import {cleanupOrderedVariants} from '../shared/design-variant-cleanup.js?v=feedback29-batch5-followup';
 import {createDuplicateGuard,duplicateBaseline} from './orders/duplicate-guard.js?v=duplicate-review-20261028';
 import {createOrderMerge} from './orders/merge.js?v=feedback-followup-20261028';
 import {nextOrderNumber} from '../shared/duplicate-records.js?v=duplicate-review-20261028';
@@ -21,38 +26,38 @@ import {orderStagesFor,displayOrderStage} from '../shared/companies.js';
 import {createAutomaticPhaseSync} from './mail/automatic-phase-sync.js?v=feedback-followup-20261028';
 import {createPhaseLabelSync} from './mail/phase-label-sync.js?v=feedback-followup-20261028';
 import {saveOnlineAssistantPlan} from './assistant/online-plan.js?v=feedback-launcher-20261020';
-import {vatProtectedOrder} from '../shared/vat-ledger.js?v=feedback28-batch2-20261028';
+import {vatProtectedOrder} from '../shared/vat-ledger.js?v=feedback-five-20261029';
 import {createOverviewSettings} from './workspace/overview-settings.js?v=document-templates-20261028';
 import {installSectionTabs,syncSectionTabs} from './workspace/section-tabs.js?v=calm-workspaces-20261027';
-import {createGeneratedDocumentForms} from './documents/generated-forms.js?v=document-templates-20261028';
-import {createDocumentWorkspace} from './documents/library-workspace.js?v=calm-workspaces-20261027';
+import {createGeneratedDocumentForms} from './documents/generated-forms.js?v=feedback29-batch3-followup';
+import {createDocumentWorkspace} from './documents/library-workspace.js?v=feedback29-restpunten';
 import {createCustomerDossier} from './customers/dossier.js?v=calm-workspaces-20261027';
-import {createOrderWorkspace} from './orders/workspace.js?v=feedback-followup-20261028';
-import {createOrderPlanning} from './orders/planning.js?v=feedback-followup-20261028';
-import {createOrderAddresses,deliveryEditBasis} from './orders/addresses.js?v=crm-code-review-20261027';
-import {createProductImages} from './products/images.js?v=feedback-followup-20261028';
-import {createPurchaseWorkspace} from './purchases/batch-workspace.js?v=feedback28-batch2-20261028';
+import {createOrderWorkspace} from './orders/workspace.js?v=feedback29-batch2-followup';
+import {createOrderPlanning} from './orders/planning.js?v=feedback29-batch2-followup';
+import {createOrderAddresses,deliveryEditBasis} from './orders/addresses.js?v=feedback29-batch2-followup';
+import {createProductImages} from './products/images.js?v=feedback29-batch5-followup';
+import {createPurchaseWorkspace} from './purchases/batch-workspace.js?v=feedback29-batch1-followup';
 import {createMailAttachments} from './mail/attachments.js';
-import {createMailComposer} from './mail/composer.js?v=feedback-followup-20261028';
-import {createAiImportFlow} from './inquiries/ai-import-flow.js?v=duplicate-review-20261028';
-import {createAnalyticsWorkspace} from './analytics/workspace.js?v=feedback-followup-20261028';
+import {createMailComposer} from './mail/composer.js?v=feedback29-batch3-followup';
+import {createAiImportFlow} from './inquiries/ai-import-flow.js?v=feedback29-batch1-followup';
+import {createAnalyticsWorkspace} from './analytics/workspace.js?v=import-vat-20261029';
 import {financialChartMarkup,mountFinancialChart} from './analytics/financial-chart.js?v=analytics-workspace-20261024';
-import {invoicePaymentSelection,invoicePaymentNote} from '../shared/invoice-payments.js';
-import {invoicePaymentsMarkup} from './documents/payment-selection.js?v=batch2-payments-20261023';
+import {invoicePaymentSelection,invoicePaymentNote} from '../shared/invoice-payments.js?v=feedback29-batch3-followup';
+import {invoicePaymentsMarkup} from './documents/payment-selection.js?v=feedback29-batch3-followup';
 import {namedCostSummary} from '../shared/named-costs.js';
 import {namedCostsMarkup,installNamedCosts} from './orders/named-costs.js';
-import {releaseMarkup,createReleaseUI} from './orders/production-release.js?v=feedback-followup-20261028';
-import {paymentCorrectionHistory,createPaymentCorrectionUI} from './orders/payment-corrections.js?v=batch2-payments-20261023';
+import {releaseMarkup,createReleaseUI} from './orders/production-release.js?v=feedback29-batch3-followup';
+import {paymentCorrectionHistory,createPaymentCorrectionUI} from './orders/payment-corrections.js?v=feedback29-batch3-followup';
 import {batchEconomicsMarkup,deliveryScenarioMarkup,installBatchEconomics} from './purchases/economics.js';
 import {installPrimaryImage} from './products/primary-image.js?v=maat-cleanup-20261021';
-import {installCustomerNumberSettings} from './customers/number-settings.js';
+import {installCustomerNumberSettings} from './customers/number-settings.js?v=feedback29-batch2-followup';
 import {batchPackingMarkup,installBatchPacking} from './purchases/packing.js?v=feedback-followup-20261028';
-import {arrivalButton,installArrivalMail} from './purchases/arrival.js?v=feedback-followup-20261028';
+import {arrivalButton,installArrivalMail} from './purchases/arrival.js?v=feedback29-batch1-followup';
 import {guardPurchaseLink,latePurchase,batchDocumentKinds} from '../shared/purchase-workflow.js';
 import {transitAcknowledgement,installTransitWarning,batchDocumentsMarkup,batchArchiveButton,installPurchaseWorkflow} from './purchases/workflow.js';
 import {htmlSignatureMessage,signatureFrame} from '../shared/mail-signature.js?v=signatures-20261021';
 import {fulfilmentMarkup,installFulfilment} from './orders/fulfilment.js?v=feedback-followup-20261028';
-import {replaceBuildTasks} from './workspace/build-task-store.js?v=feedback-followup-20261028';
+import {replaceBuildTasks} from './workspace/build-task-store.js?v=feedback29-restpunten';
 import {preferredOpenPurchase,isOpenPurchase} from '../shared/purchase-default.js';
 import {sampleOrderFields,readSampleFields,sampleOrderSummary} from './products/sample-order.js';
 import {customerExecutionDetails,readExecutionFields} from '../shared/product-specifications.js?v=product-thickness-20261021';
@@ -63,21 +68,21 @@ import {isReviewMode,prepareReview,reviewBannerMarkup,installReviewGuard} from '
 installReviewGuard(message=>toast(message));
 import {mountWebsiteAnalytics,analyticsTabs} from './analytics/website.js?v=feedback28-batch3-20261028';
 import {mountGoogleAnalytics} from './analytics/google.js?v=weekly-analytics-20261027';
-import {orderReadiness} from '../shared/order-readiness.js?v=feedback-followup-20261028';
+import {orderReadiness} from '../shared/order-readiness.js?v=feedback29-batch3-followup';
 import {createWorkspaceSearch,searchLauncherMarkup} from './search/workspace-search.js?v=duplicate-review-20261028';
 import {documentReplyContext,documentReplyChoices} from '../shared/document-mail-context.js?v=crm-code-review-20261027';
 import {createCustomerViews} from './customers/views.js?v=feedback-followup-20261028';
 import {navigationMarkup,workspaceContextMarkup} from './workspace/navigation.js?v=home-20261028';
-import {createBuildTasks} from './workspace/development-plan.js?v=document-templates-20261028';
+import {createBuildTasks} from './workspace/development-plan.js?v=feedback29-restpunten';
 import {markProvenance} from '../shared/provenance.js?v=provenance-colors-20261027';
 import {provenanceText,markFormSources,markGeneratedMail,mailFormProvenance,formRecordProvenance} from './provenance-ui.js?v=provenance-colors-20261027';
 import {installSidebar,createUsagePreferences} from "./workspace/preferences.js?v=table-guides-20261028";
-import {createSalesFunnelUI} from './sales-funnel.js?v=feedback-followup-20261028';
+import {createSalesFunnelUI} from './sales-funnel.js?v=feedback-five-20261029';
 import {createInventoryUI} from './inventory.js?v=workspace-search-20261017';
 import {orderCostingMarkup,focusOrderCosting} from "./orders/costing.js?v=analytics-workspace-20261024";
 import {customerWithSources,inquiryWithSources,reviewSpecsProposal} from '../shared/inquiries.js?v=feedback-followup-20261028';
 import {createInquiryMailUI} from './inquiry-mail.js?v=feedback-followup-20261028';
-import {createInquiryUI} from './inquiry-ui.js?v=feedback-followup-20261028';
+import {createInquiryUI} from './inquiry-ui.js?v=feedback29-batch2-followup';
 import {installMobileUI} from './mobile-ui.js?v=batch1-mobile-20261023';
 import {reviewAssistantMail} from '../shared/assistant-mail.js';
 import {runGuidedAction,showGuidance,guidanceMarkup,installGuidedActions} from './guided-actions.js';
@@ -85,13 +90,13 @@ import {openInlineFormTask} from './inline-tasks.js?v=crm-code-review-20261027';
 import {costingPickerMarkup,installCostingPickers,readCostingLink,validateCostingSources,finishCostingItem,purchaseCalculationMarkup,installPurchaseCalculation} from './costing-links.js?v=provenance-colors-20261027';
 import {formProblem,focusFormField,showFormProblem,textFormValues,changedFormValues,restoreFormValues,validateForm,installFormGuidance,hasActiveFormEdits,installFormEditProtection} from './form-guidance.js?v=crm-code-review-20261027';
 import {documentRemovalInfo,removeDocument} from '../shared/document-removal.js?v=crm-code-review-20261027';
-import {documentBundles,documentFormat,documentVersionGroups} from "./documents/library.js?v=workspace-search-20261017";
-import {canReviseDocument,appendDocumentRevision,documentVersion,documentVersionLabel,documentDownloadName} from '../shared/document-revisions.js?v=document-templates-20261028';
-import {openDocumentRevision} from './documents/revision-editor.js?v=crm-code-review-20261027';
+import {documentBundles,documentFormat,documentVersionGroups} from "./documents/library.js?v=feedback29-restpunten";
+import {canReviseDocument,appendDocumentRevision,documentVersion,documentVersionLabel,documentDownloadName} from '../shared/document-revisions.js?v=feedback29-restpunten';
+import {openDocumentRevision} from './documents/revision-editor.js?v=feedback29-restpunten';
 import {createCategoryPreferences,installCategoryReorder,documentLayoutToolbar,documentLayoutAttributes} from "./documents/layout.js?v=calm-workspaces-20261027";
 import {previewDocument,createDocumentPreview} from "./documents/preview.js?v=batch2-payments-20261023";
 import {loading} from './loading.js';
-import {createAiExportUI} from './ai-export.js?v=payments-overview-20261027';
+import {createAiExportUI} from './ai-export.js?v=feedback29-batch1-followup';
 import {applyShippingPrice,shippingPriceSignature} from '../shared/order-repairs.js?v=crm-code-review-20261027';
 import {emailDocuments,emailSender,documentMail,mailStatusLabel,emailIsFullyPaid} from '../shared/mail-workflow.js';
 import {prepareQuickReplyDraft,saveQuickReplyDraft} from '../shared/mail-drafts.js?v=feedback-followup-20261028';
@@ -109,14 +114,14 @@ import {openCrmDatabase,storageRuntime,startCloudRefresh} from './cloud-storage.
 import {migrationPanel,installMigration,backupBlob,parseBackup,readCloudPackage,replaceDesigns,readBrowserPackage} from './cloud-migration.js?v=document-templates-20261028';
 import {ensureCustomerNumbers} from "./customers/numbers.js?v=documents-flexible-20261010";
 import {defaultOrderSearch,defaultCustomerSearch,searchOrderItems,orderDossierLabel,searchCustomers,orderFilterError,quoteOutcomeOptions} from "./workspace/dossier-search.js?v=feedback-followup-20261028";
-import {installFeedback} from './feedback.js?v=feedback-followup-20261028';
+import {installFeedback} from './feedback.js?v=feedback29-restpunten';
 import { renderDeliveryMap, renderOrdersMap } from "./orders/delivery-map.js?v=delivery-map-20261021";
 import { importLocalOrders } from './local-import.js?v=duplicate-review-20261028';
 import {supplierInvoices,invoiceFinance,supplierFinance,physicalQuantity,syncSupplierInvoiceCosts,itemCostTotal} from "./purchases/costs.js?v=invoices-20261009-2";
-import {customerAiPrompt,orderAiPrompt,supplierAiPrompt,parseAiAnswer,normalizeAiOrder,normalizeAiSupplier,aiOrderDates,aiSupplierKeys} from './ai-import.js?v=maat-cleanup-20261021';
+import {customerAiPrompt,orderAiPrompt,supplierAiPrompt,parseAiAnswer,normalizeAiOrder,normalizeAiSupplier,aiOrderDates,aiSupplierKeys} from './ai-import.js?v=feedback29-batch1-followup';
 import {documentTypes,nextDocumentNumber,addressParts,customerDocumentItems,packingSlipItems} from "./documents/generation.js?v=document-templates-20261028";
 import {paymentBasis,requestedAmount,applyTikkiePayments} from "./orders/payment-workflow.js?v=mobile-push-20261023";
-import {createPaymentsWorkspace} from './payments/workspace.js?v=calm-workspaces-20261027';
+import {createPaymentsWorkspace} from './payments/workspace.js?v=import-vat-20261029';
 
 // Live getters preserve state replacement and route changes across asynchronous feature actions.
 const appContext={
@@ -636,7 +641,7 @@ const customerViews=createCustomerViews({dossierPreferences,company,esc,button,b
 document.addEventListener('click',e=>{const b=e.target.closest('[data-action=customer-tab]');if(b)selectCustomerTab(b.dataset.id);});
 
 function economics(o){
- const p=purchase(o.purchaseId),info=p?purchaseInfo(p):null,product=o.items.reduce((sum,i)=>sum+itemCostTotal(i),0),duty=p?null:dutyAmount(o),shared=p?allocatedCost(p,o.id):0;
+ const p=purchase(o.purchaseId),info=p?purchaseInfo(p):null,product=o.items.reduce((sum,i)=>sum+itemCostTotal(i),0)-(p?embeddedFreightShare(state,p,o.id):0),duty=p?null:dutyAmount(o),shared=p?allocatedCost(p,o.id):0;
  const missing=o.items.filter(i=>i.cost==null).map(i=>`inkoop ${i.description}`);if(!totals(o).priceKnown)missing.push('verkoopprijs van de producten');
  if(o.shippingActual==null)missing.push('verzending Nederland → klant');if(o.extraCosts==null)missing.push('overige orderkosten');
  if(p){missing.push(...info.missingShared);if(p.allocation==='cost'&&!info.goodsKnown)missing.push('inkoopwaarden voor de verdeling');}else if(duty==null)missing.push('invoerrechten');
@@ -701,7 +706,7 @@ document.addEventListener('change',e=>{if(e.target.name==='measurementUnknown')u
 
 document.addEventListener('change',e=>{if(e.target.name==='createOrder'||e.target.name==='customerId'&&e.target.form?.querySelector('[data-order-fields]'))updateCombinedOrderForm(e.target.form);});
 
-const openPaymentCorrection=createPaymentCorrectionUI({getState:()=>state,openForm,mergeStoredState,render,toast,euro,esc});
+const openPaymentCorrection=createPaymentCorrectionUI({getState:()=>state,openForm,mergeStoredState,render,toast,euro,esc,today});
 
 let documentUploadQueue=Promise.resolve();
 
@@ -748,7 +753,7 @@ function paymentLinksPanel(o){
  return `<section class="order-surface payment-links-panel"><div class="section-heading"><div><h2>Betaallinks</h2><p>Een aanbetaling of restant aanvragen.</p></div></div><div class="actions">${button('make-payment-link','Betaallink maken',o.id,true)}${links.length?button('check-tikkie-payments','Betalingen controleren',o.id):''}</div>${links.map(l=>`<article class="saved-payment-link"><div><strong>${euro(l.amountInCents)} incl. btw</strong><span>${esc(l.description)}</span>${paymentLinkReceipt(l)}<small>Gemaakt ${date(l.createdAt.slice(0,10))} · geldig t/m ${date(l.expiryDate)}${l.expiryDate<today()?' · verlopen':''}</small></div><div class="actions"><a class="download-button" href="${esc(safePaymentUrl(l.url))}" target="_blank" rel="noopener">Link openen ↗</a><button type="button" data-action="copy-payment-link" data-id="${o.id}" data-link="${esc(l.id)}">Kopiëren</button><button type="button" data-action="email-draft" data-id="${o.id}" data-link="${esc(l.id)}" data-document="${esc(l.documentId||'')}">E-mail voorbereiden</button></div></article>`).join('')}<details class="form-details"><summary>E-mail & eerdere verzendingen</summary><div class="actions">${button('email-draft','E-mail openen',o.id)}<button type="button" data-action="email-draft" data-id="${esc(o.id)}" data-new-mail>Nieuwe mail / gegevens opvragen</button>${button('invoice-mail-start','Factuurmail voorbereiden',o.id)}</div>${orderMailHistory(o)}</details><p class="form-help">Gewone bankoverboekingen registreer je zelf. Met een actieve online Tikkie-koppeling kan de server elke vijftien minuten automatisch controleren. Betalingen controleren haalt de laatste stand direct op. Controleer de automatische status bij Instellingen → Telefoon & meldingen. Er wordt geen mail automatisch verstuurd.</p></section>`;
 }
 
-function safePaymentUrl(value){try{const u=new URL(value);return u.protocol==='https:'&&u.hostname==='tikkie.me'?u.href:'#';}catch{return '#';}}
+function safePaymentUrl(value){return safeTikkieUrl(value);}
 function paymentLinkReceipt(link){
  if(!link.checkedAt)return '<small>Nog niet gecontroleerd bij Tikkie</small>';
  const paid=link.paidInCents||0,total=link.amountInCents;
@@ -795,8 +800,8 @@ async function preparePaymentLink(id,documentId='',options={}){
 function paymentLinkForm(id,documentId='',options={}){
  const o=order(id),t=totals(o),d=state.documents.find(x=>x.id===documentId&&x.ownerId===id),basis=paymentBasis(o,d,t.total),signature=confirmationSignature(state,id),requestId=uid();
  const end=new Date(today()+'T12:00:00Z');end.setUTCDate(end.getUTCDate()+14);const expiry=end.toISOString().slice(0,10);
- let sentPayload=null,createdLink=null;const initialAmount=t.balance>0?t.balance:basis;const initialPercentage=basis>0?initialAmount/basis*100:null;
- openForm('Betaallink maken',`<p class="form-help">${esc(customer(o.customerId)?.company)} · order #${esc(o.sourceNumber||o.number)}${d?`<br>Bij document: ${esc(d.name)}`:''}</p><div class="payment-kpis"><div><span>${d?.generated?.payload?'Document':'Order'} incl. btw</span><strong>${euro(basis)}</strong></div><div><span>Ontvangen incl. btw</span><strong>${euro(t.paid)}</strong></div><div><span>Nog te ontvangen incl. btw</span><strong>${euro(Math.max(0,t.balance))}</strong></div></div><section class="form-section"><h3>Hoeveel wil je laten betalen?</h3><div class="fields">${field('percentage','Percentage van totaal incl. btw',basis>0?Number(initialPercentage.toFixed(6)):'','number',basis>0?'required min="0.000001" step="any"':'disabled')}${field('amount','Bedrag incl. btw (€)',(initialAmount/100).toFixed(2),'number','required min="0.01" step="0.01"')}</div><div class="actions payment-presets">${[25,30,50,70,100].map(v=>`<button type="button" data-payment-percent="${v}">${v}%</button>`).join('')}<button type="button" id="payment-use-balance">Openstaand bedrag gebruiken</button></div><div class="payment-request-total"><span>Deze betaallink incl. btw</span><strong id="payment-amount-preview">${euro(initialAmount)}</strong></div><p id="payment-amount-warning" class="form-help" role="status"></p></section><div class="fields">${field('description','Omschrijving op Tikkie',`Order ${o.sourceNumber||o.number} ${company.name}`.slice(0,35),'text','required maxlength="35"')}${field('expiryDate','Geldig t/m',expiry,'date',`required min="${today()}"`)}</div>${!t.priceKnown?'<p class="form-help">De verkoopprijzen zijn nog niet volledig ingevuld. Controleer het bedrag dat je met deze betaallink wilt vragen.</p>':''}<p class="form-help">Je maakt een echte Tikkie voor het bedrag hierboven. De klant krijgt pas een bericht nadat je de link deelt. Je kunt voor een latere restbetaling een nieuwe link maken.</p>${(o.paymentLinks||[]).length?'<p class="notice">Deze order heeft al een betaallink. Bestaande links blijven geldig tot hun vervaldatum.</p>':''}`,async fd=>{
+ let sentPayload=null,createdLink=null;const orderPayment=funnelPayment(state,o),proposal=paymentDepositSuggestion(o,basis,{paid:t.paid}),invoiceRequest=(d?.generated?.kind||d?.category)==='invoice',suggestDeposit=!invoiceRequest&&orderPayment.known&&basis===t.total&&proposal.known&&proposal.remaining>0;const priceReady=Number.isSafeInteger(basis)&&basis>0&&Number.isSafeInteger(t.paid)&&(Boolean(d?.generated?.payload)||orderPayment.known),requestBalance=priceReady?Math.max(0,basis-t.paid):null,initialAmount=suggestDeposit?proposal.remaining:priceReady?(requestBalance>0?requestBalance:basis):null;const initialPercentage=initialAmount!=null&&basis>0?initialAmount/basis*100:null;
+ openForm('Betaallink maken',`<p class="form-help">${esc(customer(o.customerId)?.company)} · order #${esc(o.sourceNumber||o.number)}${d?`<br>Bij document: ${esc(d.name)}`:''}</p><div class="payment-kpis"><div><span>${d?.generated?.payload?'Document':'Order'} incl. btw</span><strong>${euro(basis)}</strong></div><div><span>Ontvangen incl. btw</span><strong>${euro(t.paid)}</strong></div><div><span>Nog te ontvangen incl. btw</span><strong>${requestBalance==null?'Nog te bepalen':euro(requestBalance)}</strong></div></div>${d&&basis!==t.total?`<p class="notice">Het documentbedrag wijkt af van de actuele orderprijs. De resterende bedragen hierboven volgen de documentbasis. Het huidige ordersaldo is ${t.priceKnown&&o.shippingKnown===true?euro(Math.max(0,t.balance)):'nog niet compleet'}. Controleer de prijsafspraak voordat je een link maakt.</p>`:''}<section class="form-section"><h3>Hoeveel wil je laten betalen?</h3>${suggestDeposit?`<p class="form-help">${esc(proposal.basis)}: ${proposal.percentage}% (${euro(proposal.amount)} incl. btw). Voorgesteld: ${euro(proposal.remaining)} om deze aanbetaling aan te vullen. Controleer het bedrag vóór je de echte link maakt.</p>`:''}<div class="fields">${field('percentage','Percentage van totaal incl. btw',initialPercentage!=null?Number(initialPercentage.toFixed(6)):'','number',basis>0?'required min="0.000001" step="any"':'disabled')}${field('amount','Bedrag incl. btw (€)',initialAmount==null?'':(initialAmount/100).toFixed(2),'number','required min="0.01" step="0.01"')}</div><div class="actions payment-presets">${[25,30,50,70,100].map(v=>`<button type="button" data-payment-percent="${v}">${v}%</button>`).join('')}<button type="button" id="payment-use-balance">Openstaand bedrag gebruiken</button></div><div class="payment-request-total"><span>Deze betaallink incl. btw</span><strong id="payment-amount-preview">${initialAmount==null?'Nog invullen':euro(initialAmount)}</strong></div><p id="payment-amount-warning" class="form-help" role="status"></p></section><div class="fields">${field('description','Omschrijving op Tikkie',`Order ${o.sourceNumber||o.number} ${company.name}`.slice(0,35),'text','required maxlength="35"')}${field('expiryDate','Geldig t/m',expiry,'date',`required min="${today()}"`)}</div>${!t.priceKnown||o.shippingKnown!==true?'<p class="form-help">De verkoopprijzen zijn nog niet volledig ingevuld. Controleer het bedrag dat je met deze betaallink wilt vragen.</p>':''}<p class="form-help">Je maakt een echte Tikkie voor het bedrag hierboven. De klant krijgt pas een bericht nadat je de link deelt. Je kunt voor een latere restbetaling een nieuwe link maken.</p>${(o.paymentLinks||[]).length?'<p class="notice">Deze order heeft al een betaallink. Bestaande links blijven geldig tot hun vervaldatum.</p>':''}`,async fd=>{
   const paymentForm=$('#dialog form'),invalid=[...paymentForm.elements].find(input=>input.willValidate&&!input.validity.valid);
   if(invalid){invalid.focus();throw Error(`Controleer ${invalid.labels?.[0]?.textContent.trim()||'het ingevulde veld'}: ${invalid.validationMessage}`);}
   const amount=cents(fd.get('amount')),percentage=Number(fd.get('percentage'));
@@ -806,8 +811,8 @@ function paymentLinkForm(id,documentId='',options={}){
   if(!createdLink){
    beginLocalStateChange();const latest=await store('state','readonly',s=>s.get('main'));
    if(signature!==confirmationSignature(latest,id)||d&&JSON.stringify(latest.documents.find(x=>x.id===d.id))!==JSON.stringify(d))throw Error('De order of bijlage is ondertussen veranderd. Open Betaallink maken opnieuw om het actuele bedrag te gebruiken.');
-   if(!sentPayload&&amount>Math.max(0,t.balance)){
-    const message=t.balance<=0?`Deze order is al volledig betaald. Je maakt toch een nieuwe betaallink van ${euro(amount)}.`:`Er staat ${euro(t.balance)} open. Je maakt een betaallink van ${euro(amount)}, dus ${euro(amount-t.balance)} meer dan het restant.`;
+   if(!sentPayload&&(amount>Math.max(0,t.balance)||requestBalance!=null&&amount>requestBalance)){
+    const message=`Je maakt een betaallink van ${euro(amount)}. Het actuele ordersaldo is ${t.priceKnown&&o.shippingKnown===true?euro(Math.max(0,t.balance)):'nog niet volledig bekend'}.${requestBalance!=null?' Op de gekozen document- of orderbasis resteert '+euro(requestBalance)+'.':''} Controleer of je bewust meer vraagt dan het bekende restant.`;
     if(!confirm(`${message}\n\nToch doorgaan? Er wordt nog geen bericht naar de klant verstuurd.`))return false;
    }
    paymentForm.querySelector('[type=submit]').textContent='Tikkie wordt aangemaakt…';
@@ -827,17 +832,18 @@ function paymentLinkForm(id,documentId='',options={}){
  form.addEventListener('invalid',event=>{const box=form.querySelector('#form-error');box.textContent=`Controleer ${event.target.labels?.[0]?.textContent.trim()||'het ingevulde veld'}: ${event.target.validationMessage}`;},true);
  const refresh=()=>{
   const n=cents(amount.value),warning=form.querySelector('#payment-amount-warning');
-  const problem=!Number.isSafeInteger(n)||n<=0?'Vul een bedrag groter dan €0,00 in.':t.balance<=0?'Deze order is al volledig betaald. Je kunt toch een nieuwe betaallink maken; we vragen je dan om bevestiging.':n>t.balance?`Er staat nog ${euro(t.balance)} open. Je kunt een hoger bedrag vragen; we vragen je dan om bevestiging.`:'';
+  const problem=!Number.isSafeInteger(n)||n<=0?'Vul een bedrag groter dan €0,00 in.':requestBalance===0?'Op deze document- of orderbasis staat geen bedrag meer open. Je kunt toch een nieuwe betaallink maken; we vragen je dan om bevestiging.':requestBalance!=null&&n>requestBalance?`Op deze document- of orderbasis staat nog ${euro(requestBalance)} open. Je kunt een hoger bedrag vragen; we vragen je dan om bevestiging.`:'';
   form.querySelector('#payment-amount-preview').textContent=Number.isSafeInteger(n)?euro(n):'—';
-  warning.textContent=problem||`Na deze betaling resteert ${euro(Math.max(0,t.balance-n))}.`;
+  warning.textContent=problem||(requestBalance==null?'De prijsbasis is niet compleet. Controleer het handmatig gekozen bedrag.':`Na deze betaling resteert op deze basis ${euro(Math.max(0,requestBalance-n))}.`);
   warning.className=problem?'danger':'form-help';
   form.querySelector('#form-error').textContent='';
  };
  percentage.addEventListener('input',()=>{amount.value=(requestedAmount(basis,decimalNumber(percentage.value))/100).toFixed(2);refresh();});
  amount.addEventListener('input',()=>{const value=basis>0?cents(amount.value)/basis*100:0;percentage.value=basis>0?value.toFixed(value>0&&value<0.005?6:2):'';refresh();});
  form.addEventListener('click',event=>{const b=event.target.closest('[data-payment-percent]');if(b){percentage.value=b.dataset.paymentPercent;percentage.dispatchEvent(new Event('input',{bubbles:true}));}});
- $('#payment-use-balance').onclick=()=>{amount.value=(Math.max(0,t.balance)/100).toFixed(2);amount.dispatchEvent(new Event('input',{bubbles:true}));};
+ $('#payment-use-balance').onclick=()=>{if(requestBalance==null){toast('Vul eerst de product- en verzendprijs in voor een restantvoorstel.');return;}amount.value=(requestBalance/100).toFixed(2);amount.dispatchEvent(new Event('input',{bubbles:true}));};
  $('#dialog [type=submit]').textContent='Tikkie aanmaken';
+ if(suggestDeposit)markFormSources(form,markProvenance({amount:decimalNumber(amount.value),percentage:decimalNumber(percentage.value)},['amount','percentage'],'calculator'));
  refresh();
 }
 function paymentLinkResult(id,link){
@@ -948,6 +954,7 @@ document.addEventListener('change',e=>{if(e.target.name==='autoInvoiceTotal')upd
 document.addEventListener('click',e=>{const b=e.target.closest('[data-action]');if(!b)return;try{if(b.dataset.action==='ai-supplier')aiSupplierForm(b.dataset.id);if(b.dataset.action==='add-ai-supplier-line'){const form=b.form;form.querySelector('#supplier-lines').insertAdjacentHTML('beforeend',aiSupplierLineFields({quantity:1,unit:'piece',price:null},form.querySelector('[name=aiPurchaseId]').value));updateInvoiceTotal();}}catch(error){toast(error.message);}});
 
 installNamedCosts({getState:()=>state,openForm,mergeStoredState,render,toast,esc});
+installDesignStorage(appContext);
 installBatchEconomics({getState:()=>state,totals,economics,purchaseInfo,euro});
 installBatchPacking(appContext);
 installArrivalMail({getState:()=>state,company,compose:emailDraftForm,euro,toast});

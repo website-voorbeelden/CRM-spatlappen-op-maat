@@ -1,0 +1,4 @@
+// Builder progress is independent of the user's open/resolved decision.
+export const feedbackBuildLabels={built:'Gebouwd · jouw controle',partial:'Gedeeltelijk',todo:'Nog te doen'};
+export const feedbackDeliveryLabels={local:'Lokaal',live:'Live',mixed:'Live basis + lokaal vervolg'};
+export function validFeedbackDevelopment(value){return value&&typeof value==='object'&&!Array.isArray(value)&&Object.keys(value).every(key=>['batch','status','delivery','note','at','author'].includes(key))&&Number.isInteger(value.batch)&&value.batch>=1&&value.batch<=5&&Object.hasOwn(feedbackBuildLabels,value.status)&&Object.hasOwn(feedbackDeliveryLabels,value.delivery)&&typeof value.note==='string'&&value.note.length<=3000&&typeof value.author==='string'&&value.author.length<=80&&Number.isFinite(Date.parse(value.at));}

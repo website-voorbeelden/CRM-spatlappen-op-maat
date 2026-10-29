@@ -1,3 +1,4 @@
+import {designRetirementReady,retiredDesignFiles,appendDesignRetirements,handleDesignStorage,incomingRetiredReferences} from './design-file-retirement.js';
 import {handleNotifications} from './notifications.js';
 import {handleWeeklyReports} from './weekly-reports.js';
 import {handleOnlineAssistant,hostedAgentReady} from './assistant.js?v=feedback-followup-20261028';
@@ -6,7 +7,7 @@ import {handleMarketing} from './marketing.js';
 import {websiteAnalytics} from './site-analytics.js';
 import {websiteJourney} from './website-journey.js';
 import {companyFromEnv} from '../shared/companies.js';
-import {validateBusinessState} from '../shared/state-validation.js?v=document-templates-20261028';
+import {validateBusinessState} from '../shared/state-validation.js?v=import-vat-20261029';
 import {authReady,localBypass,authenticated} from './auth.js';
 import {tikkieReady,validateJournal} from './tikkie.js';
 import {documentsReady} from './documents.js';
@@ -71,7 +72,8 @@ async function commit(env,body) {
     if (previous.digest!==hash) fail('Dit opslagverzoek is al met andere gegevens gebruikt.',409);
     return {revision:previous.revision,replayed:true};
   }
-  const current = await snapshot(db,['state','files']);
+  const current = await snapshot(db,['state','files','designs','reports','planning']);
+  const retirementReady=await designRetirementReady(db);
   if (current.revision!==body.revision) fail('Gegevens zijn intussen op een andere laptop of in een ander tabblad gewijzigd. Open de bewerking opnieuw.',409);
   if (body.migration && current.revision!==0) fail('Migratie kan alleen naar lege opslag; bestaande gegevens worden niet overschreven.',409);
   if(body.tikkieJournal!==undefined&&!body.migration)fail('Betaalhistorie wordt alleen bij de eerste migratie overgenomen.');
@@ -110,11 +112,17 @@ async function commit(env,body) {
     const linked=await db.prepare('SELECT id FROM crm_tikkie_requests WHERE order_id=? LIMIT 1').bind(sourceId).first();
     if(linked)fail('De bronorder heeft bewaarde Tikkie-betaalhistorie. Kies dat dossier als de order die blijft. Er is niets samengevoegd.',409);
   }
-  const revision=body.revision+1, now=new Date().toISOString();
+  const revision=body.revision+1, now=new Date().toISOString(),retired=retirementReady?retiredDesignFiles(current,nextState,files,body.operations):[];
   const guard='EXISTS (SELECT 1 FROM crm_workspace WHERE id=1 AND revision=? AND commit_token=?)';
   const guardArgs=[revision,body.id];
   const mergeGuard=mergedSources.length?` AND NOT EXISTS (SELECT 1 FROM crm_tikkie_requests WHERE order_id IN (${mergedSources.map(()=>'?').join(',')}))`:'';
-  const queries=[db.prepare('UPDATE crm_workspace SET revision=?,commit_token=?,updated_at=? WHERE id=1 AND revision=?'+mergeGuard).bind(revision,body.id,now,body.revision,...mergedSources)];
+  const incomingKeys=body.operations.filter(op=>op.store==='files'&&op.action==='put').map(op=>op.value.objectKey),incomingReferences=retirementReady?incomingRetiredReferences(body.operations,files):'[]';
+  if(retirementReady){
+   const retiredReference=await db.prepare('SELECT 1 FROM crm_design_file_retirements AS retired, json_each(retired.file_ids) AS retired_id WHERE EXISTS (SELECT 1 FROM json_each(?) AS incoming_reference WHERE incoming_reference.value=retired_id.value OR incoming_reference.value=retired.object_key) LIMIT 1').bind(incomingReferences).first();
+   if(retiredReference)fail('Deze wijziging verwijst naar een opgeruimd ontwerpbestand. Open de actuele order opnieuw, of herstel de volledige bestandsback-up met de bijbehorende inhoud. Er is niets opgeslagen.',409);
+  }
+  const retirementGuard=retirementReady?' AND NOT EXISTS (SELECT 1 FROM crm_design_file_retirements WHERE object_key IN (SELECT value FROM json_each(?))) AND NOT EXISTS (SELECT 1 FROM crm_design_file_retirements AS retired, json_each(retired.file_ids) AS retired_id WHERE EXISTS (SELECT 1 FROM json_each(?) AS incoming_reference WHERE incoming_reference.value=retired_id.value OR incoming_reference.value=retired.object_key))':'';
+  const queries=[db.prepare('UPDATE crm_workspace SET revision=?,commit_token=?,updated_at=? WHERE id=1 AND revision=?'+mergeGuard+retirementGuard).bind(revision,body.id,now,body.revision,...mergedSources,...(retirementReady?[JSON.stringify(incomingKeys),incomingReferences]:[]))];
   // Collapse repeated writes and submit manifests/chunks as bounded JSON batches,
   // rather than spending two D1 queries per file in a larger migration.
   const cleared=new Set(),pending=new Map();
@@ -142,6 +150,7 @@ async function commit(env,body) {
   }
   for (const batch of packJson(rows)) queries.push(db.prepare(`INSERT INTO crm_records (store,record_key,part,payload) SELECT json_extract(value,'$.store'),json_extract(value,'$.key'),json_extract(value,'$.part'),json_extract(value,'$.payload') FROM json_each(?) WHERE ${guard}`).bind(batch,...guardArgs));
   for (const batch of packJson(fileRows)) queries.push(db.prepare(`INSERT INTO crm_files (id,object_key,size,type,sha256) SELECT json_extract(value,'$.id'),json_extract(value,'$.objectKey'),json_extract(value,'$.size'),json_extract(value,'$.type'),json_extract(value,'$.sha256') FROM json_each(?) WHERE ${guard}`).bind(batch,...guardArgs));
+  if(retirementReady)appendDesignRetirements(queries,db,retired,guard,guardArgs,now);
   for(const row of journal)queries.push(db.prepare(`INSERT INTO crm_tikkie_requests(id,order_id,identity,status,result,created_at) SELECT ?,?,?,?,?,? WHERE ${guard}`).bind(row.id,row.orderId,row.identity,row.status,row.result,row.createdAt,...guardArgs));
   queries.push(db.prepare(`INSERT INTO crm_commits (id,revision,digest,created_at) SELECT ?,?,?,? WHERE ${guard}`).bind(body.id,revision,hash,now,...guardArgs));
   queries.push(db.prepare('SELECT revision FROM crm_commits WHERE id=?').bind(body.id));
@@ -178,6 +187,7 @@ export async function handleCrm({request,env}) {
       commitState:(state,{id,revision})=>commit(env,{id,revision,companyId:company.id,operations:[{action:'put',store:'state',key:'main',value:state}]})
     }});
     if(path.startsWith('marketing/'))return handleMarketing({request,env});
+    if(path==='design-storage')return await handleDesignStorage(request,env);
     if(path==='weekly-reports'||path.startsWith('weekly-reports/'))return handleWeeklyReports({request,env,loadSnapshot:async()=>{const s=await snapshot(env.DB,['state']);return {state:s.records.state?.main||{}};}});
     if (request.method==='GET'&&['website-analytics','website-journey'].includes(path)) {
       const current=env.DB?await snapshot(env.DB,['state']):null;

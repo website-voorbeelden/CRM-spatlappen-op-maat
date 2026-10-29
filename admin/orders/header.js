@@ -1,5 +1,5 @@
 import {orderProgressDetailsMarkup} from './progress.js?v=feedback-followup-20261028';
-import {orderKeyFactsMarkup} from './key-facts.js?v=feedback-followup-20261028';
+import {orderKeyFactsMarkup} from './key-facts.js?v=feedback29-batch2-followup';
 import {revealSelectedTab} from '../workspace/tab-visibility.js?v=calm-workspaces-20261027';
 
 // Shared presentation for every dossier tab. Actions keep their existing routes.
@@ -9,7 +9,7 @@ export function orderHeaderMarkup(context,o,{customer,totals,tab,views}){
  return `<header class="dossier-header order-dossier-header">
   <div class="breadcrumb"><a href="#orders">← Aanvragen & orders</a></div>
   <div class="order-header">
-   <div class="order-header-title"><h1>${context.esc(customer?.company||'Klantorder')}</h1><p><span>Order #${number}</span> <span>Aangemaakt ${context.date(o.date)}</span>${o.archived?' <span>Gearchiveerd</span>':''}</p></div>
+   <div class="order-header-title"><h1>${context.esc(customer?.company||'Klantorder')}</h1><p><span>Order #${number}</span> <span>Aanvraag ${context.date(o.date)}</span>${o.archived?' <span>Gearchiveerd</span>':''}</p></div>
    <div class="actions">${context.button('edit-order','Order bewerken',o.id)}<details class="order-more"><summary>Meer</summary><div><button type="button" data-order-history aria-controls="order-phase-history" aria-expanded="false">Fases & voortgang bekijken</button>${context.orderTerms.button(o.id)}${context.button('invoice-mail-start','Factuur mailen',o.id)}${context.button('quote','Offerte maken',o.id)}${context.button('payment','Betaling registreren',o.id)}${context.button('planning','Datums aanpassen',o.id)}${context.button('duplicate','Dupliceren',o.id)}${context.button('order-ai-update','Aanvullen met AI',o.id)}${context.button('merge-order','Vergelijken en samenvoegen',o.id)}${context.button('order-merge-history','Samenvoeghistorie',o.id)}${context.button('archive-order','Archiveren',o.id)}<button type="button" class="delete-order-action" data-action="delete-order" data-id="${id}">Verwijderen</button></div></details></div>
   </div>
   ${orderKeyFactsMarkup(context,o,totals)}
