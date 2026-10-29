@@ -1,3 +1,5 @@
+> Gepubliceerd op 29 oktober naar beide bestaande CRM-productieprojecten; bron ec05da1. Publicatieregistratie en grenzen: docs/RELEASE-20261029.md. Gebruikerscontrole blijft open.
+
 # Gedeelde CRM-feedback en invoer-btw — 29 oktober 2026
 
 Vijf feedbackbatches en de vervolgverbeteringen voor beide CRM-bedrijven. Invoer-btw apart van marge en uitgaande geldbasis, inbegrepen transport eenmaal verdeeld; zendingbetalingen en artikelkosten; productgerichte orderwerkplek en feedbackvoortgang; aanbetalingsvoorstel met standaard 50%, bruikbare betaalbasis en factuurrevisies met ontvangstkeuze en directe bedragen; editorzoom, maat-/aantalsynchronisatie, fontvoorbeelden/import/meetcache, kopiebewaring en SVG-kleursegmenten.

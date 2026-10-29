@@ -1,3 +1,5 @@
+> Publicatie29oktober: nieuwe bron en alle batchvervolgen staan nu op GitHub main en live bij beide CRM’s. Alleen migratie0006/lege wachtrij toegevoegd; niets opgeruimd. Gebruikerscontrole en gedeeltelijke scope blijven open. Zie docs/RELEASE-20261029.md (projectroot). De eerdere lokale vermeldingen hieronder beschrijven de toenmalige bronrondes.
+
 # Resterende feedback verder uitgewerkt — 29 oktober 2026
 
 Na de vijf batches vraagt Philippe verder te gaan met het openstaande werk. De tien gedeeltelijke meldingen zijn opnieuw naast hun opmerkingen en huidige bron gelezen. Deze ronde voegt lokale bronwijzigingen toe voor meldingen 3, 11, 32, 34, 35, 41 en 42. Bestaande wijzigingen, klantgegevens, bestanden, Git-werkkopie en staging blijven behouden. Volledige Melding-IDs en opmerkingen staan uitsluitend in de privématrix.

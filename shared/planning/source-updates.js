@@ -2295,5 +2295,89 @@ export const sourceUpdates = [
     "delivery": "local",
     "note": "Eenvoudige relatieve objectBoundingBox-clip op één gevulde vorm: bronbounds vóór eigen transform/boolean en clipfractie via dezelfde vectorruimte. Vaste clips/curves/gaten/laagvolgorde/bronbewaking/undo behouden; groepsclips/percentages/lengtematen en complexere effecten overslaan. Geen nieuwe cloudactie of wijziging van melding24. Zie docs/FEEDBACK29-RESTPUNTEN.md. Oorspronkelijke klachten/eigen controle en beschreven restscope blijven open; geen gebruikersafhandeling.",
     "evidence": "Uitsluitend handmatige bron-/documentlezing en bewerking, primaire W3C-SVGdocumentatie en feedback-/bouwadministratie. Geen tests/checks/syntaxchecks/build/browser-/DOM-/visuele QA/font-/SVG-/factuur-/PNG-/PDF-/converter-/productieproef/prestatiemeting, herstart/provideractie/migratie/GitHubupload/publicatie of zakelijke data-/bestandsmutatie. Alleen7developmenttags/matrixregels; gebruikersstatus/afhandeling/andere meldingen/Git-index behouden. Eigen controle beide bedrijven/statusrefresh/mobilecaret/IME/factuurbedragen/prijsvorm/betaalstand/bevestiging/btw-CASconflict/fontload/hover/keyboard/kopie/relatieve clip/undo/export open.24/62/70niet gewijzigd; historische onbekende bytes/cloudinrichting en telefoon-/Googleactivering apart."
+  },
+  {
+    "id": "purchase-import-vat-20261029-published-20261029",
+    "taskId": "purchase-import-vat-20261029",
+    "companies": [
+      "spatlappen",
+      "maatwerkkunststof"
+    ],
+    "at": "2026-10-29T10:47:06.302366+00:00",
+    "author": "Codex",
+    "status": "review",
+    "delivery": "live",
+    "note": "Op expliciet verzoek gepubliceerd in beide bestaande CRM-projecten, release crm-feedback-20261029. GitHub main bevat bron ec05da1. Alle lokale batchvervolgen en invoer-btw meegeleverd. Migratie 0006 toegevoegd, opruimen niet geactiveerd en geen bestanden verwijderd. Bestaande gegevens, instellingen, varianten, documenten en gebruikersstatus behouden. Gedeeltelijke punten, Google-/telefooninrichting en gebruikerscontrole blijven open. Zie docs/RELEASE-20261029.md.",
+    "evidence": "GitHub main teruggelezen; Cloudflare bevestigt beide Production/main met bron ec05da1. Vorige publicaties en databaseherstelpunten privé vastgelegd. Alleen noodzakelijke publicatieverpakking en Functionscompile; geen tests/checks/syntaxcheckrondes, browser-/DOM-/functionele QA of providerproeven. Publicatie is geen gebruikersakkoord of garantie van foutloze werking."
+  },
+  {
+    "id": "feedback29-batch1-published-20261029",
+    "taskId": "feedback29-batch1",
+    "companies": [
+      "spatlappen",
+      "maatwerkkunststof"
+    ],
+    "at": "2026-10-29T10:47:06.302366+00:00",
+    "author": "Codex",
+    "status": "review",
+    "delivery": "live",
+    "note": "Op expliciet verzoek gepubliceerd in beide bestaande CRM-projecten, release crm-feedback-20261029. GitHub main bevat bron ec05da1. Alle lokale batchvervolgen en invoer-btw meegeleverd. Migratie 0006 toegevoegd, opruimen niet geactiveerd en geen bestanden verwijderd. Bestaande gegevens, instellingen, varianten, documenten en gebruikersstatus behouden. Gedeeltelijke punten, Google-/telefooninrichting en gebruikerscontrole blijven open. Zie docs/RELEASE-20261029.md.",
+    "evidence": "GitHub main teruggelezen; Cloudflare bevestigt beide Production/main met bron ec05da1. Vorige publicaties en databaseherstelpunten privé vastgelegd. Alleen noodzakelijke publicatieverpakking en Functionscompile; geen tests/checks/syntaxcheckrondes, browser-/DOM-/functionele QA of providerproeven. Publicatie is geen gebruikersakkoord of garantie van foutloze werking."
+  },
+  {
+    "id": "feedback29-batch2-published-20261029",
+    "taskId": "feedback29-batch2",
+    "companies": [
+      "spatlappen",
+      "maatwerkkunststof"
+    ],
+    "at": "2026-10-29T10:47:06.302366+00:00",
+    "author": "Codex",
+    "status": "review",
+    "delivery": "live",
+    "note": "Op expliciet verzoek gepubliceerd in beide bestaande CRM-projecten, release crm-feedback-20261029. GitHub main bevat bron ec05da1. Alle lokale batchvervolgen en invoer-btw meegeleverd. Migratie 0006 toegevoegd, opruimen niet geactiveerd en geen bestanden verwijderd. Bestaande gegevens, instellingen, varianten, documenten en gebruikersstatus behouden. Gedeeltelijke punten, Google-/telefooninrichting en gebruikerscontrole blijven open. Zie docs/RELEASE-20261029.md.",
+    "evidence": "GitHub main teruggelezen; Cloudflare bevestigt beide Production/main met bron ec05da1. Vorige publicaties en databaseherstelpunten privé vastgelegd. Alleen noodzakelijke publicatieverpakking en Functionscompile; geen tests/checks/syntaxcheckrondes, browser-/DOM-/functionele QA of providerproeven. Publicatie is geen gebruikersakkoord of garantie van foutloze werking."
+  },
+  {
+    "id": "feedback29-batch3-published-20261029",
+    "taskId": "feedback29-batch3",
+    "companies": [
+      "spatlappen",
+      "maatwerkkunststof"
+    ],
+    "at": "2026-10-29T10:47:06.302366+00:00",
+    "author": "Codex",
+    "status": "review",
+    "delivery": "live",
+    "note": "Op expliciet verzoek gepubliceerd in beide bestaande CRM-projecten, release crm-feedback-20261029. GitHub main bevat bron ec05da1. Alle lokale batchvervolgen en invoer-btw meegeleverd. Migratie 0006 toegevoegd, opruimen niet geactiveerd en geen bestanden verwijderd. Bestaande gegevens, instellingen, varianten, documenten en gebruikersstatus behouden. Gedeeltelijke punten, Google-/telefooninrichting en gebruikerscontrole blijven open. Zie docs/RELEASE-20261029.md.",
+    "evidence": "GitHub main teruggelezen; Cloudflare bevestigt beide Production/main met bron ec05da1. Vorige publicaties en databaseherstelpunten privé vastgelegd. Alleen noodzakelijke publicatieverpakking en Functionscompile; geen tests/checks/syntaxcheckrondes, browser-/DOM-/functionele QA of providerproeven. Publicatie is geen gebruikersakkoord of garantie van foutloze werking."
+  },
+  {
+    "id": "feedback29-batch4-published-20261029",
+    "taskId": "feedback29-batch4",
+    "companies": [
+      "spatlappen",
+      "maatwerkkunststof"
+    ],
+    "at": "2026-10-29T10:47:06.302366+00:00",
+    "author": "Codex",
+    "status": "review",
+    "delivery": "live",
+    "note": "Op expliciet verzoek gepubliceerd in beide bestaande CRM-projecten, release crm-feedback-20261029. GitHub main bevat bron ec05da1. Alle lokale batchvervolgen en invoer-btw meegeleverd. Migratie 0006 toegevoegd, opruimen niet geactiveerd en geen bestanden verwijderd. Bestaande gegevens, instellingen, varianten, documenten en gebruikersstatus behouden. Gedeeltelijke punten, Google-/telefooninrichting en gebruikerscontrole blijven open. Zie docs/RELEASE-20261029.md.",
+    "evidence": "GitHub main teruggelezen; Cloudflare bevestigt beide Production/main met bron ec05da1. Vorige publicaties en databaseherstelpunten privé vastgelegd. Alleen noodzakelijke publicatieverpakking en Functionscompile; geen tests/checks/syntaxcheckrondes, browser-/DOM-/functionele QA of providerproeven. Publicatie is geen gebruikersakkoord of garantie van foutloze werking."
+  },
+  {
+    "id": "feedback29-batch5-published-20261029",
+    "taskId": "feedback29-batch5",
+    "companies": [
+      "spatlappen",
+      "maatwerkkunststof"
+    ],
+    "at": "2026-10-29T10:47:06.302366+00:00",
+    "author": "Codex",
+    "status": "doing",
+    "delivery": "live",
+    "note": "Op expliciet verzoek gepubliceerd in beide bestaande CRM-projecten, release crm-feedback-20261029. GitHub main bevat bron ec05da1. Alle lokale batchvervolgen en invoer-btw meegeleverd. Migratie 0006 toegevoegd, opruimen niet geactiveerd en geen bestanden verwijderd. Bestaande gegevens, instellingen, varianten, documenten en gebruikersstatus behouden. Gedeeltelijke punten, Google-/telefooninrichting en gebruikerscontrole blijven open. Zie docs/RELEASE-20261029.md.",
+    "evidence": "GitHub main teruggelezen; Cloudflare bevestigt beide Production/main met bron ec05da1. Vorige publicaties en databaseherstelpunten privé vastgelegd. Alleen noodzakelijke publicatieverpakking en Functionscompile; geen tests/checks/syntaxcheckrondes, browser-/DOM-/functionele QA of providerproeven. Publicatie is geen gebruikersakkoord of garantie van foutloze werking."
   }
 ];
