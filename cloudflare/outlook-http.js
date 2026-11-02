@@ -12,7 +12,12 @@ export function outlookGraphUrl(value){
 }
 export async function outlookFetch(url,options={},maximum=1000000,{binary=false}={}){
  let response;try{response=await fetch(url,{...options,redirect:'manual',signal:AbortSignal.timeout(20000)});}catch{throw integrationError('Microsoft-mail reageert niet. Je bestaande invoer blijft staan.',502);}
- if(!response.ok){await response.body?.cancel();throw integrationError(response.status===401?'De Microsoft-leestoegang is verlopen. Koppel de mailbox opnieuw.':response.status===429?'Microsoft beperkt het ophalen tijdelijk. Probeer later opnieuw.':'Microsoft-mail kon deze stap niet uitvoeren.',response.status===401?401:response.status===429?429:502);}
+ if(!response.ok){
+  let code='';try{const raw=JSON.parse(new TextDecoder().decode(await outlookBytes(response,32000))),codes=raw.error_codes;code=Array.isArray(codes)&&Number.isSafeInteger(codes[0])?'AADSTS'+codes[0]:typeof raw.error?.code==='string'&&/^[A-Za-z][A-Za-z0-9_]{0,79}$/.test(raw.error.code)?raw.error.code:'';}catch{}
+  const help={AADSTS7000215:'De Microsoft client-secretwaarde klopt niet. Laat de serverinstelling controleren; gebruik de waarde, niet het geheim-id.',AADSTS7000222:'Het Microsoft client secret is verlopen. Laat dit op de server vervangen.',AADSTS700016:'De Microsoft-app is niet gevonden in de ingestelde tenant.',AADSTS65001:'Voor de leesrechten is nog Microsoft-toestemming nodig. Koppel opnieuw of vraag de tenantbeheerder.',AADSTS50011:'Het Microsoft-terugkeeradres wijkt af van de ingestelde CRM-callback.',InefficientFilter:'Microsoft kon de combinatie van mailfilters niet verwerken.'};
+  const message=help[code]||(response.status===401?'De Microsoft-leestoegang is verlopen. Koppel de mailbox opnieuw.':response.status===403?'Microsoft weigert het lezen van deze mailbox. Controleer de toestemming voor Mail.Read.':response.status===429?'Microsoft beperkt het ophalen tijdelijk. Probeer later opnieuw.':'Microsoft-mail kon deze stap niet uitvoeren.');
+  const error=integrationError(message+' (Microsoft HTTP '+response.status+(code?' · '+code:'')+')',response.status===401?401:response.status===403?403:response.status===429?429:502);error.providerStatus=response.status;error.providerCode=code;throw error;
+ }
  const bytes=await outlookBytes(response,maximum);if(binary)return bytes;
  try{return JSON.parse(new TextDecoder().decode(bytes));}catch{throw integrationError('Microsoft gaf geen leesbaar mailantwoord.',502);}
 }

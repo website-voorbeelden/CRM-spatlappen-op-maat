@@ -1,6 +1,7 @@
 import {createHomeWorkspace} from './home.js?v=business-expenses-20261031';
 import {sectionTabsMarkup,syncSectionTabs} from './section-tabs.js?v=calm-workspaces-20261027';
 import {keyFactsMarkup} from './key-facts.js?v=feedback-five-20261029';
+import {supplierMailMarkup,installSupplierMail} from '../orders/supplier-mail.js?v=outlook-connect-20261102';
 // Same current application state and existing forms; no settings/draft store.
 export function createOverviewSettings(context){
  const home=createHomeWorkspace(context);
@@ -8,7 +9,7 @@ export function createOverviewSettings(context){
   const {state,esc,button,runtime}=context;
   const tabs=[
    {key:'gmail',label:'Gmail',content:context.inboxUI.settingsMarkup()},
-   {key:'sending',label:'Verzenden & handtekening',content:context.emailSettingsMarkup(runtime,context.company)},
+   {key:'sending',label:'Verzenden & handtekening',content:context.emailSettingsMarkup(runtime,context.company)+(context.company.id==='maatwerkkunststof'?supplierMailMarkup({settings:true}):'')},
    {key:'templates',label:'Mailtemplates',content:context.templatesUI.settingsMarkup()},
    {key:'documents',label:'Documenttemplates',content:context.documentTemplates.markup()},
    {key:'mobile',label:'Telefoon & meldingen',content:context.mobileNotifications.markup()},
@@ -25,6 +26,7 @@ export function createOverviewSettings(context){
    context.templatesUI.installSettings(mounted);context.documentTemplates.install(mounted);syncSectionTabs(document.querySelector('#app'),'settings',key);return;
   }
   context.shell(context.heading('Instellingen','Kies wat je wilt aanpassen.')+sectionTabsMarkup('settings',tabs,key,'Instellingen'),'settings',{section:key,facts:{archivedCustomerCount:state.customers.filter(c=>c.archived).length,archivedOrderCount:state.orders.filter(o=>o.archived).length}});
+  if(context.company.id==='maatwerkkunststof')installSupplierMail(context,document.querySelector('#app'),null,{});
  }
  function renderDashboard(){
   if(!context.route()[1]){context.shell(home.markup(),'dashboard',{section:'home'});home.mount(document.querySelector('#app'));return;}

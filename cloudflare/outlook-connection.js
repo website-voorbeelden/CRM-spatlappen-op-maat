@@ -1,5 +1,5 @@
 import {integrationStore,integrationError as fail,random,sha256} from './integration-store.js';
-import {outlookFetch,outlookGraph,outlookBase64Url} from './outlook-http.js?v=supplier-batches35-20261101';
+import {outlookFetch,outlookGraph,outlookBase64Url} from './outlook-http.js?v=outlook-connect-20261102';
 const scope='offline_access https://graph.microsoft.com/User.Read https://graph.microsoft.com/Mail.Read';
 const guid=value=>typeof value==='string'&&/^[a-f0-9]{8}(?:-[a-f0-9]{4}){3}-[a-f0-9]{12}$/i.test(value);
 const mailbox='info@bouwmarktxl.nl';
@@ -19,10 +19,11 @@ export function createOutlookConnection(env){
  const postToken=(config,values)=>outlookFetch('https://login.microsoftonline.com/'+config.tenant+'/oauth2/v2.0/token',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:new URLSearchParams({client_id:config.client,client_secret:config.secret,scope,...values}).toString()},100000);
  function validTokens(value,{refreshRequired=false}={}){
   const scopes=String(value.scope||'').toLowerCase().split(/\s+/).map(v=>v.replace('https://graph.microsoft.com/',''));
-  if(typeof value.access_token!=='string'||value.access_token.length>30000||!value.access_token||!Number.isFinite(value.expires_in)||value.expires_in<60||value.expires_in>86400||!scopes.includes('mail.read')||scopes.some(v=>['mail.send','mail.readwrite','mail.readwrite.shared'].includes(v))||refreshRequired&&(typeof value.refresh_token!=='string'||!value.refresh_token)||value.refresh_token&&value.refresh_token.length>30000)throw fail('Microsoft heeft geen passende blijvende alleen-lezen toegang gegeven.',403);
+  if(scopes.some(v=>v&&!['mail.read','user.read','offline_access','openid','profile','email'].includes(v)))throw fail('Microsoft gaf aanvullende rechten mee. Beperk de leveranciersmail-app tot User.Read en Mail.Read met offline_access en koppel opnieuw; verwijder ook eerder verleende schrijf- en verzendrechten voor deze app.',403);
+  if(typeof value.access_token!=='string'||value.access_token.length>30000||!value.access_token||!Number.isFinite(value.expires_in)||value.expires_in<60||value.expires_in>86400||!scopes.includes('mail.read')||refreshRequired&&(typeof value.refresh_token!=='string'||!value.refresh_token)||value.refresh_token&&value.refresh_token.length>30000)throw fail('Microsoft heeft geen passende blijvende alleen-lezen toegang gegeven.',403);
  }
  async function identity(){const config=await outlookEnvironment(env),record=await store.read('supplier-outlook'),connection=record.value;return {config,record,connection:connection?.configVersion===config.version?connection:null};}
- async function status(){const {config,connection}=await identity();return {configured:true,connected:!!connection?.refreshToken,mailbox:config.mailbox,callbackUrl:config.callback,identity:connection?.identity||'',since:connection?.since||''};}
+ async function status(){const {config,connection}=await identity(),job=connection?.refreshToken?await store.read('supplier-outlook-job-status'):null;return {configured:true,connected:!!connection?.refreshToken,mailbox:config.mailbox,callbackUrl:config.callback,identity:connection?.identity||'',since:connection?.since||'',autoSync:env.CRM_OUTLOOK_AUTO_SYNC==='true',jobStatus:job?.value||null};}
  async function start(session,since){
   const config=await outlookEnvironment(env);
   if(typeof since!=='string'||!/^20\d{2}-\d{2}-\d{2}$/.test(since)||!Number.isFinite(Date.parse(since))||new Date(since).toISOString().slice(0,10)!==since||since>new Date().toISOString().slice(0,10))throw fail('Kies vanaf welke datum je leveranciersmails wilt ophalen.');

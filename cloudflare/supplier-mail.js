@@ -1,13 +1,19 @@
 import {authenticated,sessionFingerprint} from './auth.js';
 import {integrationError as fail} from './integration-store.js';
-import {outlookBytes} from './outlook-http.js?v=supplier-batches35-20261101';
-import {createOutlookConnection,outlookEnvironment} from './outlook-connection.js?v=supplier-batches35-20261101';
+import {outlookBytes} from './outlook-http.js?v=outlook-connect-20261102';
+import {createOutlookConnection,outlookEnvironment} from './outlook-connection.js?v=outlook-connect-20261102';
 import {createSupplierMailStore} from './supplier-mail-store.js?v=supplier-batches35-20261101';
+import {validSupplierMailJob,runSupplierMailJob} from './supplier-mail-job.js?v=outlook-connect-20261102';
 const json=(body,status=200)=>Response.json(body,{status,headers:{'Cache-Control':'no-store','X-Content-Type-Options':'nosniff','Referrer-Policy':'no-referrer'}});
-function callbackPage(success){return new Response('<!doctype html><html lang="nl"><meta charset="utf-8"><title>Leveranciersmail</title><h1>'+ (success?'Outlook gekoppeld':'Outlook nog niet gekoppeld')+'</h1><p>'+(success?'Keer terug naar je open CRM-tab en haal de leveranciersmails op. Er zijn geen kosten of betalingen aangemaakt.':'De aanmelding is niet afgerond. Je bestaande gegevens zijn behouden. Begin opnieuw vanuit de Kunststofbaas-tab.')+'</p><a href="/admin/#orders">Orders openen</a></html>',{status:success?200:409,headers:{'Content-Type':'text/html; charset=utf-8','Cache-Control':'no-store','Referrer-Policy':'no-referrer','Content-Security-Policy':"default-src 'none'; base-uri 'none'; frame-ancestors 'none'"}});}
+const escape=value=>String(value).replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
+function callbackPage(success,reason=''){return new Response('<!doctype html><html lang="nl"><meta charset="utf-8"><title>Leveranciersmail</title><h1>'+ (success?'Outlook gekoppeld':'Outlook nog niet gekoppeld')+'</h1><p>'+(success?'Keer terug naar je open CRM-tab en haal de leveranciersmails op. Er zijn geen orders, kosten of betalingen gewijzigd.':'De aanmelding is niet afgerond. Je bestaande gegevens zijn behouden. '+escape(reason||'Begin opnieuw vanuit de mailboxkoppeling in het CRM.'))+'</p><a href="/admin/#settings/sending">Mailboxkoppeling openen</a></html>',{status:success?200:409,headers:{'Content-Type':'text/html; charset=utf-8','Cache-Control':'no-store','Referrer-Policy':'no-referrer','Content-Security-Policy':"default-src 'none'; base-uri 'none'; frame-ancestors 'none'"}});}
 export async function handleSupplierMail({request,env}){
  const url=new URL(request.url),action=url.pathname.replace(/^\/api\/crm\/supplier-mail\/?/,'');
  try{
+  if(action==='run'){
+   if(!validSupplierMailJob(request,env))throw fail('Geen toegang.',401);
+   return json(await runSupplierMailJob(env));
+  }
   const user=await authenticated(request,env);if(!user||user.local)throw fail('Gebruik de afzonderlijk ingerichte online CRM-koppeling voor Outlook.',401);
   if(env.CRM_COMPANY_ID!=='maatwerkkunststof')throw fail('Deze leveranciersmail is alleen voor Maatwerkkunststof.',403);
   if(action==='status'&&request.method==='GET'){
@@ -33,6 +39,6 @@ export async function handleSupplierMail({request,env}){
   if(action==='sync')return json(await mail.sync());
   if(action==='archive'){if(input.confirmed!==true)throw fail('Bevestig het archiveren.');return json(await mail.archive(input.key));}
   if(action==='retry')return json(await mail.retry(input.key));
- }catch(error){if(action==='callback')return callbackPage(false);return json({error:error.status?error.message:'Leveranciersmail kon niet worden verwerkt. Je CRM-invoer is behouden.'},error.status||503);}
+ }catch(error){if(action==='callback')return callbackPage(false,error.status?error.message:'Microsoft koppelen is niet gelukt. Probeer opnieuw vanuit het CRM.');return json({error:error.status?error.message:'Leveranciersmail kon niet worden verwerkt. Je CRM-invoer is behouden.',...(error.providerStatus?{providerStatus:error.providerStatus,providerCode:error.providerCode||''}:{})},error.status||503);}
  return json({error:'Onbekende mailroute.'},404);
 }

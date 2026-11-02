@@ -3414,5 +3414,44 @@ export const sourceUpdates = [
     "delivery": "live",
     "note": "Na expliciet hervatten bestaande Worker op production/live aangesloten:25modules over exact v4basis, dezelfde Maatproductieopslag, onafhankelijke productie-identiteit. Geen productiegegevens in preview; geen tweede boeker/register. Nieuwe servicekey op Worker en Pagesproduction; bestaand API-account uitsluitend Worker-secret. Bestaande CRM-passwordhash/encryptiesleutel niet vervangen/gekopieerd: private AES-GCM-context per request, tweede sessiecontrole bij Worker. Online readonly accountdiagnose in bron, Pagescodepublicatie nog in voorbereiding. Boekvrijgave blijft false zonder bevestigd profiel/maatbetekenis; nog geen zending/label.",
     "evidence": "Cloudflaredeployment df03713f-37d0-4e74-ab57-4ab0f2d73be2 / versie21fe256b-9725-45a4-a8c8-3771f6ba49b4 na secretaanmaak. Alleen tabel/marker voor dienstidentiteit toegevoegd, geen klantrecords gewijzigd. Metadata/config/readback en noodzakelijke uploadcompile, geen tests/checks/browserQA/APIboek/label/mail. Volle keten/gebruikercontrole open."
+  },
+  {
+    "id": "maat-packs-publication-20261102",
+    "taskId": "maat-packs-worker-v3-20261102",
+    "companies": [
+      "maatwerkkunststof"
+    ],
+    "at": "2026-11-02T03:07:11Z",
+    "author": "Codex",
+    "status": "doing",
+    "delivery": "live",
+    "note": "GitHubmain fcfc7d4 en MaatPagesproduction76f12d32 gepubliceerd; online accountdiagnose/private context/datumbridgebron geleverd. Worker25modules productiebinding/nieuwe secrets/marker ingericht, Render passende PB-nummercode meldt ready. SpatlappenPages niet herpubliceerd. Eerste upload afgewezen door ontbrekende EU-R2jurisdiction; bestaande EUbinding hersteld en herupload geslaagd. Echte boekvrijgave blijftfalse: bevestigd profiel/maatformule/maximale zijden/register nog open. Geen 100%- of werkende labelclaim.",
+    "evidence": "Cloudflarecontrolplane deploy success/commit en bestaande DB/R2EU/previewbindingen teruggelezen; Render alleen publieke release/gereedheid. Noodzakelijke verpakking/Functionscompile, geen tests/browserQA/provider-/label-/mail-/klantmutatieproef. Zie docs/RELEASE-20261102.md. Lokale bouwadministratie; deze afrondnotitie zit nog niet in de functionele productiebronfcfc7d4."
+  },
+  {
+    "id": "maat-packs-publication-docs-20261102",
+    "taskId": "maat-packs-worker-v3-20261102",
+    "companies": [
+      "maatwerkkunststof"
+    ],
+    "at": "2026-11-02T03:18:19.011984+00:00",
+    "author": "Codex",
+    "status": "doing",
+    "delivery": "live",
+    "note": "Vier actuele publicatie-/Outlookdocumenten als aparte documentatiecommit f8b648c op GitHubmain vastgelegd, zonder nieuwe runtimepublicatie. Functionele online bron blijft fcfc7d4; eigen controle en echte boekingsvrijgave open. Dagelijkse afhaalronde is bevestigd, niet opnieuw laten opvragen. Maatformule350 en zijmaxima ontbreken nog.",
+    "evidence": "GitHub create tree/commit en fast-forward met verwachte HEAD geslaagd, [skip ci] [skip render]. Geen tests/checks/browserQA/providerboeking/label/mail. Oude werkboom/index niet gebruikt of gewijzigd; eigen statusreadback schoon/HEAD20f9317. Bronnotitie lokaal en niet opnieuw als runtime uitgebracht."
+  },
+  {
+    "id": "maat-outlook-connect-20261102",
+    "taskId": "maat-supplier-nov1-batch3",
+    "companies": [
+      "maatwerkkunststof"
+    ],
+    "at": "2026-11-02T03:38:42.058366+00:00",
+    "author": "Codex",
+    "status": "doing",
+    "delivery": "local",
+    "note": "Microsoft365 User-mailbox en appgegevens ontvangen. Bestaande codeflow/PKCE/read-only bron hergebruikt, gedeelde wachtrij ook bij Instellingen → Verzenden. Gerichte veilige OAuth/Graph-fouten, strikt beperkte tokenscopes, aparte bron-only jobroute en onafhankelijke vijftienminutentaak in bestaande Maatonderhoudswerker voorbereid. Nooit automatische order/kosten/betaling of Microsoft-write.",
+    "evidence": "Bronvergelijking en officiële Microsoft/Cloudflare-documentatie, geen tests/checks/browser-QA/provideropvraag/login/mail. Installatie/geheimen/publicatie worden afzonderlijk vastgelegd; eigen Microsoft-aanmelding en eerste voorstelcontrole open. Geen credentials of app-ID’s in openbare bron."
   }
 ];

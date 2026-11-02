@@ -1,4 +1,5 @@
 import {validNotificationJob} from '../cloudflare/notifications.js';
+import {validSupplierMailJob} from '../cloudflare/supplier-mail-job.js?v=outlook-connect-20261102';
 import {packsTrialOnly,packsTrialPathAllowed,packsTrialBindingsReady} from '../cloudflare/packs-trial-policy.js';
 import {companyFromEnv} from '../shared/companies.js';
 import {authenticated,authReady,localBypass,localHost} from '../cloudflare/auth.js';
@@ -23,6 +24,10 @@ export async function onRequest(context) {
   if(company.tool!=='design'&&url.pathname.startsWith('/spatlap-preview')||company.tool!=='costing'&&url.pathname.startsWith('/tools/costing/'))return new Response('Deze tool hoort bij een andere bedrijfsversie.',{status:404});
   if(url.pathname==='/api/crm/notifications/run'){
     if(!validNotificationJob(context.request,context.env))return Response.json({error:'Geen toegang.'},{status:401,headers:{'Cache-Control':'no-store'}});
+    return context.next();
+  }
+  if(url.pathname==='/api/crm/supplier-mail/run'){
+    if(!validSupplierMailJob(context.request,context.env))return Response.json({error:'Geen toegang.'},{status:401,headers:{'Cache-Control':'no-store'}});
     return context.next();
   }
   // Pages redirects .html URLs to their extensionless equivalents.

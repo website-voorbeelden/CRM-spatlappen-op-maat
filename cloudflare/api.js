@@ -7,7 +7,7 @@ import {handleWeeklyReports} from './weekly-reports.js';
 import {routePacks} from './packs-service-route.js?v=packs-live-link-20261102';
 import {handleOnlineAssistant,hostedAgentReady} from './assistant.js?v=packs-workflow-20261102';
 import {validateTaskProgress} from '../shared/planning/progress.js?v=packs-live-link-20261102';
-import {handleSupplierMail} from './supplier-mail.js?v=supplier-batches35-20261101';
+import {handleSupplierMail} from './supplier-mail.js?v=outlook-connect-20261102';
 import {handleMarketing} from './marketing.js';
 import {websiteAnalytics} from './site-analytics.js';
 import {websiteJourney} from './website-journey.js';

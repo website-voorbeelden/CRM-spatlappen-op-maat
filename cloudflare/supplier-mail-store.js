@@ -1,5 +1,5 @@
-import {createOutlookConnection,outlookEnvironment} from './outlook-connection.js?v=supplier-batches35-20261101';
-import {outlookGraph,outlookGraphUrl} from './outlook-http.js?v=supplier-batches35-20261101';
+import {createOutlookConnection,outlookEnvironment} from './outlook-connection.js?v=outlook-connect-20261102';
+import {outlookGraph,outlookGraphUrl} from './outlook-http.js?v=outlook-connect-20261102';
 import {integrationError as fail,sha256,hex} from './integration-store.js';
 import {supplierMailSender,supplierMailFacts,supplierMailDay} from '../shared/supplier-mail-intake.js?v=supplier-batches35-20261101';
 const hash=value=>typeof value==='string'&&/^[a-f0-9]{64}$/.test(value);

@@ -7,7 +7,7 @@ import {createSupplierDescription} from './supplier-description.js?v=packs-worke
 import {kunststofbaas,supplierFulfilmentAvailable,supplierFulfilmentData} from '../../shared/supplier-fulfilment.js?v=packs-worker-v3-20261102';
 import {createSupplierProof} from './supplier-proof.js?v=packs-workflow-20261102';
 import {clearSupplierWorkspaceProblem,showSupplierWorkspaceProblem} from './supplier-workspace-status.js?v=packs-workflow-20261102';
-import {supplierMailMarkup,installSupplierMail} from './supplier-mail.js?v=supplier-batches35-20261101';
+import {supplierMailMarkup,installSupplierMail} from './supplier-mail.js?v=outlook-connect-20261102';
 
 export function createSupplierOrderWorkspace(context,{fulfilment}){
  installSupplierDraftGuard(context);
