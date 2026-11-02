@@ -1,3 +1,5 @@
+> Nieuwste verduidelijking2november: Philippe heeft geen TJWorx-mailbox, wel het domein. Bestaande info@bouwmarktxl.nl is het voorstel voor uitgaand én de bestaande ontvangende Outlookmailbox; geen extra mailbox nodig. Afzenderverificatie en Outlookactivering nog open. Zie OUTLOOK-VOORBEREIDING-ANDERE-AI-20261102.md.
+
 # Pakbon en PACKS-label naar Kunststofbaas
 
 2 november 2026. Voorbereiding, nog geen nieuwe mailkoppeling of automatische verzending geactiveerd.

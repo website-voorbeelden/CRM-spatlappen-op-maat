@@ -28,6 +28,6 @@ Philippe heeft geen TJWorx-mailbox, wel het domein. BouwmarktXL is het voorstel 
 
 ## Publicatiestand
 
-Cloudflare Worker- en secretinrichting werkelijk toegepast. Actief na secrets: deployment <deployment-id>, versie21fe256b-9725-45a4-a8c8-3771f6ba49b4. GitHub/Pages en Renderstatus worden bij afronden afzonderlijk vastgelegd; op het moment van deze notitie nog in voorbereiding. Bestaande Spatlappen-Pagesproductie niet herpubliceren; gedeelde documentservice behoudt Spatlappenvariant.
+Cloudflare Worker- en secretinrichting werkelijk toegepast. Actief na secrets: deployment <deployment-id>, versie21fe256b-9725-45a4-a8c8-3771f6ba49b4. GitHubbron fcfc7d4 en Maat Pagesproduction zijn inmiddels gepubliceerd; de documentservice meldt de passende packing-pb-reference-20261102-versie. Zie RELEASE-20261102.md voor de afzonderlijke publicatiebewijzen en de gecorrigeerde eerste upload. Dit is geen functionele eindcontrole. Bestaande Spatlappen-Pagesproductie niet herpubliceren; gedeelde documentservice behoudt Spatlappenvariant.
 
 Geen automatische tests/checks/syntax/buildrondes buiten noodzakelijke uitrolverpakking, geen CRM-browser/DOM/visuele QA, klantdata-import/restore/opruiming/Git-indexwijziging, echte provideractie/boeking/label/mail/betaling. Metadata-/publicatiereadback is geen functionele eindcontrole of100%-claim. Vereiste gebruikerscontrole blijft open.
