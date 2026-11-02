@@ -1,5 +1,5 @@
 import {templateKinds,activeDocumentTemplate,documentTemplateRevision,validateDocumentTemplates} from '../../shared/document-templates.js?v=document-templates-20261028';
-import {renderConfirmation} from './generation.js?v=document-templates-20261028';
+import {renderConfirmation} from './generation.js?v=packing-pb-reference-20261102';
 const mime='application/vnd.openxmlformats-officedocument.wordprocessingml.document';
 export function createDocumentTemplates(context){
  async function request(payload){const r=await fetch('/__local/documents/render',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)}),data=await r.json().catch(()=>({error:'De documentservice is niet bereikbaar.'}));if(!r.ok||data.error)throw Error(data.error||'De template kon niet worden verwerkt.');if(data.templateProtocol!==1)throw Error('De documentservice moet eerst worden bijgewerkt voor templatebeheer. Er is niets gewijzigd.');return data;}

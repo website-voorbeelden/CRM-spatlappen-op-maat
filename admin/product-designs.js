@@ -1,6 +1,6 @@
 import {inventoryOf,orderStockCount} from '../shared/inventory.js';
 import {openCrmDatabase} from './cloud-storage.js?v=crm-code-review-20261027';
-import {supplierInvoices,physicalQuantity} from './purchases/costs.js';
+import {supplierInvoices,physicalQuantity} from './purchases/costs.js?v=invoice-intake-review-20261031';
 import {productDesignVariants,currentFinalVariant,designVariantBasis,variantMatchesProduct} from '../shared/product-design-variants.js?v=batch1-variants-20261026';
 
 export function productDesignUrl(o,item,mode='local',variantId=''){
@@ -92,6 +92,7 @@ export async function saveProductDesign(binding,record,preview,{measurementConfi
     const lines=matches.filter(line=>line.orderId===o.id),quantity=lines.reduce((sum,line)=>sum+physicalQuantity(line),0);
     if(!Number.isSafeInteger(quantity)||quantity<0)throw Error('Controleer de aantallen op de gekoppelde leveranciersregels.');
     if(measurements.quantity<quantity)throw Error('Er zijn al '+quantity+' stuks gekoppeld aan leveranciersdocumenten. Pas eerst de inkoopregels aan.');
+    if(item.costSource==='supplierInvoiceImport'){const imported=(next.supplierInvoiceImports||[]).flatMap(r=>r.data.lines).filter(l=>l.orderId===o.id&&l.itemId===item.id),q=imported.reduce((n,l)=>n+l.quantity,0),total=imported.reduce((n,l)=>n+l.netCents,0);if(measurements.quantity<q)throw Error('Er zijn meer stuks op ingelezen facturen gekoppeld. Pas eerst de bronfactuur aan.');item.purchaseCostQuantity=q;item.purchaseCostTotal=total;item.cost=measurements.quantity===q?Math.round(total/q):null;}
     if(item.costSource==='supplierInvoice'){
      const total=lines.reduce((sum,line)=>sum+line.quantity*line.price,0);
      if(lines.some(line=>!Number.isSafeInteger(line.price)||line.price<0)||!Number.isSafeInteger(total)||total<0)throw Error('Controleer eerst de prijzen op de gekoppelde leveranciersregels.');

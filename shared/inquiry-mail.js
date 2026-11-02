@@ -1,4 +1,4 @@
-import {inquiryRequirements,specLabels} from './inquiries.js?v=feedback-followup-20261028';
+import {inquiryRequirements,specLabels} from './inquiries.js?v=packs-workflow-20261102';
 import {companyFor} from './companies.js';
 import {checkMailText} from './mail-templates.js?v=feedback-followup-20261028';
 export const requestLabels={...specLabels,application:'Toepassing / waar het voor gebruikt wordt',delivery:'Gewenste leverdatum'};

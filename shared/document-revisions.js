@@ -1,4 +1,6 @@
 import {invoiceDocumentTotals} from './document-revision-amounts.js?v=feedback29-restpunten';
+import {supplierPackingRevisionTag,supplierPackingRevisionFields} from './supplier-fulfilment.js?v=packs-worker-v3-20261102';
+export {supplierPackingRevisionTag,supplierPackingRevisionFields};
 const editable=new Set(['quote','confirmation','proforma','packing','invoice']);
 export const documentVersion=d=>Number.isSafeInteger(d.generated?.revision)&&d.generated.revision>0?d.generated.revision:1;
 export function documentSeriesKey(d){const g=d.generated;return g?.generationId?JSON.stringify([d.ownerId,g.kind,g.number,g.seriesId||g.generationId]):'file:'+d.id;}
@@ -34,12 +36,13 @@ export function appendDocumentRevision(state,id,expected,{companyId,payload,date
  if(!generationId||state.documents.some(d=>d.generated?.generationId===generationId)||!Array.isArray(files)||(payload.kind==='invoice'?![1,2].includes(files.length):files.length!==2)||new Set(files.map(f=>f.type)).size!==files.length||!files.some(f=>f.type==='application/pdf')||files.some(f=>!['application/pdf','application/vnd.openxmlformats-officedocument.wordprocessingml.document'].includes(f.type)))throw Error('Bewaar een PDF en, indien gekozen bij een factuur, het Word-bestand als nieuwe versie.');
  if(new Set(files.map(f=>f.id)).size!==files.length||files.some(f=>!f.id||state.documents.some(d=>d.id===f.id)||!Number.isSafeInteger(f.size)||f.size<=0))throw Error('De nieuwe bestanden zijn ongeldig.');
  if(payload.kind==='invoice')invoiceDocumentTotals(payload);
+ const supplierTag=supplierPackingRevisionTag(source.document,payload);
  const order=state.orders.find(o=>o.id===source.document.ownerId),changedVat=payload.kind!=='packing'&&payload.vat!==source.payload.vat;
  if(changedVat&&order?.vat!==payload.vat)throw Error('Het gewijzigde btw-tarief hoort niet bij de actuele order. Controleer de documentbedragen opnieuw.');
  const vatReason=changedVat?order.vatReason??null:source.document.generated.vatReason;
  const added=files.map(file=>{
   const previous=state.documents.find(d=>documentSeriesKey(d)===documentSeriesKey(source.document)&&d.type===file.type);
-  return {...file,...(previous?{name:documentDownloadName(state.documents,previous)}:{}),ownerId:source.document.ownerId,category:source.document.category,date,createdAt:now,generated:{...(vatReason!==undefined?{vatReason:structuredClone(vatReason)}:{}),...(templateRevision?{templateRevision}:{}),kind:payload.kind,number:payload.number,generationId,seriesId:source.seriesId,revision:source.revision,revisionOf:source.document.generated.generationId,payload:structuredClone(payload)}};
+  return {...file,...(previous?{name:documentDownloadName(state.documents,previous)}:{}),ownerId:source.document.ownerId,category:source.document.category,date,createdAt:now,generated:{...(vatReason!==undefined?{vatReason:structuredClone(vatReason)}:{}),...(templateRevision?{templateRevision}:{}),...(supplierTag?{supplierFulfilment:structuredClone(supplierTag)}:{}),kind:payload.kind,number:payload.number,generationId,seriesId:source.seriesId,revision:source.revision,revisionOf:source.document.generated.generationId,payload:structuredClone(payload)}};
  });
  state.documents.push(...added);
  return {documents:added,revision:source.revision};

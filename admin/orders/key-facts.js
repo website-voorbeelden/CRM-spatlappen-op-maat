@@ -1,4 +1,4 @@
-import {orderExecution} from '../../shared/order-progress.js?v=feedback-followup-20261028';
+import {orderExecution} from '../../shared/order-progress.js?v=packs-workflow-20261102';
 import {orderPaymentWait} from '../../shared/order-payment-wait.js?v=payment-wait-20261028';
 import {keyFactsMarkup} from '../workspace/key-facts.js?v=feedback-five-20261029';
 
@@ -10,6 +10,10 @@ export function orderPaymentFact(context,order,totals){
  const complete=totals.priceKnown&&order.shippingKnown===true;
  const fullyPaid=complete&&totals.total>0&&totals.paid>=totals.total;
  const payment={label:'Betaling',value:'Nog geen betaling',detail:'Orderprijs nog invullen',tone:'neutral',tab:'payments'};
+ if(!Array.isArray(context.state?.payments)){
+  try{context.onRenderError?.(new Error('Betaalcontext ontbreekt.'),'order-payment-data');}catch{}
+  return {...payment,value:'Betalingen niet beschikbaar',detail:'De betaalgegevens voor deze weergave ontbreken; betaalstatus niet beoordeeld.',tone:'warning'};
+ }
  if(!Number.isSafeInteger(totals.paid)||(context.state.payments||[]).some(p=>p.orderId===order.id&&!Number.isSafeInteger(p.amount)))return {...payment,value:'Betalingen controleren',detail:'Een ontvangstbedrag is ongeldig; controleer de geregistreerde betalingen.',tone:'warning'};
  if(totals.paid<0){payment.value='Betalingen controleren';payment.detail='Netto ontvangen '+context.euro(totals.paid);payment.tone='warning';}
  else if(!complete){

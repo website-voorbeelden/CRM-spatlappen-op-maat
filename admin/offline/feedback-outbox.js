@@ -1,3 +1,4 @@
+import {sameFeedbackSubmission,feedbackSubmissionConflict} from '../../shared/feedback-submission.js?v=feedback30-batch1';
 import {reviewRead,reviewAvailable,sameOwner,queueFeedback,acknowledgeFeedback} from './review-store.js';
 import {onlineGrant,reviewPack} from './review.js';
 export async function pendingFeedback(runtime){let {pack,pending}=await reviewRead();if(!runtime.offlineReview&&pending.length)pack=await reviewPack({verify:true});if(!pack||pack.grant.companyId!==runtime.companyId)return [];if(!reviewAvailable(pack))return [];return pending.filter(e=>sameOwner(e.grant,pack.grant));}
@@ -7,7 +8,7 @@ export async function addOfflineFeedback(report,runtime){const {pack}=await revi
 export async function syncOfflineFeedback({runtime,list,put}){
  const grant=await onlineGrant(),{pack,pending}=await reviewRead();if(!pack||!sameOwner(pack.grant,grant)||grant.companyId!==runtime.companyId)throw Error('Deze offline feedback hoort bij een andere aanmelding. Er is niets overgezet.');
  let count=0;
- for(const entry of pending){if(!sameOwner(entry.grant,grant))continue;const existing=(await list()).find(r=>r.id===entry.id);if(existing){if(JSON.stringify(existing)!==JSON.stringify(entry.report))throw Error('Deze melding is online anders bewaard. De offline versie blijft behouden; download de meldingen.');}else await put(entry.report);await acknowledgeFeedback(entry);count++;}
+ for(const entry of pending){if(!sameOwner(entry.grant,grant))continue;const existing=(await list()).find(r=>r.id===entry.id);if(existing){if(!sameFeedbackSubmission(existing,entry.report))throw Error('Deze melding is online anders bewaard. De offline versie blijft behouden; download de meldingen.');}else await put(entry.report);await acknowledgeFeedback(entry);count++;}
  return count;
 }
-export async function appendFeedbackReport(db,report){return new Promise((resolve,reject)=>{const tx=db.transaction('reports','readwrite'),store=tx.objectStore('reports'),r=store.get(report.id);let error;r.onsuccess=()=>{if(r.result){if(JSON.stringify(r.result)!==JSON.stringify(report)){error=Error('Deze melding is online intussen aangepast. De offline versie blijft behouden.');tx.abort();}}else store.put(report);};tx.oncomplete=resolve;tx.onerror=()=>reject(error||tx.error);tx.onabort=()=>reject(error||tx.error||Error('Feedback overzetten afgebroken.'));});}
+export async function appendFeedbackReport(db,report){return new Promise((resolve,reject)=>{const tx=db.transaction('reports','readwrite'),store=tx.objectStore('reports'),r=store.get(report.id);let error;r.onsuccess=()=>{if(r.result){if(!sameFeedbackSubmission(r.result,report)){error=feedbackSubmissionConflict();tx.abort();}}else store.put(report);};tx.oncomplete=resolve;tx.onerror=()=>reject(error||tx.error);tx.onabort=()=>reject(error||tx.error||Error('Feedback overzetten afgebroken.'));});}

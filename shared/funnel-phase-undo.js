@@ -1,4 +1,4 @@
-import {salesFunnel,funnelPhases,funnelPhasesFor,funnelDisplayPhase,funnelPhaseLabel} from './sales-funnel.js?v=feedback29-batch3-followup';
+import {salesFunnel,funnelPhases,funnelPhasesFor,funnelDisplayPhase,funnelPhaseLabel} from './sales-funnel.js?v=packs-workflow-20261102';
 
 const validPhase=(phase,companyId)=>[...funnelPhases,...funnelPhasesFor(companyId)].some(([id])=>id===phase);
 

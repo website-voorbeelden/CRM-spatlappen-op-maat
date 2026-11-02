@@ -1,63 +1,71 @@
-import {funnelPayment} from '../shared/sales-funnel.js?v=feedback29-batch3-followup';
+import {applyOrderDelivery} from '../shared/order-delivery.js?v=supplier-workflow-ui-20261101';
+import {createRenderRecovery} from './workspace/render-recovery.js?v=feedback-audit-20261031';
+import {createSupplierInvoiceIntake} from './purchases/invoice-intake.js?v=packs-workflow-20261102';
+import {validateOwnerTransfers} from '../shared/owner-transfers.js?v=finance-period-review-20261031';
+import {validateInvoiceIntakes,invoiceIntakeReferencesDocument} from '../shared/supplier-invoice-intake.js?v=supplier-batches35-20261101';
+import {createExpensesWorkspace} from './expenses/workspace.js?v=packs-worker-v3-20261102';
+import {validateBusinessExpenses,expenseReferencesDocument} from '../shared/business-expenses.js?v=invoice-intake-review-20261031';
+import {sortOrderList} from './orders/list-sort.js?v=feedback-audit-20261031';
+import {funnelPayment} from '../shared/sales-funnel.js?v=packs-workflow-20261102';
 import {paymentDepositSuggestion} from '../shared/payment-deposit-suggestion.js?v=feedback29-batch3-followup';
 import {safeTikkieUrl} from '../shared/order-payment-link.js?v=feedback29-batch3-followup';
 import {installDesignStorage} from './products/design-storage.js?v=feedback29-batch5-followup';
-import {embeddedFreightShare} from '../shared/purchase-import-costs.js?v=feedback29-batch1-followup';
-import {createDocumentTemplates} from './documents/templates.js?v=document-templates-20261028';
-import {createOrderAiUpdate} from './orders/ai-update.js?v=feedback-followup-20261028';
+import {embeddedFreightShare} from '../shared/purchase-import-costs.js?v=finance-period-review-20261031';
+import {createDocumentTemplates} from './documents/templates.js?v=packing-pb-reference-20261102';
+import {createOrderAiUpdate} from './orders/ai-update.js?v=packs-workflow-20261102';
 import {cleanupOrderedVariants} from '../shared/design-variant-cleanup.js?v=feedback29-batch5-followup';
 import {createDuplicateGuard,duplicateBaseline} from './orders/duplicate-guard.js?v=duplicate-review-20261028';
-import {createOrderMerge} from './orders/merge.js?v=feedback-followup-20261028';
+import {createOrderMerge} from './orders/merge.js?v=packs-workflow-20261102';
 import {nextOrderNumber} from '../shared/duplicate-records.js?v=duplicate-review-20261028';
 import {installOrderListNavigation} from './orders/list-navigation.js?v=order-cell-navigation-20261028';
-import {installHomeLinks} from './workspace/home.js?v=home-layout-20261028';
+import {installHomeLinks} from './workspace/home.js?v=business-expenses-20261031';
 import {orderPaymentStatusLabel} from '../shared/order-payment-status.js?v=ui-batch3-followup-20261027';
-import {orderExtraFilterLabels,extraFilterSummary} from './workspace/list-filters.js?v=ui-batch3-followup-20261027';
+import {orderExtraFilterLabels,extraFilterSummary} from './workspace/list-filters.js?v=feedback30';
 import {createOrderTerms} from './documents/order-terms.js?v=ui-batch234-20261027';
-import {orderListMarkup} from './orders/list.js?v=feedback-followup-20261028';
+import {orderListMarkup} from './orders/list.js?v=packs-workflow-20261102';
 import {createMobileNotifications} from './notifications/client.js?v=tikkie-payment-details-20261028';
 import {createPaymentNotifications} from './payments/notifications.js?v=payment-alerts-20261027';
 import {storeTransaction,synchronousTransactionResult} from './workspace/transactions.js?v=crm-code-review-20261027';
-import {copyOrder} from '../shared/order-copy.js?v=crm-code-review-20261027';
+import {copyOrder} from '../shared/order-copy.js?v=packs-worker-v3-20261102';
 import {createDossierActions} from './workspace/dossier-actions.js?v=crm-code-review-20261027';
 import {createDossierPreferences,orderSortOptions} from './workspace/dossier-preferences.js?v=ui-batch3-followup-20261027';
 import {createWebsiteDossier} from './analytics/dossier.js?v=inquiry-headers-20261023';
 import {orderStagesFor,displayOrderStage} from '../shared/companies.js';
-import {createAutomaticPhaseSync} from './mail/automatic-phase-sync.js?v=feedback-followup-20261028';
-import {createPhaseLabelSync} from './mail/phase-label-sync.js?v=feedback-followup-20261028';
+import {createAutomaticPhaseSync} from './mail/automatic-phase-sync.js?v=packs-workflow-20261102';
+import {createPhaseLabelSync} from './mail/phase-label-sync.js?v=packs-workflow-20261102';
 import {saveOnlineAssistantPlan} from './assistant/online-plan.js?v=feedback-launcher-20261020';
-import {vatProtectedOrder} from '../shared/vat-ledger.js?v=feedback-five-20261029';
-import {createOverviewSettings} from './workspace/overview-settings.js?v=document-templates-20261028';
+import {vatProtectedOrder} from '../shared/vat-ledger.js?v=packs-worker-v3-20261102';
+import {createOverviewSettings} from './workspace/overview-settings.js?v=business-expenses-20261031';
 import {installSectionTabs,syncSectionTabs} from './workspace/section-tabs.js?v=calm-workspaces-20261027';
-import {createGeneratedDocumentForms} from './documents/generated-forms.js?v=feedback29-batch3-followup';
-import {createDocumentWorkspace} from './documents/library-workspace.js?v=feedback29-restpunten';
+import {createGeneratedDocumentForms} from './documents/generated-forms.js?v=packing-pb-reference-20261102';
+import {createDocumentWorkspace} from './documents/library-workspace.js?v=packs-worker-v3-20261102';
 import {createCustomerDossier} from './customers/dossier.js?v=calm-workspaces-20261027';
-import {createOrderWorkspace} from './orders/workspace.js?v=feedback29-batch2-followup';
-import {createOrderPlanning} from './orders/planning.js?v=feedback29-batch2-followup';
-import {createOrderAddresses,deliveryEditBasis} from './orders/addresses.js?v=feedback29-batch2-followup';
-import {createProductImages} from './products/images.js?v=feedback29-batch5-followup';
-import {createPurchaseWorkspace} from './purchases/batch-workspace.js?v=feedback29-batch1-followup';
+import {createOrderWorkspace} from './orders/workspace.js?v=packs-live-link-20261102';
+import {createOrderPlanning} from './orders/planning.js?v=packs-workflow-20261102';
+import {createOrderAddresses,deliveryEditBasis} from './orders/addresses.js?v=supplier-workflow-ui-20261101';
+import {createProductImages} from './products/images.js?v=invoice-intake-review-20261031';
+import {createPurchaseWorkspace} from './purchases/batch-workspace.js?v=packs-workflow-20261102';
 import {createMailAttachments} from './mail/attachments.js';
-import {createMailComposer} from './mail/composer.js?v=feedback29-batch3-followup';
-import {createAiImportFlow} from './inquiries/ai-import-flow.js?v=feedback29-batch1-followup';
-import {createAnalyticsWorkspace} from './analytics/workspace.js?v=import-vat-20261029';
-import {financialChartMarkup,mountFinancialChart} from './analytics/financial-chart.js?v=analytics-workspace-20261024';
+import {createMailComposer} from './mail/composer.js?v=packs-workflow-20261102';
+import {createAiImportFlow} from './inquiries/ai-import-flow.js?v=finance-period-review-20261031';
+import {createAnalyticsWorkspace} from './analytics/workspace.js?v=packs-workflow-20261102';
+import {financialChartMarkup,mountFinancialChart} from './analytics/financial-chart.js?v=feedback30-batch2';
 import {invoicePaymentSelection,invoicePaymentNote} from '../shared/invoice-payments.js?v=feedback29-batch3-followup';
 import {invoicePaymentsMarkup} from './documents/payment-selection.js?v=feedback29-batch3-followup';
-import {namedCostSummary} from '../shared/named-costs.js';
-import {namedCostsMarkup,installNamedCosts} from './orders/named-costs.js';
-import {releaseMarkup,createReleaseUI} from './orders/production-release.js?v=feedback29-batch3-followup';
+import {namedCostSummary} from '../shared/named-costs.js?v=invoice-intake-review-20261031';
+import {namedCostsMarkup,installNamedCosts} from './orders/named-costs.js?v=invoice-intake-review-20261031';
+import {releaseMarkup,createReleaseUI} from './orders/production-release.js?v=packs-workflow-20261102';
 import {paymentCorrectionHistory,createPaymentCorrectionUI} from './orders/payment-corrections.js?v=feedback29-batch3-followup';
 import {batchEconomicsMarkup,deliveryScenarioMarkup,installBatchEconomics} from './purchases/economics.js';
 import {installPrimaryImage} from './products/primary-image.js?v=maat-cleanup-20261021';
 import {installCustomerNumberSettings} from './customers/number-settings.js?v=feedback29-batch2-followup';
-import {batchPackingMarkup,installBatchPacking} from './purchases/packing.js?v=feedback-followup-20261028';
-import {arrivalButton,installArrivalMail} from './purchases/arrival.js?v=feedback29-batch1-followup';
+import {batchPackingMarkup,installBatchPacking} from './purchases/packing.js?v=packing-pb-reference-20261102';
+import {arrivalButton,installArrivalMail} from './purchases/arrival.js?v=packs-workflow-20261102';
 import {guardPurchaseLink,latePurchase,batchDocumentKinds} from '../shared/purchase-workflow.js';
 import {transitAcknowledgement,installTransitWarning,batchDocumentsMarkup,batchArchiveButton,installPurchaseWorkflow} from './purchases/workflow.js';
 import {htmlSignatureMessage,signatureFrame} from '../shared/mail-signature.js?v=signatures-20261021';
-import {fulfilmentMarkup,installFulfilment} from './orders/fulfilment.js?v=feedback-followup-20261028';
-import {replaceBuildTasks} from './workspace/build-task-store.js?v=feedback29-restpunten';
+import {fulfilmentMarkup,installFulfilment} from './orders/fulfilment.js?v=packs-workflow-20261102';
+import {replaceBuildTasks} from './workspace/build-task-store.js?v=packs-live-link-20261102';
 import {preferredOpenPurchase,isOpenPurchase} from '../shared/purchase-default.js';
 import {sampleOrderFields,readSampleFields,sampleOrderSummary} from './products/sample-order.js';
 import {customerExecutionDetails,readExecutionFields} from '../shared/product-specifications.js?v=product-thickness-20261021';
@@ -66,65 +74,66 @@ import {decimalNumber} from '../shared/decimal-input.js';
 import {applyCompanyFavicon} from './branding.js';
 import {isReviewMode,prepareReview,reviewBannerMarkup,installReviewGuard} from './offline/review.js';
 installReviewGuard(message=>toast(message));
-import {mountWebsiteAnalytics,analyticsTabs} from './analytics/website.js?v=feedback28-batch3-20261028';
+import {mountWebsiteAnalytics,analyticsTabs} from './analytics/website.js?v=finance-period-review-20261031';
 import {mountGoogleAnalytics} from './analytics/google.js?v=weekly-analytics-20261027';
-import {orderReadiness} from '../shared/order-readiness.js?v=feedback29-batch3-followup';
-import {createWorkspaceSearch,searchLauncherMarkup} from './search/workspace-search.js?v=duplicate-review-20261028';
+import {orderReadiness} from '../shared/order-readiness.js?v=packs-workflow-20261102';
+import {createWorkspaceSearch,searchLauncherMarkup} from './search/workspace-search.js?v=packs-worker-v3-20261102';
 import {documentReplyContext,documentReplyChoices} from '../shared/document-mail-context.js?v=crm-code-review-20261027';
-import {createCustomerViews} from './customers/views.js?v=feedback-followup-20261028';
-import {navigationMarkup,workspaceContextMarkup} from './workspace/navigation.js?v=home-20261028';
-import {createBuildTasks} from './workspace/development-plan.js?v=feedback29-restpunten';
-import {markProvenance} from '../shared/provenance.js?v=provenance-colors-20261027';
-import {provenanceText,markFormSources,markGeneratedMail,mailFormProvenance,formRecordProvenance} from './provenance-ui.js?v=provenance-colors-20261027';
+import {createCustomerViews} from './customers/views.js?v=packs-workflow-20261102';
+import {navigationMarkup,workspaceContextMarkup} from './workspace/navigation.js?v=business-expenses-20261031';
+import {createBuildTasks} from './workspace/development-plan.js?v=packs-live-link-20261102';
+import {markProvenance} from '../shared/provenance.js?v=invoice-link-review-20261101';
+import {provenanceText,markFormSources,markGeneratedMail,mailFormProvenance,formRecordProvenance} from './provenance-ui.js?v=invoice-link-review-20261101';
 import {installSidebar,createUsagePreferences} from "./workspace/preferences.js?v=table-guides-20261028";
-import {createSalesFunnelUI} from './sales-funnel.js?v=feedback-five-20261029';
-import {createInventoryUI} from './inventory.js?v=workspace-search-20261017';
+import {createSalesFunnelUI} from './sales-funnel.js?v=packs-workflow-20261102';
+import {createInventoryUI} from './inventory.js?v=feedback30-batch3';
 import {orderCostingMarkup,focusOrderCosting} from "./orders/costing.js?v=analytics-workspace-20261024";
-import {customerWithSources,inquiryWithSources,reviewSpecsProposal} from '../shared/inquiries.js?v=feedback-followup-20261028';
-import {createInquiryMailUI} from './inquiry-mail.js?v=feedback-followup-20261028';
-import {createInquiryUI} from './inquiry-ui.js?v=feedback29-batch2-followup';
+import {customerWithSources,inquiryWithSources,reviewSpecsProposal} from '../shared/inquiries.js?v=packs-workflow-20261102';
+import {createInquiryMailUI} from './inquiry-mail.js?v=packs-workflow-20261102';
+import {createInquiryUI} from './inquiry-ui.js?v=packs-workflow-20261102';
 import {installMobileUI} from './mobile-ui.js?v=batch1-mobile-20261023';
 import {reviewAssistantMail} from '../shared/assistant-mail.js';
 import {runGuidedAction,showGuidance,guidanceMarkup,installGuidedActions} from './guided-actions.js';
 import {openInlineFormTask} from './inline-tasks.js?v=crm-code-review-20261027';
-import {costingPickerMarkup,installCostingPickers,readCostingLink,validateCostingSources,finishCostingItem,purchaseCalculationMarkup,installPurchaseCalculation} from './costing-links.js?v=provenance-colors-20261027';
+import {costingPickerMarkup,installCostingPickers,readCostingLink,validateCostingSources,finishCostingItem,purchaseCalculationMarkup,installPurchaseCalculation} from './costing-links.js?v=invoice-link-review-20261101';
 import {formProblem,focusFormField,showFormProblem,textFormValues,changedFormValues,restoreFormValues,validateForm,installFormGuidance,hasActiveFormEdits,installFormEditProtection} from './form-guidance.js?v=crm-code-review-20261027';
-import {documentRemovalInfo,removeDocument} from '../shared/document-removal.js?v=crm-code-review-20261027';
-import {documentBundles,documentFormat,documentVersionGroups} from "./documents/library.js?v=feedback29-restpunten";
-import {canReviseDocument,appendDocumentRevision,documentVersion,documentVersionLabel,documentDownloadName} from '../shared/document-revisions.js?v=feedback29-restpunten';
-import {openDocumentRevision} from './documents/revision-editor.js?v=feedback29-restpunten';
+import {documentRemovalInfo,removeDocument} from '../shared/document-removal.js?v=supplier-batches35-20261101';
+import {documentBundles,documentFormat,documentVersionGroups} from "./documents/library.js?v=packing-pb-reference-20261102";
+import {canReviseDocument,appendDocumentRevision,documentVersion,documentVersionLabel,documentDownloadName} from '../shared/document-revisions.js?v=packs-worker-v3-20261102';
+import {openDocumentRevision} from './documents/revision-editor.js?v=packing-pb-reference-20261102';
 import {createCategoryPreferences,installCategoryReorder,documentLayoutToolbar,documentLayoutAttributes} from "./documents/layout.js?v=calm-workspaces-20261027";
 import {previewDocument,createDocumentPreview} from "./documents/preview.js?v=batch2-payments-20261023";
 import {loading} from './loading.js';
-import {createAiExportUI} from './ai-export.js?v=feedback29-batch1-followup';
+import {createAiExportUI} from './ai-export.js?v=finance-period-review-20261031';
 import {applyShippingPrice,shippingPriceSignature} from '../shared/order-repairs.js?v=crm-code-review-20261027';
 import {emailDocuments,emailSender,documentMail,mailStatusLabel,emailIsFullyPaid} from '../shared/mail-workflow.js';
-import {prepareQuickReplyDraft,saveQuickReplyDraft} from '../shared/mail-drafts.js?v=feedback-followup-20261028';
+import {prepareQuickReplyDraft,saveQuickReplyDraft} from '../shared/mail-drafts.js?v=invoice-link-review-20261101';
 import {mailOwner,mailOwnerSignature,assertMailStorage} from '../shared/mail-inbox.js?v=crm-code-review-20261027';
 import {standardTemplateMail,templateContext,checkMailText} from '../shared/mail-templates.js?v=feedback-followup-20261028';
-import {createMailTemplatesUI} from "./mail/templates.js?v=feedback-followup-20261028";
-import {createMailInboxUI,request as gmailRequest} from './mail-inbox.js?v=feedback-followup-20261028';
-import {emailAvailable,emailRequest,emailSettingsMarkup,installEmailSettings,openInlineEmailSettings,pdfEmailAttachment} from './email-service.js?v=crm-code-review-20261027';
-import {installAssistant} from './assistant.js?v=feedback-followup-20261028';
+import {createMailTemplatesUI} from "./mail/templates.js?v=invoice-link-review-20261101";
+import {createMailInboxUI,request as gmailRequest} from './mail-inbox.js?v=packs-workflow-20261102';
+import {emailAvailable,emailRequest,emailSettingsMarkup,installEmailSettings,openInlineEmailSettings,pdfEmailAttachment} from './email-service.js?v=packs-trial-20261031';
+import {installAssistant} from './assistant.js?v=packs-workflow-20261102';
 import {assistantPageContext} from '../shared/assistant-page-context.js?v=payments-overview-20261027';
-import {applyAssistantPlan,assistantSnapshot} from '../shared/assistant-domain.js?v=feedback-followup-20261028';
-import {createSessionUndo} from './session-undo.js';
+import {applyAssistantPlan,assistantSnapshot} from '../shared/assistant-domain.js?v=packs-workflow-20261102';
+import {createSessionUndo} from './session-undo.js?v=finance-period-review-20261031';
 import {companyFor,toolUrl} from '../shared/companies.js?v=analytics-workspace-20261024';
 import {openCrmDatabase,storageRuntime,startCloudRefresh} from './cloud-storage.js?v=crm-code-review-20261027';
-import {migrationPanel,installMigration,backupBlob,parseBackup,readCloudPackage,replaceDesigns,readBrowserPackage} from './cloud-migration.js?v=document-templates-20261028';
+import {migrationPanel,installMigration,backupBlob,parseBackup,readCloudPackage,replaceDesigns,readBrowserPackage} from './cloud-migration.js?v=packs-live-link-20261102';
 import {ensureCustomerNumbers} from "./customers/numbers.js?v=documents-flexible-20261010";
-import {defaultOrderSearch,defaultCustomerSearch,searchOrderItems,orderDossierLabel,searchCustomers,orderFilterError,quoteOutcomeOptions} from "./workspace/dossier-search.js?v=feedback-followup-20261028";
-import {installFeedback} from './feedback.js?v=feedback29-restpunten';
+import {defaultOrderSearch,defaultCustomerSearch,searchOrderItems,orderDossierLabel,searchCustomers,orderFilterError,quoteOutcomeOptions,orderPurchaseOptions} from "./workspace/dossier-search.js?v=packs-workflow-20261102";
+import {installFeedback} from './feedback.js?v=supplier-batches35-20261101';
 import { renderDeliveryMap, renderOrdersMap } from "./orders/delivery-map.js?v=delivery-map-20261021";
-import { importLocalOrders } from './local-import.js?v=duplicate-review-20261028';
-import {supplierInvoices,invoiceFinance,supplierFinance,physicalQuantity,syncSupplierInvoiceCosts,itemCostTotal} from "./purchases/costs.js?v=invoices-20261009-2";
-import {customerAiPrompt,orderAiPrompt,supplierAiPrompt,parseAiAnswer,normalizeAiOrder,normalizeAiSupplier,aiOrderDates,aiSupplierKeys} from './ai-import.js?v=feedback29-batch1-followup';
-import {documentTypes,nextDocumentNumber,addressParts,customerDocumentItems,packingSlipItems} from "./documents/generation.js?v=document-templates-20261028";
+import { importLocalOrders } from './local-import.js?v=invoice-intake-review-20261031';
+import {supplierInvoices,invoiceFinance,supplierFinance,physicalQuantity,syncSupplierInvoiceCosts,itemCostTotal} from "./purchases/costs.js?v=invoice-intake-review-20261031";
+import {customerAiPrompt,orderAiPrompt,supplierAiPrompt,parseAiAnswer,normalizeAiOrder,normalizeAiSupplier,aiOrderDates,aiSupplierKeys} from './ai-import.js?v=finance-period-review-20261031';
+import {documentTypes,nextDocumentNumber,addressParts,customerDocumentItems,packingSlipItems} from "./documents/generation.js?v=packing-pb-reference-20261102";
 import {paymentBasis,requestedAmount,applyTikkiePayments} from "./orders/payment-workflow.js?v=mobile-push-20261023";
 import {createPaymentsWorkspace} from './payments/workspace.js?v=import-vat-20261029';
 
 // Live getters preserve state replacement and route changes across asynchronous feature actions.
 const appContext={
+ get supplierInvoiceIntake(){return supplierInvoiceIntake;},
  get orderMerge(){return orderMerge;},
  get duplicateGuard(){return duplicateGuard;},
  get dossierPreferences(){return dossierPreferences;},
@@ -292,6 +301,7 @@ const appContext={
  get orderTimeline(){return orderTimeline;},
  get orderView(){return orderView;}, set orderView(value){orderView=value;},
  get packagePriceFields(){return packagePriceFields;},
+ get shippingPriceForm(){return shippingPriceForm;},
  get packingSlipForm(){return packingSlipForm;},
  get packingSlipItems(){return packingSlipItems;},
  get paidDate(){return paidDate;},
@@ -385,11 +395,14 @@ const orderMerge=createOrderMerge(appContext);
 const orderAiUpdate=createOrderAiUpdate(appContext);
 const websiteDossier=createWebsiteDossier(appContext);
 const paymentsWorkspace=createPaymentsWorkspace(appContext);
+const expensesWorkspace=createExpensesWorkspace(appContext);
+const supplierInvoiceIntake=createSupplierInvoiceIntake(appContext);
+const renderRecovery=createRenderRecovery({getRoot:()=>$('#app'),getState:()=>state,getRoute:()=>route(),canReplace:()=>!editingLocally(),newOrder:()=>orderForm(null),retry:()=>render(),toast:message=>toast(message)});
 const {renderSettings,renderDashboard}=createOverviewSettings(appContext);
 const {shippingPriceForm,editGeneratedDocument,confirmationSignature,confirmationForm,packingSlipForm}=createGeneratedDocumentForms(appContext);
 const {orderedDocumentCategories,documentsForOwner,documentSource,documentPreviewButton,documentFile,documentDeleteButton,deleteDocumentForm,documentBundleCard,documentCreateButton,documentCreationForm,documents,addDocuments,upload,clearDropHighlights,downloadBlob}=createDocumentWorkspace(appContext);
 const {renderCustomersList,customerOrders,customerAddressInfo,syncSingleOrderDelivery,customerAddressSummary,customerAddresses,renderCustomer,selectCustomerTab,customerForm}=createCustomerDossier(appContext);
-const {packagePriceFields,readPackagePrice,updatePackagePricing,renderOrder,orderCostsView,orderPaymentsView,costForm,itemDimensions,productionLabel,updateItemMeasurements,installOrderCosting,itemFields,readItems,updateCombinedOrderForm,orderForm,paymentForm,noteForm,quoteForm,orderTimeline,changeOrderStage,registerOrderProgress,workflowActions,selectOrderTab}=createOrderWorkspace(appContext);
+const {packagePriceFields,readPackagePrice,updatePackagePricing,renderOrder:renderOrderPage,orderCostsView,orderPaymentsView,costForm,itemDimensions,productionLabel,updateItemMeasurements,installOrderCosting,itemFields,readItems,updateCombinedOrderForm,orderForm,paymentForm,noteForm,quoteForm,orderTimeline,changeOrderStage,registerOrderProgress,workflowActions,selectOrderTab:selectOrderTabPage}=createOrderWorkspace(appContext);
 const {elapsed,paidDate,compactWorkflow,orderSummaryRows,addCalendarDays,calendarDays,deliveryWindow,deliveryTiming,leadTimeFields,installLeadTimeFields,readLeadTime,orderPlanningBlock,planningSummary,planningForm}=createOrderPlanning(appContext);
 const {deliveryDetails,billingDetails,orderContactBlock,billingBlock,billingForm,deliveryValues,deliveryBlock,deliveryForm,updateDeliveryDraft}=createOrderAddresses(appContext);
 const {isDocumentImage,productImages,imageTag,renderDocumentImages,productImageActions,productImageCard,uploadProductImage,viewProductImage,markProductImage}=createProductImages(appContext);
@@ -444,7 +457,7 @@ async function mergeStoredState(mutate,duplicateOptions={}){
   const tx=db.transaction(['state','files'],'readwrite'),ss=tx.objectStore('state'),r=ss.get('main');
   r.onsuccess=()=>{try{
    next=r.result||{customers:[],orders:[],payments:[],documents:[],activities:[]};next.purchases??=[];
-   const before=duplicateBaseline(next);result=synchronousTransactionResult(mutate(next));duplicateGuard(next,before,duplicateOptions);ensureCustomerNumbers(next);const removedDesignFiles=cleanupOrderedVariants(next);for(const fileId of removedDesignFiles)tx.objectStore('files').delete(fileId);ss.put(next,'main');
+   const before=duplicateBaseline(next);result=synchronousTransactionResult(mutate(next));duplicateGuard(next,before,duplicateOptions);ensureCustomerNumbers(next);const removedDesignFiles=cleanupOrderedVariants(next);for(const fileId of removedDesignFiles)tx.objectStore('files').delete(fileId);validateBusinessExpenses(next);validateInvoiceIntakes(next);validateOwnerTransfers(next);ss.put(next,'main');
   }catch(error){tx.abort();reject(error);}};
   tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error);tx.onabort=()=>reject(tx.error||Error('Opslaan afgebroken. Probeer opnieuw.'));
  });
@@ -530,7 +543,7 @@ function shell(content,page,details={}){
  const section=details.section||(record?requestedSection||(page==='orders'?orderView.tab:'details'):reference?requestedSection||'orders':page==='orders'?orderSearch.mode==='prices'?'prices':'list':['customers','purchases'].includes(page)?'list':'');
  const filters=details.filters||(!id&&page==='orders'?{...orderSearch,sort,direction:ascending?'asc':'desc'}:!id&&page==='customers'?customerSearch:page==='order-map'?{stage:orderMapFilter}:{});
  currentAssistantPageContext=assistantPageContext({companyId:company.id,page,section,filters,facts:details.facts||{},visible:details.visible,selected:record?{entity:page==='orders'?'order':'customer',id:record.id,label:page==='orders'?'Order #'+(record.sourceNumber||record.number):record.company}:undefined,reference:reference?{id:reference.id,label:reference.name}:undefined});
- inboxUI.beforeRender?.();feedback.beforeRender();assistant.beforeRender();$('#app').innerHTML=`<div class="shell"><header class="crm-mobile-header"><button type="button" data-mobile-menu aria-controls="crm-navigation" aria-expanded="false">☰ Menu</button><a class="crm-mobile-home" href="#dashboard" data-home-link aria-label="${esc(company.name)} — naar start">${esc(company.name)}</a><div data-ai-mobile-launcher-slot></div><div data-feedback-mobile-launcher-slot></div></header><button type="button" class="crm-mobile-backdrop" data-mobile-backdrop aria-label="Menu sluiten"></button><aside id="crm-navigation"><button type="button" data-sidebar-toggle aria-controls="crm-navigation" title="Zijbalk inklappen">«</button><button type="button" class="crm-mobile-close" data-mobile-close>← Menu sluiten</button><a class="brand" href="#dashboard" data-home-link aria-label="${esc(company.name)} — naar start">${esc(company.brand)}<span class="brand-dot">.</span><small>CRM / ORDERBEHEER</small><small>Versie ${esc(runtime.release || "2.0.0")}</small></a><div class="crm-sidebar-tools">${assistant.enabled?'<div data-ai-launcher-slot></div>':''}<div data-ai-feedback-slot></div></div><nav aria-label="Hoofdnavigatie">${navigationMarkup({company,page,ordersNavigation:page==='orders'&&!record?funnelUI.navigation():''})}</nav><div class="session-undo"><button type="button" data-action="session-undo" disabled>↶ Stap terug</button><small data-undo-label></small><small data-undo-help></small></div><div class="local">${runtime.mode==='cloud'?(runtime.local?'Cloudflare · lokaal testen':'Centrale CRM-opslag')+'<br>D1 + privébestanden in R2':'Lokale ontwikkelversie<br>Opslag in deze browser'}<br>Maak regelmatig een back-up${runtime.mode==='cloud'?'<br><button class="offline-entry" type="button" data-offline-review>Offline-modus</button><br><a href="/admin/offline/">Klanten offline invullen</a>':''}</div>${runtime.authEnabled?'<div class="session-undo"><button type="button" data-action="logout">Uitloggen</button></div>':''}</aside><main class="${page==='orders'&&section==='mail'?'mail-focused-page':['orders','customers'].includes(page)&&section==='documents'?'document-focused-page':''}"><div class="workspace-toolbar">${workspaceContextMarkup({company,page})}${page==='dashboard'&&!id?'':searchLauncherMarkup()}${page==='development'?'':'<div class="ai-export-toolbar"><button type="button" data-action="ai-export" title="Kopieer opgeslagen pagina- of dossiergegevens voor een AI">Exporteren voor AI ↗</button></div>'}</div>${runtime.offlineReview?reviewBannerMarkup(runtime):''}${content}</main></div>`;installHomeLinks($('#app'),{canNavigate:()=>page==='dashboard'&&!id||!editingLocally(),onBlocked:()=>toast('Sla je openstaande bewerking eerst op of annuleer die.')});installMobileUI($('#app'));installSidebar($('#app'),company.id);installGuidedActions($('#app'),{'create-order':()=>orderForm(null,route()[0]==='customers'?route()[1]:undefined),'create-customer':()=>customerForm(),'reset-orders':()=>{funnelUI.reset();const mode=orderSearch.mode;orderSearch=defaultOrderSearch();orderSearch.mode=mode;if(mode==='prices'){orderSearch.visibility='all';orderSearch.expanded=true;}renderOrdersList();},'reset-customers':()=>{customerSearch=defaultCustomerSearch(dossierPreferences.customerSort());renderCustomersList();}},{onError:e=>toast(e.message)});orderTerms.install($('#app'));refreshUndoButton();renderDocumentImages();assistant.mount($('#app'),page);feedback.mount($('#app'));inboxUI.install($('#app'));inventoryUI.install($('#app'));funnelUI.install($('#app'));automaticPhaseSync.mount();if(page==='settings'){mobileNotifications.install($('#app'));installEmailSettings($('#app'),company);templatesUI.installSettings($('#app'));documentTemplates.install($('#app'));usageUI.install($('#app'));inboxUI.installSettings($('#app'));}}
+ inboxUI.beforeRender?.();feedback.beforeRender();assistant.beforeRender();$('#app').innerHTML=`<div class="shell"><header class="crm-mobile-header"><button type="button" data-mobile-menu aria-controls="crm-navigation" aria-expanded="false">☰ Menu</button><a class="crm-mobile-home" href="#dashboard" data-home-link aria-label="${esc(company.name)} — naar start">${esc(company.name)}</a><div data-ai-mobile-launcher-slot></div><div data-feedback-mobile-launcher-slot></div></header><button type="button" class="crm-mobile-backdrop" data-mobile-backdrop aria-label="Menu sluiten"></button><aside id="crm-navigation"><button type="button" data-sidebar-toggle aria-controls="crm-navigation" title="Zijbalk inklappen">«</button><button type="button" class="crm-mobile-close" data-mobile-close>← Menu sluiten</button><a class="brand" href="#dashboard" data-home-link aria-label="${esc(company.name)} — naar start">${esc(company.brand)}<span class="brand-dot">.</span><small>CRM / ORDERBEHEER</small><small>Versie ${esc(runtime.release || "2.0.0")}</small></a><div class="crm-sidebar-tools">${assistant.enabled?'<div data-ai-launcher-slot></div>':''}<div data-ai-feedback-slot></div></div><nav aria-label="Hoofdnavigatie">${navigationMarkup({company,page,ordersNavigation:page==='orders'&&!record?funnelUI.navigation():''})}</nav><div class="session-undo"><button type="button" data-action="session-undo" disabled>↶ Stap terug</button><small data-undo-label></small><small data-undo-help></small></div><div class="local">${runtime.mode==='cloud'?(runtime.local?'Cloudflare · lokaal testen':'Centrale CRM-opslag')+'<br>D1 + privébestanden in R2':'Lokale ontwikkelversie<br>Opslag in deze browser'}<br>Maak regelmatig een back-up${runtime.mode==='cloud'?'<br><button class="offline-entry" type="button" data-offline-review>Offline-modus</button><br><a href="/admin/offline/">Klanten offline invullen</a>':''}</div>${runtime.authEnabled?'<div class="session-undo"><button type="button" data-action="logout">Uitloggen</button></div>':''}</aside><main class="${page==='orders'&&section==='mail'?'mail-focused-page':['orders','customers'].includes(page)&&section==='documents'?'document-focused-page':''}"><div class="workspace-toolbar">${workspaceContextMarkup({company,page})}${page==='dashboard'&&!id?'':searchLauncherMarkup()}${page==='development'?'':'<div class="ai-export-toolbar"><button type="button" data-action="ai-export" title="Kopieer opgeslagen pagina- of dossiergegevens voor een AI">Exporteren voor AI ↗</button></div>'}</div>${runtime.offlineReview?reviewBannerMarkup(runtime):''}${runtime.packsTrialOnly?'<p class="notice" role="status"><strong>PACKS-PROEFOMGEVING</strong> · Geen echte boekingen, betaallinks, Gmail-/AI-acties of gewone mail. Alleen een herkenbare proefmail naar het bevestigde controleadres. Een eerder buiten deze omgeving geboekt label blijft een echt label.</p>':''}${content}</main></div>`;installHomeLinks($('#app'),{canNavigate:()=>page==='dashboard'&&!id||!editingLocally(),onBlocked:()=>toast('Sla je openstaande bewerking eerst op of annuleer die.')});installMobileUI($('#app'));installSidebar($('#app'),company.id);installGuidedActions($('#app'),{'create-order':()=>orderForm(null,route()[0]==='customers'?route()[1]:undefined),'create-customer':()=>customerForm(),'reset-orders':()=>{funnelUI.reset();const mode=orderSearch.mode;orderSearch=defaultOrderSearch();orderSearch.mode=mode;if(mode==='prices'){orderSearch.visibility='all';orderSearch.expanded=true;}renderOrdersList();},'reset-customers':()=>{customerSearch=defaultCustomerSearch(dossierPreferences.customerSort());renderCustomersList();}},{onError:e=>toast(e.message)});orderTerms.install($('#app'));refreshUndoButton();renderDocumentImages();assistant.mount($('#app'),page);feedback.mount($('#app'));inboxUI.install($('#app'));inventoryUI.install($('#app'));funnelUI.install($('#app'));automaticPhaseSync.mount();if(page==='settings'){mobileNotifications.install($('#app'));installEmailSettings($('#app'),company);templatesUI.installSettings($('#app'));documentTemplates.install($('#app'));usageUI.install($('#app'));inboxUI.installSettings($('#app'));}}
 function refreshUndoButton(){
  const control=$('[data-action=session-undo]');if(!control)return;
  const info=sessionUndo.status();control.disabled=info.busy||!info.count;
@@ -556,12 +569,10 @@ document.addEventListener('click',async e=>{
 });
 const heading=(title,sub,buttons='')=>`<header class="top page-heading"><div><h1>${title}</h1><span class="muted">${sub}</span></div><div class="actions">${buttons}</div></header>`;
 const button=(action,text,id='',primary=false)=>`<button type="button" data-action="${action}" data-id="${esc(id)}" class="${primary?'primary':''}">${text}</button>`;
-function ordersTable(list){return orderListMarkup({esc,badge,euro,totals,purchase,customer,company,funnelUI,planningSummary,paymentStatus,orderDossierLabel,guidanceMarkup,route},list,{sort,ascending});}
-function sortedOrders(list){
- const byNumber=(a,b)=>String(b.sourceNumber||b.number||'').localeCompare(String(a.sourceNumber||a.number||''),'nl',{numeric:true})||String(a.id).localeCompare(String(b.id));
- if(sort==='opened')return [...list].sort((a,b)=>dossierPreferences.openedAt('orders',b.id)-dossierPreferences.openedAt('orders',a.id)||String(b.date||'').localeCompare(String(a.date||''))||byNumber(a,b));
- const value=o=>sort==='number'?o.sourceNumber||o.number:sort==='customer'?customer(o.customerId)?.company||'':sort in totals(o)?totals(o)[sort]:o[sort];
- return [...list].sort((a,b)=>{const x=value(a),y=value(b);return (typeof x==='number'?x-y:String(x??'').localeCompare(String(y??''),'nl',{numeric:true}))*(ascending?1:-1)||byNumber(a,b);});
+function ordersTable(list){return orderListMarkup({state,onRenderError:renderRecovery.report,esc,badge,euro,totals,purchase,customer,company,funnelUI,planningSummary,paymentStatus,orderDossierLabel,guidanceMarkup,route},list,{sort,ascending});}
+function sortedOrders(list,{includeStatus=false}={}){
+ const result=sortOrderList(list,{sort,ascending,customer,totals,openedAt:id=>dossierPreferences.openedAt('orders',id),onError:renderRecovery.report});
+ return includeStatus?result:result.orders;
 }
 const searchSelect=(group,key,label,entries,value)=>`<label>${label}<select data-${group}-search="${key}">${entries.map(([v,text])=>`<option value="${esc(v)}" ${v===value?'selected':''}>${esc(text)}</option>`).join('')}</select></label>`;
 const searchInput=(group,key,label,type,value,extra='')=>`<label>${esc(label)}<input type="${type}" data-${group}-search="${key}" value="${esc(value)}" ${extra}></label>`;
@@ -570,12 +581,13 @@ function priceComparison(rows){
  const cm=n=>new Intl.NumberFormat('nl-NL',{maximumFractionDigits:1}).format(n/10);
  return `<div class="price-comparisons">${rows.map(({o,item,c,result})=>`<article class="price-comparison"><div class="price-comparison-customer"><a href="#orders/${o.id}"><strong>${esc(c?.company||'Onbekende klant')}</strong><span>Order #${esc(o.sourceNumber||o.number)} · ${date(o.date)}</span></a>${o.archived?badge('Gearchiveerd'):''}</div><div><strong>${esc(item.description)}</strong><p>${item.width&&item.height?`${cm(item.width)} × ${cm(item.height)} cm`:'Maten onbekend'} · ${item.quantity} stuks<br>${company.tool==='design'?(item.printColors==null?'Drukkleuren onbekend':item.printColors===0?'Onbedrukt':`${item.printColors} drukkleur${item.printColors===1?'':'en'}`):[item.material,item.thickness?item.thickness+' mm dik':''].filter(Boolean).map(esc).join(' · ')}</p>${item.specs?`<small>${esc(item.specs)}</small>`:''}</div><div class="comparison-price">${o.packagePrice!=null?`<strong>${euro(o.packagePrice)}</strong><span>Pakketprijs voor alle ${o.items.reduce((s,i)=>s+i.quantity,0)} stuks in deze order</span>`:item.price==null?'<strong>Prijs onbekend</strong>':`<strong>${euro(item.price)} / stuk</strong><span>${euro(item.price*item.quantity)} voor deze productregel</span>`}<small>Excl. btw en verzending</small></div><div class="comparison-outcome">${badge(result.label,result.key==='accepted'?'green':result.key==='declined'?'orange':'')}<span>${esc(displayOrderStage(o.stage,company.id))}</span><a href="#orders/${o.id}/documents">Documenten bekijken →</a></div></article>`).join('')||'<p class="empty">Geen passende producten gevonden. Maak je filters ruimer of wis ze.</p>'}</div>`;
 }
-function renderOrdersList(){
+function renderOrdersList(){return renderRecovery.run(renderOrdersListContent,{page:'orders',scope:'orders-list'});}
+function renderOrdersListContent(){
  dossierPreferences.refresh();
  const f=orderSearch,selection=funnelUI.filter&&funnelUI.filter!=='followup'?{...f,visibility:'all'}:f,rows=searchOrderItems(state,selection,{includeIncomplete:true}).filter(r=>funnelUI.matches(r.o)),error=orderFilterError(f),ids=new Set(rows.map(r=>r.o.id)),list=state.orders.filter(o=>ids.has(o.id));
- const extraFilters=orderExtraFilterLabels(f,company.id);
- const controls=`<div class="search-main dossier-search-main"><input id="search" type="search" aria-label="Zoek aanvragen en orders" placeholder="Zoek klant, order, product of specificatie…" value="${esc(f.text)}">${searchSelect('order','stage','Status',[['','Alle statussen'],...(company.id==='maatwerkkunststof'?[]:stages.map(v=>[v,v])),...['Onbetaald','Deels betaald','Betaald','Te veel ontvangen','Prijs nog onbekend','Verzendprijs nog onbekend','Geen bedrag'].map(v=>[v,v])],f.stage)}${f.mode==='prices'?'':searchSelect('order','sort','Sorteren',orderSortOptions,sort+':'+(ascending?'asc':'desc'))}</div><details class="search-details" data-search-details="orders" ${f.expanded?'open':''}><summary>${esc(extraFilterSummary(extraFilters,'Meer filters · maat, aantal en periode'))}</summary>${extraFilters.length?'<p class="form-help">Actief: '+esc(extraFilters.join(', '))+'</p>':''}<div class="search-fields">${searchSelect('order','visibility','Orders',[['active','Niet-gearchiveerd'],['all','Alles, inclusief archief'],['archived','Alleen gearchiveerd']],f.visibility)}${searchSelect('order','customerId','Klant',[['','Alle klanten'],...state.customers.map(c=>[c.id,c.company+(c.archived?' · archief':'')])],f.customerId)}${searchInput('order','width','Breedte (cm)','number',f.width,'min="0.1" step="0.1" placeholder="Bijv. 60"')}${searchInput('order','height','Hoogte (cm)','number',f.height,'min="0.1" step="0.1" placeholder="Bijv. 35"')}${company.id==='maatwerkkunststof'?searchInput('order','material','Materiaal','text',f.material||'','placeholder="Bijv. POM"')+searchInput('order','thickness','Dikte (mm)','number',f.thickness||'','min="0.001" max="1000000" step="any"'):''}${searchInput('order','quantity','Aantal stuks per productregel','number',f.quantity,'min="1" step="1"')}${company.id==='spatlappen'?searchInput('order','printColors','Aantal drukkleuren','number',f.printColors,'min="0" max="99" step="1" placeholder="Alle / onbekend"'):''}${searchSelect('order','tolerance','Vergelijken op maat en aantal',[['0','Exact'],['10','Tot 10% verschil'],['20','Tot 20% verschil']],f.tolerance)}${searchSelect('order','outcome','Offerte / akkoord',[['','Alle uitkomsten'],['accepted','Akkoord / betaling / uitvoering'],['pending','Nog geen akkoord'],['declined','Afgewezen'],['no_response','Geen reactie'],['unknown','Uitkomst onbekend']],f.outcome)}${searchInput('order','from','Aangevraagd vanaf','date',f.from)}${searchInput('order','to','Aangevraagd t/m','date',f.to)}</div>${button('clear-order-search','Filters wissen')}<p class="form-help">Maten in cm; aantallen zijn fysieke stuks per productregel. De filters moeten samen op hetzelfde product passen. Speling geldt voor maat en aantal${company.tool==='design'?'; drukkleuren blijven exact':''}. Leeg = geen filter; 0 drukkleuren = onbedrukt.</p></details>`;
- shell(heading('Aanvragen & orders','Alle aanvragen en orders, ook als aantallen of prijzen nog ontbreken.',button('new-order','Nieuwe klantorder','',true)+'<details class="quiet-menu"><summary>Meer</summary><div>'+button('ai-order','AI prompt')+'</div></details>')+`<div class="search-view-toggle" aria-label="Orderweergave"><button type="button" data-action="order-list-mode" data-id="orders" aria-pressed="${f.mode==='orders'}">Aanvragen & orders</button><button type="button" data-action="order-list-mode" data-id="prices" aria-pressed="${f.mode==='prices'}">Prijzen vergelijken</button></div><div class="panel">${funnelUI.summary()}${controls}${selection.visibility!==f.visibility?'<p class="form-help">De gekozen fase toont ook gearchiveerde dossiers.</p>':''}${f.sourceOrderId?`<p class="form-help">Vergelijken met <a href="#orders/${esc(f.sourceOrderId)}">order #${esc(order(f.sourceOrderId)?.sourceNumber||order(f.sourceOrderId)?.number||'—')}</a>. Deze order zelf staat niet tussen de resultaten.</p>`:''}${f.selectionLabel?`<p class="form-help">${esc(f.selectionLabel)} · ${f.orderIds.length} geselecteerde dossiers. Filters wissen toont weer alle dossiers.</p>`:''}<p class="search-result-count" role="status">${error?esc(error):`${list.length} aanvragen / orders · ${rows.filter(r=>r.item).length} passende productregels${f.mode==='prices'&&Number(f.tolerance)>0?' · beste overeenkomsten eerst':''}`}</p>${f.mode==='prices'?'<p class="form-help">Dit zijn de bewaarde orderprijzen, geen actuele prijslijst. Kijk bij Documenten voor het oorspronkelijke prijsvoorstel. Pakketprijzen worden niet verdeeld over producten. De uitkomst volgt geregistreerd akkoord, ontvangen betaling of voortgang; afwijzingen kun je bij Order bewerken vastleggen.</p>'+priceComparison(rows):'<p class="form-help">'+esc(dossierPreferences.help('orders',sort+':'+(ascending?'asc':'desc')))+'</p>'+ordersTable(sortedOrders(list))}</div>`,'orders',{facts:{orderCount:list.length,productMatchCount:rows.length},visible:{entity:'order',ids:(f.mode==='prices'?[...ids]:sortedOrders(list).map(o=>o.id)).slice(0,20),total:list.length}});
+ const extraFilters=orderExtraFilterLabels(f,company.id),sorted=f.mode==='prices'?{orders:[],unavailable:0}:sortedOrders(list,{includeStatus:true});
+ const controls=`<div class="search-main dossier-search-main"><input id="search" type="search" aria-label="Zoek aanvragen en orders" placeholder="Zoek klant, order, product of inkoopbestelling…" value="${esc(f.text)}">${searchSelect('order','stage','Status',[['','Alle statussen'],...(company.id==='maatwerkkunststof'?[]:stages.map(v=>[v,v])),...['Onbetaald','Deels betaald','Betaald','Te veel ontvangen','Prijs nog onbekend','Verzendprijs nog onbekend','Geen bedrag'].map(v=>[v,v])],f.stage)}${f.mode==='prices'?'':searchSelect('order','sort','Sorteren',orderSortOptions,sort+':'+(ascending?'asc':'desc'))}</div><details class="search-details" data-search-details="orders" ${f.expanded?'open':''}><summary>${esc(extraFilterSummary(extraFilters,'Meer filters · maat, aantal en periode'))}</summary>${extraFilters.length?'<p class="form-help">Actief: '+esc(extraFilters.join(', '))+'</p>':''}<div class="search-fields">${searchSelect('order','visibility','Orders',[['active','Niet-gearchiveerd'],['all','Alles, inclusief archief'],['archived','Alleen gearchiveerd']],f.visibility)}${searchSelect('order','customerId','Klant',[['','Alle klanten'],...state.customers.map(c=>[c.id,c.company+(c.archived?' · archief':'')])],f.customerId)}${searchSelect('order','purchaseId','Inkoopbestelling / zending',orderPurchaseOptions(state.purchases,f.purchaseId),f.purchaseId)}${searchInput('order','width','Breedte (cm)','number',f.width,'min="0.1" step="0.1" placeholder="Bijv. 60"')}${searchInput('order','height','Hoogte (cm)','number',f.height,'min="0.1" step="0.1" placeholder="Bijv. 35"')}${company.id==='maatwerkkunststof'?searchInput('order','material','Materiaal','text',f.material||'','placeholder="Bijv. POM"')+searchInput('order','thickness','Dikte (mm)','number',f.thickness||'','min="0.001" max="1000000" step="any"'):''}${searchInput('order','quantity','Aantal stuks per productregel','number',f.quantity,'min="1" step="1"')}${company.id==='spatlappen'?searchInput('order','printColors','Aantal drukkleuren','number',f.printColors,'min="0" max="99" step="1" placeholder="Alle / onbekend"'):''}${searchSelect('order','tolerance','Vergelijken op maat en aantal',[['0','Exact'],['10','Tot 10% verschil'],['20','Tot 20% verschil']],f.tolerance)}${searchSelect('order','outcome','Offerte / akkoord',[['','Alle uitkomsten'],['accepted','Akkoord / betaling / uitvoering'],['pending','Nog geen akkoord'],['declined','Afgewezen'],['no_response','Geen reactie'],['unknown','Uitkomst onbekend']],f.outcome)}${searchInput('order','from','Aangevraagd vanaf','date',f.from)}${searchInput('order','to','Aangevraagd t/m','date',f.to)}</div>${button('clear-order-search','Filters wissen')}<p class="form-help">Maten in cm; aantallen zijn fysieke stuks per productregel. De filters moeten samen op hetzelfde product passen. Speling geldt voor maat en aantal${company.tool==='design'?'; drukkleuren blijven exact':''}. Leeg = geen filter; 0 drukkleuren = onbedrukt.</p></details>`;
+ shell(heading('Aanvragen & orders','Alle aanvragen en orders, ook als aantallen of prijzen nog ontbreken.',button('new-order','Nieuwe klantorder','',true)+'<details class="quiet-menu"><summary>Meer</summary><div>'+button('ai-order','AI prompt')+'</div></details>')+`<div class="search-view-toggle" aria-label="Orderweergave"><button type="button" data-action="order-list-mode" data-id="orders" aria-pressed="${f.mode==='orders'}">Aanvragen & orders</button><button type="button" data-action="order-list-mode" data-id="prices" aria-pressed="${f.mode==='prices'}">Prijzen vergelijken</button></div><div class="panel">${funnelUI.summary()}${controls}${selection.visibility!==f.visibility?'<p class="form-help">De gekozen fase toont ook gearchiveerde dossiers.</p>':''}${f.sourceOrderId?`<p class="form-help">Vergelijken met <a href="#orders/${esc(f.sourceOrderId)}">order #${esc(order(f.sourceOrderId)?.sourceNumber||order(f.sourceOrderId)?.number||'—')}</a>. Deze order zelf staat niet tussen de resultaten.</p>`:''}${f.selectionLabel?`<p class="form-help">${esc(f.selectionLabel)} · ${f.orderIds.length} geselecteerde dossiers. Filters wissen toont weer alle dossiers.</p>`:''}<p class="search-result-count" role="status">${error?esc(error):`${list.length} aanvragen / orders · ${rows.filter(r=>r.item).length} passende productregels${f.mode==='prices'&&Number(f.tolerance)>0?' · beste overeenkomsten eerst':''}`}</p>${f.mode==='prices'?'<p class="form-help">Dit zijn de bewaarde orderprijzen, geen actuele prijslijst. Kijk bij Documenten voor het oorspronkelijke prijsvoorstel. Pakketprijzen worden niet verdeeld over producten. De uitkomst volgt geregistreerd akkoord, ontvangen betaling of voortgang; afwijzingen kun je bij Order bewerken vastleggen.</p>'+priceComparison(rows):'<p class="form-help">'+esc(dossierPreferences.help('orders',sort+':'+(ascending?'asc':'desc')))+'</p>'+(sorted.unavailable?'<p class="notice" role="status">Bij '+sorted.unavailable+' dossier(s) kon het sorteergegeven niet worden getoond. Die dossiers staan onderaan en blijven bereikbaar.</p>':'')+ordersTable(sorted.orders)}</div>`,'orders',{facts:{orderCount:list.length,productMatchCount:rows.length},visible:{entity:'order',ids:(f.mode==='prices'?[...ids]:sorted.orders.map(o=>o.id)).slice(0,20),total:list.length}});
 }
 
 document.addEventListener('click',e=>{
@@ -591,7 +603,8 @@ document.addEventListener('change',e=>{
    if(!dossierPreferences.setOrderSort(e.target.value))return;
    const [key,direction]=e.target.value.split(':');sort=key;ascending=direction==='asc';
   }else orderSearch[e.target.dataset.orderSearch]=e.target.value;
-  renderOrdersList();
+  const filterKey=e.target.dataset.orderSearch;renderOrdersList();
+  document.querySelector('[data-order-search="'+CSS.escape(filterKey)+'"]')?.focus();
  }
  else if(e.target.dataset.customerSearch){
   if(e.target.dataset.customerSearch==='sort'&&!dossierPreferences.setCustomerSort(e.target.value))return;
@@ -600,7 +613,10 @@ document.addEventListener('change',e=>{
 });
 document.addEventListener('toggle',e=>{if(e.target.dataset.searchDetails==='orders')orderSearch.expanded=e.target.open;else if(e.target.dataset.searchDetails==='customers')customerSearch.expanded=e.target.open;},true);
 
-function render(){const [page='dashboard',id]=route();if(page==='feedback'){shell('<div data-feedback-page><p>Feedback laden…</p></div>','feedback');void feedback.refresh();return;}if(page==='development'){shell(buildTasks.markup(),'development');buildTasks.mount($('#app'));return;}if(page==='order-map')return renderOrderMap();if(page==='analytics')return renderAnalytics();if(page==='payments')return paymentsWorkspace.render();if(page==='inventory'){shell(inventoryUI.markup(),'inventory',{facts:inventoryUI.facts()});return;}if(page==='purchases')return renderPurchases(id);if(page==='orders'&&id)return renderOrder(id);if(page==='customers'&&id)return renderCustomer(id);
+function render(){return renderRecovery.run(renderPage,{scope:'page'});}
+function renderOrder(id){return renderRecovery.run(()=>renderOrderPage(id),{page:'orders',scope:'order-detail'});}
+function selectOrderTab(id){return renderRecovery.run(()=>selectOrderTabPage(id),{page:'orders',scope:'order-tab'});}
+function renderPage(){const [page='dashboard',id]=route();if(page==='feedback'){shell('<div data-feedback-page><p>Feedback laden…</p></div>','feedback');void feedback.refresh();return;}if(page==='development'){shell(buildTasks.markup(),'development');buildTasks.mount($('#app'));return;}if(page==='order-map')return renderOrderMap();if(page==='expenses')return expensesWorkspace.render();if(page==='analytics')return renderAnalytics();if(page==='payments')return paymentsWorkspace.render();if(page==='inventory'){shell(inventoryUI.markup(),'inventory',{facts:inventoryUI.facts()});return;}if(page==='purchases')return renderPurchases(id);if(page==='orders'&&id)return renderOrder(id);if(page==='customers'&&id)return renderCustomer(id);
 if(page==='dashboard')renderDashboard();
 else if(page==='orders')renderOrdersList();
 else if(page==='customers')renderCustomersList();
@@ -674,7 +690,13 @@ function openForm(title,html,onSubmit,options={}){
  // Feature actions such as attachment uploads share the same modal boundary.
  const formBusy=()=>busy||form.inert||form.getAttribute('aria-busy')==='true';
  const canClose=()=>!formBusy()&&(!dirty||confirm('Je wijzigingen zijn nog niet opgeslagen. Wil je ze weggooien?'));
- const cancelForm=()=>{if(canClose()){d.close();options.afterCancel?.();}};$('#cancel').onclick=cancelForm;d.oncancel=e=>{e.preventDefault();cancelForm();};
+ // A failed continuation is not a failed commit. Never replay onSubmit or
+ // report a confirmed previous step as "not saved" because its next view fails.
+ async function followUp(callback,scope){
+  try{await callback?.();}
+  catch(error){renderRecovery.report(error,scope);toast(scope==='form-after-save'?'Het vervolgscherm kon niet worden geopend. Controleer het dossier voordat je de vorige actie herhaalt.':'Het vorige scherm kon niet worden geopend. Open het onderdeel opnieuw.');}
+ }
+ const cancelForm=()=>{if(canClose()){d.close();void followUp(options.afterCancel,'form-after-cancel');}};$('#cancel').onclick=cancelForm;d.oncancel=e=>{e.preventDefault();cancelForm();};
  function showError(problem){showFormProblem(form,problem,{toast,isBusy:formBusy});}
  form.onsubmit=async event=>{
   event.preventDefault();if(formBusy())return;
@@ -690,7 +712,7 @@ function openForm(title,html,onSubmit,options={}){
    if(result!==false){completed=true;dirty=false;d.close();if(toastSequence===previousToast&&/opslaan|bewaren|aanmaken/i.test(submitLabel))toast('Opgeslagen');}
   }catch(error){failed=true;form.inert=previousInert;showError(error);}
   finally{finishLoading({error:failed});busy=false;form.inert=previousInert;b.disabled=false;b.textContent=submitLabel;cancel.disabled=false;status.hidden=true;form.removeAttribute('aria-busy');}
-  if(completed)options.afterSave?.();
+  if(completed)await followUp(options.afterSave,'form-after-save');
  };
  for(const box of form.querySelectorAll('[data-inline-customer],[data-inline-purchase]'))for(const input of box.querySelectorAll('input'))input.disabled=box.hidden;
  for(const button of form.querySelectorAll('[data-create-related]'))button.onclick=()=>runGuidedAction(button,()=>createRelated(form,button.dataset.createRelated),{isBusy:formBusy,pendingLabel:'Maakvenster openen…',onError:showError});
@@ -864,6 +886,8 @@ document.addEventListener('click',async event=>{
  }catch(error){failed=true;toast(error.message);}finally{finishLoading?.({error:failed});}
 });
 function deleteOrderForm(id){
+ if((state.supplierInvoiceImports||[]).some(r=>r.data.orderIds.includes(id)))throw Error('Deze order heeft een ingelezen leveranciersfactuur. Archiveer haar om de financiële bron te behouden.');
+ if((state.businessExpenses||[]).some(e=>e.target.kind==='order'&&e.target.ownerId===id))throw Error('Deze order heeft gekoppelde bedrijfskosten en bronbewijs. Archiveer de order om de financiële historie te behouden.');
  if(vatProtectedOrder(state,id))throw Error('Deze order heeft een btw-boeking of bewaarde voorbereiding. Archiveer de order; behoud de fiscale bron en historie.');
  const o=order(id);if(!o)throw Error('Deze order bestaat niet meer.');
  const payments=state.payments.filter(p=>p.orderId===id),files=state.documents.filter(d=>d.ownerId===id),links=orderInvoiceLinks(state,o),label=o.sourceNumber||o.number;
@@ -878,13 +902,15 @@ function deleteOrderForm(id){
    const current=next.orders.find(o=>o.id===id);if(!current)throw Error('Deze order is al verwijderd.');
    if(orderInvoiceLinks(next,current).length)throw Error('Deze order is gekoppeld aan een leveranciersdocument. Haal eerst die productkoppeling weg.');
    if(vatProtectedOrder(next,id))throw Error('Deze order is inmiddels in het btw-register opgenomen. Archiveer haar in plaats van definitief verwijderen.');
+   if((next.supplierInvoiceImports||[]).some(r=>r.data.orderIds.includes(id))||next.documents.some(d=>d.ownerId===id&&invoiceIntakeReferencesDocument(next,d.id)))throw Error('Deze order bevat een ingelezen factuur of historisch bewijs. Archiveer haar in plaats van verwijderen.');
+   if((next.businessExpenses||[]).some(e=>e.target.kind==='order'&&e.target.ownerId===id)||next.documents.some(d=>d.ownerId===id&&expenseReferencesDocument(next,d.id)))throw Error('Deze order bevat bronbewijs voor bedrijfskosten. Archiveer haar; de financiële historie blijft behouden.');
    const currentFiles=next.documents.filter(d=>d.ownerId===id),currentPayments=next.payments.filter(p=>p.orderId===id);
    if(JSON.stringify(current)!==JSON.stringify(o)||JSON.stringify(currentFiles)!==JSON.stringify(files)||JSON.stringify(currentPayments)!==JSON.stringify(payments))throw Error('De order is ondertussen gewijzigd. Open Verwijderen opnieuw om de actuele gegevens te controleren.');
    removed=currentFiles.map(d=>d.id);next.orders=next.orders.filter(o=>o.id!==id);next.payments=next.payments.filter(p=>p.orderId!==id);next.documents=next.documents.filter(d=>d.ownerId!==id);
    const client=next.customers.find(c=>c.id===current.customerId);if(client){if(client.shippingAddressOrderId===id)delete client.shippingAddressOrderId;const remaining=next.orders.filter(o=>o.customerId===client.id);if(remaining.length===1&&remaining[0].delivery?.source==='custom'){const other=remaining[0];Object.assign(client,{shippingAddress:other.delivery.address||'',shippingRecipient:other.delivery.recipient||'',shippingCountry:other.delivery.country||'',shippingAddressOrderId:other.id});}}
    // Keep local import markers so deleted imported orders do not return on reload.
    next.activities.unshift({id:uid(),message:`Order #${label} definitief verwijderd`,time:new Date().toISOString()});
-   ss.put(next,'main');for(const fileId of removed)if(!next.documents.some(d=>d.id===fileId))tx.objectStore('files').delete(fileId);
+   validateBusinessExpenses(next);validateInvoiceIntakes(next);validateOwnerTransfers(next);ss.put(next,'main');for(const fileId of removed)if(!next.documents.some(d=>d.id===fileId))tx.objectStore('files').delete(fileId);
   }catch(error){tx.abort();reject(error);}};
   tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error);tx.onabort=()=>reject(tx.error||Error('Verwijderen afgebroken.'));
  });
@@ -900,6 +926,7 @@ async function exportBackup(){
  if(await downloadBlob(await backupBlob(data),`crm-backup-${today()}.json`))toast('Volledige back-up downloaden gestart · kijk in Downloads');
 }
 async function importBackup(){
+ if(runtime.packsPreview)throw Error('Deze aparte PACKS-preview neemt geen back-upadministratie over. Maak hier alleen fictieve proeforders.');
  const input=document.createElement('input');input.type='file';input.accept='.json';
  input.onchange=async()=>{const finishLoading=loading.begin('Back-up controleren en terugzetten…');let failed=false;try{
   const b=await parseBackup(input.files[0],{companyId:company.id});feedback.validate(b.feedback);ensureCustomerNumbers(b.state);b.state.purchases??=[];
@@ -920,13 +947,13 @@ document.addEventListener('click',async e=>{const b=e.target.closest('[data-acti
  await mergeStoredState(next=>{
   const current=next.orders.find(order=>order.id===id);if(JSON.stringify(current)!==basis)throw Error('Deze order is intussen gewijzigd. Open haar opnieuw voordat je een kopie maakt.');
   const number=nextOrderNumber(next);
-  copy=copyOrder(current,{number,date:today(),stage:stages[0],newId:uid});next.orders.push(copy);next.activities.unshift({id:uid(),message:`Order #${original.number} gedupliceerd zonder betalingen en bijlagen`,time:new Date().toISOString()});
+  copy=copyOrder(current,{number,date:today(),stage:stages[0],newId:uid,expenses:next.businessExpenses||[]});next.orders.push(copy);next.activities.unshift({id:uid(),message:`Order #${original.number} gedupliceerd zonder betalingen en bijlagen`,time:new Date().toISOString()});
  },{allowDuplicateOrders:true});location.hash=`orders/${copy.id}`;render();toast(`Order #${original.number} gedupliceerd zonder betalingen en bijlagen`);
  }else if(['archive-customer','archive-order','restore-customer','restore-order'].includes(action))await dossierActions.archive(action,id);}catch(error){failed=true;toast(error.message);}finally{finishLoading?.({error:failed});}});
 document.addEventListener('input',e=>{if(e.target.id==='search'){const pos=e.target.selectionStart,[page]=route();if(page==='orders')orderSearch.text=e.target.value;else if(page==='customers')customerSearch.text=e.target.value;render();const input=$('#search');if(input){input.focus();input.setSelectionRange(pos,pos);}}});
 document.addEventListener('change',async e=>{if(e.target.id==='filter'){filter=e.target.value;render();}if(e.target.id==='stage'){const o=order(e.target.dataset.id),stage=e.target.value;e.target.value=o.stage;if(stage!==o.stage)registerOrderProgress(o,stage);}});
 installSectionTabs();
-window.addEventListener('hashchange',()=>{const [page,key]=route(),section=page==='dashboard'&&!key?null:syncSectionTabs($('#app'),page,key);if(section){currentAssistantPageContext=assistantPageContext({...currentAssistantPageContext,page,section,companyId:company.id});return;}search='';filter='';render();revealSearchResult();if(pendingExternalRefresh)refreshExternalState();});
+window.addEventListener('hashchange',()=>renderRecovery.run(()=>{const [page,key]=route(),section=page==='dashboard'&&!key?null:syncSectionTabs($('#app'),page,key);if(section){currentAssistantPageContext=assistantPageContext({...currentAssistantPageContext,page,section,companyId:company.id});return;}search='';filter='';render();revealSearchResult();if(pendingExternalRefresh)refreshExternalState();},{scope:'navigation'}));
 // Assign missing customer numbers once, reading the latest state atomically.
 if(!runtime.offlineReview){
 externalRefreshSeq++;
@@ -980,7 +1007,7 @@ document.addEventListener('change',e=>{if(e.target.name==='purchaseId'){const bo
 
 document.addEventListener('change',e=>{if(e.target.name==='customerId'){const box=e.target.form?.querySelector('[data-inline-customer]');if(box){box.hidden=e.target.value!=='__new_customer__';for(const input of box.querySelectorAll('input'))input.disabled=box.hidden;box.querySelector('[name=newCustomerName]').required=!box.hidden;}}});
 
-document.addEventListener('keydown',e=>{const tab=e.target.closest('[role=tab]');if(!tab||tab.hasAttribute('data-section-tab')||!['ArrowLeft','ArrowRight','Home','End'].includes(e.key))return;e.preventDefault();const tabs=[...tab.closest('[role=tablist]').querySelectorAll('[role=tab]')],index=tabs.indexOf(tab),next=e.key==='Home'?0:e.key==='End'?tabs.length-1:(index+(e.key==='ArrowRight'?1:-1)+tabs.length)%tabs.length;const key=tabs[next].dataset.id,isCustomer=route()[0]==='customers';if(route()[0]==='purchases'){history.replaceState(null,'',`#purchases/${route()[1]}/${key}`);render();document.querySelector(`[data-action="purchase-tab"][data-id="${key}"]`)?.focus();return;}if(isCustomer)selectCustomerTab(key);else selectOrderTab(key);document.getElementById((isCustomer?'customer-tab-':'order-tab-')+key).focus();});
+document.addEventListener('keydown',e=>{const tab=e.target.closest('[role=tab]');if(!tab||tab.hasAttribute('data-section-tab')||!['ArrowLeft','ArrowRight','Home','End'].includes(e.key))return;e.preventDefault();const tabs=[...tab.closest('[role=tablist]').querySelectorAll('[role=tab]')],index=tabs.indexOf(tab),next=e.key==='Home'?0:e.key==='End'?tabs.length-1:(index+(e.key==='ArrowRight'?1:-1)+tabs.length)%tabs.length;const key=tabs[next].dataset.id,isCustomer=route()[0]==='customers';if(route()[0]==='purchases'){history.replaceState(null,'',`#purchases/${route()[1]}/${key}`);render();document.querySelector(`[data-action="purchase-tab"][data-id="${key}"]`)?.focus();return;}if(isCustomer)selectCustomerTab(key);else selectOrderTab(key);document.getElementById((isCustomer?'customer-tab-':'order-tab-')+key)?.focus();});
 
 document.addEventListener('click',async e=>{
  const b=e.target.closest('[data-action]');if(!b)return;
@@ -1008,11 +1035,7 @@ document.addEventListener('submit',async e=>{
  try{
   // Commit before changing the card or its map, keeping failed edits available.
   await mergeStoredState(next=>{
-   const current=next.orders.find(order=>order.id===o.id);
-   if(!current||!basis||deliveryEditBasis(next,current)!==basis)throw Error('Deze order, klant of adreskoppeling is intussen gewijzigd. Je invoer blijft staan; open het adres opnieuw met de actuele gegevens.');
-   current.delivery=delivery;
-   const client=next.customers.find(client=>client.id===current.customerId);
-   if(client&&next.orders.filter(order=>order.customerId===client.id).length===1)Object.assign(client,{shippingAddress:delivery.address,shippingRecipient:delivery.recipient,shippingCountry:delivery.country,shippingAddressOrderId:current.id});
+   applyOrderDelivery(next,o.id,delivery,basis);
    next.activities.unshift(activity);
   });
   deliveryDrafts.delete(o.id);render();toast(customerOrders(o.customerId).length===1?'Afleveradres opgeslagen bij klant en order':'Afleveradres opgeslagen voor deze order');

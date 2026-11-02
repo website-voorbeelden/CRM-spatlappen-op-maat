@@ -2,7 +2,8 @@ import {orderContactDetails} from '../../shared/customer-contact.js?v=feedback29
 import {createCustomerContactEditor} from '../customers/contact-editor.js?v=feedback29-batch2-followup';
 // Keep a draft bound to the data it was opened with, including the one-order
 // customer synchronisation. Re-rendering must not silently renew its baseline.
-export function deliveryEditBasis(data,order){return JSON.stringify([order,data.customers.find(customer=>customer.id===order.customerId),data.orders.filter(candidate=>candidate.customerId===order.customerId).map(candidate=>candidate.id).sort()]);}
+export {deliveryEditBasis} from '../../shared/order-delivery.js?v=supplier-workflow-ui-20261101';
+import {deliveryEditBasis} from '../../shared/order-delivery.js?v=supplier-workflow-ui-20261101';
 // Feature implementation. context provides live dependencies from workspace composition.
 // Keep state reads through context.state; never cache a separate dossier snapshot here.
 export function createOrderAddresses(context){

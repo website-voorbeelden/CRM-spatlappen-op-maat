@@ -86,7 +86,7 @@ class Handler(BaseHTTPRequestHandler):
     def do_GET(self):
         path = urlsplit(self.path).path
         if path == '/health':
-            self.json(200 if len(TOKEN) >= 32 else 503, {'ready': len(TOKEN) >= 32, 'templateProtocol': 1, 'release': 'document-templates-20261028'})
+            self.json(200 if len(TOKEN) >= 32 else 503, {'ready': len(TOKEN) >= 32, 'templateProtocol': 1, 'release': 'packing-pb-reference-20261102', 'packingNumberFormat': 'pb-supplier-v1'})
             return
         if not self.authorized():
             return

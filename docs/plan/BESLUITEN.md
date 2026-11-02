@@ -1,3 +1,15 @@
+## PACKS v3 aansluiten — 2 november 2026
+
+De werkelijk gepubliceerde exacte21bron van gebruiker blijft uitvoerder; geen tweede motor of klakkeloze historische api.patch. CRMopslag voor nieuwe voorbereidingen volgt loadDateMode en dezelfde basisvolgorde, oude documenten/basis blijven behouden. De transportbridge maakt ontbrekende capabilities expliciet zonder planningbewijs te verzinnen. Tracking is een beperkte gekoppelde orderwaarneming, geen Done→geleverdmapping. Preview-D1schema/marker en Pages-previewbindings zijn daadwerkelijk ingericht zonder productiegegevens. Workerbron/config niet veranderd, secrets/Origin/login/account/documentservice/eigen proef en afzonderlijke CRM-publicatie blijven open. Geen tests/checks/build/browser/Worker/provider/Git/publicatie. Zie ../PACKS-WORKER-V3-CRM-AANSLUITING-20261102.md.
+
+## Vervolg Kunststofbaas 1 november 2026 — vijf batches, bron versus activering
+
+De na rate-limit hervatte batch2 en reeds gevraagde batches3–5 blijven lokaal. Datumwens en PACKS-antwoordplanning afzonderlijk; leveranciernummer prominent op nieuwe pakbon, technische PB-ID behouden. Inkomend Outlook alleen bronstaging met private originelen en beperkte leestoegang, geen automatische financiële of fysieke feiten. Dezelfde factuuracceptatie is financiële eigenaar; artikelverdeling is readonly voorstel. Gewone/proefleveranciersmail gebruikt actuele order/concept en twee oorspronkelijke PDF-hashes met centrale hercontrole. Geen extra bekeken-checkboxes, wel expliciete laatste verzendklik en bestaande duplicaatbewaking. Bron gereed betekent geen ingerichte proefomgeving, bewezen werking of publicatie. Microsoft/afzender/PACKS-account en eigen praktijkcontrole open; vragen later zoals gevraagd. Zie ../KUNSTSTOFBAAS-VIJF-BATCHES-20261101.md. Geen tests/checks/build/browser-QA/provider-/accountactie/publicatie uitgevoerd.
+
+## PACKS batch2 — 30 oktober 2026, lokaal
+
+Voorbereiding in bestaande supplierFulfilment/state-merge; externe boekingsfeiten later in apart encrypted integration-register zodat orderundo/back-up ze niet vrijgeeft. Alleen Maat. Nu geen providerclient of activerende envflag: endpoints voor boeken/labelherstel weigeren uitvoering. Interne CAS-claim/settle-basis niet via API bereikbaar; geen registerinit/reset. Zonder bevestigd herstelcontract maximaal één poging per order/omgeving, geen rejected-/vervangingsvrijgave. Label krijgt fysieke preparationBasis naast bestaande orderbasis; wijzigingen vragen hercontrole, oude bytes/mails behouden. Niet bewezen door tests, afzonderlijke verificatie/activering open. Zie [batch2](../PACKS-BATCH2-LOKAAL.md).
+
 ## 28 oktober 2026 — Startpunt en betaalwachttijd
 
 Logo naar gedeelde home met zoeken/recente dossiers en ontvangsten/menutegels uit bestaande navigatie. Voorkeuren en zoek-/betaalprojecties hergebruiken; geen tweede store of providerpoll. Prominente wachttijd vanaf eerste werkelijke huidige positieve ontvangst, ook aanbetaling: geen aanvraagfallback of reset bij restbetaling. Afgesproken levertermijn/taakprioriteit apart en ongewijzigd. Bron lokaal, eigen controle open; geen tests/build/browsercontrole/publicatie. Zie STARTPAGINA en ORDER-IN-EEN-OOGOPSLAG.
@@ -435,3 +447,8 @@ Na kritiek op de Exact-geïnspireerde preview de dossiersamenstelling aangepakt:
 ## 27 oktober 2026 — opmaakbatch1: gedeelde owners vóór schermwerk
 
 Eerst centrale type/spacing/control-/menu-/navigatiebasis uitwerken; dossiers/lijsten/mail volgen in eigen batches. Eén native controller voor quiet-menu en order-more, gewone details/filters niet als actiemenu behandelen. Native toetsenbord-/dialogbediening, bestaande routes/inklapvoorkeur en invoer behouden. Bovenbalk module/bedrijf groeperen, zoekbreedte laten meeschalen. CSS-eigenaars aanpassen en oude conflictlagen weghalen, geen nieuwe themeoverride of private data. Bron lokaal/review, eigen visuele/bedieningscontrole en publicatie apart.
+
+
+## 31 oktober 2026 — één Kunststofbaas-factuur zonder zendingen verplaatsen
+
+Factuurinvoer bewaart één optioneel supplierInvoiceImports-record in de bestaande bedrijfsstaat, met gecontroleerde projecties naar product-/benoemde orderkosten. Meerdere klantorders kunnen daardoor dezelfde factuurbron delen zonder purchaseId of PACKS te herschikken. Bestaande inkoopdocumenten worden niet gemigreerd of parallel overgeschreven. PDF-tekst/eigen AI levert alleen een voorstel; originele bron, eigen bedragen/orderkeuzes en bevestiging vóór opslag blijven leidend. Geen autonome OCR-/btw-/bankhandeling. Zie ../KUNSTSTOFBAAS-FACTUURINVOER-BATCH4-20261031.md; uitsluitend lokaal bronwerk, gebruikerscontrole/batch5 open.

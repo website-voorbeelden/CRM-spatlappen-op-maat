@@ -3,13 +3,13 @@ import {cleanRequestProducts} from './request-products.js';
 import {normalizeInquiryMetadata,inquiryAttribution} from './inquiry-mail-metadata.js?v=inquiry-headers-20261023';
 import {inquiryIdentity,customerEmailMatches} from './inquiry-customer.js';
 import {websiteLeadId} from './site-conversion.js';
-import {markProvenance} from './provenance.js?v=provenance-colors-20261027';
+import {markProvenance} from './provenance.js?v=invoice-link-review-20261101';
 import {mailHtmlText,decodeMailEntities,decodeMailHeader} from './mail-content.js?v=form-intake-20261026';
 import {inquiryQuantity,inquiryColor} from './inquiry-quantity.js?v=inquiry-form-20261021';
 import {companyFor,orderStagesFor} from './companies.js';
 import {emailAddresses,saveInboxThread,conversationSignature,gmailConversationKey} from './mail-inbox.js?v=crm-code-review-20261027';
 import {ensureCustomerNumbers} from '../admin/customer-numbers.js';
-import {validateBusinessState} from './state-validation.js?v=feedback29-batch1-followup';
+import {validateBusinessState} from './state-validation.js?v=packs-workflow-20261102';
 export const specLabels={quantity:'Aantal stuks',material:'Materiaal',shape:'Vorm',width:'Breedte (mm)',height:'Hoogte (mm)',diameter:'Buitendiameter (mm)',holeDiameter:'Gatdiameter (mm)',thickness:'Dikte (mm)',color:'Kleur',printing:'Bedrukking / drukkleuren',design:'Ontwerp / tekening'};
 const numbers=new Set(['quantity','width','height','diameter','holeDiameter','thickness']),texts=new Set(Object.keys(specLabels).filter(k=>!numbers.has(k)));
 export function cleanInquirySpecs(input){if(!input||typeof input!=='object'||Array.isArray(input)||Object.keys(input).some(k=>!Object.hasOwn(specLabels,k)))throw Error('Ongeldige aanvraaggegevens.');const result={};for(const [key,value] of Object.entries(input)){if(value==null||value===''){result[key]=null;continue;}if(numbers.has(key)){if(typeof value!=='number'||!Number.isFinite(value)||value<0||value>1000000||(key==='quantity'&&(!Number.isInteger(value)||value<1))||(key!=='holeDiameter'&&value<=0))throw Error('Controleer '+specLabels[key]+'.');result[key]=value;}else if(texts.has(key)){if(typeof value!=='string'||value.length>200||/[\0\r\n]/.test(value))throw Error('Controleer '+specLabels[key]+'.');result[key]=value.trim()||null;}}return result;}

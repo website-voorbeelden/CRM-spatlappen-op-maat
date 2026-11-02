@@ -1,4 +1,4 @@
-import {funnelPayment} from '../../shared/sales-funnel.js?v=feedback29-batch3-followup';
+import {funnelPayment} from '../../shared/sales-funnel.js?v=packs-workflow-20261102';
 import {paymentDepositSuggestion} from '../../shared/payment-deposit-suggestion.js?v=feedback29-batch3-followup';
 import {manualReceiptBasis,similarReceipts,appendManualReceipt,validReceiptDate} from '../../shared/manual-receipt.js?v=feedback29-batch3-followup';
 export function createPaymentEntry(context){

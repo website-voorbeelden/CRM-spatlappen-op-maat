@@ -1,11 +1,11 @@
-import {navigationIcon} from './navigation-icons.js?v=payments-overview-20261027';
+import {navigationIcon} from './navigation-icons.js?v=business-expenses-20261031';
 // Navigation belongs to the workspace; existing route IDs remain stable.
 export function navigationGroups(company) {
  return [
   {id:'daily',label:'Werkdag',links:[['dashboard','Start','⌂'],['mail','E-mail','✉']]},
   {id:'sales',label:'Verkoop & relaties',links:[['orders','Aanvragen & orders','▤'],['payments','Betalingen','€'],['customers','Klanten','♙'],['order-map','Orderkaart','◇']]},
   {id:'operations',label:'Uitvoering',links:[['purchases','Inkoopbestellingen','⇣'],['inventory','Voorraad','▦'],['designs',company.toolLabel,company.tool==='design'?'✎':'∑']]},
-  {id:'management',label:'Beheer',links:[['analytics','Analytics','◴'],['feedback','Feedback','☏'],['development','Bouwtaken','≡'],['settings','Instellingen & back-up','⚙']]}
+  {id:'management',label:'Beheer',links:[['expenses','Bedrijfskosten','€'],['analytics','Analytics','◴'],['feedback','Feedback','☏'],['development','Bouwtaken','≡'],['settings','Instellingen & back-up','⚙']]}
  ];
 }
 const esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));

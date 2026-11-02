@@ -1,4 +1,4 @@
-import {importCostFields,readImportCostFields} from '../purchases/import-cost-fields.js?v=feedback29-batch1-followup';
+import {importCostFields,readImportCostFields} from '../purchases/import-cost-fields.js?v=finance-period-review-20261031';
 import {nextOrderNumber} from '../../shared/duplicate-records.js?v=duplicate-review-20261028';
 import {duplicateBaseline} from '../orders/duplicate-guard.js?v=duplicate-review-20261028';
 import {supplierInvoiceBasis} from '../../shared/supplier-invoices.js?v=feedback28-batch2-20261028';
@@ -114,8 +114,9 @@ function reviewAiSupplier(data){
  const sum=lines.reduce((s,l)=>s+l.quantity*l.price,0),total=fd.has('autoInvoiceTotal')&&lines.length?sum:amount('total');if(total==null||!Number.isSafeInteger(total)||total<sum)throw context.formProblem('Het documenttotaal mag niet lager zijn dan de som van de regels. Controleer de bedragen.',{field:'total'});
  const value={id:invoice.id,reference:fd.get('reference').trim(),kind:fd.get('kind'),date:fd.get('invoiceDate')||'',total,lines,notes:fd.get('notes'),payments:readAiPayments(form)};
  if(!value.reference)throw context.formProblem('Het documentnummer ontbreekt.',{field:'reference'});if(context.state.purchases.some(p=>(p.id===selected||draft.supplier&&p.supplier.trim().toLowerCase()===draft.supplier.toLowerCase())&&context.supplierInvoices(p).some(i=>i.reference.trim().toLowerCase()===value.reference.toLowerCase())))throw context.formProblem('Dit leveranciersdocument is al ingevoerd. Open het bestaande document om het te wijzigen.',{field:'reference'});
+ draft.provenance=structuredClone(context.state.purchases.find(p=>p.id===selected)?.provenance||{});context.formRecordProvenance(form,draft);
  await context.persistSupplierInvoice(draft.id,value,fd.getAll('attachments'),{expectedBasis:expectedBases.get(selected),includeUnlinked:true,ackPurchaseTransit:fd.has('ackPurchaseTransit'),purchaseDraft:draft,linkedOrderIds:[...new Set(lines.map(l=>l.orderId).filter(Boolean))]});
- });const form=context.$('#dialog form');context.installTransitWarning(form,{getState:()=>context.state});form.dataset.supplierAi='true';form.aiPurchaseInput=data.purchase;context.$('#dialog [type=submit]').textContent='Document, betaling & bestanden opslaan';context.updateDutyPreview();context.updateInvoiceTotal();
+ });const form=context.$('#dialog form');context.installTransitWarning(form,{getState:()=>context.state});form.dataset.supplierAi='true';form.aiPurchaseInput=data.purchase;for(const key of ['importVatDate','importVatPaidDate'])if(data.purchase[key])context.markFormSources(form,context.markProvenance({[key]:form.elements[key].value},[key],'ai'));context.$('#dialog [type=submit]').textContent='Document, betaling & bestanden opslaan';context.updateDutyPreview();context.updateInvoiceTotal();
 }
 return {aiCustomerForm,aiImportDialog,aiOrderForm,aiPaymentFields,readAiPayments,reviewAiOrder,updateAiOrderCosts,aiAttachmentFields,aiSupplierForm,supplierLineChoices,aiSupplierLineFields,updateAiSupplierChoices,reviewAiSupplier};
 }

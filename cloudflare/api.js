@@ -1,13 +1,18 @@
+import {handleSupplierDocument} from './supplier-document.js?v=invoice-link-review-20261101';
+import {packsCrmPreview,assertPacksPreviewCommit} from './packs-crm-preview.js?v=packs-worker-v3-20261102';
+import {packsTrialOnly} from './packs-trial-policy.js';
 import {designRetirementReady,retiredDesignFiles,appendDesignRetirements,handleDesignStorage,incomingRetiredReferences} from './design-file-retirement.js';
 import {handleNotifications} from './notifications.js';
 import {handleWeeklyReports} from './weekly-reports.js';
-import {handleOnlineAssistant,hostedAgentReady} from './assistant.js?v=feedback-followup-20261028';
-import {validateTaskProgress} from '../shared/planning/progress.js?v=feedback-followup-20261028';
+import {routePacks} from './packs-service-route.js?v=packs-live-link-20261102';
+import {handleOnlineAssistant,hostedAgentReady} from './assistant.js?v=packs-workflow-20261102';
+import {validateTaskProgress} from '../shared/planning/progress.js?v=packs-live-link-20261102';
+import {handleSupplierMail} from './supplier-mail.js?v=supplier-batches35-20261101';
 import {handleMarketing} from './marketing.js';
 import {websiteAnalytics} from './site-analytics.js';
 import {websiteJourney} from './website-journey.js';
 import {companyFromEnv} from '../shared/companies.js';
-import {validateBusinessState} from '../shared/state-validation.js?v=import-vat-20261029';
+import {validateBusinessState} from '../shared/state-validation.js?v=packs-workflow-20261102';
 import {authReady,localBypass,authenticated} from './auth.js';
 import {tikkieReady,validateJournal} from './tikkie.js';
 import {documentsReady} from './documents.js';
@@ -65,6 +70,7 @@ function packJson(rows) {
 
 async function commit(env,body) {
   const {DB:db,CRM_FILES:bucket}=env;
+  assertPacksPreviewCommit(env,body);
   if (!validKey(body.id)||!Number.isSafeInteger(body.revision)||body.revision<0||!Array.isArray(body.operations)||!body.operations.length||body.operations.length>10000) fail('Ongeldig opslagverzoek.');
   const hash = await digest(encoder.encode(JSON.stringify(body)));
   const previous = await db.prepare('SELECT revision,digest FROM crm_commits WHERE id=?').bind(body.id).first();
@@ -167,7 +173,7 @@ export async function handleCrm({request,env}) {
     const url=new URL(request.url),path=url.pathname.replace(/^\/api\/crm\/?/,'');
     if (request.method==='GET'&&path==='config') {
       const local=localBypass(request,env),localServices=local&&['http://127.0.0.1:3000','http://127.0.0.1:3010'].includes(env.CRM_LOCAL_SERVICES)&&company.id==='spatlappen';
-      return json({storage:'cloud',companyId:company.id,release:env.CRM_RELEASE||'2.0.0',local,allowedEmail:env.CRM_ALLOWED_EMAIL,authEnabled:authReady(env)&&!local,tikkieReady:localServices||tikkieReady(env),documentsReady:localServices||documentsReady(env),agentReady:hostedAgentReady(env),gmailReady:/^[a-f0-9]{64}$/.test(env.CRM_INTEGRATIONS_KEY||''),mailReady:/^[a-f0-9]{64}$/.test(env.CRM_INTEGRATIONS_KEY||''),localServices});
+      return json({storage:'cloud',packsPreview:packsCrmPreview(env),companyId:company.id,release:env.CRM_RELEASE||'2.0.0',local,...(packsTrialOnly(env)?{packsTrialOnly:true}:{}),allowedEmail:env.CRM_ALLOWED_EMAIL,authEnabled:authReady(env)&&!local,tikkieReady:!packsTrialOnly(env)&&(localServices||tikkieReady(env)),documentsReady:localServices||documentsReady(env),agentReady:!packsTrialOnly(env)&&hostedAgentReady(env),gmailReady:!packsTrialOnly(env)&&/^[a-f0-9]{64}$/.test(env.CRM_INTEGRATIONS_KEY||''),mailReady:/^[a-f0-9]{64}$/.test(env.CRM_INTEGRATIONS_KEY||''),localServices});
     }
     if(request.method==='GET'&&path==='offline-grant'){
       const user=await authenticated(request,env);if(!user)return json({error:'Log opnieuw in om offline werken klaar te zetten.'},401);
@@ -177,6 +183,9 @@ export async function handleCrm({request,env}) {
       const id=url.searchParams.get('id');if(!validKey(id))fail('Ongeldig opslagnummer.');
       const found=await env.DB.prepare('SELECT revision FROM crm_commits WHERE id=?').bind(id).first();return json({committed:!!found,...(found?{revision:found.revision}:{})});
     }
+    if(path==='supplier-document')return handleSupplierDocument({request,env});
+    if(path.startsWith('supplier-mail/'))return handleSupplierMail({request,env});
+    if(path==='packs'||path.startsWith('packs/'))return routePacks({request,env,loadSnapshot:async()=>{const s=await snapshot(env.DB,['state']);return {revision:s.revision,state:s.records.state?.main};}});
     if(path.startsWith('assistant/'))return handleOnlineAssistant({request,env,
       loadSnapshot:async()=>{const s=await snapshot(env.DB,['state']);return {revision:s.revision,state:s.records.state?.main||{customers:[],orders:[],payments:[],documents:[],activities:[],purchases:[]}};},
       loadCommit:async id=>await env.DB.prepare('SELECT revision FROM crm_commits WHERE id=?').bind(id).first(),

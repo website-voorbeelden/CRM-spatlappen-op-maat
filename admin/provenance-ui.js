@@ -1,4 +1,4 @@
-import {provenanceFor,provenanceKind,provenanceTip,fieldValue,markProvenance} from '../shared/provenance.js?v=provenance-colors-20261027';
+import {provenanceFor,provenanceKind,provenanceTip,fieldValue,markProvenance} from '../shared/provenance.js?v=invoice-link-review-20261101';
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const sourceBindings=new WeakMap();
 const sourceClass=p=>provenanceKind(p)==='automatic'?'source-automatic':'source-inferred';

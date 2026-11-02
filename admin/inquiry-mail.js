@@ -1,5 +1,5 @@
-import {markGeneratedMail,mailFormProvenance} from './provenance-ui.js?v=provenance-colors-20261027';
-import {requestChoices,requestBasis,requestMail,defaultRequestFormat,cleanRequestFormat,cleanRequestSelection} from '../shared/inquiry-mail.js?v=feedback-followup-20261028';
+import {markGeneratedMail,mailFormProvenance} from './provenance-ui.js?v=invoice-link-review-20261101';
+import {requestChoices,requestBasis,requestMail,defaultRequestFormat,cleanRequestFormat,cleanRequestSelection} from '../shared/inquiry-mail.js?v=packs-workflow-20261102';
 import {checkMailText} from '../shared/mail-templates.js?v=feedback-followup-20261028';
 import {formProblem} from './form-guidance.js?v=crm-code-review-20261027';
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));

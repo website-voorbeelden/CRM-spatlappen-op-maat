@@ -1,6 +1,6 @@
 import {nextOrderNumber} from '../shared/duplicate-records.js?v=duplicate-review-20261028';
 import {ensureCustomerNumbers} from "./customers/numbers.js?v=documents-flexible-20261010";
-import {supplierInvoices,syncSupplierInvoiceCosts} from "./purchases/costs.js?v=invoices-20261009-2";
+import {supplierInvoices,syncSupplierInvoiceCosts} from "./purchases/costs.js?v=invoice-intake-review-20261031";
 // Only the loopback development server exposes this import queue.
 const customerKeys=['company','contact','email','invoiceEmail','phone','vatNumber','country','billingAddress','shippingAddress','notes'];
 const textKeys=['sourceNumber','date','stage','supplier','batch','expectedDate','notes','quoteAcceptedDate','productionReleasedDate','productionDate','supplierOrderedDate','shippedDate','deliveredDate','leadTimeStartDate','expectedDateFrom','expectedDateTo','purchaseId'];

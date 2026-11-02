@@ -1,8 +1,8 @@
 import {inventoryOf,stockCount,pendingCount} from './inventory.js?v=workspace-search-20261017';
 import {companyFor,displayOrderStage} from './companies.js';
 import {normalizeAssistantPageContext} from './assistant-page-context.js?v=payments-overview-20261027';
-import {aiOrderDates} from '../admin/ai-import.js?v=feedback29-batch1-followup';
-import {supplierInvoices} from '../admin/supplier-costs.js';
+import {aiOrderDates} from '../admin/ai-import.js?v=finance-period-review-20261031';
+import {supplierInvoices} from '../admin/supplier-costs.js?v=invoice-intake-review-20261031';
 
 const pick=(record,keys)=>Object.fromEntries(keys.filter(k=>record?.[k]!==undefined&&(record[k]===null||['string','number','boolean'].includes(typeof record[k]))).map(k=>[k,record[k]]));
 const customerKeys=['id','number','company','contact','email','invoiceEmail','phone','vatNumber','country','billingAddress','shippingAddress','shippingRecipient','shippingCountry','archived'];

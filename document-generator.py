@@ -336,7 +336,12 @@ def build_invoice(payload, target, slots, items, package, template_root=TEMPLATE
                                 if info.filename in changed else source.read(info.filename))
 
 
-def build_packing_slip(payload, target, template_root=TEMPLATE_ROOT):
+def packing_display_number(payload):
+    reference = text(payload.get('fields', {}).get('supplier_order_reference', ''))
+    return 'PB-' + re.sub(r'^PB-', '', reference, flags=re.I) if reference else payload['number']
+
+
+def build_packing_slip(payload, target, template_root=TEMPLATE_ROOT, company_id=COMPANY):
     from datetime import date
     fields = payload.get('fields', {})
     if not isinstance(fields, dict):
@@ -346,7 +351,11 @@ def build_packing_slip(payload, target, template_root=TEMPLATE_ROOT):
     slots = {key: text(fields.get(key, '')) for key in keys}
     if not slots['shipping_company'] or not slots['shipping_street'] or not slots['shipping_postal_city']:
         raise ValueError('Vul naam, straat en postcode/plaats van het afleveradres in.')
-    slots['packing_slip_number'] = payload['number']
+    supplier_reference = text(fields.get('supplier_order_reference', ''))
+    if supplier_reference and (company_id != 'maatwerkkunststof' or len(supplier_reference) > 200 or any(c in supplier_reference for c in '\r\n\t')):
+        raise ValueError('Controleer het Kunststofbaas-bestelnummer op de pakbon.')
+    # Presentation only: payload.number and the PB sequence remain unchanged.
+    slots['packing_slip_number'] = packing_display_number(payload)
     try:
         slots['packing_slip_date'] = date.fromisoformat(text(fields.get('document_date', ''))).strftime('%d-%m-%Y')
         day = text(fields.get('delivery_date', ''))
@@ -381,6 +390,20 @@ def build_packing_slip(payload, target, template_root=TEMPLATE_ROOT):
         tables = body.findall('w:tbl', NS)
         if len(tables) != 3 or len(tables[2].findall('w:tr', NS)) != 2:
             raise ValueError('De pakbontemplate heeft een onverwachte indeling.')
+        if supplier_reference and not payload.get('template'):
+            for paragraph in body.findall('.//w:p', NS):
+                if '{{packing_slip_number}}' not in ''.join(paragraph.xpath('.//w:t/text()', namespaces=NS)):
+                    continue
+                for run in paragraph.findall('.//w:r', NS):
+                    style = run.find('w:rPr', NS)
+                    if style is None:
+                        style = etree.Element(TAG('rPr'))
+                        run.insert(0, style)
+                    for name, value in [('b', '1'), ('sz', '32'), ('szCs', '32')]:
+                        child = style.find('w:' + name, NS)
+                        if child is None:
+                            child = etree.SubElement(style, TAG(name))
+                        child.set(TAG('val'), value)
         if not slots['delivery_date']:
             for paragraph in list(tables[0].findall('.//w:p', NS)):
                 if '{{delivery_date}}' in ''.join(paragraph.xpath('.//w:t/text()', namespaces=NS)):
@@ -519,7 +542,7 @@ def build(payload, target, company_id=COMPANY, template_root=None):
     if number != 'CONCEPT' and not re.fullmatch(spec['prefix'] + r'-\d{4}-\d{4,}', number):
         raise ValueError('Ongeldig documentnummer.')
     if payload['kind'] == 'packing':
-        return build_packing_slip(payload, target, template_root)
+        return build_packing_slip(payload, target, template_root, company_id)
     fields = payload.get('fields', {})
     keys = ['billing_company', 'billing_street', 'billing_postal_city', 'billing_country',
             'shipping_company', 'shipping_street', 'shipping_postal_city', 'shipping_country',
@@ -745,9 +768,11 @@ def render(payload, company_id=COMPANY):
                            check=True, capture_output=True, timeout=30)
             previews = [base64.b64encode(path.read_bytes()).decode()
                         for path in sorted(work.glob('page-*.png'), key=lambda p: int(p.stem.split('-')[-1]))]
-        return {'templateProtocol': 1, 'pdf': base64.b64encode(pdf.read_bytes()).decode(),
+        return {'templateProtocol': 1,
+                **({'packingDisplayNumber': packing_display_number(payload)} if payload['kind'] == 'packing' else {}),
+                'pdf': base64.b64encode(pdf.read_bytes()).decode(),
                 **({'docx': base64.b64encode(docx.read_bytes()).decode()} if payload.get('formats') != ['pdf'] else {}), 'pages': actual_pages, 'previews': previews,
-                'filename': DOCUMENT_TYPES[payload['kind']]['file'] + '_' + payload['number']}
+                'filename': DOCUMENT_TYPES[payload['kind']]['file'] + '_' + (packing_display_number(payload) if payload['kind'] == 'packing' else payload['number'])}
 
 
 if __name__ == '__main__':

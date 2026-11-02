@@ -1,8 +1,8 @@
 import {orderPaymentStatusLabel} from '../../shared/order-payment-status.js?v=ui-batch3-followup-20261027';
 import {materialKey} from '../../shared/product-metrics.js?v=product-thickness-20261021';
-import {customerFinancials} from "../../shared/customer-workspace.js?v=feedback-followup-20261028";
+import {customerFinancials} from "../../shared/customer-workspace.js?v=packs-workflow-20261102";
 export const normalizeSearch=value=>String(value??'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[×✕]/g,'x').replace(/\s+/g,' ').trim();
-export const defaultOrderSearch=()=>({text:'',visibility:'active',customerId:'',stage:'',outcome:'',width:'',height:'',quantity:'',printColors:'',material:'',thickness:'',tolerance:'0',from:'',to:'',expanded:false,mode:'orders',sourceOrderId:'',orderIds:[],selectionLabel:''});
+export const defaultOrderSearch=()=>({text:'',visibility:'active',customerId:'',purchaseId:'',stage:'',outcome:'',width:'',height:'',quantity:'',printColors:'',material:'',thickness:'',tolerance:'0',from:'',to:'',expanded:false,mode:'orders',sourceOrderId:'',orderIds:[],selectionLabel:''});
 export const defaultCustomerSearch=(sort='opened')=>({text:'',visibility:'active',activity:'',country:'',sort,expanded:false});
 export const quoteOutcomeOptions=[['','Automatisch uit akkoord / betaling'],['accepted','Akkoord'],['pending','Wacht op antwoord'],['declined','Afgewezen'],['no_response','Geen reactie']];
 function localPhone(value){
@@ -37,13 +37,19 @@ export function orderFilterError(f){
  }
  return f.from&&f.to&&f.from>f.to?'De begindatum ligt na de einddatum.':'';
 }
+// The selected purchase stays explicit even when its source record disappears.
+export function orderPurchaseOptions(purchases,selected=''){
+ const options=[['','Alle bestellingen'],['__none__','Nog niet gekoppeld'],...[...purchases].sort((a,b)=>String(a.name).localeCompare(String(b.name),'nl',{numeric:true})||a.id.localeCompare(b.id)).map(p=>[p.id,[p.name,p.supplier,p.archived?'archief':''].filter(Boolean).join(' · ')])];
+ if(selected&&!options.some(([id])=>id===selected))options.push([selected,'Niet meer beschikbare inkoopbestelling · filter nog actief']);
+ return options;
+}
 export function searchOrderItems(data,f,{includeIncomplete=false}={}){
  if(orderFilterError(f))return [];
- const customers=new Map(data.customers.map(c=>[c.id,c])),paid=paymentsByOrder(data),tolerance=Number(f.tolerance)/100,rows=[];
+ const customers=new Map(data.customers.map(c=>[c.id,c])),purchases=new Map((data.purchases||[]).map(p=>[p.id,p])),paid=paymentsByOrder(data),tolerance=Number(f.tolerance)/100,rows=[];
  for(const o of data.orders){
-  if(f.orderIds?.length&&!f.orderIds.includes(o.id)||o.id===f.sourceOrderId||!inScope(o,f.visibility)||f.customerId&&o.customerId!==f.customerId||f.stage&&o.stage!==f.stage&&orderPaymentStatus(o,paid.get(o.id)||0)!==f.stage||f.from&&(!o.date||o.date<f.from)||f.to&&(!o.date||o.date>f.to))continue;
+  if(f.orderIds?.length&&!f.orderIds.includes(o.id)||o.id===f.sourceOrderId||!inScope(o,f.visibility)||f.customerId&&o.customerId!==f.customerId||f.purchaseId&&(f.purchaseId==='__none__'?!!o.purchaseId:o.purchaseId!==f.purchaseId)||f.stage&&o.stage!==f.stage&&orderPaymentStatus(o,paid.get(o.id)||0)!==f.stage||f.from&&(!o.date||o.date<f.from)||f.to&&(!o.date||o.date>f.to))continue;
   const result=quoteResult(o,paid.get(o.id)||0);if(f.outcome&&result.key!==f.outcome)continue;
-  const c=customers.get(o.customerId),common=[o.number,o.sourceNumber,o.inquiryName,o.inquirySourceSubject,o.stage,o.notes,o.supplier,o.batch,c?.company,c?.contact,c?.email,c?.invoiceEmail,c?.phone,localPhone(c?.phone),c?.shippingAddress,c?.billingAddress].join(' ');
+  const c=customers.get(o.customerId),linkedPurchase=purchases.get(o.purchaseId),common=[linkedPurchase?.name,linkedPurchase?.supplier,o.number,o.sourceNumber,o.inquiryName,o.inquirySourceSubject,o.stage,o.notes,o.supplier,o.batch,c?.company,c?.contact,c?.email,c?.invoiceEmail,c?.phone,localPhone(c?.phone),c?.shippingAddress,c?.billingAddress].join(' ');
   const incomplete=o.items.length===0,candidates=o.items.length?o.items:includeIncomplete&&f.mode!=='prices'?[{...o.inquirySpecs,description:o.inquiryProduct||'Aanvraag op maat'}]:[];
   for(const item of candidates){
    let distance=0,dimensions=0,matches=true;

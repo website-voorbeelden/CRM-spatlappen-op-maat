@@ -1,7 +1,7 @@
-import {validateTaskProgressList} from '../shared/planning/progress.js?v=document-templates-20261028';
+import {validateTaskProgressList} from '../shared/planning/progress.js?v=packs-live-link-20261102';
 import {openBrowserDatabase,openDesignDatabase,cloudRequest,uploadCloudFile,readCloudFile,commitCloud,blobDigest,storageRuntime} from './cloud-storage.js?v=crm-code-review-20261027';
 
-import {validateBusinessState} from '../shared/state-validation.js?v=feedback29-batch1-followup';
+import {validateBusinessState} from '../shared/state-validation.js?v=packs-workflow-20261102';
 import {companyFor} from '../shared/companies.js';
 function read(db,names) {
   return new Promise((resolve,reject)=>{
@@ -89,7 +89,7 @@ export async function packageFingerprint(data) {
 }
 export async function migratePackage(data,progress=()=>{},beforeCommit=async()=>{}) {
   validatePackage(data);
-  const runtime=await storageRuntime();if((data.companyId||'spatlappen')!==runtime.companyId)throw Error('Deze back-up hoort bij een ander bedrijf.');
+  const runtime=await storageRuntime();if(runtime.packsPreview)throw Error('De PACKS-preview neemt geen bestaande administratie over. Maak alleen fictieve proeforders.');if((data.companyId||'spatlappen')!==runtime.companyId)throw Error('Deze back-up hoort bij een ander bedrijf.');
   const initial=await cloudRequest('/snapshot');
   if (initial.revision!==0||Object.keys(initial.records).length||initial.files.length) throw Error('De centrale opslag is niet leeg. Bestaande gegevens worden niet overschreven.');
   const operations=[{store:'state',action:'put',key:'main',value:data.state}];
@@ -113,6 +113,7 @@ export async function migratePackage(data,progress=()=>{},beforeCommit=async()=>
   return saved;
 }
 export function migrationPanel(runtime) {
+  if(runtime.packsPreview)return '<div class="panel"><h2>Afzonderlijke PACKS-proefadministratie</h2><p>Alleen fictieve proeforders, eigen D1/R2. Browsermigratie en back-ups terugzetten staan hier uit. De productieadministratie blijft apart.</p></div>';
   return `<div class="panel"><h2>${runtime.mode==='cloud'?'Centrale opslag':'Cloudflare voorbereiden'}</h2><p>${runtime.mode==='cloud'?'Gegevens worden in D1 bewaard; uploads staan privé in R2. Opslaan lukt pas als de server dit bevestigt.':'Je huidige browsergegevens blijven lokaal bewaard. Migratie kopieert de gegevens en bestanden na een volledige back-up en controleert het resultaat.'}</p><p class="notice">${runtime.local!==false?'De Cloudflare-testopslag staat op deze laptop. Online inloggen doe je straks met je e-mailadres en wachtwoord.':'Je gebruikt de online opslag. Je kunt op een andere laptop inloggen met je e-mailadres en wachtwoord.'}</p><div class="actions"><button data-cloud-action="browser">Browsergegevens migreren</button><button data-cloud-action="backup">Migreren vanuit back-up</button>${runtime.mode==='local'?'<a class="download-button" href="?storage=cloud#settings">Open lokale Cloudflare-versie</a>':''}</div><p class="form-help">Alleen naar lege centrale opslag. Originele browsergegevens worden nooit verwijderd. De volledige back-up neemt ook de Tikkie-historie mee.</p></div>`;
 }
 async function readTikkieJournal(){

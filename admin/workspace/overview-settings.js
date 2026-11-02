@@ -1,4 +1,4 @@
-import {createHomeWorkspace} from './home.js?v=home-layout-20261028';
+import {createHomeWorkspace} from './home.js?v=business-expenses-20261031';
 import {sectionTabsMarkup,syncSectionTabs} from './section-tabs.js?v=calm-workspaces-20261027';
 import {keyFactsMarkup} from './key-facts.js?v=feedback-five-20261029';
 // Same current application state and existing forms; no settings/draft store.

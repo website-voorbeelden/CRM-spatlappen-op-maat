@@ -1,5 +1,5 @@
-import {navigationGroups} from './navigation.js?v=home-20261028';
-import {navigationIcon} from './navigation-icons.js?v=payments-overview-20261027';
+import {navigationGroups} from './navigation.js?v=business-expenses-20261031';
+import {navigationIcon} from './navigation-icons.js?v=business-expenses-20261031';
 import {paymentOverviewRows} from '../../shared/payment-overview.js?v=payments-overview-20261027';
 import {markFormClean} from '../form-guidance.js?v=crm-code-review-20261027';
 

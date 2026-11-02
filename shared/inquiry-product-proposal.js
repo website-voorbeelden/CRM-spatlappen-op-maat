@@ -1,6 +1,6 @@
-import {cleanInquirySpecs,specLabels} from './inquiries.js?v=feedback-followup-20261028';
+import {cleanInquirySpecs,specLabels} from './inquiries.js?v=packs-workflow-20261102';
 import {companyFor} from './companies.js';
-import {markProvenance,provenanceFor} from './provenance.js?v=provenance-colors-20261027';
+import {markProvenance,provenanceFor} from './provenance.js?v=invoice-link-review-20261101';
 
 // A form draft only: never create IDs, add records, infer prices or replace an
 // existing product. The caller saves explicitly through the existing order CAS.

@@ -1,4 +1,4 @@
-import {createSearchIndex,searchWorkspace,searchTypes} from '../../shared/workspace-search.js?v=duplicate-review-20261028';
+import {createSearchIndex,searchWorkspace,searchTypes} from '../../shared/workspace-search.js?v=packs-worker-v3-20261102';
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 export const searchLauncherMarkup=()=>'<button type="button" class="global-search-trigger" data-global-search aria-haspopup="dialog"><span aria-hidden="true">⌕</span><span>Zoek klant, order, nummer of pagina…</span><kbd>⌘ / Ctrl K</kbd></button>';
 export function createWorkspaceSearch({getState,company,navigate,canNavigate=()=>true,document=globalThis.document}){

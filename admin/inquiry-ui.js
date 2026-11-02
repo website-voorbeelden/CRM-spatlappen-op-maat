@@ -1,11 +1,11 @@
-import {inquiryEditDataBasis,inquiryEditProductBasis,changedInquiryValues} from '../shared/inquiry-edit.js?v=feedback-followup-20261028';
-import {recognizeRequest} from '../shared/request-recognition.js?v=feedback-followup-20261028';
+import {inquiryEditDataBasis,inquiryEditProductBasis,changedInquiryValues} from '../shared/inquiry-edit.js?v=packs-workflow-20261102';
+import {recognizeRequest} from '../shared/request-recognition.js?v=packs-workflow-20261102';
 import {customerEmailMatches} from '../shared/inquiry-customer.js';
-import {createInquiryCustomerUI} from './inquiries/customer-review.js?v=feedback-followup-20261028';
-import {createRequestIntakeUI} from './inquiries/request-intake.js?v=feedback-followup-20261028';
-import {provenanceText,markFormSources,formRecordProvenance} from './provenance-ui.js?v=provenance-colors-20261027';
-import {markProvenance} from '../shared/provenance.js?v=provenance-colors-20261027';
-import {inquiryWithSources,createInquiry,inquiryAutomationReason,parseFormInquiry,isFormInquiry,inquiryRule,inquiryRequirements,inquiryProductKeys,inquiryMailText,cleanInquirySpecs,specLabels} from '../shared/inquiries.js?v=feedback-followup-20261028';
+import {createInquiryCustomerUI} from './inquiries/customer-review.js?v=packs-workflow-20261102';
+import {createRequestIntakeUI} from './inquiries/request-intake.js?v=packs-workflow-20261102';
+import {provenanceText,markFormSources,formRecordProvenance} from './provenance-ui.js?v=invoice-link-review-20261101';
+import {markProvenance} from '../shared/provenance.js?v=invoice-link-review-20261101';
+import {inquiryWithSources,createInquiry,inquiryAutomationReason,parseFormInquiry,isFormInquiry,inquiryRule,inquiryRequirements,inquiryProductKeys,inquiryMailText,cleanInquirySpecs,specLabels} from '../shared/inquiries.js?v=packs-workflow-20261102';
 import {formProblem} from './form-guidance.js?v=crm-code-review-20261027';
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 export function createInquiryUI({getState,mergeStoredState,company,openForm,render,toast,editOrder,analyse}){

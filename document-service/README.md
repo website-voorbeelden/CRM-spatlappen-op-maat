@@ -1,3 +1,5 @@
+> Kunststofbaas batch2,1november: expliciete supplier_order_reference op Maat-pakbon vervangt alleen de zichtbare packing_slip_number. PB-identiteit behouden; standaardregel16pt vet, eigen templateopmaak behouden. Renderantwoord meldt packingDisplayNumber zodat een oude service niet stil als bijgewerkt geldt. CRM én generator moeten worden bijgewerkt; niets gepubliceerd/uitgevoerd. Zie ../docs/KUNSTSTOFBAAS-BATCH2-20261101.md.
+
 # Gratis Word/PDF-dienst
 
 Deze dienst vult dezelfde Word-templates als het lokale CRM: orderbevestiging, offerte, proforma, factuur en pakbon. De bestaande variabelen blijven werken. Documentgegevens worden via HTTPS en een geheime bearer-token doorgestuurd; de dienst heeft geen CRM-database of Tikkie-sleutels. Opgeslagen documenten blijven in Cloudflare R2.

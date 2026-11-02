@@ -1,3 +1,9 @@
+> Factuurlink1november: expliciet overgenomen ordernummer uit URL is supplierDocumentLink (rechtstreekse bron, lichtpaars), geen door PDF bevestigde match en geen wijziging van order.supplierOrderReference. Herkende documentregels donkerpaars; expliciet berekend netto calculator/lichtpaars. Nieuwe voorstelvelden binden aan getoonde waarden; bestaande handmatige invoer alleen na aparte vervangkeuze. URL/sleutel niet in herkomst. Alleen lokaal bronwerk, geen tests/publicatie. Zie KUNSTSTOFBAAS-FACTUURLINK-20261101.md.
+
+> Factuurinvoer31oktober: nieuwe bron documentRecognition = Factuurtekst / veldherkenning, interpretatie (donkerpaars), apart van AI. Header-/regelwaarden binden op getoonde formulierwaarden, worden voor bewaarde centen opnieuw ondertekend; eigen afwijkingen verliezen de markering. Exacte productkosten uit toerekening hebben berekeningsbron, oorspronkelijke AI/tekstvelden blijven bij de factuur. Geen oude bronmarkeringen gemigreerd. Zie KUNSTSTOFBAAS-FACTUURINVOER-BATCH4-20261031.md.
+
+> Feedback30oktober, batch3: centrale AI-/interpretatietokens staan op middenpaars #7041a6 met witte tekst; automatische overname blijft lichtpaars. In vervolgbronvergelijking behouden, geen nieuwe CSSlaag/visuele beoordeling; jouw controle open.
+
 # Herkomst van automatisch ingevulde gegevens
 
 Laatste gebruikersafspraak27oktober2026: paars heeft uitsluitend herkomstbetekenis. Gewone knoppen, tabs, navigatie, filters, selectie en legenda gebruiken blauw/neutrale kleuren.

@@ -1,5 +1,5 @@
 import {orderPaymentWait} from '../../shared/order-payment-wait.js?v=payment-wait-20261028';
-import {orderProgressMarkup} from './progress.js?v=feedback-followup-20261028';
+import {orderProgressMarkup} from './progress.js?v=packs-workflow-20261102';
 import {depositLeadTime,leadTimeDepositPercent,leadTimeBases} from '../../shared/lead-time.js';
 // Feature implementation. context provides live dependencies from workspace composition.
 // Keep state reads through context.state; never cache a separate dossier snapshot here.

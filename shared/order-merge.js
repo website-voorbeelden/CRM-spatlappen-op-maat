@@ -1,10 +1,10 @@
-import {vatProtectedOrder} from './vat-ledger.js?v=feedback-five-20261029';
+import {vatProtectedOrder} from './vat-ledger.js?v=packs-worker-v3-20261102';
 import {correctPayment} from './payment-corrections.js?v=feedback29-batch3-followup';
-import {validateBusinessState} from './state-validation.js?v=feedback29-batch1-followup';
+import {validateBusinessState} from './state-validation.js?v=packs-workflow-20261102';
 const clone=v=>structuredClone(v),same=(a,b)=>JSON.stringify(a??null)===JSON.stringify(b??null);
 const present=v=>v!==undefined&&v!==null&&v!==''&&!(Array.isArray(v)&&!v.length)&&!(v&&typeof v==='object'&&!Object.keys(v).length);
 const stored=new Set(['id','number','items','provenance']);
-const retained=new Set(['paymentLinks','documentDrafts','confirmationDraft','quoteDraft','emailDrafts','salesFunnel','gmailSalesPhase','statusHistory']);
+const retained=new Set(['paymentLinks','documentDrafts','confirmationDraft','quoteDraft','emailDrafts','supplierOrderText','salesFunnel','gmailSalesPhase','statusHistory']);
 const objects=new Set(['delivery','billing','vatReason','inquirySpecs','inquiryCustomer']);
 const complexItem=new Set(['costSource','purchaseCostQuantity','designId','designDocumentId','designPreviewId','designVariants','designFinalVariantId','designFinalBasis','primaryImageId','costQuoteLink','costCalculation','purchaseCostTotal','calculatedCostTotal']);
 const refs=['incomingEmails','emailDrafts','mailThreads','inquirySources','inquiryActivity','mailThreadLabels','mailReplyGuidance'];
@@ -19,6 +19,8 @@ function records(state,source,target){return {source:state.orders.find(o=>o.id==
 export function orderMergeIssues(state,sourceId,targetId){
  const {source,target}=records(state,sourceId,targetId),issues=[];
  if(!source||!target||source===target)return ['Kies twee verschillende bestaande orders.'];
+ if((state.supplierInvoiceImports||[]).some(r=>r.data.orderIds.some(id=>[source.id,target.id].includes(id))))issues.push('Een order heeft een ingelezen leveranciersfactuur. Behoud de factuurkoppelingen; samenvoegen vraagt een afzonderlijke financiële correctie.');
+ if((state.businessExpenses||[]).some(e=>e.target.kind==='order'&&[source.id,target.id].includes(e.target.ownerId)))issues.push('Een order heeft gekoppelde bedrijfskosten, btw of betaalbewijs. Samenvoegen vraagt eerst een afzonderlijke financiële correctie.');
  if(source.customerId!==target.customerId)issues.push('Samenvoegen kan alleen binnen hetzelfde klantdossier. Controleer eerst de klantkoppeling.');
  if(vatProtectedOrder(state,source.id)||vatProtectedOrder(state,target.id))issues.push('Een order heeft een btw-boeking of bewaarde btw-voorbereiding. Corrigeer die eerst via het btw-register.');
  if(source.websiteLeadId)issues.push('De bronorder is aan een websiteaanvraag gekoppeld. Kies die order als blijvend dossier; twee websiteaanvragen samenvoegen vraagt afzonderlijke controle.');

@@ -3,7 +3,7 @@ import {productDesignVariants} from '../../shared/product-design-variants.js?v=b
 import {storedCalculationDiffers} from '../../shared/costing-product.js';
 
 // Presentation only. Reuse existing editors, totals, source marks and design actions.
-export function orderOverviewMarkup(context,o,{totals:t,economics:e,customer:c,itemDimensions,productionLabel,nextStep=''}){
+export function orderOverviewMarkup(context,o,{totals:t,economics:e,customer:c,itemDimensions,productionLabel,nextStep='',supplierFulfilment=''}){
  const id=o.id,priceComplete=t.priceKnown&&o.shippingKnown===true;
  function productMarkup(i){
   const esc=context.esc;
@@ -40,7 +40,7 @@ export function orderOverviewMarkup(context,o,{totals:t,economics:e,customer:c,i
   </div>
  </section>`;
  return `${context.releaseMarkup(context.state,o,context.company,{esc:context.esc,euro:context.euro})}${context.company.id==='spatlappen'?context.sampleOrderSummary(o,e,context.euro):''}
-  <div class="order-overview">${products}
+  <div class="order-overview">${supplierFulfilment?'<div>'+supplierFulfilment+products+'</div>':products}
    <aside class="order-overview-details" aria-label="Aanvullende dossiergegevens"><h2>Dossiergegevens</h2>${customerDetails}${context.orderPlanningBlock(o,{concise:true})}${context.inquiryUI.checklistMarkup(id,{compact:true})}</aside>
   </div>`;
 }

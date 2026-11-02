@@ -1,4 +1,4 @@
-import {orderAiSnapshot,orderAiProposal,applyOrderAiProposal} from '../../shared/order-ai-update.js?v=feedback-followup-20261028';
+import {orderAiSnapshot,orderAiProposal,applyOrderAiProposal} from '../../shared/order-ai-update.js?v=packs-workflow-20261102';
 export function createOrderAiUpdate(context){
  function open(id,snapshot=null,answer=''){
   snapshot??=orderAiSnapshot(context.state,id,context.company.id);let proposal,nextAnswer;

@@ -58,3 +58,11 @@ Gebruiker vraagt waar websitebron/GitHub staat en wil unieke gebruikers, cookiew
 ## Maatwerkkunststof: tabtoegang — 20 oktober 2026, alleen lokaal
 
 De bestaande UI beperkte Websitegebruik/Aanvragen/Google & SEO tot Spatlappen en stuurde Maat-routes terug naar Financiën. Beide beperkingen zijn in de bron verwijderd. De bestaande backendroutes gebruiken al het bedrijf uit de serveromgeving en de eigen database/binding; die zijn niet gewijzigd. Dit richt geen Maat-meetdatabase, website-script, Google-property of serviceaccount in. De afwezigheid van een koppeling wordt expliciet uitgelegd; alleen de bestaande eigen CRM-aanvragen worden afzonderlijk getoond. Geen productieconfig gelezen of gewijzigd, geen publicatie of tests uitgevoerd. Voor activering van websitegebruik eerst de echte Maat-websitebron en eigen meetinrichting bepalen; nooit de Spatlappen-binding hergebruiken als bron voor Maatcijfers.
+
+## Maatdiagnose 30 oktober 2026
+
+Gebruiker bedoelt Websitegebruik. Laatste beschikbare publicatiesnapshot29oktober bevat voor Maat geen eigen SITE_ANALYTICS_DB/WEBSITE_ANALYTICS_SITE. Gevonden Maatwebsitebron22oktober gebruikt GA4 en vult deze CRM-meettabellen niet. Geen bewijs van eerdere aansluiting/verloren metingen. CRM toont nu concretere configuratiereden en weigert een rapport voor een ander domein; geen dataherstel/publicatie/trackingscriptactivering uitgevoerd. Eigen website-/database-/aanvraagkoppeling blijft vereist; zie VIER-FEEDBACKBATCHES-20261030.md.
+
+## Maatbronvoorbereiding — batch2vervolg30oktober
+
+Eigen eerste-partij ingest/schema/consentgebonden paginagebruik en servergeaccepteerde aanvraag-IDkoppeling nu lokaal voorbereid in de bestaande Maatwebsitebron. Oude GA4-toestemming activeert de nieuwe meting niet. Het CRM gebruikt dezelfde rapportcode met eigen bedrijfsbinding; grafiek heeft kiesbare reeksen en ontbrekende dagen blijven onbekend. Nog geen database/schema/binding/activering/publicatie/meetproef uitgevoerd. Zie MAAT-WEBSITEGEBRUIK.md en FEEDBACK30-BATCH2-VERVOLG.md.

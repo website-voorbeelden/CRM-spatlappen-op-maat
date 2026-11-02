@@ -1,5 +1,5 @@
 export function createManualDocumentDelivery(context){
- const supported=d=>d&&context.order(d.ownerId)&&['invoice','confirmation','quote'].includes(d.generated?.kind||d.manualDelivery?.kind||d.category)&&/\.pdf$/i.test(d.name||'');
+ const supported=d=>d&&!d.supplierControlDocument&&context.order(d.ownerId)&&['invoice','confirmation','quote'].includes(d.generated?.kind||d.manualDelivery?.kind||d.category)&&/\.pdf$/i.test(d.name||'');
  function button(d){return supported(d)?`<button type="button" data-document-manual-delivery="${context.esc(d.id)}">${d.manualDelivery?'Externe verzending bekijken':'Al buiten CRM verstuurd'}</button>`:'';}
  function status(d){return d?.manualDelivery?`<small>Extern verstuurd op ${context.date(d.manualDelivery.sentOn)} · zelf geregistreerd</small>`:'';}
  document.addEventListener('click',event=>{

@@ -1,6 +1,6 @@
-import {batchPackingReview,batchPackingBasis,batchPackingPayload} from '../../shared/batch-packing-review.js?v=feedback-followup-20261028';
-import {addressParts,nextDocumentNumber,renderConfirmation} from '../documents/generation.js';
-import {mergePackingPdfs} from '../documents/merge-pdfs.js';
+import {batchPackingReview,batchPackingBasis,batchPackingPayload} from '../../shared/batch-packing-review.js?v=packs-workflow-20261102';
+import {addressParts,nextDocumentNumber,renderConfirmation} from '../documents/generation.js?v=packing-pb-reference-20261102';
+import {mergePackingPdfs} from '../documents/merge-pdfs.js?v=packs-operation-review-20261101';
 import {loading} from '../loading.js';
 const methodLabel=method=>({pickup:'Afhalen',shipping:'Verzenden',delivery:'Bezorgen'}[method]||'Leverwijze onbekend');
 const orderLabel=row=>'#'+(row.order.sourceNumber||row.order.number)+' · '+(row.customer?.company||'Klant onbekend');

@@ -1,5 +1,5 @@
 import {laptopOriginAllowed} from '../../shared/laptop-origins.js';
-import {laptopContext} from '../../shared/assistant-laptop-context.js?v=feedback-followup-20261028';
+import {laptopContext} from '../../shared/assistant-laptop-context.js?v=packs-workflow-20261102';
 const instances=new Map(),marker='crm-laptop-v1';
 export function assistantTransport({companyId,runtime}){
  const key=runtime.mode+'|'+companyId;if(instances.has(key))return instances.get(key);

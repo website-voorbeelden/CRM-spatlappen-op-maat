@@ -1,0 +1,22 @@
+{
+  // Merge into the SEPARATE preview CRM configuration; not a replacement file.
+  // DB and CRM_FILES must be the same preview resources as the private worker.
+  "services": [
+    {"binding": "CRM_PACKS_WORKER", "service": "tjworx-packs-crm-test"}
+  ],
+  "vars": {
+    "CRM_COMPANY_ID": "maatwerkkunststof",
+    "CRM_RELEASE_ENV": "preview",
+    "CRM_PACKS_TRANSPORT": "service",
+    "CRM_PACKS_ENVIRONMENT": "test",
+    "CRM_PACKS_EXECUTION_ENABLED": "false",
+    "CRM_PACKS_FRESH_INSTALL": "false",
+    "CRM_PACKS_RELEASE_ID": "",
+    "CRM_PACKS_REGISTRY_GENERATION": "",
+    "CRM_PACKS_STORAGE_ID": "REPLACE_WITH_SAME_PREVIEW_STORAGE_MARKER",
+    "CRM_PUBLIC_URL": "https://replace-preview.example.invalid"
+  }
+  // Independently configure matching CRM_PACKS_SERVICE_KEY, CRM_PASSWORD_HASH,
+  // CRM_INTEGRATIONS_KEY and the preview login identity on both servers.
+  // Never put secrets here. This file neither creates resources nor books.
+}

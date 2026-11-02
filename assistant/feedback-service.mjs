@@ -1,3 +1,4 @@
+import {sameFeedbackSubmission,feedbackSubmissionConflict} from '../shared/feedback-submission.js';
 import {mkdir,readFile,writeFile,rename,unlink,open,chmod} from 'node:fs/promises';
 import path from 'node:path';
 import {homedir} from 'node:os';
@@ -45,7 +46,7 @@ export function createFeedbackService(directory=defaultFeedbackDirectory()){
   list:read,
   work:async(company,updates)=>mutate(company,records=>{if(!Array.isArray(updates)||updates.length>1000)throw Error('Ongeldige bouwupdates.');for(const update of updates){if(!validFeedbackDevelopment(update.development))throw Error('Ongeldige bouwupdate.');const report=records.find(r=>r.id===update.id);if(!report)throw Error('Melding ontbreekt: '+update.id);report.development=structuredClone(update.development);}return {updated:updates.length};}),
   import:async(company,input)=>{const incoming=validateFeedback(structuredClone(input).map(r=>({...r,details:r.details||''})));return mutate(company,records=>{const ids=new Set(records.map(r=>r.id));let added=0;for(const r of incoming)if(!ids.has(r.id)){records.push(r);ids.add(r.id);added++;}return {added,total:records.length};});},
-  create:async(company,input)=>{const report={...structuredClone(input),status:'open',details:input.details||''};validateFeedback([report]);return mutate(company,records=>{if(records.some(r=>r.id===report.id))throw Error('Deze melding bestaat al.');records.push(report);return report;});},
+  create:async(company,input)=>{const report={...structuredClone(input),status:'open',details:input.details||''};validateFeedback([report]);return mutate(company,records=>{const existing=records.find(r=>r.id===report.id);if(existing){if(!sameFeedbackSubmission(existing,report))throw feedbackSubmissionConflict();return existing;}records.push(report);return report;});},
   status:async(company,{id,status,expectedVersion,resolution=''})=>mutate(company,records=>{const r=records.find(r=>r.id===id);if(!r)throw Error('Melding niet gevonden.');if(expectedVersion!==(r.updatedAt||r.createdAt))throw Object.assign(Error('Deze melding is inmiddels gewijzigd. Herlaad de feedbacklijst.'),{status:409});if(!['open','resolved'].includes(status))throw Error('Ongeldige status.');r.status=status;r.updatedAt=new Date().toISOString();r.resolution=resolution;return r;})
  };
 }

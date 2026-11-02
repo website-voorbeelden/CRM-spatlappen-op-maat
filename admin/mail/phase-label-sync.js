@@ -1,4 +1,4 @@
-import {salesFunnel} from '../../shared/sales-funnel.js?v=feedback29-batch3-followup';
+import {salesFunnel} from '../../shared/sales-funnel.js?v=packs-workflow-20261102';
 const esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 export function createPhaseLabelSync({company,getState,request,openForm,toast}){
  async function review(orderId,thread){

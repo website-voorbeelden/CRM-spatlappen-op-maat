@@ -148,7 +148,7 @@
     else if(piece.shape==='circle')shapeFields=input('Buitendiameter (mm)',path+'outerDiameter',piece.outerDiameter,{min:1,step:1})+(piece.opening==='circle'?input('Diameter middengat (mm)',path+'innerDiameter',piece.innerDiameter,{min:0,step:1}):'');
     else shapeFields=input(piece.shape==='manhole'?'Lengte totaal (mm)':'Lengte (mm)',path+'width',piece.width,{min:1,step:1})+input(piece.shape==='manhole'?'Hoogte / diameter (mm)':'Breedte (mm)',path+'height',piece.height,{min:1,step:1})+(piece.opening==='circle'?input('Diameter middengat (mm)',path+'innerDiameter',piece.innerDiameter,{min:1,step:1}):'')+(piece.opening==='rect'?input('Binnenlengte (mm)',path+'innerWidth',piece.innerWidth,{min:1,step:1})+input('Binnenbreedte (mm)',path+'innerHeight',piece.innerHeight,{min:1,step:1}):'');
     var more='<details data-detail="piece-more-'+piece.id+'" id="v2-piece-more-'+index+'" class="v2-piece-more"><summary>Andere vorm, gaten &amp; extra opties'+(normalized.holes?' · '+normalized.holes+' gaten':'')+'</summary><div class="v2-piece-options">'+window.PackingV2.shapes(piece,index)+window.PackingV2.variants(normalized,index)+window.PackingV2.controls(normalized,index)+(piece.shape==='rect'&&piece.opening!=='none'?select('Vorm open midden',path+'opening',piece.opening,[['rect','Vierkant'],['circle','Rond']]):'')+(piece.shape==='circle'&&piece.opening==='rect'?input('Binnenlengte (mm)',path+'innerWidth',piece.innerWidth,{min:1,step:1})+input('Binnenbreedte (mm)',path+'innerHeight',piece.innerHeight,{min:1,step:1}):'')+window.PackingV2.extraHoles(normalized,index,openDetails.has('holes-'+piece.id))+(piece.shape==='circle'?'<button type="button" class="qcalc__textBtn" data-action="bolt-circle" data-index="'+index+'">Uitgebreide boutcirkelinstellingen</button>':'')+select('Bewerking',path+'process',piece.process,[['saw','Zagen'],['mill','Frezen / snijden']])+(piece.shape==='rect'?input('Hoeken afronden (mm)',path+'cornerRadius',piece.cornerRadius,{min:0,step:1}):'')+'<button class="qcalc__textBtn" type="button" data-action="piece-file" data-index="'+index+'">Vorm uit DXF / STEP importeren</button>'+(state.pieces.length>1?'<button type="button" class="qcalc__textBtn" data-action="remove-piece" data-index="'+index+'">Stuk verwijderen</button>':'')+'<details data-detail="drawing-'+piece.id+'"><summary>Tekeninggegevens</summary>'+geometryDetails(piece)+'</details></div></details>';
-    return '<article class="qcalc__piece v2-friendly-piece" aria-label="'+esc(pieceTitle(piece,index))+'"><div class="qcalc__pieceLayout"><div class="v2-piece-inputs">'+pieceBasics(piece,index)+'<div class="qcalc__fields qcalc__pieceGeometry">'+shapeFields+'</div></div><div class="qcalc__piecePreview" data-piece-preview="'+index+'">'+window.QuoteCalculatorPreview.renderPiece(normalized,index)+'<div class="v2-preview-downloads"><button class="qcalc__textBtn" type="button" data-action="dxf" data-index="'+index+'">DXF downloaden</button><button type="button" class="qcalc__textBtn" data-action="svg" data-index="'+index+'">SVG downloaden</button></div></div></div>'+more+'</article>';
+    return '<article class="qcalc__piece v2-friendly-piece" aria-label="'+esc(pieceTitle(piece,index))+'"><div class="qcalc__pieceLayout"><div class="v2-piece-inputs">'+pieceBasics(piece,index)+'<div class="qcalc__fields qcalc__pieceGeometry">'+shapeFields+'</div></div><div class="qcalc__piecePreview" data-piece-preview="'+index+'">'+window.QuoteCalculatorPreview.renderPiece(normalized,index)+'<div class="v2-preview-downloads"><button type="button" class="qcalc__textBtn" data-action="step" data-index="'+index+'">STEP downloaden</button><button class="qcalc__textBtn" type="button" data-action="dxf" data-index="'+index+'">DXF downloaden</button><button type="button" class="qcalc__textBtn" data-action="svg" data-index="'+index+'">SVG downloaden</button></div><p class="qcalc__hint" data-piece-export-status="'+index+'" role="status"></p></div></div>'+more+'</article>';
   }
 
   function currencyUnit(scenario) {
@@ -749,8 +749,18 @@
       p.holeMode='coordinates';p.holeCoordinates=result.text;if(action==='hole-add')expandDetail('holes-'+p.id);render();return;
     }
     var extra=event.target.closest('[data-action]');
-    if(extra && ['dxf','svg','four-holes','rubber-piece'].includes(extra.dataset.action)) {
+    if(extra && ['dxf','svg','step','four-holes','rubber-piece'].includes(extra.dataset.action)) {
       var idx=Number(extra.dataset.index),action=extra.dataset.action,piece=state.pieces[idx];
+      if(action==='step'){
+        var exportStatus=extra.closest('[data-piece-preview]')?.querySelector('[data-piece-export-status]');
+        try{
+          if(!window.GasketV2StepExport)throw Error('De STEP-export is nog niet geladen. Open de calculator opnieuw; bewaar eerst je berekening.');
+          var stepPiece=Core.normalizeState(state).pieces[idx],stepText=window.GasketV2StepExport.exportStep(stepPiece);
+          window.GasketV2Download(stepText,(piece.name||'onderdeel-'+(idx+1))+'.step','model/step');
+          var exportMessage='STEP-download gestart: één stuk op de ingevulde dikte, millimeters. Controleer het bestand in je CAD-programma vóór productie.';
+          if(exportStatus)exportStatus.textContent=exportMessage;showMessage(exportMessage);
+        }catch(error){if(exportStatus)exportStatus.textContent=error.message;showMessage(error.message,true);}return;
+      }
       if(action==='dxf'||action==='svg') {
         var p=Core.normalizeState(state).pieces[idx],errors=window.GasketV2Geometry.validate(p);
         if(errors.length){showMessage(errors.join(' '),true);return;}

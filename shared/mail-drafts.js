@@ -1,5 +1,5 @@
 import {replyReferences,validMessageId} from './mail-reply.js';
-import {validProvenance} from './provenance.js?v=provenance-colors-20261027';
+import {validProvenance} from './provenance.js?v=invoice-link-review-20261101';
 import {mailOwner,emailAddresses,assertMailStorage} from './mail-inbox.js?v=crm-code-review-20261027';
 import {checkMailText} from './mail-templates.js?v=feedback-followup-20261028';
 import {formProblem} from '../admin/form-guidance.js?v=crm-code-review-20261027';

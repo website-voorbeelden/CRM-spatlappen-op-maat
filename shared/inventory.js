@@ -36,6 +36,12 @@ export function validateInventory(state){
  }
  for(const r of v.incoming){if(r.purchaseSplit){const b=r.purchaseSplit;if(!positive(b.totalQuantity)||!positive(b.customerQuantity)||b.totalQuantity-b.customerQuantity!==r.quantity||!Array.isArray(b.lines)||!b.lines.length||b.lines.some(l=>!ident(l.orderId)||!ident(l.itemId)||!positive(l.quantity))||new Set(b.lines.map(l=>l.orderId+':'+l.itemId)).size!==b.lines.length||!ident(r.purchaseId)||b.lines.reduce((n,l)=>n+l.quantity,0)!==b.customerQuantity)fail('Ongeldige verdeling tussen klantorders en voorraad.');}if(!balances.has(r.stockId)||!positive(r.quantity)||!text(r.reference)||!text(r.note,2000)||(r.purchaseId&&!ident(r.purchaseId))||!Array.isArray(r.cancellations||[])||(r.cancellations||[]).some(c=>!positive(c.quantity)||!text(c.note,2000))||(received.get(r.id)||0)+cancelledCount(v,r.id)>r.quantity)fail('Ongeldige bestelde voorraad of te veel ontvangen.');}
 }
+// The stock revision guards stock itself. This separate, transient basis guards
+// the customer and exact product that the user inspected for an issue.
+export function inventoryIssueBasis(state,orderId,itemId){
+ const order=state.orders.find(o=>o.id===orderId),product=order?.items.find(i=>i.id===itemId);
+ return product?JSON.stringify([order.customerId,order.archived===true,product]):null;
+}
 export function inventoryChange(state,revision,action,{uuid=()=>crypto.randomUUID(),now=new Date().toISOString()}={}){
  validateInventory(state);const current=inventoryOf(state);if(current.revision!==revision)fail('De voorraad is intussen gewijzigd. Sluit dit venster en open de actie opnieuw. Je invoer is nog niet opgeslagen.');
  const v=structuredClone(current),a=action;
@@ -53,6 +59,8 @@ export function inventoryChange(state,revision,action,{uuid=()=>crypto.randomUUI
   if(a.type==='receive'&&a.incomingId)movement.incomingId=a.incomingId;
   if(a.type==='issue'){
    const order=state.orders.find(o=>o.id===a.orderId),product=order?.items.find(i=>i.id===a.itemId);if(!product||order.archived)fail('Kies een bestaande, niet-gearchiveerde order en product.');
+   if(a.customerId&&order.customerId!==a.customerId)fail('De gekozen order hoort niet meer bij deze klant. Je invoer blijft staan; controleer de klant en order opnieuw.');
+   if(a.expectedIssueBasis!==undefined&&inventoryIssueBasis(state,order.id,product.id)!==a.expectedIssueBasis)fail('De klant of productregel is intussen gewijzigd. Je invoer blijft staan. Open de voorraadkeuze opnieuw en controleer de actuele uitvoering.');
    if(a.quantity+orderStockCount(v,order.id,product.id)>product.quantity)fail('Je geeft meer voorraad uit dan deze orderregel nodig heeft.');
    Object.assign(movement,{delta:-a.quantity,orderId:order.id,itemId:product.id});
   }

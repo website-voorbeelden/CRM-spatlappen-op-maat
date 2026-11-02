@@ -9,7 +9,7 @@ function loadLibrary(){
   script.onerror=()=>reject(Error('Samenvoegen kon niet laden. Probeer opnieuw.'));document.head.append(script);
  }).catch(error=>{library=null;throw error;});
 }
-export async function mergePackingPdfs(files,onProgress=()=>{}){
+export async function mergePackingPdfs(files,onProgress=()=>{},{title='Pakbonnen gezamenlijke bestelling'}={}){
  if(!files.length||files.length>100)throw Error('Kies 1 tot 100 pakbonbestanden per download.');
  if(files.reduce((total,f)=>total+f.blob.size,0)>80000000)throw Error('De pakbonnen zijn samen te groot (maximaal 80 MB). Kies minder orders.');
  const {PDFDocument}=await loadLibrary(),merged=await PDFDocument.create();
@@ -20,5 +20,5 @@ export async function mergePackingPdfs(files,onProgress=()=>{}){
   if(merged.getPageCount()+source.getPageCount()>500)throw Error('Kies minder pakbonnen (maximaal 500 pagina’s per download).');
   const pages=await merged.copyPages(source,source.getPageIndices());for(const page of pages)merged.addPage(page);
  }
- merged.setTitle('Pakbonnen gezamenlijke bestelling');return new Blob([await merged.save()],{type:'application/pdf'});
+ merged.setTitle(title);return new Blob([await merged.save()],{type:'application/pdf'});
 }

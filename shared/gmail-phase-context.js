@@ -1,4 +1,4 @@
-import {salesFunnel} from './sales-funnel.js?v=feedback29-batch3-followup';
+import {salesFunnel} from './sales-funnel.js?v=packs-workflow-20261102';
 export function gmailPhaseContext(state,orderId,companyId){
  const order=state.orders.find(o=>o.id===orderId);if(!order)throw Error('Dit dossier bestaat niet meer.');
  const links=(state.mailThreads||[]).filter(t=>t.orderId===orderId&&t.mailbox&&t.gmailThreadId).map(t=>({mailbox:t.mailbox,threadId:t.gmailThreadId})).sort((a,b)=>(a.mailbox+'|'+a.threadId).localeCompare(b.mailbox+'|'+b.threadId));

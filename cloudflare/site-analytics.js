@@ -4,7 +4,7 @@ const json=(data,status=200)=>Response.json(data,{status,headers:{'Cache-Control
 // Read-only route behind the existing CRM authentication middleware. A separate D1 binding.
 export async function websiteAnalytics({request,env,state={}},now=Date.now()){
  const company=companyFromEnv(env),site=company.website.toLowerCase(),db=env.SITE_ANALYTICS_DB;
- if(!db||env.WEBSITE_ANALYTICS_SITE!==site)return json({status:'not-configured',site});
+ if(!db||env.WEBSITE_ANALYTICS_SITE!==site)return json({status:'not-configured',site,configuration:{database:!!db,siteMatches:env.WEBSITE_ANALYTICS_SITE===site}});
  const params=new URL(request.url).searchParams,days=Number(params.get('days')||30),page=params.get('page')||'';
  if(page&&!/^(?:[a-zA-Z0-9][a-zA-Z0-9._/-]{0,149}|\/[a-zA-Z0-9._/-]{0,149})$/.test(page))return json({error:'Kies een geldige gemeten pagina.'},400);
  if(![7,30,90].includes(days))return json({error:'Kies 7, 30 of 90 dagen.'},400);

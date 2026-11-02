@@ -1,3 +1,7 @@
+## STEP-exportvervolg30oktober — lokaal
+
+step-profile.js vóór step-export.js en calculator geladen. Analytische lijn-/cirkelboogprofielen, exacte cirkels/gaten/afgeronde vormen en CAD-bogen; AP214 advanced manifold BREP met gedeelde randen, vlakke caps/cilinderwanden, mm en echte dikte, één stuk. Benaderde import blijft expliciet geweigerd. Geen polygonisatie van ronde contouren, geen 3D-/ellips-/splineherstel/CAM. Bestaande linearLoops-helper compatibel, download gebruikt nieuw profiel. V1/tarieven/berekening/opslag niet gewijzigd. Geen tests/checks/build/browsercontrole/STEP-generatie/CAD-herimport/publicatie; eigen beoordeling en productiecontrole open, geen productiegeschiktheidsclaim. Zie docs/FEEDBACK30-BATCH4-VERVOLG.md vanaf projectroot; oudere alleen-lineaire exportnotities zijn historie.
+
 ## Vervolg 24 oktober 2026
 
 Actuele bronwijzigingen en grenzen: docs/VERVOLGWERK-2026-10-24.md (vanaf projectroot). Nieuwste publicatiestatus staat bovenaan OVERDRACHT.md. Oudere uitspraken over alleen lokaal/ontbrekende customdomeinen zijn hieronder historische momentopnamen. Geen functionele tests door Codex uitgevoerd; Philippe controleert zelf.

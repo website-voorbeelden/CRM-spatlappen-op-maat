@@ -31,13 +31,13 @@ function dailyMetricRows(report,key){
  if(!supported)return null;
  const from=Number(report.since),until=Number(report.until);if(!Number.isFinite(from)||!Number.isFinite(until)||until<from||until-from>91*86400000)return null;
  const byVisit=new Map(visits.map(r=>[r.date,r])),byLead=new Map(leads.map(r=>[r.date,r]));
- const first=Number.isFinite(report.firstMeasuredAt)?report.firstMeasuredAt:null,rows=[];
+ const rows=[];
  let at=new Date(from);at.setUTCHours(0,0,0,0);at=+at;
  for(;at<=until;at+=86400000){
-  const date=new Date(at).toISOString().slice(0,10),v=byVisit.get(date),l=byLead.get(date),knownDay=first!=null&&at+86400000>first;
+  const date=new Date(at).toISOString().slice(0,10),v=byVisit.get(date),l=byLead.get(date);
   const value=column=>{
-   if(column==='leads')return l?count(l.leads):knownDay?0:null;
-   return v?count(v[column]):knownDay?0:null;
+   if(column==='leads')return l?count(l.leads):v&&number(v.visits)?0:null;
+   return v?count(v[column]):null;
   };
   let amount;
   if(key==='active'||key==='conversion'){
@@ -48,9 +48,12 @@ function dailyMetricRows(report,key){
  }
  return rows;
 }
-export function websiteMetricChart(report,{esc,metric='visits'}={}){
+export const websiteComparisonKeys=['visits','scroll','started','submitted','converted'];
+export function websiteMetricChart(report,{esc,metric='visits',compare=false,series=websiteComparisonKeys}={}){
+ const control=`<label class="check-row"><input type="checkbox" data-website-compare ${compare?'checked':''}> Bezoeken, scrollen en formulierstappen samen vergelijken</label>`;
+ if(compare)return control+websiteComparisonChart(report,{esc,series});
  const key=Object.hasOwn(websiteMetrics,metric)?metric:'visits',definition=websiteMetrics[key],rows=dailyMetricRows(report,key);
- const heading=`<h3 tabindex="-1" data-website-chart-heading>${esc(definition.label)} per dag</h3><p class="form-help">${esc(definition.help)}</p>`;
+ const heading=control+`<h3 tabindex="-1" data-website-chart-heading>${esc(definition.label)} per dag</h3><p class="form-help">${esc(definition.help)}</p>`;
  if(!rows)return heading+'<p class="notice">Deze dagreeks is nog niet beschikbaar in het meetrapport. Beschikbare periodetotalen blijven hierboven staan; ontbrekende dagmetingen worden niet als nul getoond.</p>';
  const known=rows.filter(r=>r.value!=null);
  if(!known.length)return heading+'<p class="form-help">Nog geen bruikbare dagmetingen voor deze meetwaarde in deze periode.</p>';
@@ -58,8 +61,21 @@ export function websiteMetricChart(report,{esc,metric='visits'}={}){
  const ticks=[0,.5,1].map(f=>`<g><line x1="${left}" x2="${right}" y1="${base-f*(base-top)}" y2="${base-f*(base-top)}"/><text x="${left-8}" y="${base-f*(base-top)+4}" text-anchor="end">${esc(websiteMetricValue(key,max*f))}</text></g>`).join('');
  const bars=rows.map((r,i)=>r.value==null?'':`<rect class="analytics-trend-visits" x="${left+i*step+(step-bar)/2}" y="${base-r.value/max*(base-top)}" width="${bar}" height="${r.value/max*(base-top)}" rx="2"><title>${esc(r.date+': '+websiteMetricValue(key,r.value))}</title></rect>`).join('');
  const dates=rows.filter((_,i)=>i===0||i===rows.length-1||i%Math.max(1,Math.ceil(rows.length/6))===0).map(r=>`<text x="${left+(rows.indexOf(r)+.5)*step}" y="183" text-anchor="middle">${esc(r.date.slice(8)+'/'+r.date.slice(5,7))}</text>`).join('');
- return heading+`<p class="form-help">Per dag · UTC. ${esc(report.scope?.page||'Alle pagina’s')} · laatste ${esc(report.days)} dagen.</p><div class="analytics-trend-scroll"><svg class="analytics-trend" viewBox="0 0 900 200" role="img" aria-label="${esc(definition.label+' per dag')}"><title>${esc(definition.label+' per dag')}</title>${ticks}${bars}${dates}</svg></div><details class="website-details analytics-day-values"><summary>Dagcijfers bekijken</summary><div class="tablewrap"><table><thead><tr><th scope="col">Datum (UTC)</th><th scope="col">${esc(definition.label)}</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${esc(r.date)}</td><td>${esc(websiteMetricValue(key,r.value))}</td></tr>`).join('')}</tbody></table></div></details><p class="form-help">Eerste en laatste dag kunnen onvolledig zijn. Vóór de eerste geregistreerde bezoekmeting blijven ontbrekende dagen onbekend. Geen actieve tijd of conversiepercentage zonder gemeten bezoeken. Ontvangen aanvragen kunnen op een andere dag vallen dan het begin van het bezoek.</p>`;
+ return heading+`<p class="form-help">Per dag · UTC. ${esc(report.scope?.page||'Alle pagina’s')} · laatste ${esc(report.days)} dagen.</p><div class="analytics-trend-scroll"><svg class="analytics-trend" viewBox="0 0 900 200" role="img" aria-label="${esc(definition.label+' per dag')}"><title>${esc(definition.label+' per dag')}</title>${ticks}${bars}${dates}</svg></div><details class="website-details analytics-day-values"><summary>Dagcijfers bekijken</summary><div class="tablewrap"><table><thead><tr><th scope="col">Datum (UTC)</th><th scope="col">${esc(definition.label)}</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${esc(r.date)}</td><td>${esc(websiteMetricValue(key,r.value))}</td></tr>`).join('')}</tbody></table></div></details><p class="form-help">Eerste en laatste dag kunnen onvolledig zijn. Dagen zonder dagmetingen blijven onbekend, ook tussen gemeten dagen; een eerste meting bewijst geen doorlopende dekking. Geen actieve tijd of conversiepercentage zonder gemeten bezoeken. Ontvangen aanvragen kunnen op een andere dag vallen dan het begin van het bezoek.</p>`;
 }
 export function websiteMetricCard({esc,metric,label,value,sub='',selected=false}){
  return `<button type="button" class="card website-metric" data-website-metric="${metric}" aria-pressed="${selected}"><span class="muted">${esc(label)}</span><strong>${esc(String(value))}</strong><small>${esc(sub)}</small><span class="website-metric-action">Dagcijfers bekijken →</span></button>`;
+}
+
+function websiteComparisonChart(report,{esc,series:selected}){
+ const keys=websiteComparisonKeys.filter(key=>selected.includes(key)),series=keys.map(key=>({key,rows:dailyMetricRows(report,key)})),available=series.filter(s=>s.rows?.some(r=>r.value!=null));
+ const choices=`<fieldset class="website-series-options"><legend>Welke dagreeksen wil je vergelijken?</legend>${websiteComparisonKeys.map(key=>`<label class="check-row website-series-label website-series-${key}"><input type="checkbox" data-website-series="${key}" ${keys.includes(key)?'checked':''}>${esc(websiteMetrics[key].label)}</label>`).join('')}</fieldset>`;
+ const header=choices+'<h3 tabindex="-1" data-website-chart-heading>Websitegebruik samen per dag</h3><p class="form-help">Eén schaal in aantallen paginabezoeken. Verzenden geprobeerd is geen bewijs van ontvangst. Houd een punt aan voor het dagcijfer; alle waarden staan ook in de tabel.</p>';
+ if(!keys.length)return header+'<p class="form-help">Kies minstens één dagreeks hierboven.</p>';
+ if(!available.length)return header+'<p class="notice">Nog geen bruikbare dagreeksen. Ontbrekende metingen blijven onbekend.</p>';
+ const dates=available[0].rows.map(r=>r.date),max=Math.max(1,...available.flatMap(s=>s.rows.filter(r=>r.value!=null).map(r=>r.value))),left=64,right=876,top=16,base=158,step=(right-left)/Math.max(1,dates.length),x=i=>left+(i+.5)*step,y=value=>base-value/max*(base-top);
+ const ticks=[0,.5,1].map(f=>`<g><line x1="${left}" x2="${right}" y1="${y(max*f)}" y2="${y(max*f)}"/><text x="${left-8}" y="${y(max*f)+4}" text-anchor="end">${esc(nf(max*f))}</text></g>`).join('');
+ const lines=available.map(({key,rows})=>{let path='',continuing=false;for(let i=0;i<rows.length;i++){const r=rows[i];if(r.value==null){continuing=false;continue;}path+=(continuing?' L':' M')+x(i)+' '+y(r.value);continuing=true;}return `<g class="website-series website-series-${key}"><path d="${path}"/>${rows.map((r,i)=>r.value==null?'':`<circle cx="${x(i)}" cy="${y(r.value)}" r="3"><title>${esc(r.date+' · '+websiteMetrics[key].label+': '+websiteMetricValue(key,r.value))}</title></circle>`).join('')}</g>`;}).join('');
+ const axis=dates.map((date,i)=>i===0||i===dates.length-1||i%Math.max(1,Math.ceil(dates.length/6))===0?`<text x="${x(i)}" y="183" text-anchor="middle">${esc(date.slice(8)+'/'+date.slice(5,7))}</text>`:'').join('');
+ return header+`<div class="analytics-trend-legend">${series.map(({key,rows})=>`<span class="website-series-label website-series-${key}">${esc(websiteMetrics[key].label)}${!rows?' · nog niet beschikbaar':!rows.some(row=>row.value!=null)?' · nog geen dagmetingen':''}</span>`).join('')}</div><div class="analytics-trend-scroll"><svg class="analytics-trend" viewBox="0 0 900 200" role="img" aria-label="Bezoeken, scrollen en formulierstappen per dag"><title>Websitegebruik per dag · UTC</title>${ticks}${lines}${axis}</svg></div><details class="website-details"><summary>Alle dagcijfers bekijken</summary><div class="tablewrap"><table><thead><tr><th>Datum (UTC)</th>${keys.map(key=>`<th>${esc(websiteMetrics[key].label)}</th>`).join('')}</tr></thead><tbody>${dates.map((date,i)=>`<tr><td>${esc(date)}</td>${series.map(({key,rows})=>`<td>${esc(websiteMetricValue(key,rows?.[i]?.value??null))}</td>`).join('')}</tr>`).join('')}</tbody></table></div></details><p class="form-help">Eerste en laatste dag kunnen onvolledig zijn. Dagen zonder bezoekmetingen blijven onbekend, ook na de eerste meting; lijnen lopen niet door zulke dagen heen. Elke reeks telt bezoeken waarin die stap gebeurde, geen unieke personen. Een aanvraag kan later zijn ontvangen dan het begin van het bezoek.</p>`;
 }

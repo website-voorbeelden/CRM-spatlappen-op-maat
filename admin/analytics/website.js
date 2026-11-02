@@ -1,4 +1,4 @@
-import {websiteMetrics,websiteMetricSummary,websiteMetricValue,websiteMetricCard,websiteMetricChart} from './website-metrics.js?v=feedback28-batch3-20261028';
+import {websiteMetrics,websiteMetricSummary,websiteMetricValue,websiteMetricCard,websiteMetricChart,websiteComparisonKeys} from './website-metrics.js?v=feedback30-batch2';
 import {websiteCohort} from '../../shared/site-conversion.js?v=analytics-workspace-20261024';
 import {analyticsExclusions} from '../../shared/analytics-exclusions.js';
 import {exclusionMarkup,installExclusions} from './exclusions.js?v=crm-code-review-20261027';
@@ -10,7 +10,7 @@ const nf=n=>new Intl.NumberFormat('nl-NL',{maximumFractionDigits:1}).format(n),p
 let selectedDays=30,selectedPage='';
 const safePage=value=>typeof value==='string'&&/^(?:[a-zA-Z0-9][a-zA-Z0-9._/-]{0,149}|\/[a-zA-Z0-9._/-]{0,149})$/.test(value);
 const pageLabel=value=>labels[value]||(safePage(value)?value:'Overige pagina');
-export const analyticsTabs=(active)=>`<nav class="analytics-tabs" aria-label="Analytics onderdelen">${[['overview','Overzicht'],['usage','Website'],['requests','Aanvragen'],['financial','Financiën'],['vat','Btw'],['google','Google & SEO'],['reports','Rapporten']].map(([id,label])=>`<a href="#analytics/${id}" ${active===id?'aria-current="page"':''}>${label}</a>`).join('')}</nav>`;
+export const analyticsTabs=(active)=>`<nav class="analytics-tabs" aria-label="Analytics onderdelen">${[['overview','Overzicht'],['usage','Website'],['requests','Aanvragen'],['financial','Ordermarges'],['money','Kosten & geld'],['vat','Btw'],['google','Google & SEO'],['reports','Rapporten']].map(([id,label])=>`<a href="#analytics/${id}" ${active===id?'aria-current="page"':''}>${label}</a>`).join('')}</nav>`;
 export function dailyChart(report,{esc,mode='visits'}){
  const rows=dailyRows(report),both=mode==='both',series=both?['visits','leads']:[mode],max=Math.max(1,...rows.flatMap(r=>series.map(key=>Number(r[key])||0))),left=44,right=876,base=158,top=16,step=(right-left)/Math.max(1,rows.length),bar=Math.max(2,step*(both ? 0.56 : 0.7));
  const title=both?'Paginabezoeken en ontvangen aanvragen per dag':mode==='leads'?'Ontvangen aanvragen per dag':'Gemeten paginabezoeken per dag';
@@ -24,12 +24,12 @@ export function localInquiryMarkup({esc,state,totals,days,now=Date.now()}){
  const crm=inquirySummary(state,{since:now-days*86400000,until:now,totals});
  return `<section class="analytics-local"><div class="section-heading"><div><h3>In het CRM · laatste ${days} dagen</h3><p class="form-help">Alle bronnen en pagina’s, op aanvraagdatum, inclusief handmatige aanvragen. Het paginafilter geldt alleen voor websitemetingen. Fases en betalingen tonen de huidige stand.</p></div><a href="#orders">Dossiers openen →</a></div><div class="cards website-stats">${[['Aanvragen / orders',crm.count],['Klanten',crm.customers],['Offerte aanwezig / verstuurd',crm.quoted],['Volledig betaald',crm.paid]].map(([label,value])=>`<div class="card"><span class="muted">${esc(label)}</span><strong>${value}</strong></div>`).join('')}</div><details class="website-details"><summary>Recente dossiers (${crm.count})</summary>${crm.orders.slice(0,10).map(o=>`<a class="analytics-balance-row" href="#orders/${esc(o.id)}"><span>${esc(state.customers?.find(c=>c.id===o.customerId)?.company||'Klant')} · #${esc(o.sourceNumber||o.number)}</span><small>${esc(o.stage||'Nog geen fase')}</small></a>`).join('')||'<p class="muted">Geen CRM-aanvragen in deze periode.</p>'}</details></section>`;
 }
-export function websiteReportMarkup(report,{esc,state,totals,view='all',metric=null}){
- if(report.status==='not-configured')return `<section class="notice"><h3>Website-metingen nog niet aangesloten</h3><p>Bezoekcijfers voor ${esc(report.site||'deze website')} zijn onbekend, niet nul. De website moet met toestemming meten en dit CRM moet met de eigen meetdatabase verbonden zijn.</p><div class="actions"><a href="#analytics/google">Google &amp; SEO instellen →</a>${view!=='requests'&&view!=='overview'?'<a href="#analytics/requests">CRM-aanvragen bekijken →</a>':''}</div><p class="form-help">Google koppelen schakelt deze bezoekmeting niet in. Search Console en eventueel GA4 zijn afzonderlijke bronnen. Je bestaande dossiers staan hieronder gewoon klaar.</p></section>`;
+export function websiteReportMarkup(report,{esc,state,totals,view='all',metric=null,compare=false,series=websiteComparisonKeys}){
+ if(report.status==='not-configured')return `<section class="notice"><h3>Website-metingen nog niet aangesloten</h3><p>Bezoekcijfers voor ${esc(report.site||'deze website')} zijn onbekend, niet nul. De website moet met toestemming meten en dit CRM moet met de eigen meetdatabase verbonden zijn.</p><div class="actions">${view!=='requests'&&view!=='overview'?'<a href="#analytics/requests">CRM-aanvragen bekijken →</a>':''}</div><p class="form-help">${report.configuration?esc(!report.configuration.database?'De eigen meetdatabase is niet verbonden. ':!report.configuration.siteMatches?'De website-instelling komt niet overeen met dit bedrijf. ':''):''}Google koppelen schakelt deze bezoekmeting niet in. Search Console en eventueel GA4 zijn afzonderlijke bronnen. De meetdatabase en het meetscript moeten bij dit bedrijf horen. Je bestaande dossiers blijven via Aanvragen bereikbaar.</p></section>`;
  const s=report.summary,c=websiteCohort(state,report,{totals}),rate=pct(s.converted_visits,s.visits);
  const chosen=Object.hasOwn(websiteMetrics,metric)?metric:view==='requests'?'leads':'visits';
  const cards=rows=>`<div class="cards website-stats">${rows.map(([label,value,sub,key])=>key?websiteMetricCard({esc,metric:key,label,value,sub,selected:chosen===key}):`<div class="card"><span class="muted">${esc(label)}</span><strong>${esc(String(value))}</strong><small>${esc(sub)}</small></div>`).join('')}</div>`;
- const metricChart=()=>`<section class="analytics-panel" data-website-metric-chart>${websiteMetricChart(report,{esc,metric:chosen})}</section>`;
+ const metricChart=()=>`<section class="analytics-panel" data-website-metric-chart>${websiteMetricChart(report,{esc,metric:chosen,compare,series})}</section>`;
  const table=rows=>rows.length?`<div class="website-table">${rows.map(([name,value,sub])=>`<div><span>${esc(name)}${sub?`<small>${esc(sub)}</small>`:''}</span><strong>${esc(String(value))}</strong></div>`).join('')}</div>`:'<p class="muted">Nog geen gegevens in deze periode.</p>';
  const funnel=(title,rows,help)=>`<section class="analytics-funnel"><h3>${title}</h3><ol>${rows.map(([label,value,sub])=>`<li><div><span>${label}</span><strong>${nf(value)}</strong></div><meter min="0" max="${Math.max(1,...rows.map(r=>r[1]))}" value="${value}" aria-label="${label}">${value}</meter>${sub?`<small>${esc(sub)}</small>`:''}</li>`).join('')}</ol><p class="form-help">${help}</p></section>`;
  const previous=report.comparison,change=(current,old)=>previous?.complete?(old?`${current>=old?'+':''}${nf((current-old)/old*100)}% t.o.v. vorige periode`:current?'Vorige periode: 0':'Gelijk aan vorige periode'):'Nog geen volledige vergelijkingsperiode';
@@ -48,11 +48,12 @@ export function websiteReportMarkup(report,{esc,state,totals,view='all',metric=n
 }
 export function mountWebsiteAnalytics(root,{company,esc,state,totals,view='all',fetcher=fetch,saveExclusions}){
  if(!root)return;
- let revision=0,days=selectedDays,page=selectedPage,controller,shown='',metric=view==='requests'?'leads':'visits',displayedReport=null;
+ let revision=0,days=selectedDays,page=selectedPage,controller,shown='',metric=view==='requests'?'leads':'visits',displayedReport=null,compare=false,series=[...websiteComparisonKeys];
  const titles={overview:'Website & aanvragen',usage:'Websitegebruik',requests:'Aanvragen & conversie'};
  root.innerHTML=`<div class="section-heading"><div><h2>${titles[view]||'Website & aanvragen'}</h2><p>${esc(company.website)}</p></div><div class="actions analytics-filters"><label>Pagina<select data-website-page><option value="">Alle pagina’s</option></select></label><label>Periode<select data-website-period>${[7,30,90].map(n=>`<option value="${n}" ${n===days?'selected':''}>Laatste ${n} dagen</option>`).join('')}</select></label></div></div><div class="analytics-load-status" data-website-status role="status" aria-live="polite"></div><div data-website-report></div>`;
  root.insertAdjacentHTML('beforeend',exclusionMarkup({state,company,esc,editable:!!saveExclusions}));
  const body=root.querySelector('[data-website-report]'),status=root.querySelector('[data-website-status]');
+ const localHelp=['localhost','127.0.0.1'].includes(location.hostname)?`<p class="form-help">Deze lokale versie haalt geen metingen uit je browseropslag. De eigen meetdienst moet bereikbaar zijn; live bezoekcijfers staan bij het bedrijfs-CRM.</p><a href="https://crm.${esc(company.website.toLowerCase())}/admin/#analytics/usage" target="_blank" rel="noopener">Live Websitegebruik openen ↗</a>`:'';
  installExclusions(root,{state,save:saveExclusions,onSaved:async latest=>{state=latest;shown='';displayedReport=null;body.replaceChildren();await load();}});
  async function load(){
   const token=++revision;controller?.abort();const requestController=new AbortController();controller=requestController;
@@ -63,27 +64,38 @@ export function mountWebsiteAnalytics(root,{company,esc,state,totals,view='all',
    if(response.status===401)throw Error('Log opnieuw in om website-metingen te bekijken.');
    if(!response.ok)throw Error('Website-metingen zijn niet bereikbaar. Controleer de meetkoppeling.');
    const report=await response.json();if(token!==revision||!root.isConnected)return;
+   if(String(report.site||'').toLowerCase()!==company.website.toLowerCase())throw Error('Het meetrapport hoort niet bij '+company.website+'. Controleer de bedrijfsgebonden aansluiting.');
    if(!['ready','not-configured'].includes(report.status))throw Error(report.error||'Meetkoppeling nog niet beschikbaar.');
    const filters=analyticsExclusions(state.analyticsExclusions);
    if(report.status==='ready'&&(filters.emails.length||filters.leadIds.length)&&report.exclusions?.signature!==JSON.stringify(filters))throw Error('De server gebruikt deze uitsluitingen nog niet. Wacht op synchronisatie of de bijgewerkte CRM-publicatie en probeer opnieuw.');
    const pageSelect=root.querySelector('[data-website-page]'),available=[...new Set([...(report.pages||[]).map(row=>row.page).filter(safePage),...(page?[page]:[])])];pageSelect.replaceChildren(new Option('Alle pagina’s',''),...available.map(value=>new Option(pageLabel(value),value)));pageSelect.value=page;pageSelect.disabled=report.status!=='ready';
-   const markup=websiteReportMarkup(report,{esc,state,totals,view,metric})+(report.status==='not-configured'&&['requests','overview'].includes(view)?localInquiryMarkup({esc,state,totals,days}):'');
-   body.innerHTML=markup;displayedReport=report.status==='ready'?report:null;
+   const markup=websiteReportMarkup(report,{esc,state,totals,view,metric,compare,series})+(report.status==='not-configured'&&['requests','overview'].includes(view)?localInquiryMarkup({esc,state,totals,days}):'');
+   body.innerHTML=markup+(report.status==='not-configured'?localHelp:'');displayedReport=report.status==='ready'?report:null;
    shown=`${page?pageLabel(page):'Alle pagina’s'} · laatste ${days} dagen`;status.textContent='';
   }catch(error){
    if(token!==revision||!root.isConnected)return;
-   status.innerHTML=`<p>${esc(error.name==='AbortError'?'Het laden duurt te lang.':error.message)}${shown?' De vorige weergave blijft staan: '+esc(shown)+'.':''}</p><button type="button" class="secondary" data-website-retry>Opnieuw proberen</button>`;
+   status.innerHTML=`<p>${esc(error.name==='AbortError'?'Het laden duurt te lang.':error.message)}${shown?' De vorige weergave blijft staan: '+esc(shown)+'.':''}</p><button type="button" class="secondary" data-website-retry>Opnieuw proberen</button>${localHelp}`;
    if(!shown&&['requests','overview'].includes(view))body.innerHTML=localInquiryMarkup({esc,state,totals,days});
   }finally{clearTimeout(timeout);if(token===revision)body.removeAttribute('aria-busy');}
  }
- root.addEventListener('change',e=>{if(e.target.matches('[data-website-period]')){days=Number(e.target.value);selectedDays=days;void load();}else if(e.target.matches('[data-website-page]')){page=e.target.value;selectedPage=page;void load();}});
+ root.addEventListener('change',event=>{
+  const target=event.target;
+  if(target.matches('[data-website-series]')){
+   const key=target.dataset.websiteSeries;if(!websiteComparisonKeys.includes(key))return;
+   series=target.checked?[...new Set([...series,key])]:series.filter(item=>item!==key);
+   const chart=target.closest('[data-website-metric-chart]');if(chart&&displayedReport){chart.innerHTML=websiteMetricChart(displayedReport,{esc,metric,compare,series});chart.querySelector('[data-website-series="'+key+'"]')?.focus({preventScroll:true});}
+  }else if(target.matches('[data-website-compare]')){
+   compare=target.checked;const chart=target.closest('[data-website-metric-chart]');if(chart&&displayedReport){chart.innerHTML=websiteMetricChart(displayedReport,{esc,metric,compare,series});chart.querySelector('[data-website-compare]')?.focus({preventScroll:true});}
+  }else if(target.matches('[data-website-period]')){days=Number(target.value);selectedDays=days;void load();}
+  else if(target.matches('[data-website-page]')){page=target.value;selectedPage=page;void load();}
+ });
  root.addEventListener('click',e=>{
   if(e.target.closest('[data-website-retry]')){void load();return;}
   const button=e.target.closest('[data-website-metric]'),panel=button?.closest('[data-website-metrics]'),chart=panel?.querySelector('[data-website-metric-chart]');
   if(!button||!root.contains(button)||!chart||!displayedReport||!Object.hasOwn(websiteMetrics,button.dataset.websiteMetric))return;
-  metric=button.dataset.websiteMetric;
+  metric=button.dataset.websiteMetric;compare=false;
   for(const item of panel.querySelectorAll('[data-website-metric]'))item.setAttribute('aria-pressed',String(item.dataset.websiteMetric===metric));
-  chart.innerHTML=websiteMetricChart(displayedReport,{esc,metric});
+  chart.innerHTML=websiteMetricChart(displayedReport,{esc,metric,compare,series});
   chart.querySelector('[data-website-chart-heading]')?.focus({preventScroll:true});chart.scrollIntoView({block:'nearest'});
  });void load();
 }

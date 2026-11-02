@@ -1,4 +1,4 @@
-import {funnelPayment} from './sales-funnel.js?v=feedback29-batch3-followup';
+import {funnelPayment} from './sales-funnel.js?v=packs-workflow-20261102';
 // Only saved delivery agreements determine requirements; prices never imply a method.
 export const fulfilmentMethods=[['','Nog afspreken'],['pickup','Afhalen'],['shipping','Verzenden'],['delivery','Bezorgen']];
 export const validFulfilmentMethod=value=>fulfilmentMethods.some(([id])=>id===value);

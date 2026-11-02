@@ -1,9 +1,9 @@
 import {paymentRequestDay,usableOrderPaymentLink} from './order-payment-link.js?v=feedback29-batch3-followup';
 import {salesPhaseSignal,adoptedGmailPhase} from './sales-phase-signal.js?v=open-fixes-20261027';
-import {productionReleaseInfo} from './production-release.js?v=feedback29-batch3-followup';
+import {productionReleaseInfo} from './production-release.js?v=packs-workflow-20261102';
 import {mailTemplates,fillMailTemplate,templateContext} from './mail-templates.js?v=feedback-followup-20261028';
 import {companyFor} from './companies.js';
-import {inquiryRequirements} from './inquiries.js?v=feedback-followup-20261028';
+import {inquiryRequirements} from './inquiries.js?v=packs-workflow-20261102';
 export const funnelPhases=[['new','Nieuwe aanvragen'],['specs','Specificaties opgevraagd'],['pricing','Prijs berekenen'],['indication','Prijsindicatie verstuurd'],['quote','Offerte verstuurd'],['confirmation','Orderbevestiging · wacht op betaling'],['paid','Betaald'],['released','Productie vrijgegeven'],['production','In productie'],['delivered','Geleverd / gearchiveerd']];
 export const funnelPhasesFor=companyId=>companyFor(companyId).salesPhases||funnelPhases;
 export function funnelDisplayPhase(phase,companyId){return companyId==='maatwerkkunststof'&&['confirmation','paid','released'].includes(phase)?'received':phase;}
@@ -19,7 +19,7 @@ export function funnelPayment(state,o){
  return {known,total,paid,valid,fullyPaid:known&&total>0&&paid>=total};
 }
 function orderDocumentPrepared(state,orderId,kind){return state.documents.some(d=>d.ownerId===orderId&&(d.generated?.kind||d.category)===kind&&(/\.pdf$/i.test(d.name||'')||d.type==='application/pdf'));}
-function mailPhase(state,draft){const doc=state.documents.find(x=>x.id===draft.documentId),kind=doc?.generated?.kind||doc?.category;return ({quote:'quote',confirmation:'confirmation',invoice:'invoice'})[kind]||draft.funnelPurpose||'';}
+function mailPhase(state,draft){if(draft.supplierFulfilmentMail)return '';const doc=state.documents.find(x=>x.id===draft.documentId),kind=doc?.generated?.kind||doc?.category;return ({quote:'quote',confirmation:'confirmation',invoice:'invoice'})[kind]||draft.funnelPurpose||'';}
 // Require a known acceptance, then use explicit document/mail purposes only.
 export function automaticFunnelMailPhase(state,draft){if(draft.status!=='accepted'||!timestamp(draft.sentAt))return '';const phase=mailPhase(state,draft);return ['specs','indication','quote','confirmation'].includes(phase)?phase:'';}
 export function funnelMailEvents(state,o){return (o.emailDrafts||[]).filter(d=>d.status==='accepted'&&timestamp(d.sentAt)).map(d=>({id:d.id,phase:mailPhase(state,d),at:d.sentAt,source:'mail',review:d.funnelReview})).filter(e=>phaseIds.has(e.phase)||e.phase==='followup');}

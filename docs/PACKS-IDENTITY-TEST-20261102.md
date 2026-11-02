@@ -1,0 +1,29 @@
+> Vervolg2november: Philippe heeft de lokale Identity-knop zelf gebruikt en bevestigd dat de verbinding werkt. Daarna aparte echte read-only GetProductInfo-opvraagHTTP200; nieuwe dienstenknop/route brongebouwd. De eerdere beschrijving hieronder is de oorspronkelijke uitsluitend-Identityronde. Nieuwe grenzen/resultaten: [vervolg](PACKS-EN-WORKFLOW-VERVOLG-20261102.md). Geen boeking of label, nieuwe UI nog door Philippe te beoordelen.
+
+# Tijdelijke echte PACKS-accounttest · lokaal Maatwerkkunststof
+
+2 november 2026 lokaal. Expliciete nieuwe opdracht: een echte Bearer-aanmelding en GET /api/Identity volgens de aangeleverde officiële Swagger v9.0.0.0; geen mocks, BookShipment of labels. Gebruiker verduidelijkt dat dit lokaal moet kunnen en geeft geen toestemming voor de eerder gevraagde previewbuild/publicatie. De eerdere previewinrichting blijft staan; deze opdracht publiceert niets en vraagt geen aparte CRM-previewlogin.
+
+## Bediening
+
+Bewaar eventuele open invoer vóór je zelf ververst. Open lokaal een Maat-order → Kunststofbaas → PACKS-verbinding → Test PACKS verbinding. De knop opent een resultaatvenster en doet direct één echte tokenaanvraag, gevolgd door GET /api/Identity als aanmelden slaagt. Opnieuw testen is een nieuwe bewuste klik; geen polling of automatische account-/host-/401-retry.
+
+Je ziet slagen/mislukken, bedrijf/gebruiker indien expliciet teruggegeven, de afzonderlijke HTTP-status van tokenaanvraag en Identity en de volledige Identity JSON. Geen oude JSON/HTTP-status als nieuwe uitslag laten staan bij opnieuw testen. Volledige JSON tot de weergavegrens, geheime waarden afgeschermd. De tokenresponse wordt nooit getoond; het Bearer-token leeft alleen binnen de serveraanvraag. Bij aanmeldfout de echte providerstatus met veilige vaste foutcode/uitleg, geen ruwe error_description of tokenpayload. Zonder ontvangen HTTP-antwoord staat er geen verzonnen PACKS-status.
+
+Dit staat alleen op de lokale Maat-werkplek. Spatlappen en online CRM’s krijgen deze tijdelijke lokale knop niet. Er wordt geen ordernummer, klantadres, factuur, pakket of CRM-state meegestuurd. Open nummer-/adres-/factuurinvoer wordt niet bewaard, geaccepteerd, gewist of hertekend door deze diagnostische actie. Het eigen modale venster is uitgezonderd in de bestaande gerichte invoerbewaking en wist zijn getoonde resultaat bij sluiten. JSONveld uitgesloten van gewone formulier-/AI-invoerexport, geen automatische feedbackdeling.
+
+## Servergrens
+
+De aparte lokale POST /__local/packs/identity accepteert alleen de lokale Maat-Host/Origin, application/json en confirmed:true. Alle andere lokale PACKS-routes blijven bij hun bestaande boekings-/labelblokkering. De Pythonhandler start de vaste Node-Identityhelper, met alleen de bevestiging via stdin; geen credentials in procesargumenten. Privéconfig is apart, met eigenaar-lezen/schrijven, buiten publieke bron/build/back-up en niet in browservelden/logs. Bestaande bestanden niet overschreven. Geen bestaande immutable boekingsprofielen, registry, uitvoervlag of Cloudflare-secret gewijzigd.
+
+cloudflare/packs-identity.js bevat uitsluitend vaste HTTPS-token- en Identity-URL’s voor één expliciet gekozen omgeving. Deze uitvoering gebruikt de echte/live API met het eerder door gebruiker opgegeven API-account. Geen onbekend testaccount geraden of test/livefallback. OAuth grant_type=password en clientId/scope volgen de bestaande handleidingbron. GET met Authorization Bearer, Accept application/json en api-version1.0; Swagger Identity geeft een array met type/value. Geen BookShipment/GetLabels/ProductInfo/mails of financiële writes in deze module. Hij is geen tweede boekingsmotor en wordt niet in het gepubliceerde Worker-bundle geïnstalleerd door deze lokale wijziging.
+
+Antwoorden streaming begrensd, redirects niet gevolgd, vaste timeout per stap, geen rauwe foutlogging. Identity-JSON recursief op geheime velden/claims en bekende gebruikte geheime waarden opgeschoond; accountclaims zijn bedoeld om aan de eigenaar te tonen. Bedrag-/order-/verzend-/lever-/kostenstatus blijft ongewijzigd. De lokale Node-helper bewaart ook geen token op schijf.
+
+## Werkelijk uitgevoerd
+
+De echte API-accounttest is uitgevoerd op expliciet verzoek. Eerst kreeg de beperkte uitvoeromgeving geen HTTP-antwoord; met netwerktoegang daarna daadwerkelijk tokenHTTP200 en IdentityHTTP200. Vervolgens dezelfde echte route via de herstartte lokale CRM-server bevestigd: lokale routeHTTP200, tokenHTTP200, IdentityHTTP200,18type/value-claims, waaronder bedrijf/gebruiker/API-rol en directBooking/generateLabel. Antwoorden waren echte PACKS-antwoorden, geen fixture. Accountdetails zelf alleen in het resultaatvenster/toolantwoord, geen ruwe response of credentials in deze openbare bronnotitie.
+
+Direct Booking/labelclaims zijn door PACKS teruggegeven, maar er is GEEN boekings-/label-/tarief-/verpakkings-/bezorgproef gedaan. Geen contractevidence/limieten afgevinkt of server vrijgegeven op basis van alleen deze claims. Foutbranches zijn alleen in bron vergeleken; geen opzettelijke foute-wachtwoordtest of extra provideronderzoek. Geen unit-/syntax-/check-/buildronde of browser-/DOM-/visuele QA uitgevoerd. Eigen knop-/scherm-/foutweergavecontrole blijft open. De twee beheerde lokale servers zijn voor het laden van de nieuwe route herstart, zonder CRM-/browserdata te veranderen.
+
+Geen Git/GitHub, Cloudflare-/CRM-/Workerpublicatie, nieuwe cloudresources/schema/config/secrets, pakbon, label, zending, mail, betaling of bestaande klant-/financiële mutatie in deze opdracht. Oude staging/templates/bestanden behouden. Tijdelijke lokale uitleesproef is geen vrijgave voor live transportboekingen. Officiële bron: [PACKS Swagger](https://packsonlineapp.packs.nl/swagger/v1/swagger.json), aangeleverde lokale exacte v9.0.0.0 daarnaast gelezen; webreader kon de URL niet openen. Dat maakt de echte HTTP200-accounttest niet tot een mock.

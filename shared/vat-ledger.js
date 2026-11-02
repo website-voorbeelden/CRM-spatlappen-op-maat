@@ -1,6 +1,7 @@
-import {documentVersion,documentSeriesKey} from './document-revisions.js?v=feedback29-batch3-followup';
+import {documentVersion,documentSeriesKey} from './document-revisions.js?v=packs-worker-v3-20261102';
 // Preparation ledger: actual source amounts, explicit classification, no filing API.
 import {supplierInvoices} from './supplier-invoices.js';
+import {expenseIssues} from './business-expenses.js?v=invoice-intake-review-20261031';
 export const vatBoxes=[['1a','Binnenland · hoog'],['1b','Binnenland · laag'],['1c','Bijzonder forfait / overige tarieven · geen buitenlandse btw'],['1d','Privégebruik'],['1e','Binnenland · 0% / niet bij jou belast'],['2a','Binnenlandse inkoop · btw naar jou verlegd'],['3a','Uitvoer buiten EU'],['3b','Leveringen/diensten binnen EU'],['3c','Installatie / afstandsverkopen binnen EU'],['4a','Inkoop buiten EU / invoer met artikel 23'],['4b','Inkoop binnen EU'],['5b','Nederlandse voorbelasting / betaalde invoer-btw'],['outside','Buiten deze Nederlandse aangifte']];
 const output=new Set(['1a','1b','1c','1d','2a','4a','4b']),input=new Set(['2a','4a','4b','5b']),zero=new Set(['1e','3a','3b','3c']);
 const err=message=>{throw Object.assign(Error(message),{status:400});},clone=v=>structuredClone(v),money=v=>Number.isSafeInteger(v)&&v>=0&&v<=1e12;
@@ -18,6 +19,8 @@ function invoiceSeed(payload){
 }
 export function vatSources(state){
  const sources=[],groups=new Map();
+ const expenses=state.businessExpenses||[],expenseFiles=new Map(expenses.flatMap(e=>e.documentIds.map(id=>[id,e])));
+ const intakeFiles=new Map((state.supplierInvoiceImports||[]).flatMap(r=>[r.documentId,...r.history.map(h=>h.before.documentId)].map(id=>[id,r])));
  const supplierFiles=new Map();
  for(const p of state.purchases||[])for(const invoice of supplierInvoices(p)){
   const files=state.documents.filter(d=>d.ownerId===p.id&&d.invoiceId===invoice.id&&!d.vatEvidence&&!d.generated);
@@ -25,6 +28,8 @@ export function vatSources(state){
  }
  for(const doc of state.documents){
   if(doc.vatEvidence)continue;
+  if(intakeFiles.has(doc.id)&&!(state.vatLedger?.entries||[]).some(e=>e.status!=='void'&&e.sourceKey==='file:'+doc.id))continue;
+  if(expenseFiles.has(doc.id)&&!(state.vatLedger?.entries||[]).some(e=>e.status!=='void'&&e.sourceKey==='file:'+doc.id))continue;
   // The uploaded original and its supplier record are one source. Preserve old
   // file-key bookings as aliases until the user explicitly corrects them.
   if(supplierFiles.has(doc.id)&&!(state.vatLedger?.entries||[]).some(e=>e.status!=='void'&&e.sourceKey==='file:'+doc.id))continue;
@@ -43,6 +48,22 @@ export function vatSources(state){
  for(const p of state.purchases||[])for(const invoice of supplierInvoices(p))if(invoice.kind==='invoice'){
   const files=state.documents.filter(d=>supplierFiles.get(d.id)?.p.id===p.id&&supplierFiles.get(d.id)?.invoice.id===invoice.id),aliases=files.filter(d=>(state.vatLedger?.entries||[]).some(e=>e.status!=='void'&&e.sourceKey==='file:'+d.id));
   sources.push({key:'supplier:'+p.id+':'+invoice.id,kind:'supplier',label:(p.supplier||p.name)+' · '+invoice.reference,documentNumber:invoice.reference||'',counterparty:p.supplier||p.name,date:vatDate(invoice.date)?invoice.date:'',purchaseId:p.id,documentIds:files.map(d=>d.id),signature:vatFingerprint([p.id,p.supplier,invoice.id,invoice.reference,invoice.date,invoice.total,invoice.kind,invoice.currency||'']),seed:null,aliases:aliases.map(d=>'file:'+d.id),issue:aliases.length?'Dit document heeft al een boeking via het bronbestand. Gebruik die bestaande boeking; voeg geen tweede toe.':''});
+ }
+ for(const r of state.supplierInvoiceImports||[]){
+  const d=r.data,known=d.vatCents===0||d.deductibleVatCents!==null,proofIds=new Set([r.documentId,...r.history.map(h=>h.before.documentId)]),aliases=(state.vatLedger?.entries||[]).filter(e=>e.status!=='void'&&e.sourceKey.startsWith('file:')&&proofIds.has(e.sourceKey.slice(5))).map(e=>e.sourceKey),related=(state.vatLedger?.entries||[]).filter(e=>e.status!=='void'&&!e.duplicateOf&&(e.sourceKey==='supplier-import:'+r.id||aliases.includes(e.sourceKey)));
+  const source={key:'supplier-import:'+r.id,kind:'supplier',intakeId:r.id,label:'Kunststofbaas · '+d.reference,documentNumber:d.reference,counterparty:'Kunststofbaas',date:d.date,documentIds:[r.documentId],grossCents:d.grossCents,signature:vatFingerprint([r.id,d,r.documentId,r.sha256,state.documents.find(doc=>doc.id===r.documentId)]),seed:known?{grossCents:d.grossCents,lines:[{box:'',baseCents:d.netCents,vatCents:d.vatCents,deductCents:d.deductibleVatCents??0}]}:null,aliases,hardIssue:!known||related.length>1,issue:related.length>1?'Deze factuur heeft meer dan één actieve btw-boeking. Behoud één bronboeking en sluit de dubbele bewust uit.':known?'':'Controleer eerst de aftrekkeuze bij de ingelezen bronfactuur.'};
+  if(d.orderIds.length===1)source.orderId=d.orderIds[0];sources.push(source);
+  for(const key of aliases){let legacy=sources.find(s=>s.key===key);if(!legacy){legacy={...source,key,kind:'uploaded',aliases:[]};sources.push(legacy);}else Object.assign(legacy,{intakeId:r.id,documentIds:source.documentIds,seed:source.seed,grossCents:source.grossCents,signature:vatFingerprint([legacy.signature,source.signature]),hardIssue:source.hardIssue,issue:source.issue});}
+ }
+ for(const e of expenses){
+  const issues=expenseIssues(e),known=e.netCents!=null&&e.vatCents!=null&&(e.vatCents===0||e.deductibleVatCents!=null);
+  const aliases=e.documentIds.filter(id=>(state.vatLedger?.entries||[]).some(entry=>entry.status!=='void'&&entry.sourceKey==='file:'+id)).map(id=>'file:'+id);
+  const signature=vatFingerprint([e.id,e.label,e.counterparty,e.reference,e.date,e.netCents,e.vatCents,e.deductibleVatCents,e.grossCents,e.paidVatCents,e.paidVatDate,e.evidenceNote,e.documentIds.map(id=>state.documents.find(d=>d.id===id))]);
+  const source={key:'expense:'+e.id,kind:'expense',expenseId:e.id,label:e.label,documentNumber:e.reference,counterparty:e.counterparty,date:e.date,documentIds:e.documentIds,grossCents:e.grossCents,evidenceNote:e.evidenceNote,signature,aliases,hardIssue:issues.length>0,issue:issues.length?'Kostenbron nog aanvullen: '+issues.join(', '):'',seed:known?{grossCents:e.grossCents,lines:[{box:'',baseCents:e.netCents,vatCents:e.vatCents,deductCents:e.deductibleVatCents??0}]}:null};
+  if(e.target.kind==='purchase')source.purchaseId=e.target.ownerId;if(e.target.kind==='order')source.orderId=e.target.ownerId;
+  if(e.paidVatCents!=null)source.paidVat={amountCents:e.paidVatCents,date:e.paidVatDate,reference:(e.reference||e.label).slice(0,200)};
+  sources.push(source);
+  for(const legacy of sources.filter(s=>aliases.includes(s.key))){Object.assign(legacy,{expenseId:e.id,signature:vatFingerprint([legacy.signature,signature]),seed:source.seed,grossCents:source.grossCents,hardIssue:source.hardIssue,issue:source.issue,evidenceNote:source.evidenceNote,...(source.paidVat?{paidVat:source.paidVat}:{})});}
  }
  for(const receipt of state.payments)sources.push({key:'receipt:'+receipt.id,kind:'receipt',label:'Ontvangst '+(receipt.reference||receipt.id),date:receipt.date,orderId:receipt.orderId,documentNumber:receipt.reference||receipt.id,documentIds:[],grossCents:receipt.amount,signature:vatFingerprint(receipt),seed:null});
  for(const source of sources)if(source.kind==='uploaded'){
@@ -131,6 +152,10 @@ export function vatEntryIssues(entry,state,sources=vatSources(state)){
   const gross=entry.lines.reduce((n,l)=>n+l.baseCents+l.vatCents,0);if(entry.credit||gross!==source.grossCents)issues.push('De splitsing sluit niet aan op de werkelijk geregistreerde ontvangst.');
  }
  if(source?.kind==='invoice'&&source.seed){if([21,9].includes(source.seed.rate)&&entry.lines.some(l=>l.box==='1a'&&source.seed.rate!==21||l.box==='1b'&&source.seed.rate!==9))issues.push('De gekozen tariefrubriek past niet bij het percentage op de bewaarde factuur.');const base=entry.lines.reduce((n,l)=>n+l.baseCents,0),tax=entry.lines.reduce((n,l)=>n+l.vatCents,0),original=source.seed.lines[0];if(entry.credit||base!==original.baseCents||tax!==original.vatCents)issues.push('Grondslag en btw sluiten niet afzonderlijk aan op de bewaarde factuur.');}
+ if(source?.intakeId&&!entry.duplicateOf){const record=(state.supplierInvoiceImports||[]).find(r=>r.id===source.intakeId);if(record&&!entry.documentIds.includes(record.documentId))issues.push('Koppel en controleer de huidige originele leveranciersfactuur bij deze boeking.');}
+ if(source?.intakeId&&source.seed&&!entry.duplicateOf){const original=source.seed.lines[0];if(entry.credit||entry.kind!=='purchase'||entry.lines.reduce((n,l)=>n+l.baseCents,0)!==original.baseCents||entry.lines.reduce((n,l)=>n+l.vatCents,0)!==original.vatCents||entry.lines.reduce((n,l)=>n+l.deductCents,0)!==original.deductCents)issues.push('Netto, btw en aftrek moeten aansluiten op de ingelezen Kunststofbaas-factuur. Corrigeer eerst die bron.');}
+ if(source?.expenseId&&source.seed){const expected=source.seed.lines[0];if(entry.credit||!['purchase','import'].includes(entry.kind)||entry.lines.reduce((n,l)=>n+l.baseCents,0)!==expected.baseCents||entry.lines.reduce((n,l)=>n+l.vatCents,0)!==expected.vatCents||entry.lines.reduce((n,l)=>n+l.deductCents,0)!==expected.deductCents)issues.push('Netto, btw of aftrek sluit niet aan op de gekoppelde bedrijfskosten. Controleer eerst die bron.');}
+ if(source?.expenseId){const expense=(state.businessExpenses||[]).find(e=>e.id===source.expenseId);if(expense&&((entry.paidVat?.amountCents??null)!==expense.paidVatCents&&!(expense.paidVatCents===0&&!entry.paidVat)||expense.paidVatCents>0&&entry.paidVat?.date!==expense.paidVatDate))issues.push('De betaalde btw of betaaldatum sluit niet aan op Bedrijfskosten. Werk de kostenbron en daarna deze boeking bij.');}
  if(entry.kind==='adjustment'&&!entry.note.trim())issues.push('Een correctie/privégebruik vraagt een onderbouwde toelichting.');
  if(entry.lines.every(l=>l.box==='outside')&&!entry.note.trim())issues.push('Licht toe waarom deze bron buiten de Nederlandse aangifte valt.');
  return [...new Set(issues)];

@@ -1,5 +1,5 @@
 import {allocateCents} from '../../shared/money-allocation.js?v=feedback-five-20261029';
-import {embeddedFreightShare,importVatCost} from '../../shared/purchase-import-costs.js?v=feedback29-batch1-followup';
+import {embeddedFreightShare,importVatCost,importVatCostKnown} from '../../shared/purchase-import-costs.js?v=finance-period-review-20261031';
 
 // Display-only detail of canonical costs. A component's third value carries
 // source completeness: an unknown zero is never presented as free.
@@ -16,7 +16,7 @@ export function articleCostRows(context,order,economics){
   ['Transport leverancier → NL',shared(p?.freight),!p||p.freight!=null,true],
   ['Invoerrechten',p?shared(context.dutyAmount(p)):split(economics.duty,quantity(items)),p?context.dutyAmount(p)!=null:economics.duty!=null,Boolean(p)],
   ['Inklaring / overige inkoopkosten',shared(p?.extraCosts),!p||p.extraCosts!=null,true],
-  ['Niet-terugvorderbare invoer-btw',shared(p?importVatCost(p):0),!p||!p.importVat||p.importVatRecoverable!=null,true],
+  ['Niet-terugvorderbare invoer-btw',shared(p?importVatCost(p):0),!p||importVatCostKnown(p),true],
   ['Benoemde batchkosten',shared(p?context.namedCostSummary(p).total:0),!p||context.namedCostSummary(p).known,true],
   ['Verzending / bezorging NL',split(order.shippingActual,quantity(items)),order.shippingActual!=null,false],
   ['Overige orderkosten',split(order.extraCosts,quantity(items)),order.extraCosts!=null,false],

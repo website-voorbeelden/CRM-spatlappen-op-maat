@@ -1,5 +1,5 @@
-import {funnelPhasesFor} from './sales-funnel.js?v=feedback29-batch3-followup';
-import {gmailModifyScope} from './gmail-phase-sync.js?v=feedback-followup-20261028';
+import {funnelPhasesFor} from './sales-funnel.js?v=packs-workflow-20261102';
+import {gmailModifyScope} from './gmail-phase-sync.js?v=packs-workflow-20261102';
 const fail=message=>{throw Object.assign(Error(message),{status:409});};
 const random=()=>Array.from(crypto.getRandomValues(new Uint8Array(24)),n=>n.toString(16).padStart(2,'0')).join('');
 const digest=async value=>Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(JSON.stringify(value)))),n=>n.toString(16).padStart(2,'0')).join('');

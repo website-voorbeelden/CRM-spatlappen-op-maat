@@ -1,3 +1,5 @@
+> Actueel31oktober: [batch2](INKOOP-BATCH2-20261031.md) bouwt voort op deze eerdere verwerking. Apart kostenformulier; transportbasis nu onbekend/nee/ja in plaats van een checkbox, btw leeg blijft onbekend en betaalde bedragen blijven los van kostenbasis. Beide AI-/bewaar-/JSON-opslagketens bronvergeleken, geen datamigratie of nieuwe btw-boeking. Alleen lokaal voor eigen controle; gebruiker kiest alles lokaal houden. Oudere checkbox-/publicatiebeschrijvingen hieronder zijn historie.
+
 > Batch1vervolg29oktober: gedeelde guard voor betaalstaat/aankomstmail, zoeken/filterterugkeer, expliciet nul/overbetaling/onbekend en gemengde-orderuitleg; onbekende artikelposten zichtbaar. Nieuwe optionele importVatIncludedInSupplierPayments voorkomt dubbel getelde betaalde btw; beide AI-/save-/back-uproutes aangesloten, gedeeltelijk AI-transportvoorstel pas volledig bij opslaan valideren. Zie docs/FEEDBACK29-BATCH1-VERVOLG.md (projectroot). Alleen lokaal bronwerk; geen tests/checks/build/browsercontrole/publicatie, eigen controle/Google-activering open.
 
 # Invoer-btw bij inkoop — 29 oktober 2026

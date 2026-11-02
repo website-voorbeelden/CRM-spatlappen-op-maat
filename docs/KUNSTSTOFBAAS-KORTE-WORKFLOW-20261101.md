@@ -1,0 +1,39 @@
+> Batch2: automatische of eigen datum aangesloten in lokale bron en hun nummer op nieuwe pakbonkop via documentgenerator, niet door bestaande DOCX te herschrijven. Operationele inrichting en eigen controle open; zie KUNSTSTOFBAAS-BATCH2-20261101.md.
+
+> Vervolgbatch1,1november: [vijf nieuwe batches](KUNSTSTOFBAAS-VIJF-BATCHES-20261101.md). Bestaande volgorde behouden, bestelbovenkant compacter/directe website, landwijziging behoudt handmatige velden, zichtbare actieproblemen en originele documenten bekijken bij open invoer. Alleen bron/lokaal, jouw controle open; PACKS-inrichting/mailinvoer/datum/pakbonnummer blijven bij batches2–5.
+
+> Nieuwste factuurcorrectie1november: betaalinvoer verwijderd (bestaande betalingen behouden), verplichte controle-vinkjes weg, expliciete acceptatie-/vervangknop als opslagactie. Importfeedback direct zichtbaar buiten kosten-dropdown, optionele bedragenaan/uit-knop. Eigen invoer blijft bij nieuw voorstel bewaard tot Nieuw voorstel overnemen. Alleen lokaal bronwerk, geen tests/publicatie; eigen controle open.
+
+# Kunststofbaas — korte werkvolgorde en direct afleveradres
+
+1 november 2026. Nieuwste expliciete UX-correctie daadwerkelijk in bron verwerkt, alleen Maatwerkkunststof. Geen tests/checks/build/browsercontrole; Philippe beoordeelt zelf. Geen CRM-records of providers door Codex gewijzigd, niets gepubliceerd.
+
+## Zichtbare volgorde
+
+1. **Bestellen:** de kopieertekst bevat uitsluitend ontvanger/klantnaam, afleveradres inclusief land en ons Order #nummer. Geen productregels, uitgebreide toelichting, instructies of leveranciersnummer in deze tekst. Daar direct onder naam en groot adresvak bewerken, gevolgd door straat/huisnummer/toevoeging/postcode/plaats/landcode voor PACKS. Adres opslaan werkt de bestaande orderbron bij; kopiëren wacht ook op eventuele begonnen adresopslag.
+2. **Bestelnummer:** één direct veld voor het volledige Kunststofbaas-bestelnummer, bewaren bij verlaten/Enter. Geen aparte Bestelling controleren / bevestigen-knop. In deze expliciete gebruikersroute wordt het nummer NA de eigen webshopbestelling ingevoerd; die bewuste handeling legt de leveranciersreferentie bij de actuele order vast. Geen echte besteldatum verzinnen of betaling/verzending registreren. Oude generieke referentiewriters houden hun bestaande invalidatie.
+3. **Factuur & kosten:** PDF-sleepvak direct zichtbaar, link/bestaand bestand en uitleg onder Meer. Het bestaande kostenvoorstel zit achter Kosten controleren en accepteren en opent wanneer een voorstel wordt ingevuld. Zelfde bewerkbare bedragen, originele PDF, regels/btw/aftrek/betaalkeuze en expliciete kostenacceptatie. Kleine kostprijs-/margeweergave uit dezelfde bestaande financiële projectie; onbekende kosten als voorlopig.
+4. **Productcontrole:** aantal, maat, materiaal/dikte. Geen lange productomschrijving/specs/bewerkingstekst in deze tabel; onderliggende productgegevens niet ingekort of verwijderd. Inline factuurproductkeuzes ook compacter, identiteit/bronfactuuromschrijving ongewijzigd.
+5. **Pakbon → label → mail:** ná de factuur en productcontrole, geen lange driekoloms uitleg/steeds herhaalde ontbreektmeldingen. Zichtbare volgende handeling; labelknop na actuele pakbon, mailknop na beide actuele PDF’s. Bekijken direct, downloads/alternatieven onder Meer. Geen onzichtbare tweede bevestigingsdialoog om alleen een nummer te kunnen gebruiken. De eerste handmatige logistieke vervolgactie kan de bestaande expliciet ingevulde referentie aan de actuele bron binden zonder een besteldatum te raden. Boeking zelf behoudt de centrale profiel/register/pakket-/laatste eigen bevestiging.
+
+Nieuwe gewone mailvoorstellen: onderwerp Pakbon <hun nummer> - Order <ons nummer>, kort adres/aantal en werkelijk ingevulde gereed-/gewenste afhaal-/bezorgdatum met juiste labels. Bestaande concepten/acceptatiestatus niet herschrijven. Geen mail verstuurd door Codex.
+
+## Adresbron en synchronisatie
+
+shared/order-delivery is één pure eigenaar voor de bestaande deliveryEditBasis en de orderadreswrite met klant-sync. Oude adrespagina en nieuwe inline-adrescontroller gebruiken dezelfde functie. Bij precies één gekoppelde klantorder blijven shippingRecipient/shippingAddress/shippingCountry bij klant en order samen bijgewerkt; bij meerdere orders blijft een ordercorrectie bij die order. Klant-/factuuridentiteit en andere klantorders niet stil veranderen.
+
+Optioneel order.delivery.structuredAddress bewaart de gecontroleerde straat/nummer/toevoeging/postcode/plaats/landcode naast de exact daarvan opgebouwde bestaande address/country. Validator eist overeenkomst; geen tweede onafhankelijke adresstore. Alleen toevoegen na eigen bewaren; geen oude dossiers migreren. Gewone adrespagina/klantadresvervanging zonder splitsing schrijft de bestaande vrije adresbron en laat oude splitsing vervallen. Pakbon/map/andere bestaande lezers gebruiken de bestaande addressbron; PACKS-voorstel gebruikt de passende bewaarde splitsing, anders hetzelfde beperkte parsevoorstel. Oude labels/pakbonnen worden niet herschreven en kunnen door een wijziging niet meer actueel zijn. Bij openen van een verouderde PACKS-voorbereiding met aantoonbaar gewijzigd orderadres krijgt alleen de nieuwe formulierdraft het actuele adresvoorstel; pakketwaarden blijven staan en eigen hercontrole is vereist. De oude opgeslagen voorbereiding verandert pas na eigen bewaren.
+
+Automatisch splitsen uitsluitend herkenbare Nederlandse/Belgische/Duitse patronen met bekende of expliciet geplakte landcode/landnaam. Eén regel of straat/postcode-plaats op aparte regels, optioneel land. Geen land uit alleen postcode raden, geen online adrescontrole/geocoder. Onduidelijke regels blijven handmatig te controleren; extra naam-/adresregels niet stil weggooien. Andere landen kunnen via de losse velden ingevuld en bewaard worden. Handmatige huisnummertoevoeging behouden. Dit is een voorstel, geen verificatie dat het adres bestaat.
+
+## Invoer, bewaren en opstart
+
+Nieuwe factory/guardconstructie leest geen company/runtime/state vóór initialisatie. Controllers pas na de tabrender. Adresform gebruikt dezelfde form-guidance/busy/dirty/centraletransactie/CAS; rebase alleen wanneer exact de eigen eerdere bronwijziging bewezen is. Referentie-/adressave patcht alleen lees-/actieslots; gekozen factuur-PDF en ingevulde kosten blijven in hun bestaande form. Inline factuurbasis kan ook de exact eigen klant-sync volgen; andere wijzigingen blijven conflict.
+
+Vervolgacties wachten via DOM-gebonden callback op referentie-/adresopslag. Klikidentiteit blijft behouden als opslaan het actieblok vernieuwt; lokale actielock blokkeert een tweede gelijktijdige vervolgklik. Een begonnen factuur wordt niet gewist/vervangen: eerst accepteren of zelf invoer wissen. Navigatieguard is uitsluitend bij daadwerkelijk gerenderde supplierformulieren actief. Formflags blijven in DOM, geen credentials/velden naar browserdraft. CSS uitsluitend admin/style.css. Oude klantbestanden, templates, eigen teksten, feedbackstatus en Git-staging behouden.
+
+## Eerlijk open
+
+De schermcode is lokaal gebouwd en in bron vergeleken, niet functioneel getest. Philippe beoordeelt veldinvoer/plakken/toevoegingen/land/naam/omschrijvingkopie, bronconflicten, één versus meerdere klantorders, factuurinvoerbehoud, volgorde en knoppen. Geen CRM/DOM/browser-QA door Codex. Alle bronwijzigingen zijn standaard lokaal.
+
+PACKS-account-/dienst-/serverinrichting, automatische datumkeuze in de CRM-keten, workerreviewbevindingen en eerste eigen boekings-/mailcontrole blijven open. Hun nummer daadwerkelijk groot op de plek van het zichtbare pakbonnummer is nog een aparte documentlayoutwijziging; nu blijft bestaande gekoppelde pakbonmaker/reference gebruikt. Geen gebruiksklaar-, live- of waterdichtheidsclaim. Zie PACKS-WORKER-V8-REVIEW-20261101.md en PACKS-EERSTE-ZENDING-20261101.md.

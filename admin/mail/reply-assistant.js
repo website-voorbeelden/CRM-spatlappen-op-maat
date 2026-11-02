@@ -1,6 +1,6 @@
-import {provenanceTip} from '../../shared/provenance.js?v=provenance-colors-20261027';
-import {assistantTransport} from '../assistant/laptop-transport.js?v=feedback-followup-20261028';
-import {mailReplyContext,manualReplyPrompt,parseMailReplySuggestion,mailReplyHistory} from '../../shared/mail-reply-assistant.js?v=feedback-followup-20261028';
+import {provenanceTip} from '../../shared/provenance.js?v=invoice-link-review-20261101';
+import {assistantTransport} from '../assistant/laptop-transport.js?v=packs-workflow-20261102';
+import {mailReplyContext,manualReplyPrompt,parseMailReplySuggestion,mailReplyHistory} from '../../shared/mail-reply-assistant.js?v=packs-workflow-20261102';
 
 const esc=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
 const signature=value=>JSON.stringify(value);

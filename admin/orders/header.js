@@ -1,5 +1,5 @@
-import {orderProgressDetailsMarkup} from './progress.js?v=feedback-followup-20261028';
-import {orderKeyFactsMarkup} from './key-facts.js?v=feedback29-batch2-followup';
+import {orderProgressDetailsMarkup} from './progress.js?v=packs-workflow-20261102';
+import {orderKeyFactsMarkup} from './key-facts.js?v=packs-workflow-20261102';
 import {revealSelectedTab} from '../workspace/tab-visibility.js?v=calm-workspaces-20261027';
 
 // Shared presentation for every dossier tab. Actions keep their existing routes.

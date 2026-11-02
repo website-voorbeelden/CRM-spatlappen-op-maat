@@ -1,0 +1,38 @@
+{
+  "$schema": "../../node_modules/wrangler/config-schema.json",
+  "name": "tjworx-packs-crm-test",
+  "main": "index.js",
+  "compatibility_date": "2026-11-01",
+  "workers_dev": false,
+  "preview_urls": false,
+  "observability": {
+    "enabled": true,
+    "head_sampling_rate": 1
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "REPLACE_WITH_MAAT_PREVIEW_CRM_DATABASE",
+      "database_id": "REPLACE_WITH_PREVIEW_D1_ID"
+    }
+  ],
+  "r2_buckets": [
+    {
+      "binding": "CRM_FILES",
+      "bucket_name": "REPLACE_WITH_MAAT_PREVIEW_FILES",
+      "jurisdiction": "eu"
+    }
+  ],
+  "vars": {
+    "CRM_COMPANY_ID": "maatwerkkunststof",
+    "CRM_RELEASE_ENV": "preview",
+    "CRM_PACKS_ENVIRONMENT": "test",
+    "CRM_PUBLIC_URL": "https://replace-preview.example.invalid",
+    "CRM_ALLOWED_EMAIL": "",
+    "CRM_PACKS_EXECUTION_ENABLED": "false",
+    "CRM_PACKS_RELEASE_ID": "",
+    "CRM_PACKS_REGISTRY_GENERATION": "",
+    "CRM_PACKS_FRESH_INSTALL": "false",
+    "CRM_PACKS_STORAGE_ID": ""
+  }
+}

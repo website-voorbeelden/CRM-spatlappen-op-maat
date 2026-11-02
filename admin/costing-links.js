@@ -1,5 +1,5 @@
-import {markFormSources} from './provenance-ui.js?v=provenance-colors-20261027';
-import {markProvenance} from '../shared/provenance.js?v=provenance-colors-20261027';
+import {markFormSources} from './provenance-ui.js?v=invoice-link-review-20261101';
+import {markProvenance} from '../shared/provenance.js?v=invoice-link-review-20261101';
 import {showGuidance,installGuidedActions} from './guided-actions.js';
 import {openCostingTask} from './inline-tasks.js?v=crm-code-review-20261027';
 import {formProblem,focusFormField} from './form-guidance.js?v=crm-code-review-20261027';
@@ -20,7 +20,7 @@ export function finishCostingItem(item,element){const link=links.get(element);if
  item.costQuoteLink=structuredClone(link);if(!sameSource||applied.has(element))delete item.costCalculation;
  if(item.costCalculation){item.costQuoteLink.localModified=true;return item;}
  const basis=link.linkedFields;if(applied.has(element))for(const key of costingLinkedFields)if(basis&&item[key]===basis[key])markProvenance(item,[key],'calculator');const match=sameCostingFields(item,basis,[...costingBasisFields,'cost']);item.costQuoteLink.localModified=!sameCostingFields(item,basis,costingLinkedFields);
- if(match&&item.costSource!=='supplierInvoice'&&Number.isSafeInteger(link.directCostInCents)&&link.directCostInCents>=0){item.costSource='calculator';item.calculatedCostTotal=link.directCostInCents;}
+ if(match&&!['supplierInvoice','supplierInvoiceImport'].includes(item.costSource)&&Number.isSafeInteger(link.directCostInCents)&&link.directCostInCents>=0){item.costSource='calculator';item.calculatedCostTotal=link.directCostInCents;}
  else if(item.costSource==='calculator'){delete item.costSource;delete item.calculatedCostTotal;}return item;
 }
 export function installCostingPickers(root,{company,getOriginal=()=>null,direction='sale',onChange=()=>{},canPush=()=>true}={}){
@@ -42,7 +42,7 @@ export function installCostingPickers(root,{company,getOriginal=()=>null,directi
   }
   repairs.set(picker,()=>run(createOrRepair));picker.querySelector('[data-costing-create]').onclick=()=>run(()=>createOrRepair(''));picker.querySelector('[data-costing-refresh]').onclick=()=>run(reload);
   function apply(choice){
-   const original=getOriginal(element);if(direction==='sale'&&original?.costSource==='supplierInvoice')throw formProblem('Deze inkoopprijs komt uit een leveranciersfactuur en kan niet door een berekening worden vervangen. Je kunt de huidige inkoopprijs hier bekijken.',{field:field('cost')});
+   const original=getOriginal(element);if(direction==='sale'&&['supplierInvoice','supplierInvoiceImport'].includes(original?.costSource))throw formProblem('Deze inkoopprijs komt uit een leveranciersfactuur en kan niet door een berekening worden vervangen. Je kunt de huidige inkoopprijs hier bekijken.',{field:field('cost')});
    if(direction==='sale'&&root.querySelector('[name=packagePrice]')?.value)throw formProblem('Deze order gebruikt een totaalprijs. Controleer die instelling eerst voordat je losse verkoopprijzen overneemt.',{field:root.querySelector('[name=packagePrice]')});
    const values=direction==='sale'?salesFieldsFromCalculation(choice):purchaseFieldsFromCalculation(choice);
    if(!confirm('Gegevens uit '+choice.title+' · '+choice.supplier+' in dit formulier overnemen?\n'+choice.description+' · '+choice.quantity+' stuks\n'+(direction==='sale'?(choice.material||'Materiaal onbekend')+' · '+choice.thickness+' mm dik\n':'')+(direction==='sale'?'Verkoopprijs: '+(values.price===null?'onbekend':(values.price/100).toFixed(2)+' €/stuk'):'Inkoopprijs: '+(values.price/100).toFixed(2)+' €/stuk')+'\nBestaande invoer in deze productregel wordt vervangen. Er wordt nog geen order of inkoopdocument opgeslagen.'))return;

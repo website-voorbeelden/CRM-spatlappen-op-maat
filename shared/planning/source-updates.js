@@ -2379,5 +2379,1040 @@ export const sourceUpdates = [
     "delivery": "live",
     "note": "Op expliciet verzoek gepubliceerd in beide bestaande CRM-projecten, release crm-feedback-20261029. GitHub main bevat bron ec05da1. Alle lokale batchvervolgen en invoer-btw meegeleverd. Migratie 0006 toegevoegd, opruimen niet geactiveerd en geen bestanden verwijderd. Bestaande gegevens, instellingen, varianten, documenten en gebruikersstatus behouden. Gedeeltelijke punten, Google-/telefooninrichting en gebruikerscontrole blijven open. Zie docs/RELEASE-20261029.md.",
     "evidence": "GitHub main teruggelezen; Cloudflare bevestigt beide Production/main met bron ec05da1. Vorige publicaties en databaseherstelpunten privé vastgelegd. Alleen noodzakelijke publicatieverpakking en Functionscompile; geen tests/checks/syntaxcheckrondes, browser-/DOM-/functionele QA of providerproeven. Publicatie is geen gebruikersakkoord of garantie van foutloze werking."
+  },
+  {
+    "id": "maat-kunststofbaas-fulfilment-source-20261029",
+    "taskId": "maat-kunststofbaas-fulfilment-20261029",
+    "companies": [
+      "maatwerkkunststof"
+    ],
+    "at": "2026-10-29T11:04:20.968517+00:00",
+    "author": "Codex",
+    "status": "doing",
+    "delivery": "local",
+    "note": "Kunststofbaas-bestelstroom lokaal aangesloten: overzicht/kopiëren en webshop openen, echte plaatsing/nummer/datum/leveranciersmail bevestigen, rechtstreekse leverwijze, handmatig echt PACKS-PDF-label bewaren, pakbon met leveranciersnummer en mail naar bevestigd info@kunststofbaas.nl met pakbon-PDF plus label. Alleen Maat, bestaande state/files/CAS, bron-/adres-/product-/bijlagebewaking, oude bestanden behouden, kopie-/verwijder-/klantfasebescherming. Gebruiker nog in overleg met PACKS; automatische labelaanmaak en account-/dienst-/afhaal-/verpakkingscontract blijven open. Zie docs/KUNSTSTOFBAAS-BESTELLEN.md.",
+    "evidence": "Uitsluitend bron-/documentvergelijking en bewerking; officiële leverancierscontactpagina en openbare PACKS-documentatie gelezen. Geen tests/checks/syntaxchecks/build/browser-/DOM-/visuele QA/converterproef, echte bestelling/label-/provider-/mail-/betaalactie, runtimeherstart, GitHubupload of publicatie. Geen klantgegevens/bestanden aangepast; Git-werkkopie/index behouden. Eigen controle Maat/Spat-afscherming, opslag/invoer/CAS/twee tabs/gewijzigde klant/adres/product/bijlagen/pakbon/mail/journal blijft open. Automatisering en gebruikersakkoord eerlijk onvoltooid."
+  },
+  {
+    "id": "maat-kunststofbaas-reference-source-20261029",
+    "taskId": "maat-kunststofbaas-fulfilment-20261029",
+    "companies": [
+      "maatwerkkunststof"
+    ],
+    "at": "2026-10-29T15:14:25.344170+00:00",
+    "author": "Codex",
+    "status": "doing",
+    "delivery": "local",
+    "note": "Nieuwste verduidelijking: eigen Kunststofbaas-bestelnummerveld gebruikt order.supplierOrderReference en vult standaard bestaande klantreferentie op pakbon. Vinkje uit voor echte klantreferentie; leveranciernummer dan in opmerkingen. CRM-nummer/sourceNumber blijven apart. Gewone Maatpakbonmaker bewaart nummer atomair met PDF/Word; bestaande handmatige pakbonreferentie alleen als bewust overneembaar voorstel. Eigen handmatige referentie/keuze en invulwaarden behouden bij productaanvulling/fout; bevestigde dropshipreferentie vergrendeld aan labelbasis. Eerdere bestel-/label-/mailbron behouden. PACKS-automatisering/accountinrichting en Philippecontrole blijven open.",
+    "evidence": "Bron-/templatecontractvergelijking en bewerking plus bouwadministratie; geen tests/checks/syntaxchecks/build/browser-/DOM-/visuele QA of converterproef. Geen echte order-/klant-/document-/bestandswijziging, provider-/PACKS-/mail-/betaal-/bestelactie, herstart, GitHubupload of publicatie. Oude documenten en gebruikers-/feedbackstatus behouden. Eigen controle Maat/Spatafscherming, referentie/vinkje/oud voorstel, gewone pakbon/bestelstroom, opslag/PDF/Word/invoer/CAS/twee tabs en echte bijlagen/verzendresultaat open. Zie docs/KUNSTSTOFBAAS-BESTELLEN.md."
+  },
+  {
+    "id": "feedback30-batch1-bron-20261030",
+    "taskId": "feedback30-batch1",
+    "companies": [
+      "spatlappen",
+      "maatwerkkunststof"
+    ],
+    "at": "2026-10-30T10:00:00.000Z",
+    "author": "Codex",
+    "status": "review",
+    "delivery": "local",
+    "note": "Orderlijst krijgt de actuele state mee; verzendformulier via live getter aangesloten. Feedback met concrete klikplek, beperkte recente fouten/acties, expliciete open/selectie/alles-export en V2-plekselectie. Native Mac-starter houdt beide lokale servers buiten de terminalsessie actief. Eigen bediening/gebruikerscontrole open.",
+    "evidence": "Alleen broncode/templates/documentatie vergeleken en bewerkt. Feedbackimport/bouwadministratie en gevraagde lokale serverstart uitgevoerd. Geen tests, checks, syntaxchecks, builds, browser-/DOM-/visuele QA, converterproef, CAD-importproef of provideracties. Eigen gebruikerscontrole en nieuwe GitHub-/livepublicatie blijven open."
+  },
+  {
+    "id": "feedback30-batch2-bron-20261030",
+    "taskId": "feedback30-batch2",
+    "companies": [
+      "spatlappen",
+      "maatwerkkunststof"
+    ],
+    "at": "2026-10-30T10:00:00.000Z",
+    "author": "Codex",
+    "status": "doing",
+    "delivery": "local",
+    "note": "Vergelijkingsgrafiek met vijf dagreeksen en ontbrekende-dekkingbewaking; verkoop en marge alleen orders met positieve ontvangst, overige dossiers afzonderlijk. Maat-meetaansluiting gedeeltelijk: bron/snapshot wijst op ontbrekende eigen databinding en site-instelling; websitebron gebruikt GA4, ander meetmodel. Eigen database/script/formulierkoppeling en afzonderlijke publicatie/gebruikerscontrole open.",
+    "evidence": "Alleen broncode/templates/documentatie vergeleken en bewerkt. Feedbackimport/bouwadministratie en gevraagde lokale serverstart uitgevoerd. Geen tests, checks, syntaxchecks, builds, browser-/DOM-/visuele QA, converterproef, CAD-importproef of provideracties. Eigen gebruikerscontrole en nieuwe GitHub-/livepublicatie blijven open."
+  },
+  {
+    "id": "feedback30-batch3-bron-20261030",
+    "taskId": "feedback30-batch3",
+    "companies": [
+      "spatlappen",
+      "maatwerkkunststof"
+    ],
+    "at": "2026-10-30T10:00:00.000Z",
+    "author": "Codex",
+    "status": "review",
+    "delivery": "local",
+    "note": "Klant zoeken in orderformulier en klantfilter voorraaduitgifte; inkoopbatchfilter en zoeken op batchnaam. Verzendprijs rechtstreeks bij Adres & levering, betaalverdeling inclusief btw zichtbaar, standaard nieuwste mail eerst met behoud bestaande voorkeur en middenpaars voor interpretatie/AI. Gebruikerscontrole/invoer/CAS/keyboard/mobiel open.",
+    "evidence": "Alleen broncode/templates/documentatie vergeleken en bewerkt. Feedbackimport/bouwadministratie en gevraagde lokale serverstart uitgevoerd. Geen tests, checks, syntaxchecks, builds, browser-/DOM-/visuele QA, converterproef, CAD-importproef of provideracties. Eigen gebruikerscontrole en nieuwe GitHub-/livepublicatie blijven open."
+  },
+  {
+    "id": "feedback30-batch4-bron-20261030",
+    "taskId": "feedback30-batch4",
+    "companies": [
+      "spatlappen",
+      "maatwerkkunststof"
+    ],
+    "at": "2026-10-30T10:00:00.000Z",
+    "author": "Codex",
+    "status": "doing",
+    "delivery": "local",
+    "note": "Huidige Maat-bronstandaard bevat al geen eigen straatadres; oude documenten/eigen templates behouden. Oude nul-saldostrook komt in huidige dossierkop niet voor. Documentbedragen via bestaande ordereditor aanpassen met terugkeer en op artikel-ID herkende producttekst. Echte STEP voor rechte contouren op dikte; ronde vormen/gaten/bogen/benaderde CAD expliciet nog open. Geen converter/CADproef of gebruikersakkoord.",
+    "evidence": "Alleen broncode/templates/documentatie vergeleken en bewerkt. Feedbackimport/bouwadministratie en gevraagde lokale serverstart uitgevoerd. Geen tests, checks, syntaxchecks, builds, browser-/DOM-/visuele QA, converterproef, CAD-importproef of provideracties. Eigen gebruikerscontrole en nieuwe GitHub-/livepublicatie blijven open."
+  },
+  {
+    "id": "feedback30-batch1-vervolg-20261030",
+    "taskId": "feedback30-batch1",
+    "companies": [
+      "spatlappen",
+      "maatwerkkunststof"
+    ],
+    "at": "2026-10-29T20:36:58.000Z",
+    "author": "Codex",
+    "status": "review",
+    "delivery": "local",
+    "note": "Batch1 gericht verder uitgewerkt na bronvergelijking. Vast meldingsnummer per feedbackconcept, herkenning van eerder opgeslagen inhoud bij retry, geen overschrijven van latere afhandeling/bouwtags. Onzekere lokale respons teruglezen, andere tekst expliciet als aparte melding bewaren; cloud/offline dezelfde inhoudvergelijking met bedrijfs-/aanmeldgrenzen. CRM/V2 gedeelde controleselector inclusief productindex; uitgeschakelde plek via gemarkeerde-keuzeknop; V2-concept/plek behouden in tab, formuliervak busy/inert en herstelopties bereikbaar. Opgevangen verzendformulierfout ook in feedbackcontext. Starter: achtergebleven leeg slot herstelbaar, eigen proces exactere vergelijking, vaste lokale poorten en logmap voor Macapp. Eerdere orderlijst/state-/verzendformuliergetterfix behouden. Brongebouwd, jouw controle en publicatie blijven apart.",
+    "evidence": "Uitsluitend broncode/overdracht/bouwstatus gelezen, vergeleken en bewerkt; bouwadministratie via scripts/build-task.mjs. Geen tests/checks/syntaxchecks/builds/browser-/DOM-/visuele QA, startproef/runtimeherstart, provideractie, Gitwijziging/GitHubupload of publicatie. Geen klant-/order-/document-/bestandsmutaties. Eigen controle beide bedrijven, online/lokaal/offline, retry/gewijzigde tekst, disabled plek, V2-heropenen, klein scherm en Macstarter open."
+  },
+  {
+    "id": "feedback30-batch2-vervolg-20261030",
+    "taskId": "feedback30-batch2",
+    "companies": [
+      "spatlappen",
+      "maatwerkkunststof"
+    ],
+    "at": "2026-10-29T20:53:30.000Z",
+    "author": "Codex",
+    "status": "doing",
+    "delivery": "local",
+    "note": "Batch2vervolg: kiesbare dagreeksen voor bezoeken/scroll75/formulierstappen, gewone kaartklik herstelt enkele meetwaarde, ontbrekende dagmetingen blijven onbekend. Pure gedeelde financiële ontvangstscope: alleen geldige positieve ontvangsten tot vandaag voor verkoopselectie; ongeldige/toekomstige registraties apart, echte ontvangstdatum voor geldstroom en volledige orderwaarde op orderdatum, product-/grafiekbasis en labels gelijk. Geen margepercentage zonder positieve verkoopbasis. Maatwebsite lokaal uitgebreid met eigen consentgebonden ingest/paginagebruik en alleen na succesvolle interne mail geaccepteerde aanvraag-IDkoppeling. Oude GA4-toestemming activeert geen CRM-bezoekmeting, eigen uitsluiting en intrekken/andere tab, geen invulinhoud in meetdatabase. Eerdere websitewijzigingen behouden; bronkopieën vooraf privé. Database/schema/bindings/activering, actuele productiebron en afzonderlijke publicatie/gebruikerscontrole blijven open. Volledige taak daarom doing/local.",
+    "evidence": "Alleen broncode/HTML/SQL/documentatie gelezen, vergeleken en bewerkt. Read-only GitHub-repositorymetadata opgehaald; geen repo/branch/index gewijzigd. Geen tests/checks/syntaxchecks/builds/Functionscompile/browser-/DOM-/visuele QA/HTTP- of meetproeven, migratie/databaseaanmaak, credentials/accountwijziging, echte aanvragen/mail/betaalactie, runtimeherstart, GitHubupload of publicatie. Geen zakelijke data of bestaande documenten gewijzigd. Twee vaste privéfeedbacktags als brongebouwd/lokaal, gebruikersafhandeling open."
+  },
+  {
+    "id": "feedback30-batch3-vervolg-20261030",
+    "taskId": "feedback30-batch3",
+    "companies": [
+      "spatlappen",
+      "maatwerkkunststof"
+    ],
+    "at": "2026-10-29T21:02:25.000Z",
+    "author": "Codex",
+    "status": "review",
+    "delivery": "local",
+    "note": "Batch3vervolg na vergelijking zeven vaste meldingtags: gedeelde klantzoeker onthoudt later toegevoegde klant en behoudt bewuste selectie; Enter in zoekveld bewaart geen order. Voorraaduitgifte heeft order-/productzoeker, reset pasvorm en doelregel bij andere klant, bewaakt actuele klant/product naast bestaande voorraadrevisie en actuele aantallen. Inkoopfilter toont leverancier/archief en verdwenen geselecteerde bron expliciet; vrije batchzoekbasis en toetsenbordfocus behouden. Verzendprijs via levering en Meer bij prijsopbouw, dezelfde bestaande opslagroute met extra klantbewaking en contextonafhankelijke tekst. Geen procentverdeling bij nulbedrag, onbekend blijft voorlopig. Bestaande nieuwste-maildefault/eigen voorkeur en middenpaarse herkomsttokens bronvergeleken en behouden. Alle zeven meldingen blijven open voor gebruikerscontrole; taak review/local.",
+    "evidence": "Uitsluitend bron/documentatie/privéfeedback/bouwadministratie gelezen, vergeleken en bewerkt. Geen tests/checks/syntaxchecks/builds/generator/browser-/DOM-/visuele QA, voorraadboeking, provider-/mail-/betaal-/documentproef, serverstart/herstart, migratie, Gitwijziging/GitHubupload of publicatie. Geen zakelijke gegevens of bestaande documenten/bestanden gewijzigd. Eerdere batches/Kunststofbaas/invoer-btw/templates/Git-index behouden. Eigen controle beide bedrijven, nieuw/existend/inline klant, zoeken zonder resultaat, keyboard, filters, twee tabs/conflicten, voorraaduitgifte en verzending/betaalverdeling/mobiel open."
+  },
+  {
+    "id": "feedback30-batch4-vervolg-20261030",
+    "taskId": "feedback30-batch4",
+    "companies": [
+      "spatlappen",
+      "maatwerkkunststof"
+    ],
+    "at": "2026-10-29T21:11:13.000Z",
+    "author": "Codex",
+    "status": "doing",
+    "delivery": "local",
+    "note": "Batch4vervolg: STEP V2 uitgebreid van alleen vlakke polygonen naar analytische lijn/cirkelboogprofielen met ronde vormen, afgeronde hoeken, middenuitsparingen en coördinaatgaten, mm en echte dikte; gedeelde topologische edges/vertices, vlakke caps/cilindrische zijvlakken. Exacte CAD-lijnen/bogen behouden; benaderde import blijft expliciet geweigerd en CAD-herimport/productiebeoordeling open. Downloadmelding bij eigen stuk. Documentterugkeer bewaart producttekst en geleverde aantallen op artikel-ID, expliciete Word-/ontvangstkeuze en tekst van vervallen regels; gewijzigde klant vraagt hercontrole. Onbekende bedragen niet als nul. Maatpakbon toont standaard/eigen template; bronstandaard al zonder eigen straatadres, PAGE/NUMPAGES behouden; geen DOCX gewijzigd. Nul-saldostrook in huidige kop afwezig. Bron lokaal, volledige batch doing vanwege resterende benaderde-CADscope en gebruikerscontrole.",
+    "evidence": "Alleen bron-/OOXML-/documentatievergelijking en bewerking, primaire STEP Tools-schema’s gelezen, privéfeedback-/bouwadministratie. Geen tests/checks/syntaxchecks/builds/Functionscompile/generator/browser-/DOM-/visuele QA, STEP-generatie/download/herimport/CAD-/PDF-/Word-/converter-/provider-/mail-/betaal-/productieproef, serverstart/herstart, migratie, Gitwijziging/GitHubupload of publicatie. Geen bestaande klant-/order-/betaal-/voorraad-/documentrecords/bestanden gewijzigd, templates bytes behouden. Eigen controle beide bedrijven, invoer/annuleren/herhaald aanvullen/klant/productvolgorde/ontvangstkeuze/pakbonreferentie, CAD-maat/radius/dikte/gaten/normaalrichtingen/eenheden blijft open; geen productiegeschiktheidsclaim."
+  },
+  {
+    "id": "maat-kunststofbaas-order-description-20261030",
+    "taskId": "maat-kunststofbaas-fulfilment-20261029",
+    "companies": [
+      "maatwerkkunststof"
+    ],
+    "at": "2026-10-29T21:16:35.000Z",
+    "author": "Codex",
+    "status": "doing",
+    "delivery": "local",
+    "note": "Op gebruikersverzoek aparte Kunststofbaas-bestelbeschrijving met canoniek eigen CRM-ordernummer: Maatwerkkunststof order #… en productaantallen/omschrijving/materiaal/dikte/buitenmaat. Aparte kopieerknop en uitleg voor opmerkingen/referentie bij handmatige webshopbestelling; alle bestel-/aflevergegevens onder gesloten details, bestaande info behouden. Dezelfde pure afgeleide beschrijving in nieuwe leveranciersmail, eigen ordernummer vooraan onderwerp; bestaand bewerkt/onzeker/verstuurd concept blijft behouden. Kopiëren weigert intussen gewijzigde orderbasis met invoerbehoud. Geen extra opgeslagen veld, geen wijziging aan bevestigingsbasis/pakbon/labels/klantreferentie of externe Kunststofbaasnummer. Volledige taak doing/local vanwege PACKS-automatisering/publicatie en gebruikerscontrole.",
+    "evidence": "Alleen bron/documentatie gelezen, vergeleken en bewerkt; bouwadministratie via scripts/build-task.mjs. Geen tests/checks/syntaxchecks/build/browser-/DOM-/visuele QA, runtimeherstart/start, echte bestelling/mail/provider-/label-/betaal-/documentactie, migratie, Gitwijziging/GitHubupload/publicatie of zakelijke gegevens-/bestandsmutatie. Eigen controle Maat/Spatafscherming, nieuwe/bestaande order, kopiëren/fallback/gewijzigde basis, mailconcept/onderwerp/twee bijlagen blijft open."
+  },
+  {
+    "id": "maat-packs-contractonderzoek-20261030",
+    "taskId": "maat-kunststofbaas-fulfilment-20261029",
+    "companies": [
+      "maatwerkkunststof"
+    ],
+    "at": "2026-10-30T11:54:45.000Z",
+    "author": "Codex",
+    "status": "doing",
+    "delivery": "local",
+    "note": "Op verzoek PACKS-contract onderzocht vóór uitvoering: aangeleverde handleiding en actuele openbare Swagger daadwerkelijk gelezen, bestaande Kunststofbaas-stroom vergeleken. Vier checkpoints voorgesteld: account-/afhaal-/retour-/kostencontract, lokale/serverbouw, afzonderlijk toegestane verificatie, aparte beheerste ingebruikname. Beperkte bronbescherming nodig tegen dubbele boekingen/timeout/onzeker resultaat; labelherstel apart van boeking, pakketmaten niet gelijk productmaten, statusovername niet gelijk aflevering. Accountrechten/DirectBooking/testtoegang, werkelijke afhaal-/retourafspraak, verpakkingsgegevens/tarieven en providerherstelcontract staan open. Privéonderzoeksplan bij chatoutputs, geen API-implementatie of Goal gestart. Hele opdracht blijft doing/local.",
+    "evidence": "Alleen documentatie/bron gelezen, PDF-bronpagina’s bekeken, twee openbare documentatiebestanden via GET opgehaald en privéplan/bouwadministratie geschreven. Eerste beperkte fetch DNS-fout, daarna openbare bronfetch met toegestane netwerktoegang geslaagd. Geen operationele PACKS-API/login/tokenaanvraag/accountwijziging/testboeking/liveboeking/labelgeneratie/mail/providerproef/productcheck/build/browser-/DOM-/CRM-QA/Gitupload/publicatie of zakelijke gegevensmutatie. Gebruikerscontrole en afzonderlijke test-/release-toestemming ontbreken nog. PDF/private broninhoud niet naar publieke projectdocs gekopieerd."
+  },
+  {
+    "id": "maat-packs-contractantwoorden-20261030",
+    "taskId": "maat-kunststofbaas-fulfilment-20261029",
+    "companies": [
+      "maatwerkkunststof"
+    ],
+    "at": "2026-10-30T12:00:43.000Z",
+    "author": "Codex",
+    "status": "doing",
+    "delivery": "local",
+    "note": "Gebruikersantwoorden privé vastgelegd: afhaallocatie bekend, vooraf aanpasbaar pakket-/maat-/gewichtvoorstel met eigen controle gewenst, doorgaans één pakket. Geen normale klantretour bedoeld, operationeel retouradres apart nog onbekend. Zelfde tariefafspraak als leverancier gemeld, exacte tabel/toeslagen/accountkoppeling niet bevestigd. Test/prod/accountrechten/DirectBooking niet vastgesteld; handleiding noemt testaccount op aanvraag Packs Partner. Betrouwbare productmassa/verpakking/stapeling blijven nodig voor voorstellen; onbekend niet raden. Geen nieuwe providerimplementatie/Goal, contractcheckpoint nog open.",
+    "evidence": "Alleen relevante bronpassage teruggelezen, privéonderzoeksplan/overdracht/bouwadministratie bijgewerkt. Geen credentials in bron/log/toolaanroep/document opgeslagen; geen login/auth/tokenaanvraag/PACKS-/test-/liveboeking/label/mail/providerproef/producttest/check/build/browser-QA/Gitupload/publicatie of zakelijke mutatie. Eerdere bron/gegevens/bestanden behouden. Account-, afhaal-/retour-, tarief-/verpakkings- en herstelbevestiging en afzonderlijke verificatietoestemming open."
+  },
+  {
+    "id": "maat-packs-batch1-contract-20261030",
+    "taskId": "maat-kunststofbaas-fulfilment-20261029",
+    "companies": [
+      "maatwerkkunststof"
+    ],
+    "at": "2026-10-30T12:11:19.000Z",
+    "author": "Codex",
+    "status": "doing",
+    "delivery": "local",
+    "note": "PACKS batch1 documentair uitgewerkt: elf PK-contracttags, veldmapping met eenheden/limieten, controleerbaar fysiek pakketvoorstel, duurzame per-order/omgeving pogingregistratie via bestaande encrypted integration-store/CAS, overgangs- en foutmatrix. Leaseverloop geeft onzekere poging niet vrij, providerfeit vóór label/orderprojectie, GetLabels zonder opnieuw boeken; CRM-undo/back-up mag boekingsbewijs niet wissen, integratiedatabaseherstel vereist reconciliatie. Module-/server-/omgevinggrenzen en latere acceptatiescenario’s beschreven. Privébesluitenbijlage en vragenconcept aan PACKS gemaakt, niet verstuurd. Ontwerp is geen implementatie. Batch1 gedeeltelijk/open: account/test/DirectBooking, dienst/afhalen, operationeel retour, tarieven/limieten, verpakking/gereedheid/datums en herstelcontract plus gebruikersbeoordeling ontbreken nog. Batch2 lokaal offline te bouwen; verificatie/activering afzonderlijk. Taak doing/local, geen Goal gestart.",
+    "evidence": "Alleen bestaande bron en documentatie gelezen/vergeleken, docs/PACKS-KOPPELING.md en privéplannen/concept geschreven; catalogus/overdracht/bouwtaken-cacheketen administratief bijgewerkt. Bouwregistratie via scripts/build-task.mjs, opgeslagen bronnotitie teruggelezen. Geen tests/checks/syntaxchecks/build/generator/browser-/DOM-/CRM-QA, login/token/provideraanroep/boeking/label/mail/accountwijziging, runtimeactie, migratie, Gitwijziging/GitHubupload/publicatie of zakelijke mutatie. Geen credentials/accountnamen opgenomen. Eerdere wijzigingen/gegevens/documenten/templates/Git-index behouden. Beschreven foutscenario’s niet uitgevoerd; geen functionele/livebetrouwbaarheidsclaim."
+  },
+  {
+    "id": "maat-packs-batch2-preparation-20261030",
+    "taskId": "maat-kunststofbaas-fulfilment-20261029",
+    "companies": [
+      "maatwerkkunststof"
+    ],
+    "at": "2026-10-30T12:30:53.000Z",
+    "author": "Codex",
+    "status": "doing",
+    "delivery": "local",
+    "note": "PACKS batch2 lokaal brongebouwd, gedeeltelijk: pakketregels/cm/kg, beperkte kale-productmaatvoorstellen, expliciete NL-adresinterpretatie, drie adressen, logistieke datums Europe/Amsterdam, onvolledig bewaren en controleoverzicht. Optionele supplierFulfilment.packsPreparation in bestaande state-merge/validator/back-up; actuele order/klant/inkoop-signature en invoerbehoud. Fysieke preparationBasis op nieuwe labels: wijzigen vraagt hercontrole, oude bestanden/keuze/mails behouden; checkbox/herkomst/opnieuw bewaren alleen maakt label niet oud. Handmatige labelupload/pakbon/leveranciersmail blijven via bestaande route. Cloudhandler eigen auth/company/Origin/streamlimiet, status/review; book/recover-labels hard uit zonder providerclient. Interne encrypted CAS-registerbasis gescheiden test/live/order, guard/generation, één blijvend geblokkeerde poging, pending/uncertain/known IDs; geen publieke claim/settle/reset of records aangemaakt. Nog open: PK-contract, concrete credential/token/providerclient/productlimieten/payload/datum, boeking/GetLabels/PDF/bestandsprojectieherstel, registerprovisioning/rampenherstel/correcties en eigen controle. Taak doing/local, geen batch3/4 gestart.",
+    "evidence": "Alleen bron/documentatie gelezen/vergeleken en bewerkt plus bouwadministratie via scripts/build-task.mjs; bronnotitie opgeslagen/teruggelezen. Docs/PACKS-BATCH2-LOKAAL.md en catalogus/overdracht/cacheketen packs-local-verified-20261030 bijgewerkt zonder generator. Geen tests/checks/syntaxchecks/build/browser-/DOM-/visuele QA, login/token/product-/zending-/label-API/providerproef/mail, runtimeherstart/start, migratie/Gitwijziging/GitHubupload/publicatie of zakelijke record-/bestandsmutatie. Geen credentials/accountnamen opgenomen. Eerdere bron/gegevens/documenten/templates/Git-index behouden. Nieuwe schermen/server/concurrency/backup/labelactualiteit nog niet functioneel beoordeeld; geen werkende live- of duplicatepreventieketen claimen."
+  },
+  {
+    "id": "orders-online-state-candidate-20261030",
+    "taskId": "feedback30-batch1",
+    "companies": [
+      "spatlappen",
+      "maatwerkkunststof"
+    ],
+    "at": "2026-10-30T12:36:33.000Z",
+    "author": "Codex",
+    "status": "review",
+    "delivery": "local",
+    "note": "Incident beide online CRM’s: tab Aanvragen & orders lijkt niet te reageren; via mail nog een order te maken. GitHub main bron bevestigt ontbrekende state in ordersTable-context, orderPaymentFact leest context.state.payments en kan render vóór shell afbreken. Canonieke lokale state-correctie bestaat sinds feedbackbatch1. Vanaf werkelijk opgehaalde main geïsoleerde twee-bestanden-kandidaat gemaakt: alleen state meegeven in app.js en entrycacheversie in index.html. Geen lokale PACKS-/feedback30-/website-/templateuitbreidingen meegenomen. Patch/basiskopie/blobmanifest onder work/orders-state-hotfix-20261030; geen Git-indexwijziging. Publicatie van precies deze correctie naar GitHub/beide CRM’s afzonderlijk gevraagd, nog niet uitgevoerd; gebruikerscontrole open. Voorafgaande tijdelijke algemene laaduitval niet apart verklaard.",
+    "evidence": "Alleen GitHub main-app/HTML/orderlijst/betaalhelper gelezen en naast lokale bron/release-overdracht gelegd. Geen tests/checks/syntaxchecks/build/browser-/DOM-/functionele QA, productiegegevens opgevraagd of zakelijke mutatie, runtimeactie, provideractie, GitHubupload of livepublicatie. Geen liveherstelclaim. Bestaande bron/data/bestanden/templates/Git-staging behouden. Docs/ORDERS-ONLINE-HERSTEL-20261030.md en overdracht bijgewerkt; bouwlog via CLI opgeslagen/teruggelezen. Publicatie en eigen controle blijven apart."
+  },
+  {
+    "id": "maat-packs-batch3-local-verification-20261030",
+    "taskId": "maat-kunststofbaas-fulfilment-20261029",
+    "companies": [
+      "maatwerkkunststof"
+    ],
+    "at": "2026-10-30T12:46:25.000Z",
+    "author": "Codex",
+    "status": "doing",
+    "delivery": "local",
+    "note": "Batch3 met afzonderlijke expliciete toestemming voor uitsluitend lokale fictieve PACKS-tests uitgevoerd. Eerste28:24geslaagd/4falen; echte ship/shipping-aansluitfout in leverancierssetter en guards hersteld naar bestaande shipping, plus testverwachting bij afwezig label aangepast. Extra regressie leveranciersbevestiging door gehele statevalidator. Tweede29:29geslaagd/0falen, exit0. Model/voorstellen/eenheden/adres/datum/state/signature/labelmailguard, fictieve encrypted SQLite-CAS-concurrentie/verloren bewaarrespons/partiële IDs en echte losse Nodeprocesherstart, company/test/live/generation en directe HTTPguards/uitvoer hard uit. Testdata in geheugen/eigen tijdelijke map, fetch geblokkeerd. Hoofdtaak doing/local; contract/providerclient/boekuitvoering/GetLabels/PDF/bestandsprojectie, echte D1/browser/volledige-backup-proef, bevestigde kostenvrije provideromgeving en aparte activering open. Onlineorderlijstkandidaat blijft ongepubliceerd; nieuwe batch is geen upload-/liveopdracht.",
+    "evidence": "Alleen node --test tests/packs-local.mjs tweemaal uitgevoerd,28→29tests zoals gedocumenteerd; tweedeallesgeslaagd. Geen verdere suites/checkrondes/builds/generator/browser-/DOM-/visuele QA, echte PACKS/Tikkie/account-/betaal-/label-/mailactie, runtimeherstart/start, echte CRM-data-/bestandsmutatie, migratie/Gitwijziging/GitHubupload/publicatie. Buiten tests uitsluitend openbare officiële Tikkie-docs en gepubliceerde GitHub-bron gelezen voor gebruikersvragen; geen uitbetalingsrekening gecontroleerd of garantie gegeven. Docs/PACKS-BATCH3-LOKALE-VERIFICATIE.md/overdracht/catalogus bijgewerkt; cache/importmetadata packs-local-verified-20261030. Bronnotitie via CLI opgeslagen/teruggelezen. Eerdere bron/data/bestanden/templates/staging behouden; geen brede werking- of liveclaim."
+  },
+  {
+    "id": "maat-packs-batch4-release-plan-20261030",
+    "taskId": "maat-kunststofbaas-fulfilment-20261029",
+    "companies": [
+      "maatwerkkunststof"
+    ],
+    "at": "2026-10-30T12:52:32.000Z",
+    "author": "Codex",
+    "status": "doing",
+    "delivery": "local",
+    "note": "PACKS batch4 ingebruikname voorbereid maar niet vrijgegeven: actuele gereed/openmatrix, acht concrete G4-stappen/eigenaren en draaiboek voor één toekomstige zending met externe bewijsregistratie/originele labels/pakbon/bewuste leveranciersmail en stop/terugzetgrenzen. Geen operationele configuratie/releasepakket. Concrete providerclient/auth/token/product-/payload-/datumverwerking, boekuitvoering/GetLabels/PDF-bestandsprojectie en registerprovisioning/herstel nog te bouwen naast PK-contractantwoorden; geen externe blokkades als enige oorzaak voorgesteld.29lokale batch3tests zijn geen bewezen volledige providerketen. Read-only gerichte recente directe PACKS-mailzoekactie drie gekoppelde accounts0resultaten, geen volledigheidsclaim/geen mailactie. Hoofdtaak doing/local; batch4 blijft open. Aparte twee-bestanden-onlineorderlijstkandidaat blijft ongepubliceerd, eigen publicatievraag open.",
+    "evidence": "Alleen bron/docs gelezen/vergeleken, drie gerichte read-only Gmailzoekopdrachten en docs/PACKS-BATCH4-INGEBRUIKNAME.md/planning/overdracht/bouwadministratie geschreven. Bronnotitie via scripts/build-task.mjs opgeslagen/teruggelezen; alleen planningcacheketen packs-release-plan-20261030, geen nieuwe bedrijfslogica. Geen nieuwe tests/checkrondes/build/generator/browser-/DOM-/visuele QA, providerlogin/token/product-/boek-/label-/mail-/betaalactie, runtimeherstart/start, migratie, zakelijke records/bestanden, Gitwijziging/GitHubupload/publicatie. Geen credentials/accountnamen opgeslagen. Bestaande lokale bron/gegevens/documenten/templates/staging behouden; geen eindclaim alle batches/livegeschiktheid."
+  },
+  {
+    "id": "maat-packs-daily-round-20261030",
+    "taskId": "maat-kunststofbaas-fulfilment-20261029",
+    "companies": [
+      "maatwerkkunststof"
+    ],
+    "at": "2026-10-30T13:03:48.000Z",
+    "author": "Codex",
+    "status": "doing",
+    "delivery": "local",
+    "note": "Gebruiker bevestigt dagelijkse afhaalronde Kunststofbaas, geen extra Pickup. Gebruikelijk1–3werkdagen gereed, langer maatwerk mogelijk; morgen gewenst als aanpasbaar voorstel zonder tijdstip. Seed loadDate morgen volgens Europe/Amsterdam, lichtpaarse automatische herkomst; weekenduitleg, geen feestdagen/cutoff/afhaalgarantie raden. Bestaande voorbereiding blijft behouden; Morgen opnieuw voorstellen onder Meer wijzigt alleen datum en wist controlekeuzes. Gereed-/bezorgdatum optioneel; afhaaldatum en afzonderlijke daadwerkelijke gereedheidscontrole blijven nodig voor complete voorbereiding. Een verstreken gereeddatum mag, afhaal-/bezorgdatum niet; bekende datumvolgorde blijft bewaakt. Kunststofbaas retour is gebruikersvoorstel, leverancier-/PACKS-akkoord open; retourveld niet automatisch ingevuld. PACKS-FAQ beschrijft buren/nieuwe bezorgpoging, geen garantie of verzonnen buren-API-vlag. PK03/04/07 bijgewerkt, overige contract/providerclient/boekuitvoering/GetLabels/bestandsprojectieherstel/provisioning/verificatie open. Alleen Maat, doing/local. Onlineorderlijstherstel afzonderlijk ongepubliceerd.",
+    "evidence": "Alleen bron/templates/docs gelezen/vergeleken en bewerkt, openbare officiële PACKS-FAQ geraadpleegd en opgeslagen Swagger-eigenschappen gelezen. Drie fictieve datumregressiegevallen toegevoegd, NIET uitgevoerd. Eerdere29geslaagde batch3-tests gelden voor vorige bronversie. Geen nieuwe tests/checks/syntaxchecks/build/generator/browser-/DOM-/visuele QA/providerlogin/token/boeking/label/mail/betaling/runtimeactie, migratie/zakelijke record-/bestandsmutatie, Gitwijziging/GitHubupload/livepublicatie. Bouwadministratie via scripts/build-task.mjs; opgeslagen notitie teruglezen. Docs/PACKS-DAGELIJKSE-RONDE-20261030.md/overdracht/catalogus bijgewerkt; cache-importketen packs-daily-round-20261030 vanwege datumherkomst, geen centrale CSSwijziging. Bestaande bron/gegevens/bestanden/templates/Git-staging en gebruikers-/feedbackstatus behouden. Eigen beoordeling/verificatie van aanvulling open; geen live- of werkende providerketenclaim."
+  },
+  {
+    "id": "maat-packs-source-review-20261030",
+    "taskId": "maat-kunststofbaas-fulfilment-20261029",
+    "companies": [
+      "maatwerkkunststof"
+    ],
+    "at": "2026-10-30T13:56:32.000Z",
+    "author": "Codex",
+    "status": "doing",
+    "delivery": "local",
+    "note": "Op verzoek PACKS eerst grondig in bron nagegaan. PR01: pakbonrevisie liet generated.supplierFulfilment weg, nieuwere PDF/Word verloren leverancierskoppeling; nu behouden met vaste bestemming/eigen order/klantreferentie en leveranciernummer in opmerkingen waar nodig, zowel voorbeeld als opslag bewaakt. PR02: oude voorbereiding kon nieuw labelbasis worden; gedeelde labelmetadata bewaakt actuele basis/ref/shipping bij openen en opslag, bestaande oude labels niet als actueel mailvoorstel, bestanden/keuze bewaard. PR03: vervolgweergave/download na commit gescheiden van opslagfout bij leverancier/voorbereiding/pakbon/revisie, minder risico op opnieuw opslaan. PR04: controleoverzicht één gerichte hoofdactie naar handmatig label of verder met bestelling, rest Meer. PR05: registerguard/generation opnieuw lezen na intentie; gewijzigde blokkade weigert claim, pendingbewijs behouden. Dit bewijst geen volledige racevrije providerdispatch. Geen actieve providerclient/auth/boekuitvoering/GetLabels/PDF/bestandsprojectie; G4/PK/inrichting/verificatie/open. Exact TJ Worx-afzender nog onbekend, niets geconfigureerd. AI-aanpaswens zoals import apart open; geen heleCRM-afrondingsclaim.",
+    "evidence": "Alleen bron/templates/docs gelezen/vergeleken en lokaal bewerkt; vier aanvullende fictieve regressiegevallen klaargezet, NIET uitgevoerd. Eerdere drie nieuwe datumgevallen evenmin uitgevoerd; historische29tests gelden vorige bron. Geen tests/checks/syntaxchecks/build/generator/browser-/DOM-/visuele QA, converter/providerlogin/token/boeking/label/mail/betaling/runtimeactie, migratie, zakelijke data-/bestandsmutatie, Git-/indexwijziging/GitHubupload/livepublicatie. Bestaande bron/gegevens/files/templates/staging en feedback-/gebruikersstatus behouden. Centrale CSS ongewijzigd, importcache packs-source-review-20261030. Docs/PACKS-BRONREVIEW-20261030.md, planning/overdracht en CLI-bronnotities bijgewerkt/teruggelezen. Hoofdtaak doing/local, eigen bediening/ketencontrole open. Aparte onlineorderlijsthotfix blijft ongepubliceerd."
+  },
+  {
+    "id": "crm-ai-order-update-request-20261030",
+    "taskId": "crm-ai-order-update-import-flow-20261030",
+    "companies": [
+      "spatlappen",
+      "maatwerkkunststof"
+    ],
+    "at": "2026-10-30T13:56:33.000Z",
+    "author": "Codex",
+    "status": "open",
+    "delivery": "local",
+    "note": "Nieuwe gebruikerswens geregistreerd: AI-order aanpassen werkt onhandig en moet bijna dezelfde opzet krijgen als de goed werkende orderimport, inclusief aanvinkbare voorstellen. Gebruiker geeft PACKS-review voorrang. Bestaande updatebron en importvindplaatsen gelezen; current update gebruikt afwijkend changes/path-schema en eigen tabel. Vergelijking/uitwerking/implementatie nog open. Bestaande IDs/klant-/product-/bestands-/financiële bescherming, expliciete keuzes en invoer bij fouten behouden. Brede CRM-glitches niet als allemaal onderzocht of opgelost claimen.",
+    "evidence": "Alleen verzoek/bestaande bron gelezen en nieuwe catalogustaak/bronnotitie via scripts/build-task.mjs geregistreerd. Geen AI-order-updatecode veranderd, geen tests/build/browser-QA/provideractie/publicatie of klantmutatie. Open/local, geen gebruikersafhandeling gewijzigd; vervolgwens niet afgevinkt."
+  },
+  {
+    "id": "maat-packs31-overview-20261031",
+    "taskId": "maat-kunststofbaas-fulfilment-20261029",
+    "companies": [
+      "maatwerkkunststof"
+    ],
+    "at": "2026-10-31T03:17:00.000Z",
+    "author": "Codex",
+    "status": "doing",
+    "delivery": "local",
+    "note": "Vier vervolgbatches met vaste maat-packs31-batch1..4-IDs, risico-/keuzematrix en gebruikerscontrole. Generiek voor iedere geschikte Maatorder, geen vooraf één order voorbereiden. Proefmail gebruikt gekozen actuele label-/pakbon-PDFs; zelf gekozen proefadres in eigen config servergepind, apart doel/proefstatus, geen supplier-/klant-/financiële/fysieke afhandeling. Online proefbeleid en inrichtingspakket voorbereid maar GEEN online omgeving aangemaakt. Echte provideruitvoering en eigen eindcontrole/afzonderlijke verificatie/publicatie open. AI-order-updatewens blijft apart open.",
+    "evidence": "Alleen bron/documentatie gelezen/vergeleken en bewerkt, openbare PACKS-GETdocumentatie opgehaald en bouwadministratie. Geen automatische tests/checks/syntaxchecks/build/generator/browser-/DOM-/visuele QA of converter/mail/boek/label/betaal/accountactie uitgevoerd; gerichte offline-testvraag voor precies twee fictieve testbestanden staat afzonderlijk open. Geen runtimeherstart, cloudresourceaanmaak/migratie, Git-/indexwijziging/GitHubupload/livepublicatie of echte zakelijke gegevens-/bestandsmutatie. Bestaande bron/data/bestanden/templates/staging en gebruikers-/feedbackstatus behouden. Cache packs-trial-20261031; CSS ongewijzigd. Zie docs/PACKS-VIER-VERVOLGBATCHES-20261031.md."
+  },
+  {
+    "id": "maat-packs31-batch1-source-20261031",
+    "taskId": "maat-packs31-batch1",
+    "companies": [
+      "maatwerkkunststof"
+    ],
+    "at": "2026-10-31T03:17:01.000Z",
+    "author": "Codex",
+    "status": "review",
+    "delivery": "local",
+    "note": "Actuele aangeleverde PDF v2.4.3 en openbare Swagger31oktober opnieuw gelezen/naast eerdere bron gelegd. Relevante contractschema's gelijk; dynamische voorbeelddatums gewijzigd. Risico's/keuzes/advies bij verpakte cm/kg/werkelijke colli/gereedheid/dagelijkse ronde/retour, geen vaste verpakkingstoeslag of gewicht raden. Bestaande PR01–05 bronherstel behouden. Jouw controle/lokaal, geen volledige keten-/waterdichtheidsclaim.",
+    "evidence": "Alleen bron/documentatie gelezen/vergeleken en bewerkt, openbare PACKS-GETdocumentatie opgehaald en bouwadministratie. Geen automatische tests/checks/syntaxchecks/build/generator/browser-/DOM-/visuele QA of converter/mail/boek/label/betaal/accountactie uitgevoerd; gerichte offline-testvraag voor precies twee fictieve testbestanden staat afzonderlijk open. Geen runtimeherstart, cloudresourceaanmaak/migratie, Git-/indexwijziging/GitHubupload/livepublicatie of echte zakelijke gegevens-/bestandsmutatie. Bestaande bron/data/bestanden/templates/staging en gebruikers-/feedbackstatus behouden. Cache packs-trial-20261031; CSS ongewijzigd. Zie docs/PACKS-VIER-VERVOLGBATCHES-20261031.md."
+  },
+  {
+    "id": "maat-packs31-batch2-source-20261031",
+    "taskId": "maat-packs31-batch2",
+    "companies": [
+      "maatwerkkunststof"
+    ],
+    "at": "2026-10-31T03:17:02.000Z",
+    "author": "Codex",
+    "status": "doing",
+    "delivery": "local",
+    "note": "Nieuwe generieke supplier-trial-factory in bestelstroom en trialRecipient op bestaande draft; gekozen testTo met CAS/idem-potente keuze, serverdoel supplier-trial, Maat/pinned ontvanger/PROEF/geen replyketen/precies2PDFs, preview/laatste verzendknop en bestaande journal-/herhaalbewaking. Normale suppliermail telt proef niet mee; aparte proefstatus, vaste ontvanger, oudere helpercapability blokkeren, extra upload/drop uit. Online proefstand opt-in met centrale route-allowlist/eigen D1/R2-canary/loginvereisten/runtimebanner, alleen proefmail door. Voorbereidingspakket work/packs-preview-20261031; publishReadyfalse/missende IDs. Gedeeltelijk/lokaal: eigen Pages/D1/R2/login/key/config/URL niet aangemaakt en helpers niet herstart. Geen echte mail/proefboekingen.",
+    "evidence": "Alleen bron/documentatie gelezen/vergeleken en bewerkt, openbare PACKS-GETdocumentatie opgehaald en bouwadministratie. Geen automatische tests/checks/syntaxchecks/build/generator/browser-/DOM-/visuele QA of converter/mail/boek/label/betaal/accountactie uitgevoerd; gerichte offline-testvraag voor precies twee fictieve testbestanden staat afzonderlijk open. Geen runtimeherstart, cloudresourceaanmaak/migratie, Git-/indexwijziging/GitHubupload/livepublicatie of echte zakelijke gegevens-/bestandsmutatie. Bestaande bron/data/bestanden/templates/staging en gebruikers-/feedbackstatus behouden. Cache packs-trial-20261031; CSS ongewijzigd. Zie docs/PACKS-VIER-VERVOLGBATCHES-20261031.md."
+  },
+  {
+    "id": "maat-packs31-batch3-open-20261031",
+    "taskId": "maat-packs31-batch3",
+    "companies": [
+      "maatwerkkunststof"
+    ],
+    "at": "2026-10-31T03:17:03.000Z",
+    "author": "Codex",
+    "status": "open",
+    "delivery": "local",
+    "note": "Concrete serverproviderclient/auth/token/accountproducten/payload/datum, BookShipmentresponse-/meer-colli-/PDF/GetLabels-/bestandsprojectieherstel en operationeel registerherstel nog bouwen/afmaken. PK-account/test/DirectBooking/dienst/limieten/tarieven/retour/lookup bevestigingen open. Bestaande handler weigert boeking/labelherstel, nieuwe proefmail activeert geen PACKS. Geen schijnbaar werkende labelaanmaak of standaardproductcode invullen.",
+    "evidence": "Alleen bron/documentatie gelezen/vergeleken en bewerkt, openbare PACKS-GETdocumentatie opgehaald en bouwadministratie. Geen automatische tests/checks/syntaxchecks/build/generator/browser-/DOM-/visuele QA of converter/mail/boek/label/betaal/accountactie uitgevoerd; gerichte offline-testvraag voor precies twee fictieve testbestanden staat afzonderlijk open. Geen runtimeherstart, cloudresourceaanmaak/migratie, Git-/indexwijziging/GitHubupload/livepublicatie of echte zakelijke gegevens-/bestandsmutatie. Bestaande bron/data/bestanden/templates/staging en gebruikers-/feedbackstatus behouden. Cache packs-trial-20261031; CSS ongewijzigd. Zie docs/PACKS-VIER-VERVOLGBATCHES-20261031.md."
+  },
+  {
+    "id": "maat-packs31-batch4-open-20261031",
+    "taskId": "maat-packs31-batch4",
+    "companies": [
+      "maatwerkkunststof"
+    ],
+    "at": "2026-10-31T03:17:04.000Z",
+    "author": "Codex",
+    "status": "open",
+    "delivery": "local",
+    "note": "Eigen eindcontrole en vergelijking dezelfde code lokaal/afzonderlijke online proefinstallatie nog uit te voeren. Concrete waarden, juiste order zelf kiezen, fysieke verpakking/gereedheid/dienst/kosten/adres/retour, beide originele PDFs en proefontvanger controleren. Afzonderlijk toegestane fictieve/online/providerverificatie en latere publicatie/activering/één bedoelde echte zending in dagelijkse omgeving open. Geen speculatieve betaalde vervaltest; geen gebruikerscontrole of livegang als voltooid markeren.",
+    "evidence": "Alleen bron/documentatie gelezen/vergeleken en bewerkt, openbare PACKS-GETdocumentatie opgehaald en bouwadministratie. Geen automatische tests/checks/syntaxchecks/build/generator/browser-/DOM-/visuele QA of converter/mail/boek/label/betaal/accountactie uitgevoerd; gerichte offline-testvraag voor precies twee fictieve testbestanden staat afzonderlijk open. Geen runtimeherstart, cloudresourceaanmaak/migratie, Git-/indexwijziging/GitHubupload/livepublicatie of echte zakelijke gegevens-/bestandsmutatie. Bestaande bron/data/bestanden/templates/staging en gebruikers-/feedbackstatus behouden. Cache packs-trial-20261031; CSS ongewijzigd. Zie docs/PACKS-VIER-VERVOLGBATCHES-20261031.md."
+  },
+  {
+    "id": "maat-packs31-user-control-20261031",
+    "taskId": "maat-kunststofbaas-fulfilment-20261029",
+    "companies": [
+      "maatwerkkunststof"
+    ],
+    "at": "2026-10-31T03:20:31.000Z",
+    "author": "Codex",
+    "status": "doing",
+    "delivery": "local",
+    "note": "Philippe antwoordt op de specifieke vraag voor alleen tests/packs-local.mjs en tests/supplier-trial-mail.mjs: Nee, ik controleer het zelf. Tests NIET uitgevoerd; geen akkoord of waterdichtheid afleiden. Vier vervolg-batches behouden:1bronreview/keuzes/Jouw controle lokaal,2proefmail en online proefbeleid brongebouwd maar online resources/URL/runtimeconfig open,3echte provideruitvoering nog bouwen,4eigen eindcontrole/ingebruikname open. Generieke functie per geschikte Maatorder, geen vooraf één ordernummer nodig. Bestaande normale suppliermail versus proef versus boeking/fysieke levering gescheiden. Alleen bron/lokaal; huidige online CRM's niet gewijzigd.",
+    "evidence": "Geen automatische tests/checks/syntaxchecks/build/generator/browser-/DOM-/visuele QA, converter/mail/boeking/label/betaling/accountactie, runtimeherstart, cloudresourceaanmaak/migratie, Git/index/GitHubupload/publicatie of echte zakelijke datamutatie uitgevoerd. Publieke PACKS-docs waren uitsluitend GET-brononderzoek. Nieuwe testgevallen klaargezet maar ongemoeid gelaten. OVERDRACHT/docs expliciete weigering bijgewerkt; CLI-bronnotitie toegevoegd/teruggelezen. Oudere notities met toen open testvraag blijven als historie behouden. Concrete online proefomgeving bestaat nog niet, providerclient/dispatch/GetLabels ontbreken nog; geen eindclaim."
+  },
+  {
+    "id": "maat-packs31-batch1-control-followup-20261031",
+    "taskId": "maat-packs31-batch1",
+    "companies": [
+      "maatwerkkunststof"
+    ],
+    "at": "2026-10-31T03:29:32Z",
+    "author": "Codex",
+    "status": "review",
+    "delivery": "local",
+    "note": "Batch1 lokaal verder uitgewerkt: ontbrekende controlepunten openen rechtstreeks het juiste veld met bestaande detail-/focusbediening. Alleen relevante eerder aangevinkte pakket-/adres-/gereedheidscontrole vervalt na een wijziging; afhaaladres vraagt ook gereedheid. Zichtbare hercontrolemelding; opnieuw bevestigen verwijdert die melding. Eerdere labelhercontrole vervalt bij fysieke invoerwijziging, dezelfde morgendatum doet dat niet. Invoer, volledige hercontrole bij gewijzigde orderbasis, fysieke labelbasis en bestaande opslag/CAS behouden. Docs/PACKS-BATCH1-CONTROLE-20261031.md met niet-uitgevoerde gebruikerslijst. Jouw controle blijft open; batch2 gedeeltelijk/lokaal, batch3/4open/lokaal, geen online proefomgeving of echte PACKS-uitvoering claimen.",
+    "evidence": "Alleen bron/templates gelezen en vergeleken, code/documentatie/catalogus/cachemetadata lokaal bewerkt en bouwadministratie via deze CLI. Expliciete testweigering gerespecteerd: geen tests/checks/syntaxchecks/build/generator/browser-/DOM-/visuele QA, runtime- of provideractie, boeking/label/mail/betaling, zakelijke gegevensmutatie, Git-/indexwijziging/upload/publicatie. Geen nieuwe tests toegevoegd. Historische29tests gelden vorige bron. Bestaande klantgegevens, bestanden/templates, wijzigingen en staging behouden; gebruikerscontrole/PK-contract/provideruitvoering/online inrichting blijven open."
+  },
+  {
+    "id": "maat-packs31-batch2-evidence-followup-20261031",
+    "taskId": "maat-packs31-batch2",
+    "companies": [
+      "maatwerkkunststof"
+    ],
+    "at": "2026-10-31T03:36:14Z",
+    "author": "Codex",
+    "status": "doing",
+    "delivery": "local",
+    "note": "Batch2 lokaal verder brongebouwd: cloudserver vergelijkt eigen committed proefconcept/request-ID/order/leveranciersbasis en originele twee PDF-bytes via D1/R2; revisiehercontrole direct vóór dispatch. Vooraf gestopt apart van onzeker aangeboden. Finale twee bijlagebevestigingen en online capability, proef versus gewone mail gescheiden in herhaalbewaking. Lokale helper houdt browsercontrole en meldt beperkte onafhankelijke controle. Pure aparte-projectconfiguratiebron en leeg invulvoorbeeld met vier beschermde bindingsvergelijkingen klaar, niet uitgevoerd. Docs/PACKS-BATCH2-PROEFCONTROLE-20261031.md met open eigen controlelijst. Gedeeltelijk: eigen online resources/login/secrets/config/URL/publicatie en gebruikerscontrole open; echte PACKS-uitvoering/contract/batch3/4 niet afgerond.",
+    "evidence": "Alleen bron/documentatie gelezen/vergeleken en lokaal bewerkt plus bouwadministratie. Geen tests/checks/syntaxchecks/build/generator/browser-/DOM-/visuele QA, CRM-runtimeactie, netwerk/login/provider/boeking/label/mail/betaling, cloudresourceaanmaak/migratie, zakelijke gegevensmutatie, Git-/indexwijziging/upload/publicatie. Geen nieuwe testcode. Oude29tests zijn historisch; nieuwe bron niet functioneel geverifieerd. CSS/data/bestanden/templates/eerdere wijzigingen/staging behouden. Afzonderlijk op expliciet gebruikersverzoek caffeinate -i -t 7200 gestart om Mac twee uur wakker te houden; geen CRM-runtime gewijzigd. Online proef-URL bestaat nog niet."
+  },
+  {
+    "id": "maat-packs31-batch3-provider-source-20261031",
+    "taskId": "maat-packs31-batch3",
+    "companies": [
+      "maatwerkkunststof"
+    ],
+    "at": "2026-10-31T03:52:44Z",
+    "author": "Codex",
+    "status": "doing",
+    "delivery": "local",
+    "note": "Batch3 gedeeltelijk lokaal brongebouwd: pure account-/product-/pakket-/datum-/payloadregels, serverclient met vaste test-/livehosts/OAuth/versleutelde tokencache, interne autoritatieve eenmaal-boekexecutor en GetLabels/PDF-bytevalidatie. Volledige vaste payload/accountKey aan bestaande CAS-poging/fingerprint, herkenbare provider-ID’s bewaren vóór labels, status onzeker behoudt blokkade. Bestaand handmatig PACKS-label blokkeert nieuwe API-boeking; buiten CRM geboekt vraagt aparte bevestiging. Alle bekende colli nodig, geen eerste-labelfallback/automatische herboeking. HTTP/UI niet aangesloten, book/recover-labels blijven423 en geen envflag activeert. Nog bouwen: veilige operationele profiel-/credential-/actor-/release-inrichting, finale UI/handler, idempotente state/files-projector en meer-colli-PDF-bundel. PK-bevestigingen/registerinrichting/eigen controle blijven open. Docs/PACKS-BATCH3-UITVOERBRON-20261031.md, leeg profielvoorbeeld met nulls. Geen claim dat de volledige batch of koppeling klaar is.",
+    "evidence": "Alleen bron/documentatie vergelijken en bewerken, openbaar PACKS-Swagger via uitsluitend GET opnieuw opgehaald en bouwadministratie. Schema v9.0.0.0 identiek aan eerdere31oktober-snapshot; bestaande privéhandleidingtekst geraadpleegd. Geen nieuwe tests/checks/syntaxchecks/build/generator/browser-/DOM-/visuele QA, geen nieuwe testcode, CRM-runtimeactie, operationele login/token/product-/boek-/GetLabels-aanroep/mail/betaling, cloudresourceaanmaak/migratie, zakelijke gegevensmutatie, Git-/indexwijziging/upload/publicatie. Geen credentials/accountnamen/klantgegevens gekopieerd. Oude29tests gelden eerdere bron. CSS/data/bestanden/templates/eerdere wijzigingen/staging behouden. Geen operationele poging/guard/config aangemaakt; batches1/2/4 en aparte onlineorderlijst-/AI-resttaken behouden."
+  },
+  {
+    "id": "maat-packs31-provider-main-20261031",
+    "taskId": "maat-kunststofbaas-fulfilment-20261029",
+    "companies": [
+      "maatwerkkunststof"
+    ],
+    "at": "2026-10-31T03:52:45Z",
+    "author": "Codex",
+    "status": "doing",
+    "delivery": "local",
+    "note": "Batch3vervolg lokaal: client/contractmapping/interne boeking en GetLabels-bron gedeeltelijk gebouwd; vaste request/accountbasis en bestaande handmatige labels bewaakt. Nog geen aangesloten/werkende automatische PACKS-koppeling: HTTP/UI uit, bestandsprojector/meer-colli-bundel/operationele inrichting/PK/eigen controle open. Zie maat-packs31-batch3 en docs/PACKS-BATCH3-UITVOERBRON-20261031.md. Batch1review/lokaal, batch2gedeeltelijk zonder online proef-URL, batch3doing/lokaal en batch4open. Hoofdtaak niet afgerond of gepubliceerd; huidige lokale bron en bestaande data behouden.",
+    "evidence": "Alleen bron/documentatie vergelijken en bewerken, openbaar PACKS-Swagger via uitsluitend GET opnieuw opgehaald en bouwadministratie. Schema v9.0.0.0 identiek aan eerdere31oktober-snapshot; bestaande privéhandleidingtekst geraadpleegd. Geen nieuwe tests/checks/syntaxchecks/build/generator/browser-/DOM-/visuele QA, geen nieuwe testcode, CRM-runtimeactie, operationele login/token/product-/boek-/GetLabels-aanroep/mail/betaling, cloudresourceaanmaak/migratie, zakelijke gegevensmutatie, Git-/indexwijziging/upload/publicatie. Geen credentials/accountnamen/klantgegevens gekopieerd. Oude29tests gelden eerdere bron. CSS/data/bestanden/templates/eerdere wijzigingen/staging behouden. Geen operationele poging/guard/config aangemaakt; batches1/2/4 en aparte onlineorderlijst-/AI-resttaken behouden."
+  },
+  {
+    "id": "maat-packs31-batch4-control-source-20261031",
+    "taskId": "maat-packs31-batch4",
+    "companies": [
+      "maatwerkkunststof"
+    ],
+    "at": "2026-10-31T04:07:32Z",
+    "author": "Codex",
+    "status": "doing",
+    "delivery": "local",
+    "note": "Batch4 lokaal readonly eindcontrole gebouwd, bereikbaar bij geschikte Maatorder onder Meer, ook bij niet-actuele leveranciersbasis. Pakketwaarden/tekorten en originele PDF-viewers; momentopname via één readonly state/files-transactie, begrensde header/omvang/SHA-256. JSON-download/inlezen voor dezelfde order, waardes/bestanden versus omgeving/versie apart; geen CRM-data toepassen of goedkeuring/werkende keten afleiden. PDF-onbekend/oud/niet leesbaar zichtbaar. Async formulieridentiteit bewaakt tussentijdse invoer; downloadhelper afgewacht, guarded contextrefresh bij verdergaan indien nodig, fouten houden overzicht/bestandskeuze. Finale twee bijlagebevestigingen nu ook gewone leveranciersmail, geaccepteerdstatus herstellen zonder nieuwe verzending. Docs/PACKS-BATCH4-EIGEN-CONTROLE-20261031.md met gebruikerslijst en eerlijke eindmatrix. Batch4 blijft gedeeltelijk: jouw beoordeling, automatische labelprojector/meer-colli-bundel/runtimeaansluiting/PK, operationele inrichting/online proef-URL en publicatie/eerste echte boeking open.",
+    "evidence": "Alleen bron/documentatie gelezen/vergeleken en lokaal bewerkt plus bouwadministratie. Geen tests/checks/syntaxchecks/build/generator/browser-/DOM-/visuele QA, nieuwe tests, runtimeactie, netwerk/livebron-/provider-/CRM-dataopvraag, login/token/boeking/label/mail/betaling, cloudresourceaanmaak/migratie, zakelijke data-/bestandsmutatie, Git-/indexwijziging/upload/publicatie. Geen echt klantcontrolerapport door Codex gemaakt. Oude29tests gelden eerdere bron; nieuwste testweigering gerespecteerd. Bestaande code/data/bestanden/templates/staging en opgeslagen gebruikers-/feedbackstatus behouden. CSS centraal/ongewijzigd, cachemetadata vernieuwd. Publieke boek/herstelroutes blijven423; geen activering. Geen volledige-keten-/live-/waterdichtheidsclaim."
+  },
+  {
+    "id": "maat-packs31-final-control-main-20261031",
+    "taskId": "maat-kunststofbaas-fulfilment-20261029",
+    "companies": [
+      "maatwerkkunststof"
+    ],
+    "at": "2026-10-31T04:07:33Z",
+    "author": "Codex",
+    "status": "doing",
+    "delivery": "local",
+    "note": "Batch4vervolg lokaal: readonly eindcontrole, eigen controlerapportvergelijking en finale bijlagebevestigingen voor beide leveranciersmailsoorten brongebouwd. Onder Meer bij geschikte Maatorder; geen gegevens toepassen of vrijgeven via rapport. Zie maat-packs31-batch4 en docs/PACKS-BATCH4-EIGEN-CONTROLE-20261031.md. Hoofdtaak blijft doing/local; batch1review, batch2/3gedeeltelijk en batch4doing. Automatische labelopslag/meer-colli-PDF/runtimeaansluiting/PK, operationele inrichting/afzonderlijke online proefomgeving, eigen beoordeling en aparte publicatie/activering/echte zending blijven open. Geen eindclaim voor de vier batches; bestaande gebruikersstatus en bron/data behouden.",
+    "evidence": "Alleen bron/documentatie gelezen/vergeleken en lokaal bewerkt plus bouwadministratie. Geen tests/checks/syntaxchecks/build/generator/browser-/DOM-/visuele QA, nieuwe tests, runtimeactie, netwerk/livebron-/provider-/CRM-dataopvraag, login/token/boeking/label/mail/betaling, cloudresourceaanmaak/migratie, zakelijke data-/bestandsmutatie, Git-/indexwijziging/upload/publicatie. Geen echt klantcontrolerapport door Codex gemaakt. Oude29tests gelden eerdere bron; nieuwste testweigering gerespecteerd. Bestaande code/data/bestanden/templates/staging en opgeslagen gebruikers-/feedbackstatus behouden. CSS centraal/ongewijzigd, cachemetadata vernieuwd. Publieke boek/herstelroutes blijven423; geen activering. Geen volledige-keten-/live-/waterdichtheidsclaim."
+  },
+  {
+    "id": "crm-orders-resilience-source-20261031",
+    "taskId": "crm-orders-resilience-20261031",
+    "companies": [
+      "spatlappen",
+      "maatwerkkunststof"
+    ],
+    "at": "2026-10-31T08:18:28Z",
+    "author": "Codex",
+    "status": "review",
+    "delivery": "local",
+    "note": "Gebruiker wil niet opnieuw door een orderweergavefout worden geblokkeerd. GitHub main opnieuw read-only gelezen: ordersTable mist nog state, kleine oorspronkelijke correctie nog niet gepubliceerd. Lokaal aanvullende per-betaal/status/planningcel-/rijopvang, ontbrekende betaalcontext expliciet onbeoordeeld, minimale identificatierij. Pagina/orderlijst/orderdetail/ordertab/hashnavigatie krijgen weergavegrens; eenvoudige alle-orderslijst met archief/eigenzoeken/Nieuwe klantorder/gewone navigatie en bewuste retry. Late andere route/open invoer niet door fallback vervangen. Alleen vaste foutcode/type, geen ruwe gegevens naar nieuwe diagnose. Nieuwe6bestanden-kandidaat vanaf opgehaalde main geïsoleerd zonder PACKS/andere lokale scope, met exacte basisblobs/patch/manifest; oude2bestanden-kandidaat behouden als aanbevolen minimale eerste livecorrectie. Geen volledige Pagesrelease gemaakt; GitHub/beide-live en alleen noodzakelijke verpakking vragen nog aparte keuze/toestemming. Zie docs/ORDERS-BEREIKBAARHEID-20261031.md. Eigen beoordeling en publicatie blijven open; geen absolute foutloosheid claimen.",
+    "evidence": "Alleen GitHub-bron lezen, bron/template/patch/vingerafdrukken vergelijken, lokale code/docs/catalogus/cachemetadata bewerken en deze bouwadministratie. Geen tests/checks/syntaxchecks/build/generator/browser-/DOM-/CRM-QA, live-/klantgegevensopvraag, provider/mail/betaling, CRM-runtimeherstart, migratie of zakelijke datamutatie, Git-/indexwijziging/upload/publicatie. Bestaande bron/data/bestanden/templates/Git-staging en gebruikers-/feedbackstatus behouden. CSS centraal/ongewijzigd; gewone financiële regels niet veranderd en fallback verzint geen bedragen/betaalstatus. Expliciete testweigering gerespecteerd. Op afzonderlijk verzoek caffeinate -i -t 7200 opnieuw gestart, sessie96488, alleen Mac-idleslaap2uur zolangklepopen; geen CRM-runtime gewijzigd."
+  },
+  {
+    "id": "crm-finance31-batch1-source-20261031",
+    "taskId": "crm-finance31-batch1",
+    "companies": [
+      "spatlappen",
+      "maatwerkkunststof"
+    ],
+    "at": "2026-10-31T08:35:42.000Z",
+    "author": "Codex",
+    "status": "review",
+    "delivery": "local",
+    "note": "94 bestaande meldingen onder volledige IDs privé geïnventariseerd (89 exports + 5 eerdere): 81 brongebouwd voor eigen controle, 13 gedeeltelijk. AI-orderupdate importachtige wens expliciet gedeeltelijk/open. Drie lokale reparaties: financiële sorteerafhankelijkheid per dossier geïsoleerd en standaard arraycontract voor klantenlijsten behouden; feedbackopenactie bewaakt dubbele/late reactie en route/formulier zonder invoer te vervangen; na formulierstap teruggegeven vervolgfout apart vangen zonder eerdere actie opnieuw uit te voeren. Eigen controle en bredere restscope open.",
+    "evidence": "Alleen gerichte bron-/documentvergelijking en bewerking plus inventarisatie/bouwadministratie. Geen tests/checks/syntaxchecks/build/generator/browsercontrole, provider-/mail-/betaalactie, klantgegevensmutatie, runtimeactie, Gitwijziging/upload/publicatie. Bestaande staging/gegevens/bestanden/feedbackstatus behouden. Gebruikerscontrole open. Zie docs/FEEDBACK-AUDIT-BATCH1-20261031.md en docs/VIJF-BATCHES-KOSTEN-EN-HERSTEL-20261031.md."
+  },
+  {
+    "id": "crm-finance31-batch2-source-20261031",
+    "taskId": "crm-finance31-batch2",
+    "companies": [
+      "spatlappen",
+      "maatwerkkunststof"
+    ],
+    "at": "2026-10-31T08:35:42.000Z",
+    "author": "Codex",
+    "status": "open",
+    "delivery": "local",
+    "note": "Gepland: bestaande inkoop/invoer-btw/twee AI-routes/opslag/kosten/uitgaand geld eerst vergelijken, eenvoudiger invoer en ingebed transport eenmaal toerekenen. Niet gestart.",
+    "evidence": "Alleen gerichte bron-/documentvergelijking en bewerking plus inventarisatie/bouwadministratie. Geen tests/checks/syntaxchecks/build/generator/browsercontrole, provider-/mail-/betaalactie, klantgegevensmutatie, runtimeactie, Gitwijziging/upload/publicatie. Bestaande staging/gegevens/bestanden/feedbackstatus behouden. Gebruikerscontrole open. Zie docs/FEEDBACK-AUDIT-BATCH1-20261031.md en docs/VIJF-BATCHES-KOSTEN-EN-HERSTEL-20261031.md."
+  },
+  {
+    "id": "crm-finance31-batch3-source-20261031",
+    "taskId": "crm-finance31-batch3",
+    "companies": [
+      "spatlappen",
+      "maatwerkkunststof"
+    ],
+    "at": "2026-10-31T08:35:42.000Z",
+    "author": "Codex",
+    "status": "open",
+    "delivery": "local",
+    "note": "Gepland: gedeelde bedrijfskosten met bewijs/betaling/btw en optionele orderkoppeling, ook bezorger/vervoerder/bank. Eerst bestaande kostenbronnen vergelijken, geen dubbele boekingen. Niet gestart.",
+    "evidence": "Alleen gerichte bron-/documentvergelijking en bewerking plus inventarisatie/bouwadministratie. Geen tests/checks/syntaxchecks/build/generator/browsercontrole, provider-/mail-/betaalactie, klantgegevensmutatie, runtimeactie, Gitwijziging/upload/publicatie. Bestaande staging/gegevens/bestanden/feedbackstatus behouden. Gebruikerscontrole open. Zie docs/FEEDBACK-AUDIT-BATCH1-20261031.md en docs/VIJF-BATCHES-KOSTEN-EN-HERSTEL-20261031.md."
+  },
+  {
+    "id": "crm-finance31-batch4-source-20261031",
+    "taskId": "crm-finance31-batch4",
+    "companies": [
+      "maatwerkkunststof"
+    ],
+    "at": "2026-10-31T08:35:42.000Z",
+    "author": "Codex",
+    "status": "open",
+    "delivery": "local",
+    "note": "Gepland, uitsluitend Maat: Kunststofbaas-factuurvoorstel en leveranciersbestelnummer aan juiste order/klant koppelen, duplicaten/meerdere matches bewaken en gebruikerskeuze vóór opslaan. Privéfacturen nog niet gelezen; niet gestart.",
+    "evidence": "Alleen gerichte bron-/documentvergelijking en bewerking plus inventarisatie/bouwadministratie. Geen tests/checks/syntaxchecks/build/generator/browsercontrole, provider-/mail-/betaalactie, klantgegevensmutatie, runtimeactie, Gitwijziging/upload/publicatie. Bestaande staging/gegevens/bestanden/feedbackstatus behouden. Gebruikerscontrole open. Zie docs/FEEDBACK-AUDIT-BATCH1-20261031.md en docs/VIJF-BATCHES-KOSTEN-EN-HERSTEL-20261031.md."
+  },
+  {
+    "id": "crm-finance31-batch5-source-20261031",
+    "taskId": "crm-finance31-batch5",
+    "companies": [
+      "spatlappen",
+      "maatwerkkunststof"
+    ],
+    "at": "2026-10-31T08:35:42.000Z",
+    "author": "Codex",
+    "status": "open",
+    "delivery": "local",
+    "note": "Gepland: bedrijfsvorm/categorie eerst bepalen, overboekingen naar jezelf apart van gewone kosten, per-bedrijfskosten/btw/geldstromen/periode-export. Geen voorbeeldbetaling geregistreerd. Niet gestart.",
+    "evidence": "Alleen gerichte bron-/documentvergelijking en bewerking plus inventarisatie/bouwadministratie. Geen tests/checks/syntaxchecks/build/generator/browsercontrole, provider-/mail-/betaalactie, klantgegevensmutatie, runtimeactie, Gitwijziging/upload/publicatie. Bestaande staging/gegevens/bestanden/feedbackstatus behouden. Gebruikerscontrole open. Zie docs/FEEDBACK-AUDIT-BATCH1-20261031.md en docs/VIJF-BATCHES-KOSTEN-EN-HERSTEL-20261031.md."
+  },
+  {
+    "id": "crm-finance31-batch2-costs-source-20261031",
+    "taskId": "crm-finance31-batch2",
+    "companies": [
+      "spatlappen",
+      "maatwerkkunststof"
+    ],
+    "at": "2026-10-31T08:47:10.000Z",
+    "author": "Codex",
+    "status": "review",
+    "delivery": "local",
+    "note": "Bestaande invoer-btw/database-/AI-/bewaar-/margeketen eerst vergeleken. Nieuw apart kostenformulier met preview en gedeelde kostprijs/btw/geregistreerd-betaald/geldbasisuitsplitsing; expliciete transportbasis onbekend/nee/ja en btw leeg geen €0. Bestaande transportcorrectie/kostenverdeling gebruiken allocateCents; invoer/CAS/herkomst behouden. Beide AI-prompts/versiecontrole en formulierketens bijgewerkt. Geen historische records gewijzigd of aangifteboekingen/betalingen gemaakt. Gebruiker kiest Alles lokaal houden, dus ook orderhotfix niet publiceren. Jouw controle en batches3–5 blijven open. Zie docs/INKOOP-BATCH2-20261031.md.",
+    "evidence": "Alleen gerichte bron-/documentvergelijking en lokale bewerking plus bouwadministratie. Geen tests/checks/syntaxchecks/build/generator/browser-/DOM-/visuele QA of runtimeactie, provider-/mail-/betaal-/factuurproef, online-/klantgegevensopvraag, migratie/zakelijke data-/bestandsmutatie, Git/indexwijziging/upload/publicatie. Rekenvoorbeelden zijn documentatie, niet uitgevoerd. Bestaande wijzigingen/gegevens/bestanden/templates/Git-staging en oorspronkelijke gebruikers-/feedbackstatus behouden. CSS centraal/ongewijzigd; eigen controle open."
+  },
+  {
+    "id": "crm-finance31-batch3-business-expenses-20261031",
+    "taskId": "crm-finance31-batch3",
+    "companies": [
+      "spatlappen",
+      "maatwerkkunststof"
+    ],
+    "at": "2026-10-31T11:35:16Z",
+    "author": "Codex · bedrijfskosten batch 3",
+    "status": "review",
+    "delivery": "local",
+    "note": "Onderbroken batch3 hervat en bronwerk afgerond voor eigen controle. Nieuwe gedeelde Beheer → Bedrijfskosten: algemene of aan vaste/benoemde dossierkosten gekoppelde registratie, netto/btw/gekozen aftrek/bruto, werkelijke betalingen, expliciet betaalde btw, bewijs en revisiereden. Zelfde bestaande kostenbron bij koppelen, gecontroleerde projectie en aparte bevestiging bij prijswijziging; onbekend blijft onbekend. Actuele dossier-/bewijsbasis en stabiele upload/expense-IDs bij herhaling, atomair state/files. Dubbele bron/bewijshash/overeenkomende leveranciersreferentie en betaling bewaakt met beschreven grenzen. Dossierverwijzingen/gebruikelijke gekoppelde velden alleen-lezen, orderkopie/merge/verwijdering en bewijs/sessiehistorie beschermd. Btw-register hergebruikt met bedrag-/betaaldebtw-/bronhercontrole, geen automatische boeking. Brondatumfilter/CSV. Bron/importcacheketen vernieuwd; centrale CSS ongewijzigd. Geen bestaande records ingevuld of oorspronkelijke feedback afgehandeld. Batches4/5 open; algemene Analytics-consolidatie/kasperiode en overboekingen volgen batch5. Geen kostenverwijderen/verplaatsen/splitsfunctie in deze versie. Zie docs/BEDRIJFSKOSTEN-BATCH3-20261031.md.",
+    "evidence": "Uitsluitend instructies/overdracht/relevante bron en documentatie gelezen/vergeleken en bron/bouwadministratie bewerkt. Geen tests, checks, syntaxcontrole, build/generator, browser/DOM/visuele QA, runtime/provider/login/mail/bankactie, migratie, zakelijke records/bestanden, Git/index/GitHubupload of livepublicatie. Alles lokaal houden blijft leidend. Gebruikerscontrole beide bedrijven, bedragen/onbekend/0/aftrek, koppelen/twee tabs, bijlagen/fouten, historie, btw-hercontrole en back-up open. Geen waterdichtheids-, fiscale, geslaagde werking- of volledige feedbackafclaim; bestaande wijzigingen/data/templates/staging behouden."
+  },
+  {
+    "id": "crm-finance31-batch4-invoice-intake-20261031",
+    "taskId": "crm-finance31-batch4",
+    "companies": [
+      "maatwerkkunststof"
+    ],
+    "at": "2026-10-31T12:12:51Z",
+    "author": "Codex · Kunststofbaas-factuurinvoer batch 4",
+    "status": "review",
+    "delivery": "local",
+    "note": "Nieuwe generieke factuurcontrole vanuit Maatorder Inkoop & marge en Bedrijfskosten → Meer. Originele of bestaande PDF; bewuste lokale PDF-tekstextractie/gelabelde velden, eigen-AI-prompt en strikt begrensde JSON zonder automatische upload. Match op supplierOrderReference met expliciete order/productkeuze en regelvinkjes; ambigu/onbekend niet automatisch toerekenen. Exacte nettoregeltotalen/aantallen, netto/btw/bruto/handmatige aftrek, eerdere kosten en aanvullende kosten per order of gedeeld. Bewaakte product-/namedCosts-projecties uit één supplierInvoiceImports-record, meerdere orders zonder purchaseId/PACKS te verplaatsen. Prijsvervanging apart bevestigen; onbekende aftrek maakt marge voorlopig. Werkelijke betalingen met datum/bewijs/revisies, één state/files-commit, verse bron/CAS en stabiele IDs bij herhaling. Duplicaatreferentie/hash/andere kostenbron bewaakt; bewijs/kopie/merge/verwijdering/sessiehistorie beschermd. Bestaande btw-register met huidige/historische file-aliases en bronhercontrole, geen automatische boeking. Tekstinterpretatie en AI-herkomst apart, centrale CSS ongewijzigd. Oude inkoopregels, credit/valuta en beeld-OCR niet automatisch verwerkt. Volledige kasconsolidatie en overboekingen volgen batch5. Zie docs/KUNSTSTOFBAAS-FACTUURINVOER-BATCH4-20261031.md.",
+    "evidence": "Alleen bron/documentatie gelezen/vergeleken/bewerkt, openbare officiële PDF.js-API-documentatie gelezen en bouwadministratie. Twee aangeleverde private factuurlinks als read-only bron geprobeerd: eerste netwerkopvraag mislukte, daarna geen bruikbare PDF ontvangen; geen concrete factuurinhoud/lay-out vastgesteld. Geen tests/checks/syntaxcontrole/build/generator/browser/DOM/visuele QA, runtimeherstart, echte factuur-/klant-/bankmutatie, providerlogin/boeking/labels/mail/betaalactie, migratie, Git/index/GitHubupload/livepublicatie. Geen private URLs/sleutels in publieke bron/log. Alles lokaal houden en testweigering behouden; bestaande data/bestanden/templates/PACKS/staging/feedbackstatus ongewijzigd. Jouw controle actuele PDF, matches/meerdere orders/aantallen/centen/bestaande kosten/aftrek/duplicaat/twee tabs/fouten/bewijs/btw/back-up blijft open; geen waterdichtheids- of volledige feedbackafclaim."
+  },
+  {
+    "id": "crm-finance31-batch5-company-context-20261031",
+    "taskId": "crm-finance31-batch5",
+    "companies": [
+      "spatlappen",
+      "maatwerkkunststof"
+    ],
+    "at": "2026-10-31T12:16:55Z",
+    "author": "Codex · contextaanvulling",
+    "status": "open",
+    "delivery": "local",
+    "note": "Tijdens batch4 antwoordt gebruiker op de bedrijfsvormvraag. Precieze rekening-/vennootschapcontext privé bij huidige chatoutputs vastgelegd voor batch5, niet als publieke bedrijfsconfiguratie hardgecodeerd. Bedrijfsvorm hoeft niet opnieuw gevraagd te worden. Categorie/actieve bedrijfsadministratie/verdere inrichting bewust bepalen; bestaande gescheiden administraties behouden. Batch5 niet gebouwd, geen voorbeeldbedrag ingevuld.",
+    "evidence": "Alleen gebruikersantwoord en plancontext vastgelegd; geen bank-/CRM-record of fiscale instelling gewijzigd, tests of publicatie."
+  },
+  {
+    "id": "crm-finance31-batch5-period-owner-20261031",
+    "taskId": "crm-finance31-batch5",
+    "companies": [
+      "spatlappen",
+      "maatwerkkunststof"
+    ],
+    "at": "2026-10-31T13:07:33Z",
+    "author": "Codex · kosten en geldstromen batch 5",
+    "status": "review",
+    "delivery": "local",
+    "note": "Analytics → Kosten & geld: bronkosten, werkelijk geregistreerd geld, expliciet betaalde btw en gecontroleerde aftrek afzonderlijk. Bestaande inkoop/businessExpenses/supplierInvoiceImports en hun betalingen als bron, product-/namedCosts-projecties niet opnieuw optellen. Ontbrekende/toekomstige datums en onbekende btw zichtbaar; oude kostprijsramingen, overlappende betaalsaldi en mogelijke dubbele facturen apart afstemmen. Nieuwe optionele importVatDate/importVatPaidDate in gedeelde formulieren, beide AI-routes en validatie, zonder historische data in te vullen. VOF-privéregistraties met eigen persoon/richting/datum/bedrag, bewuste bevestiging, revisiereden/historie, vergelijkbare-mutatiecontrole, basis/CAS en herhalingsbewaking; geen bankactie of opname in omzet/kosten/btw. Per-persoonoverzicht, gescheiden periode-/broncontrole-CSV met centen en aparte kas/kosten/btw-kolommen. Lazy operationele indicatie ordermarge na algemene kosten, geen fiscale periodewinst/banksaldo/kapitaalrekening. Bestaande bedrijfsopslag/back-up en centrale lokale/cloudvalidatie, sessieherstelgrens voor financiële historie; CSS ongewijzigd. Alle vijf nieuwe batches brongebouwd voor eigen controle, oudere gedeeltelijke feedback en PACKS-restbouw behouden. Zie docs/FINANCIEEL-BATCH5-20261031.md.",
+    "evidence": "Uitsluitend bron/documentatie gelezen/vergeleken/bewerkt en bouwadministratie; officiële Belastingdienst-uitleg privéstortingen/-onttrekkingen gelezen. Geen tests/checks/syntaxcontrole/build/generator/browser/DOM/visuele QA, nieuwe testcode, runtimeactie, bank-/klant-/factuurregistratie, providerlogin/token/boeking/label/mail/betaalactie, migratie, Git-/indexwijziging/upload/livepublicatie. Alles lokaal houden en testweigering leidend, voorbeeldbedrag niet ingevoerd; persoonlijke rekeningcontext uitsluitend privé, geen bedrijfs-/bankconfiguratie hardgecodeerd. Geen klantgegevens/bestanden/templates/staging of opgeslagen feedback-/gebruikersstatus gewijzigd. Jouw controle beide bedrijven, datums/btw/kas/bronoverlap/privé/personen/invoerfouten/twee tabs/herhaling/historie/export/back-up open. Geen bewezen werking, volledige feedbackafhandeling, fiscale geschiktheid of waterdichtheid."
+  },
+  {
+    "id": "maat-kunststofbaas-tab-source-20261101",
+    "taskId": "maat-kunststofbaas-tab-20261101",
+    "companies": [
+      "maatwerkkunststof"
+    ],
+    "at": "2026-11-01T04:46:51Z",
+    "author": "Codex · Kunststofbaas-ordertab",
+    "status": "review",
+    "delivery": "local",
+    "note": "Eigen Kunststofbaas-tab bij passende Maatorders; bestelnummer groot naast ons CRM-nummer, korte direct gefocuste één-veldactie op bestaande supplierOrderReference. Geen bestelling/leverwijze/kosten/betaling uit nummeropslag afleiden. Centrale hercontroleregel vanuit tab/directe inkoop/gewone pakbon; veranderde en teruggezette referentie vernieuwt bestaande bevestiging/bijlagen niet vanzelf. Beschrijving noemt eerst hun nummer, dan ons nummer/producten/aantallen/mm/materiaal/specificaties/adres; nieuwe mailvoorstellen delen die bron, bestaande concepten behouden. Intern PDF-controledocument naast order, originele bytes/omvang/hash en lokale tekstlezer op klik; conservatieve nummer/mm-maat-aanwijzingen, geen automatische product-/aantal-/adresgoedkeuring of OCR. Bestaande state/files-transactie/basis en herhalingsbewaking, geen automatische financiële bron. Kostenroute blijft aparte factuurinvoer, pakbon/bevestiging daar geweigerd. Centrale CSS/importcache, geen oorspronkelijke records gewijzigd. Zie docs/KUNSTSTOFBAAS-ORDERTAB-20261101.md.",
+    "evidence": "Uitsluitend instructies/overdracht/relevante bron/documentatie gelezen/vergeleken/bewerkt en bouwadministratie. Geen tests/checks/syntaxcontrole/build/generator/browser/DOM/visuele QA, runtimeherstart, echte CRM-/document-/bankmutatie, providerlogin/token/boeking/label/mail/betaalactie, migratie, Git/index/GitHubupload/livepublicatie. Alles lokaal houden en testweigering behouden; data/bestanden/templates/PACKS/oude werkkopie/staging en gebruikers-/feedbackstatus behouden. Eigen controle beide bedrijfsgrenzen, nummers/pakbonreferentie/gewijzigde basis, tekst/origineel/scan/verschillen, fouten/twee tabs/herhalen/back-up open. Volledige automatische inhoudscontrole en operationele PACKS-uitvoering/proefomgeving niet afgerond; geen werkings-/waterdichtheidsclaim."
+  },
+  {
+    "companies": [
+      "maatwerkkunststof"
+    ],
+    "at": "2026-11-01T05:10:47Z",
+    "author": "Codex · PACKS boekingsroute en diagnose",
+    "delivery": "local",
+    "note": "Bestaande interne executor nu via echte login/Origin/bodylimiet/centrale snapshot/actor/release/accountversie/registergeneratie aangesloten. Immutable encrypted accountversies met gewone gebruikersvelden; eerste-registerinrichting expliciet en tijdelijk servergemarkeerd, geen reset. Bewuste preflight-/boekknop, één duurzame CAS-winnaar/geen boekretry. Bekende labels met identiteit/hash/bytes eerst privé R2/register, daarna oorspronkelijke labels en volledige meer-colli-bundel in bestaande state/files-transactie; idempotent herstel/ack, andere labelpointer niet overschrijven, originelen afzonderlijk downloaden bij bundel/opslagfout. Geen automatische mail/kosten/leverstatus; testlabel alleen proefmail. Begrensde server-/sessielogs en export ook bij onbereikbare server, vaste stap/tijd/trace/poging/HTTP/duur en antwoordcontrolevlaggen, geen secrets/adres/payload/PDF/ruwe providerbody. Geen actieve koppeling gemaakt. Zie docs/PACKS-BOEKEN-EN-LOGS-20261101.md.",
+    "evidence": "Alleen instructies/overdracht/bron/documentatie gelezen/vergeleken/bewerkt en bouwadministratie. Actuele openbare Swagger via uitsluitend GET opgehaald (webreader niet bereikbaar, curl met netwerkmachtiging gelukt), relevante schemas en bestaande privéhandleidingtekst gelezen. Geen nieuwe tests/checks/syntaxcontrole/build/generator/browser/DOM/visuele QA, testcode, runtimeherstart, PACKS-login/token/accountproduct-/boek-/label-/mail-/betaalactie, echte CRM-record-/bestandsmutatie, server-/secret-/resourceinrichting/migratie, Git/index/GitHubupload/livepublicatie. Alles lokaal houden en testweigering leidend. Historische29tests geen bewijs nieuwe bron. Accountomgeving/dienst/PK/serverbindings/login/secrets/versievrijgave/generatie/proefomgeving/eigen controle blijven open. Geen waterdichtheids-/werkende-ketenclaim, data/bestanden/templates/wijzigingen/staging/gebruikersstatus behouden.",
+    "id": "maat-packs-operation-operation-20261101",
+    "taskId": "maat-packs-operation-20261101",
+    "status": "review"
+  },
+  {
+    "companies": [
+      "maatwerkkunststof"
+    ],
+    "at": "2026-11-01T05:10:47Z",
+    "author": "Codex · PACKS boekingsroute en diagnose",
+    "delivery": "local",
+    "note": "Bestaande interne executor nu via echte login/Origin/bodylimiet/centrale snapshot/actor/release/accountversie/registergeneratie aangesloten. Immutable encrypted accountversies met gewone gebruikersvelden; eerste-registerinrichting expliciet en tijdelijk servergemarkeerd, geen reset. Bewuste preflight-/boekknop, één duurzame CAS-winnaar/geen boekretry. Bekende labels met identiteit/hash/bytes eerst privé R2/register, daarna oorspronkelijke labels en volledige meer-colli-bundel in bestaande state/files-transactie; idempotent herstel/ack, andere labelpointer niet overschrijven, originelen afzonderlijk downloaden bij bundel/opslagfout. Geen automatische mail/kosten/leverstatus; testlabel alleen proefmail. Begrensde server-/sessielogs en export ook bij onbereikbare server, vaste stap/tijd/trace/poging/HTTP/duur en antwoordcontrolevlaggen, geen secrets/adres/payload/PDF/ruwe providerbody. Geen actieve koppeling gemaakt. Zie docs/PACKS-BOEKEN-EN-LOGS-20261101.md.",
+    "evidence": "Alleen instructies/overdracht/bron/documentatie gelezen/vergeleken/bewerkt en bouwadministratie. Actuele openbare Swagger via uitsluitend GET opgehaald (webreader niet bereikbaar, curl met netwerkmachtiging gelukt), relevante schemas en bestaande privéhandleidingtekst gelezen. Geen nieuwe tests/checks/syntaxcontrole/build/generator/browser/DOM/visuele QA, testcode, runtimeherstart, PACKS-login/token/accountproduct-/boek-/label-/mail-/betaalactie, echte CRM-record-/bestandsmutatie, server-/secret-/resourceinrichting/migratie, Git/index/GitHubupload/livepublicatie. Alles lokaal houden en testweigering leidend. Historische29tests geen bewijs nieuwe bron. Accountomgeving/dienst/PK/serverbindings/login/secrets/versievrijgave/generatie/proefomgeving/eigen controle blijven open. Geen waterdichtheids-/werkende-ketenclaim, data/bestanden/templates/wijzigingen/staging/gebruikersstatus behouden.",
+    "id": "maat-packs-operation-batch3-20261101",
+    "taskId": "maat-packs31-batch3",
+    "status": "review"
+  },
+  {
+    "companies": [
+      "maatwerkkunststof"
+    ],
+    "at": "2026-11-01T05:10:47Z",
+    "author": "Codex · PACKS boekingsroute en diagnose",
+    "delivery": "local",
+    "note": "Bestaande interne executor nu via echte login/Origin/bodylimiet/centrale snapshot/actor/release/accountversie/registergeneratie aangesloten. Immutable encrypted accountversies met gewone gebruikersvelden; eerste-registerinrichting expliciet en tijdelijk servergemarkeerd, geen reset. Bewuste preflight-/boekknop, één duurzame CAS-winnaar/geen boekretry. Bekende labels met identiteit/hash/bytes eerst privé R2/register, daarna oorspronkelijke labels en volledige meer-colli-bundel in bestaande state/files-transactie; idempotent herstel/ack, andere labelpointer niet overschrijven, originelen afzonderlijk downloaden bij bundel/opslagfout. Geen automatische mail/kosten/leverstatus; testlabel alleen proefmail. Begrensde server-/sessielogs en export ook bij onbereikbare server, vaste stap/tijd/trace/poging/HTTP/duur en antwoordcontrolevlaggen, geen secrets/adres/payload/PDF/ruwe providerbody. Geen actieve koppeling gemaakt. Zie docs/PACKS-BOEKEN-EN-LOGS-20261101.md. Hoofdtaak blijft gedeeltelijk: echte inrichting/publicatie/proef/eigen controle niet uitgevoerd; batches2/4 niet afgerond.",
+    "evidence": "Alleen instructies/overdracht/bron/documentatie gelezen/vergeleken/bewerkt en bouwadministratie. Actuele openbare Swagger via uitsluitend GET opgehaald (webreader niet bereikbaar, curl met netwerkmachtiging gelukt), relevante schemas en bestaande privéhandleidingtekst gelezen. Geen nieuwe tests/checks/syntaxcontrole/build/generator/browser/DOM/visuele QA, testcode, runtimeherstart, PACKS-login/token/accountproduct-/boek-/label-/mail-/betaalactie, echte CRM-record-/bestandsmutatie, server-/secret-/resourceinrichting/migratie, Git/index/GitHubupload/livepublicatie. Alles lokaal houden en testweigering leidend. Historische29tests geen bewijs nieuwe bron. Accountomgeving/dienst/PK/serverbindings/login/secrets/versievrijgave/generatie/proefomgeving/eigen controle blijven open. Geen waterdichtheids-/werkende-ketenclaim, data/bestanden/templates/wijzigingen/staging/gebruikersstatus behouden.",
+    "id": "maat-packs-operation-main-20261101",
+    "taskId": "maat-kunststofbaas-fulfilment-20261029",
+    "status": "doing"
+  },
+  {
+    "id": "maat-invoice-link-source-20261101",
+    "taskId": "maat-invoice-link-20261101",
+    "companies": [
+      "maatwerkkunststof"
+    ],
+    "at": "2026-11-01T12:00:00.000Z",
+    "author": "Codex",
+    "status": "review",
+    "delivery": "local",
+    "note": "Factuurlink of eigen PDF in bestaande factuurinvoer, bewerkbaar voorstel en pas eigen Kosten accepteren financiële opslag. Vaste leveranciers-HTTPSroute, geen redirects/login/URL-opslag, bronkeuze/invoerbehoud. Kop-/kolomvoorstel en aparte CNC/opstart/verzending zonder extra productstuks; bestaande centen/order/duplicaat/CAS/bewijshistorie blijft eigenaar. Pakbon blijft controledocument. Begrensde vluchtige staplogs, goede/foute herkenning via gewone feedback en expliciete waardenopt-in. Lokale serverherstart niet uitgevoerd. Echt voorbeeld-PDF/leverancieropmaak en gebruikerscontrole open.",
+    "evidence": "Uitsluitend bron/documentatie vergelijken/bewerken, bouwadministratie en read-only documentonderzoek. Zes aangeleverde links gaven HTTP200 HTML onvoldoende rechten, geen PDF/opmaak/bedragen gelezen. Geen tests/checks/syntaxchecks/build/generator/browser-QA/appmodeluitvoering, echte kosten-/betaal-/klantmutaties, mail/provideractie, runtimeherstart, Git/index/upload/publicatie. Alles lokaal; bestaande data/bestanden/wijzigingen/staging en feedbackstatus behouden. Geen bewezen werking of waterdichtheidsclaim. Zie docs/KUNSTSTOFBAAS-FACTUURLINK-20261101.md."
+  },
+  {
+    "id": "maat-supplier-text-source-20261101",
+    "taskId": "maat-supplier-text-20261101",
+    "companies": [
+      "maatwerkkunststof"
+    ],
+    "at": "2026-11-01T05:55:22.647010+00:00",
+    "author": "Codex",
+    "status": "review",
+    "delivery": "local",
+    "note": "Beschrijving voor één order en standaardtekst afzonderlijk bewerkbaar bij Kunststofbaas. Standaard met vaste invulvelden/voorbeeld, bekende nummers/producten/adres compact en interne ontbrekendmeldingen apart. Bewuste tekstcontrole, terug naar standaard, eigen tekst bewaard maar hercontrole bij gewijzigde bron. Zelfde tekst in nieuwe mail-/bestelvoorstellen; oude concepten/pakbonnen/labels en echte ordervelden behouden. Optionele velden in bestaande staat/back-up, centrale/lokale validatie en verse tekst-/order-/template-CAS, veilige herhaling, kopie/merge bewaakt. Geen aparte datastore/CSS.",
+    "evidence": "Alleen bron/documentatie vergeleken/bewerkt en bouwadministratie. Geen tests/checks/syntaxchecks/build/generator/browser-/DOM-/visuele QA/app- of modeluitvoering behalve bouw-CLI, runtimeherstart, echte klant-/order-/template-/documentmutatie, provider/boeking/mail/betaling, Git/index/upload/publicatie. Gebruiker controleert zelf; bestaande wijzigingen/data/bestanden/staging en feedbackstatus behouden. Zie docs/KUNSTSTOFBAAS-BESTELTEKST-20261101.md; lokale bron, geen bewezen werking."
+  },
+  {
+    "id": "maat-supplier-inline-source-20261101",
+    "taskId": "maat-supplier-inline-20261101",
+    "companies": [
+      "maatwerkkunststof"
+    ],
+    "at": "2026-11-01T06:10:28.773860+00:00",
+    "author": "Codex",
+    "status": "review",
+    "delivery": "local",
+    "note": "Nummer direct invullen op Kunststofbaas-tab, guard/CAS en automatisch bewaren op verlaten/Enter, zichtbare fout/status en herstel. Volledige bestaande factuurinvoer ook inline, geen aparte openingsknop: URL/PDF/bedragen zichtbaar, bron leest op keuze, kosten alleen na accepteren. Nummeropslag bouwt factuur niet opnieuw op; eigen bewezen wijziging volgt bronbasis, andere wijzigingen blijven conflict met invoer/PDF behouden. Gerichte inline navigatie-/busy-/invoerbewaking. Korte PACKS-beschrijving met ons CRM-nummer kopiëren; geen boeking of providerreferentie gewijzigd. Gedeelde code en centrale CSS, oude documenten/concepten blijven behouden.",
+    "evidence": "Uitsluitend bron/documentatie vergelijken/bewerken en bouwadministratie. Geen tests/checks/syntaxchecks/build/generator/browser-/DOM-/visuele QA/app/modeluitvoering behalve bouw-CLI, netwerk/providerlogin/token/boeking/label/mail/bank/betaling, runtimeherstart, echte CRM-record-/bestandmutaties, migratie of Git/index/upload/publicatie. Alles lokaal, gebruikerscontrole open, geen bewezen werking. Eerdere wijzigingen/data/bestanden/staging/feedbackstatus behouden. Zie docs/KUNSTSTOFBAAS-DIRECTE-INVOER-20261101.md; factuurlinktoegang/account/PACKS-inrichting nog open."
+  },
+  {
+    "id": "maat-invoice-drop-source-20261101",
+    "taskId": "maat-invoice-drop-20261101",
+    "companies": [
+      "maatwerkkunststof"
+    ],
+    "at": "2026-11-01T06:17:40.912575+00:00",
+    "author": "Codex",
+    "status": "review",
+    "delivery": "local",
+    "note": "Factuur-PDF uit Finder/Downloads naar eigen zichtbaar sleepvak; highlight en bestandsnaam. Eén PDF/max15MB/header/naamcontrole vóór bronwissel, vorige bron/invoer behouden bij afwijzing. Zelfde factuurlezer/voorstel/selectedProof/opslag en expliciete kostenacceptatie, geen algemene addDocuments-upload. Native kiezer blijft. Busy/actuele-formuliergrens en centrale CSS. Automatisch Kunststofbaas-inloggen op gebruikersverzoek uitgesteld.",
+    "evidence": "Uitsluitend bron/documentatie vergelijken/bewerken en bouwadministratie. Geen tests/checks/syntaxchecks/build/generator/browser-/DOM-/visuele QA/appmodeluitvoering behalve bouw-CLI, netwerk/login/provider/mail/betaling, runtimeherstart, echte CRM-record-/bestandsmutaties, migratie, Git/index/upload/publicatie. Eigen controle open, alles lokaal en eerdere data/bestanden/wijzigingen/staging/status behouden. Zie docs/KUNSTSTOFBAAS-PDF-SLEPEN-20261101.md."
+  },
+  {
+    "id": "maat-logistics-reference-source-20261101",
+    "taskId": "maat-logistics-reference-20261101",
+    "companies": [
+      "maatwerkkunststof"
+    ],
+    "at": "2026-11-01T09:45:23.609061+00:00",
+    "author": "Codex",
+    "status": "review",
+    "delivery": "local",
+    "note": "Volledig Kunststofbaas-bestelnummer leidend: PACKS-kopie exact dat nummer, zichtbaar labelvoorstel en nieuwe mailonderwerpen; interne unieke boekingsidentiteit bewust apart. URL-document-ID niet als bestelnummer voorstellen. Directe bestaande acties pakbon/label/mail met actuele twee PDF’s, bevestiging/teststand/status/geen stil herverzenden behouden. Kalender-/kopherkenning voor maanddatums en conservatieve tabel-/CNC-/verzendregels na twee echte bron-PDF’s; N/A geen adresmutatie. Concrete taakverdeling voor eerste echte PACKS-zending, centrale inrichting/praktijkcontrole nog open.",
+    "evidence": "Alleen bron/documentatie vergelijken/bewerken, read-only aangeleverde PDF’s extraheren/afbeelden en bouwadministratie. Geen tests/checks/syntaxchecks/build/generator/CRM-browser-/DOM-QA/appmodeluitvoering behalve bouw-CLI, account-/providerlogin/boeking/label/mail/betaling, echte CRM-record-/bestandsmutatie, runtimeherstart, infrastructuur/secretconfig, Git/index/upload/publicatie. Bron-PDF’s/afbeeldingen privé bij chatoutputs, geen persoonlijke factuurinhoud/credentials in bron/docs/log. Gegevens/wijzigingen/staging/feedbackstatus behouden, eigen controle en echte PACKS-inrichting open. Zie docs/KUNSTSTOFBAAS-LOGISTIEK-20261101.md."
+  },
+  {
+    "id": "crm-supplier-startup-20261101-source",
+    "taskId": "crm-supplier-startup-20261101",
+    "companies": [
+      "spatlappen",
+      "maatwerkkunststof"
+    ],
+    "at": "2026-11-01T09:56:19.927939Z",
+    "author": "Codex",
+    "status": "review",
+    "delivery": "local",
+    "note": "Te vroege context.company-getter uit leverancierguardconstructie verwijderd; lazy DOMselectie bewaart bestaande invoerbescherming. Importketen vernieuwd. Beide lokale serverlisteners aanwezig, geen herstart. Eigen gebruikerscontrole gevraagd en nog open.",
+    "evidence": "Uitsluitend broncode/initialisatievolgorde vergeleken en bestaande proces-/startloggegevens gelezen. Geen tests/checks/build/browser/appmodeluitvoering behalve bouwadministratie; geen provider/boekingen/mail/CRMrecordmutaties/Git/publicatie. Zie OVERDRACHT en docs/KUNSTSTOFBAAS-WORKFLOW-20261101.md. Eigen controle open."
+  },
+  {
+    "id": "maat-supplier-workflow-20261101-source",
+    "taskId": "maat-supplier-workflow-20261101",
+    "companies": [
+      "maatwerkkunststof"
+    ],
+    "at": "2026-11-01T09:56:19.927939Z",
+    "author": "Codex",
+    "status": "open",
+    "delivery": "local",
+    "note": "Nieuwste werkvolgorde vastgelegd: eigen referentie/adres vóór bestellen, hun nummer/factuur/kosten-marge, pakbon met hun nummer groot, pakketcontrole/label en korte mail met beide bijlagen. Exacte nieuwe indeling/pakbon/mail nog niet gebouwd. Worker nog niet ontvangen; datumcontract en operationele PACKS-inrichting open.",
+    "evidence": "Uitsluitend broncode/initialisatievolgorde vergeleken en bestaande proces-/startloggegevens gelezen. Geen tests/checks/build/browser/appmodeluitvoering behalve bouwadministratie; geen provider/boekingen/mail/CRMrecordmutaties/Git/publicatie. Zie OVERDRACHT en docs/KUNSTSTOFBAAS-WORKFLOW-20261101.md. Eigen controle open."
+  },
+  {
+    "id": "crm-supplier-startup-user-confirmed-20261101",
+    "taskId": "crm-supplier-startup-20261101",
+    "companies": [
+      "spatlappen",
+      "maatwerkkunststof"
+    ],
+    "at": "2026-11-01T09:56:45.970052Z",
+    "author": "Codex",
+    "status": "review",
+    "delivery": "local",
+    "note": "Aanvulling na bronherstel: Philippe bevestigt op verversvraag dat CRM weer opent. Daarmee zijn niet automatisch beide bedrijven of de verdere invoer-/PACKS-/mailketen beoordeeld.",
+    "evidence": "Expliciet gebruikersantwoord CRM opent weer. Geen tests/checks/build/browsercontrole door Codex, geen echte provideractie, geen publicatie. Overige gebruikerscontrole blijft open."
+  },
+  {
+    "id": "maat-packs-worker-v8-review-source-20261101",
+    "taskId": "maat-packs-worker-v8-review-20261101",
+    "companies": [
+      "maatwerkkunststof"
+    ],
+    "at": "2026-11-01T10:09:54.235864Z",
+    "author": "Codex",
+    "status": "review",
+    "delivery": "local",
+    "note": "ZIPv8 productiebron naast actuele PACKS-Swagger/PDF/CRM gelezen;10bevindingen met bronregels en aanbeveling één bestaande boekingsroute. fileType/Done/GetLabels/binding/duurzame IDs/foutopvang/limieten/logs/datumguard/SQLguard. PACKS mag volgens handleiding beide datums plannen; huidige CRMverplichting nog niet aangepast. Geen werkercode gerepareerd/overgenomen; advies nu niet als werkende koppeling uploaden.",
+    "evidence": "Alleen read-only bron/documentonderzoek en bouwadministratie. ZIP privé uitgepakt; publieke Swagger v9.0.0.0 en Cloudflare-docs/types via GET opgehaald, PDFp7/12 gelezen. Geen tests/checks/build/worker/appuitvoering behalve bouwCLI, login/boeking/mail/migratie/resource/secret/CRMrecordmutatie/Git/publicatie. Bijgeleverde67mockclaim niet bevestigd. Zie docs/PACKS-WORKER-V8-REVIEW-20261101.md; bronherstel/inrichting/gebruikercontrole open."
+  },
+  {
+    "id": "maat-supplier-workflow-ui-source-20261101",
+    "taskId": "maat-supplier-workflow-ui-20261101",
+    "companies": [
+      "maatwerkkunststof"
+    ],
+    "at": "2026-11-01T10:28:17.619792Z",
+    "author": "Codex",
+    "status": "review",
+    "delivery": "local",
+    "note": "Nieuwste gevraagde korte workflow daadwerkelijk in bron: beschrijving alleen naam/adres/ons nummer, inline adresvak en PACKS-splitsing, simpel leveranciersnummer, factuur vóór compacte producttabel en sequentiële logistiek. Gedeelde adreswrite/CAS/klantsync/validator, geen echte besteldatum raden. Slotupdates/bewuste eigen bronrebase behouden factuurinvoer/PDF; vervolgklik wacht op bewaren. Korte nieuwe mail met beide bestaande bijlagen. Bron-/operationele rest blijft open.",
+    "evidence": "Uitsluitend bron/documentatie vergeleken en bewerkt, bouwadministratie via CLI. Geen tests/checks/syntax/build/generator/browser/DOM/app/modeluitvoering behalve bouwCLI, netwerk/provider/boeking/mail/CRMrecordmutatie/migratie/Git/publicatie. Eerdere data/bestanden/templates/wijzigingen/staging/feedbackstatus behouden. Eigen controle open; echte PACKS-inrichting/automatic-datummodus/workerherstel/pakbonhoofdnummer nog open. Zie docs/KUNSTSTOFBAAS-KORTE-WORKFLOW-20261101.md."
+  },
+  {
+    "id": "maat-supplier-workflow-invoice-simplified-20261101",
+    "taskId": "maat-supplier-workflow-ui-20261101",
+    "companies": [
+      "maatwerkkunststof"
+    ],
+    "at": "2026-11-01T10:37:26.143393Z",
+    "author": "Codex",
+    "status": "review",
+    "delivery": "local",
+    "note": "Betaalinvoer verwijderd uit Kunststofbaas-factuurform; revisie bewaart bestaande betalingen. Verplichte per-regel/eind-/kostenvervangingsvinkjes weg, bewuste acceptatie/vervanging via herkenbare opslagknop. Feedback gewone zichtbare sectie buiten kosten-disclosure, bedragen delen optioneel via aan/uit-knop, korte recente stappen. Nieuw voorstel laat eigen invoer staan tot expliciete overname, bronversie bewaakt.",
+    "evidence": "Alleen bron en templates naast listeners/saver vergeleken; bestaande validatie/CAS/revisie/duplicaat/bewijs behouden. Geen tests/checks/build/browser/DOM/appmodeluitvoering behalve bouwCLI, CRMrecord-/betaal-/provider-/mailmutatie, Git/publicatie. Bron lokaal, eigen controle open; PACKS-hoofdrest onvoltooid. Zie OVERDRACHT en docs/KUNSTSTOFBAAS-KORTE-WORKFLOW-20261101.md."
+  },
+  {
+    "id": "maat-packs-service-package-source-20261101",
+    "taskId": "maat-packs-service-package-20261101",
+    "companies": [
+      "maatwerkkunststof"
+    ],
+    "at": "2026-11-01T10:56:25.158226Z",
+    "author": "Codex",
+    "status": "review",
+    "delivery": "local",
+    "note": "V9bron en aangeleverde Swagger/PDF gelezen; meerdere v8fouten verbeterd maar10restpunten gedocumenteerd. Eigen private testworker rond dezelfde CRMhandler/session/previewDB/R2/registry, readonly previewopslagmarker en vastebinding, servicefout geen fallback. Lokale2regels APIrouting en installatiebron/ZIP, geen tweede shipmentsDB of credentials. Bronpakket voor latere eigen installatie, geen volledige testCRM/activering. Verdere vragen op gebruikersverzoek uitgesteld.",
+    "evidence": "Uitsluitend bron/documentreview, p7/p12 read-only PDFlezing, bronarchief samenstellen en bouwCLI. Geen tests/checks/build/appworkeruitvoering, npm/wrangler/login/resources/migraties/secrets/provider/boeking/mail/CRMrecords/Git/publicatie. Bijgeleverde v9testclaims niet bevestigd. Eigen controle en PK/account/inrichting/automaticdatum/echteproef blijven open. Zie docs/PACKS-WORKER-V9-EN-EIGEN-PAKKET-20261101.md en workers/packs-service/README.md."
+  },
+  {
+    "id": "maat-supplier-nov1-batch1-source-20261101",
+    "taskId": "maat-supplier-nov1-batch1",
+    "companies": [
+      "maatwerkkunststof"
+    ],
+    "at": "2026-11-01T11:12:20.000Z",
+    "author": "Codex",
+    "status": "review",
+    "delivery": "local",
+    "note": "Twee kolommen waar passend, ons nummer in stapkop en directe webshoplink. Landwijziging behoudt handmatige adresvelden; eigen activiteit bewijst gecommitteerde nummeropslag. Blijvende foutmelding/veldfocus, tijdelijke actieblokkering over knoppenverversing heen. Bestaande originele documenten bekijken/downloaden zonder factuur-/adresinvoer te bewaren of wissen. Zie docs/KUNSTSTOFBAAS-VIJF-BATCHES-20261101.md.",
+    "evidence": "Alleen bron vergeleken; geen tests/checks/build/browser-QA/provider/CRMrecordmutatie/publicatie. Eigen bediening/adres/kopie/nummer/PDF/conflict/smal scherm controleren. Hoofd-PACKS-koppeling en batches2–5 open."
+  },
+  {
+    "id": "maat-supplier-nov1-batch2-source-20261101",
+    "taskId": "maat-supplier-nov1-batch2",
+    "companies": [
+      "maatwerkkunststof"
+    ],
+    "at": "2026-11-01T11:12:20.000Z",
+    "author": "Codex",
+    "status": "open",
+    "delivery": "local",
+    "note": "Private workerbron aansluiten op afgezonderde proefomgeving; accountrechten/DirectBooking/dienstlimieten bevestigd configureren. Automatische versus eigen datum door hele keten; hun nummer groot op pakbon met behoud interne documentidentiteit. Pakketvoorstellen zelf beoordelen, onzeker resultaat herstellen. Zie docs/KUNSTSTOFBAAS-VIJF-BATCHES-20261101.md.",
+    "evidence": "Nog niet gebouwd in deze nieuwe ronde. Geen cloudinrichting/activatie of echte proefclaim; publicatie en provideruitvoering afzonderlijk."
+  },
+  {
+    "id": "maat-supplier-nov1-batch3-source-20261101",
+    "taskId": "maat-supplier-nov1-batch3",
+    "companies": [
+      "maatwerkkunststof"
+    ],
+    "at": "2026-11-01T11:12:20.000Z",
+    "author": "Codex",
+    "status": "open",
+    "delivery": "local",
+    "note": "Bestaande mailbox als uitgangspunt; aparte beperkte leesmachtiging/CRM-inrichting. Originele bron/bijlage, deduplicatie en gemiste berichten herstellen. Werkelijke bevestigingen/ingebedde PDF alleen gericht als metadata vastgesteld; geen permanente koppeling actief. Zie docs/KUNSTSTOFBAAS-VIJF-BATCHES-20261101.md.",
+    "evidence": "Niet gebouwd/geactiveerd. Geen mailbox/account/doorstuurregel gewijzigd; onbekende of meerdere matches vragen eigen keuze, geen automatische kosten/betalingen/boeking/mail."
+  },
+  {
+    "id": "maat-supplier-nov1-batch4-source-20261101",
+    "taskId": "maat-supplier-nov1-batch4",
+    "companies": [
+      "maatwerkkunststof"
+    ],
+    "at": "2026-11-01T11:12:20.000Z",
+    "author": "Codex",
+    "status": "open",
+    "delivery": "local",
+    "note": "Bestaande factuurinvoer gebruiken; leveranciersnummer/ons nummer/producten vergelijken. CNC/opstart/transport/btw apart, afwijkingen en marge tonen. Alleen eigen acceptatie schrijft kosten; leverancierspakbon alleen controledocument. Zie docs/KUNSTSTOFBAAS-VIJF-BATCHES-20261101.md.",
+    "evidence": "Nieuwe mailketen nog te bouwen. Geen automatische betalingen/adresmutaties, kosten en ontvangen geld apart; dubbele aanvoer en revisies bewaken."
+  },
+  {
+    "id": "maat-supplier-nov1-batch5-source-20261101",
+    "taskId": "maat-supplier-nov1-batch5",
+    "companies": [
+      "maatwerkkunststof"
+    ],
+    "at": "2026-11-01T11:12:20.000Z",
+    "author": "Codex",
+    "status": "open",
+    "delivery": "local",
+    "note": "Bevestigde afzender via bestaande dienst. Onderwerp Pakbon <hun nummer> - Order <ons nummer>, kort adres/aantal/datum, twee actuele PDF’s. Proefontvanger bewerkbaar; concept/aanbod/aflevering apart; onzekere verzending onderzoeken vóór opnieuw aanbieden. Zie docs/KUNSTSTOFBAAS-VIJF-BATCHES-20261101.md.",
+    "evidence": "Geen echte mail of actieve afzender ingericht in deze ronde. Eigen praktijkcontrole/publicatie apart; niet als waterdicht of afgehandeld markeren op basis van bron."
+  },
+  {
+    "id": "maat-supplier-nov1-batch2-planning-source-20261101",
+    "taskId": "maat-supplier-nov1-batch2",
+    "companies": [
+      "maatwerkkunststof"
+    ],
+    "at": "2026-11-01T12:00:00.000Z",
+    "author": "Codex",
+    "status": "doing",
+    "delivery": "local",
+    "note": "Datumkeuze, providerplanning, labelbundel/herstel/mail en prominente pakbonreferentie lokaal brongebouwd. Oude expliciete data/labelbasis, originele bestanden, PB-identiteit en eigen templates behouden. Versiegrenzen stoppen automatische planning op oude service en supplierkop op oude documentgenerator. Aparte previewinrichting/accountvrijgave/eigen eerste proef blijven open. Zie docs/KUNSTSTOFBAAS-BATCH2-20261101.md.",
+    "evidence": "Alleen bron gelezen/vergeleken/bewerkt en bouwadministratie. Geen tests/checks/syntax/build/browser/CRMrecords/provider/boeking/label/mail/cloudresources/secrets/migratie/Git/publicatie. Onderbroken bron hervat; geen afgeronde operationele ketenclaim."
+  },
+  {
+    "taskId": "maat-supplier-nov1-batch3",
+    "id": "maat-supplier-nov1-batch3-implementation-20261101",
+    "status": "doing",
+    "note": "Na hervatten batch2 de reeds opgedragen batch3 lokaal brongebouwd: Microsoft OAuth/PKCE Mail.Read, versleutelde token-/bronmetadata en private MIME/PDF. Begrensde hervatbare sync, aparte schedulerbron uit, wachtrij met nummermatches/keuze en bestaande factuurinvoer. Opnieuw koppelen/loskoppelen bij Meer. Geen mailbox/account/resource/consent ingericht; activering en eigen controle open.",
+    "evidence": "Bron/docs vergeleken: docs/KUNSTSTOFBAAS-BATCH3-20261101.md; cloudflare/outlook-connection/http/supplier-mail/store, shared/supplier-mail-intake, admin/orders/supplier-mail, workers/supplier-mail. Geen tests/checks/build/browser/DOM/visuele QA of provideractie. Geen kosten/betaling/order/adres uit alleen mail. Lokaal, niet gepubliceerd.",
+    "companies": [
+      "maatwerkkunststof"
+    ],
+    "at": "2026-11-01T15:59:18Z",
+    "author": "Codex",
+    "delivery": "local"
+  },
+  {
+    "taskId": "maat-supplier-nov1-batch4",
+    "id": "maat-supplier-nov1-batch4-implementation-20261101",
+    "status": "review",
+    "note": "Bewerkbare factuurinvoer behoudt bedragen bij bronwissel, verwijdert oude preview/tekstbinding, vraagt bewuste acceptatie voor huidige PDF. Herkend pakbon/credit/offerte stopt gewone kosteninvoer, ook vóór save. Exact nummer/expliciete maten/unieke productmatch/restdekking als voorstel; artikelkostenverdeling gebruikt dezelfde centrale centen, geen extra kostenrecord. Optionele feedback en één hoofdactie; geen extra controlecheckboxes/betaalinvoer.",
+    "evidence": "Alleen bronvergelijking/-bewerking: docs/KUNSTSTOFBAAS-BATCH4-20261101.md, shared/supplier-invoice-proposal, supplier-invoice-recognition/invoice-import-feedback, admin/purchases/invoice-intake en supplier-workspace. Geen tests/checks/build/browser/DOM/visuele QA, app/generator/recordmutatie/provider/publicatie. Eigen factuur/matching/btw/bronwissel/duplicaat/revisie/conflictcontrole open.",
+    "companies": [
+      "maatwerkkunststof"
+    ],
+    "at": "2026-11-01T15:59:18Z",
+    "author": "Codex",
+    "delivery": "local"
+  },
+  {
+    "taskId": "maat-supplier-nov1-batch5",
+    "id": "maat-supplier-nov1-batch5-implementation-20261101",
+    "status": "doing",
+    "note": "Nieuwe gewone/proefmail delen korte onderwerp/nummer/adres/aantal/planningbron. Proef heropenen; bewust nieuw bij Meer. Laatste verzendknop noemt beide PDF’s/ontvanger, bekeken-vinkjes weg. Gewone leveranciersmail vereist bijgewerkte centrale order/concept/PDF-byte/hashcontrole en revisiecheck vlak vóór dispatch, bestaande journal/dedup/uncertain behouden. Nog geen exact TJ Worx-afzenderadres/domeinverificatie ingesteld; service-inrichting en eigen proef open.",
+    "evidence": "Alleen bron/docs vergeleken: docs/KUNSTSTOFBAAS-BATCH5-20261101.md, shared/supplier-logistics-mail/mail-service, cloudflare/mail/supplier-trial-evidence, admin/mail/composer en supplier-trial/fulfilment. Geen echte mail/boeking/login/config/resources/migratie/secrets/Git/GitHub/publicatie of tests/checks/build/browser/DOM/visuele QA. Bestaande gegevens/templates/files/staging behouden.",
+    "companies": [
+      "maatwerkkunststof"
+    ],
+    "at": "2026-11-01T15:59:18Z",
+    "author": "Codex",
+    "delivery": "local"
+  },
+  {
+    "id": "maat-packs-worker-v3-connection-20261102",
+    "taskId": "maat-packs-worker-v3-20261102",
+    "companies": [
+      "maatwerkkunststof"
+    ],
+    "at": "2026-11-01T16:27:21Z",
+    "author": "Codex",
+    "status": "doing",
+    "delivery": "local",
+    "note": "Exacte aangeleverde gepubliceerde v3bron als baseline gelezen; actieve deployment via Cloudflare bevestigd. Datumveld/basisverschil opgelost voor nieuwe expliciet opgeslagen voorbereiding, oude labelbasis behouden; private servicebridge zonder tweede motor/fallback, bounded transport, Track & Trace-waarneming/log bij order, geen Done→geleverd. Preview-D1schema/bedrijf/opslagmarker én uitsluitend Pages-preview DB/R2/Service Binding werkelijk ingericht. Productieconfig teruggelezen gelijk; nul records/files/sessions/integrations overgenomen. CRM-bron ongepubliceerd, bestaande Worker v3 code/config/secrets ongemoeid. Login/shared secrets/Worker-Origin/documentservice/PACKSprofiel/registervrijgave/eigen proef blijven open.",
+    "evidence": "docs/PACKS-WORKER-V3-CRM-AANSLUITING-20261102.md en work/packs-cloudflare-v3-20261102/connection bevatten bron-/manifestvergelijking, concrete config en Cloudflare-readback. Geen automatische tests/checks/syntax/build/generator/browser/DOM/visuele QA/Worker-runtime/echte PACKS-login/API/boeking/label/tracking/mail/Git/publicatie uitgevoerd. Meegeleverde19mocktests zijn niet door Codex herhaald of huidigeCRMketenbevestiging. Alleen lege preview ingericht; geen productiegegevens/secrets gekopieerd, geen klant-/financiële records gemuteerd. Knop nog niet operationeel totdat inrichting/publicatie en eigen controle klaar zijn."
+  },
+  {
+    "id": "maat-packs-worker-v4-observed-20261102",
+    "taskId": "maat-packs-worker-v3-20261102",
+    "companies": [
+      "maatwerkkunststof"
+    ],
+    "at": "2026-11-01T16:34:24Z",
+    "author": "Codex",
+    "status": "doing",
+    "delivery": "local",
+    "note": "Correctie actuele deployment: tijdens deze CRM-bewerking buiten de eigen codewijzigingen Worker v4 actief geworden om16:20UTC. Deployment8f06c90c-ed35-435b-af2c-06e3285d654d, versie7fef7159-de54-4e55-870f-bbef4037e168. Actieve22modules via Cloudflarecontrolplane brongelezen/hashvergeleken:19identiek aan v3,2bestaande gewijzigd(index/packs),1nieuwe tracking-sync. Handmatig v3contract blijft gelijk; extra encrypted trackingcache/scheduled aanwezig. Boeken én scheduledtrackingfalse, geen secrets. Niet overschreven/teruggezet/geactiveerd. CRMbronbaseline en daadwerkelijke runtimeversie nu expliciet apart in overdracht/rapport.",
+    "evidence": "Bronnen/metadata bij work/packs-cloudflare-v3-20261102/observed-v4; volledige packs.js17437bytes en SHA2568b02d3d208471314ce6a709b44826157a641ce23c2d9cd165e03a76411a60553. Geen runtime-/provider-/mock-/syntax-/browserproef uitgevoerd. Geen verdere cloudmutatie door deze constatering; oude source-update blijft append-only als startstandhistorie. Previewinrichting codepublicatie/account/secrets/documentservice/eigen controle blijven open."
+  },
+  {
+    "id": "maat-packs-identity-real-read-20261102",
+    "taskId": "maat-packs-identity-20261102",
+    "companies": [
+      "maatwerkkunststof"
+    ],
+    "at": "2026-11-01T16:52:21Z",
+    "author": "Codex",
+    "status": "review",
+    "delivery": "local",
+    "note": "Tijdelijke lokale Maat/Kunststofbaas-knop Test PACKS verbinding gebouwd. Expliciet toegestane echte OAuth/Bearer GET /api/Identity uitgevoerd: token200/Identity200, daarna via lokale CRM-HTTP-route opnieuw200/200 en18type/value-claims ontvangen. Geen mocks. Eigen UI/knop-/foutweergavecontrole blijft open. Veilige foutstatus/JSON/redactie, private servercredentials, geen orderdata of boekings-/labelmotor vanuit deze module.",
+    "evidence": "docs/PACKS-IDENTITY-TEST-20261102.md, cloudflare/packs-identity.js, vaste Node-Identityhelper en beperkte lokale Pythonroute. Eerste beperkte netwerkpoging zonderHTTPantwoord, daarna echte succesvolle verbinding met netwerktoegang. Alleen deze beperkte echte accounttest; geen BookShipment/GetLabels/ProductInfo/mail/betaal/klantmutatie, algemene tests/checks/syntax/build/browser/DOM/visueleQA/Git/cloudpublicatie. Beheerde lokale servers herstart, geen bestaande gegevens/files/config overschreven. Previewlogin/publicatie niet nodig voor dit lokale doel en niet goedgekeurd; boekingsvrijgave blijft apart."
+  },
+  {
+    "id": "maat-packs-account-catalogue-20261102",
+    "taskId": "maat-packs-identity-20261102",
+    "status": "review",
+    "note": "Philippe bevestigt Identity-knop werkt. Echte read-only token200/GetProductInfo200 met drie diensten ontvangen, geen BookShipment/GetLabels. Nieuwe lokale dienstenknop en vaste private helper/route brongebouwd; nieuwe UI/route niet functioneel getest. Gewone pakketdienst package/1003/Packs/NextDay,35kg,9colli,NL/BE/LU. productSizeMax350 betekenis nog niet bevestigd. Geen prijzen/maatgrenzen of vrijgave geraden.",
+    "evidence": "Echte Node-helperopvraag,18Identityclaims historisch; actuele catalogus drie diensten, veilige HTTP/statusJSON. Docs/PACKS-EN-WORKFLOW-VERVOLG-20261102.md. Geen algemene tests/checks/build/browser-QA, boeking/label/mail of publicatie.",
+    "companies": [
+      "maatwerkkunststof"
+    ],
+    "at": "2026-11-02T02:00:19.000Z",
+    "author": "Codex",
+    "delivery": "local"
+  },
+  {
+    "id": "maat-packs-account-optional-fields-20261102",
+    "taskId": "maat-packs-worker-v3-20261102",
+    "status": "doing",
+    "note": "Echte catalogue laat nullable validUntil en soms productSizeMax weg. Bestaande null-only guard zou echte diensten weigeren. Broncorrectie in shared/packs-provider-contract plus een vervangingsmodule voor dezelfde bestaande Worker voorbereid; aanwezige grenzen/datum en bevestigd profiel verplicht gehouden. Worker niet gepubliceerd. Centrale server/secrets/profiel/register/maatformule/zijgrenzen en eigen echte labelproef open; geen tweede motor of productiegegevens in preview.",
+    "evidence": "Officiële aangeleverde Swaggerv9 bron naast echte GetProductInfo200 en exact v3-/observed-v4-modulebron. Alleen bronwijziging, geen boekuitvoering/testcheck/build/publicatie. Zie pending-account-fix-20261102/README.md.",
+    "companies": [
+      "maatwerkkunststof"
+    ],
+    "at": "2026-11-02T02:00:19.000Z",
+    "author": "Codex",
+    "delivery": "local"
+  },
+  {
+    "id": "maat-supplier-practical-source-20261102",
+    "taskId": "maat-supplier-practical-20261102",
+    "status": "review",
+    "note": "Tussentijdse gebruikersfeedback lokaal verwerkt: nummer bij stap1, directe logistieke knoppen, foutbegeleiding naar open invoer met bewaren/wissen, zoekhandeling geen leeg factuur-draftslot. Zichtbare PDF/ordervergelijking voor factuurnummer, leveranciersnummer, stuks/expliciete maten/duplicaat; huidige order niet stil omwisselen. Echte PDF opnieuw bij bewaren, afwijking vraagt toelichting. Gekoppelde pakbonref zonder extra checkbox. Invoer/bestanden en financiële/CAS-eigenaar behouden. TJ Worx-mailvoorbereiding beschreven; geen mailboxverhuizing nodig.",
+    "evidence": "Bron/templates vergeleken en aangepast, CSS centraal. Geen automatische tests/checks/syntax/build/generator/browser/DOM/visuele QA, zakelijke data-/PDF-/template-mutatie, mail/Git/GitHub/publicatie. Eigen gebruikerscontrole vervolg open, niet als afgehandelde feedback gemarkeerd.",
+    "companies": [
+      "maatwerkkunststof"
+    ],
+    "at": "2026-11-02T02:00:19.000Z",
+    "author": "Codex",
+    "delivery": "local"
+  },
+  {
+    "id": "maat-supplier-packs-panel-bottom-20261102",
+    "taskId": "maat-supplier-practical-20261102",
+    "companies": [
+      "maatwerkkunststof"
+    ],
+    "at": "2026-11-02T02:09:42Z",
+    "author": "Codex",
+    "status": "review",
+    "delivery": "local",
+    "note": "Op nieuwste verzoek het lokale PACKS-verbindingblok met Identity- en dienstenknop helemaal onderaan de Kunststofbaas-werkplek gezet, na de bestaande overige opties. Alleen markupvolgorde; handlers/gegevens/invoerbescherming blijven dezelfde. Eerdere vier feedbackcorrecties bronvergeleken, niet als functioneel getest of afgehandeld aangemerkt. Advies: eerst zelf lokale scherm-/factuurbediening met proeforder controleren; daarna apart bijgewerkte online keten met echte centrale inrichting, niet de huidige oude liveversie als bewijs voor nieuwe bron.",
+    "evidence": "admin/orders/supplier-workspace.js en docs/PACKS-EN-WORKFLOW-VERVOLG-20261102.md; alleen bron/templatelezing en -bewerking plus bouwCLI. Geen tests/checks/build/browser-QA/provideropvraag/boeking/label/mail/CRM-data-/Git-/cloud-/publicatiemutatie. Gebruiker behoudt eigen controle; echte boekingen nog niet operationeel."
+  },
+  {
+    "id": "maat-supplier-packing-pb-reference-20261102",
+    "taskId": "maat-supplier-practical-20261102",
+    "companies": [
+      "maatwerkkunststof"
+    ],
+    "at": "2026-11-02T02:13:45Z",
+    "author": "Codex",
+    "status": "review",
+    "delivery": "local",
+    "note": "Op expliciet verzoek zichtbare pakbonnummer bij Kunststofbaas PB- plus hun bestelnummer, bijvoorbeeld PB-30268793. Intern PB-nummer/provisorische reeks verdwijnt uit dit veld. Gedeelde pure weergavehelper in formulier/init/resume/datumwijziging/voorbeeld/succes en nieuwe bestandstitels; generator vult hetzelfde nummer in packing_slip_number en antwoord/filename. Browser vergelijkt serviceantwoord met verwachte nieuwe schrijfwijze. Canonieke leveranciersreferentie blijft zonder extra prefix voor PACKS/klantkoppeling; technische payload.number/jaarlijkse unieke documentreeks en oude documenten behouden.",
+    "evidence": "Bron/templates vergeleken en bewerkt in shared/packing-display-number, documents supplier-reference/generated-forms/generation en document-generator.py. Lokaal start generator per eigen documentklik als subprocess; geen extra serverherstart nodig. Geen tests/checks/build/generator/PDF/Word/browser-QA, echte record-/bestand-/template-/provider-/mailmutatie, Git/publicatie. Eigen controle open; online CRM en documentservice moeten later samen worden bijgewerkt."
+  },
+  {
+    "id": "maat-packs-live-connection-20261102",
+    "taskId": "maat-packs-worker-v3-20261102",
+    "companies": [
+      "maatwerkkunststof"
+    ],
+    "at": "2026-11-02T02:55:00.944Z",
+    "author": "Codex",
+    "status": "doing",
+    "delivery": "live",
+    "note": "Na expliciet hervatten bestaande Worker op production/live aangesloten:25modules over exact v4basis, dezelfde Maatproductieopslag, onafhankelijke productie-identiteit. Geen productiegegevens in preview; geen tweede boeker/register. Nieuwe servicekey op Worker en Pagesproduction; bestaand API-account uitsluitend Worker-secret. Bestaande CRM-passwordhash/encryptiesleutel niet vervangen/gekopieerd: private AES-GCM-context per request, tweede sessiecontrole bij Worker. Online readonly accountdiagnose in bron, Pagescodepublicatie nog in voorbereiding. Boekvrijgave blijft false zonder bevestigd profiel/maatbetekenis; nog geen zending/label.",
+    "evidence": "Cloudflaredeployment df03713f-37d0-4e74-ab57-4ab0f2d73be2 / versie21fe256b-9725-45a4-a8c8-3771f6ba49b4 na secretaanmaak. Alleen tabel/marker voor dienstidentiteit toegevoegd, geen klantrecords gewijzigd. Metadata/config/readback en noodzakelijke uploadcompile, geen tests/checks/browserQA/APIboek/label/mail. Volle keten/gebruikercontrole open."
   }
 ];

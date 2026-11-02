@@ -1,4 +1,4 @@
-import {arrivalMail} from '../../shared/arrival-mail.js?v=feedback29-batch1-followup';
+import {arrivalMail} from '../../shared/arrival-mail.js?v=packs-workflow-20261102';
 export function arrivalButton(state,o,company,{esc}){
  if(company.id!=='spatlappen')return '';try{arrivalMail(state,o.id,company,{euro:String});return `<button type="button" data-arrival-mail="${esc(o.id)}">Aankomstmail voorbereiden</button>`;}catch{return '';}
 }

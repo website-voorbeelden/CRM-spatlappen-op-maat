@@ -4,12 +4,13 @@ import {replyReferences,validMessageId} from './mail-reply.js';
 import {sanitizeSignature,htmlSignatureMessage} from './mail-signature.js';
 import {companyFor} from './companies.js';
 import {checkMailText} from './mail-templates.js?v=feedback-followup-20261028';
+import {supplierTrialKind,supplierTrialRecipient,assertSupplierTrialEnvelope} from './supplier-trial-mail.js?v=supplier-batches35-20261101';
 const fail=(message,field)=>{throw Object.assign(Error(message),{field});};
 const address=value=>typeof value==='string'&&value.length<=254&&/^[A-Za-z0-9.!#$%&'*+/=?^_`{|}~-]+@[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)+$/.test(value);
 const id=value=>typeof value==='string'&&/^[-a-zA-Z0-9._]{1,160}$/.test(value);
 const line=(value,max)=>typeof value==='string'&&value.trim()&&value.length<=max&&!/[\r\n\x00<>]/.test(value);
-export function createMailEngine({read,write,exclusive,fetchImpl,digest}){
- const publicConfig=config=>({configured:!!config?.apiKey,sender:config?.sender||'',senderName:config?.senderName||'',senders:config?.sender?[config.sender,...(config.aliases||[])]:[],invoiceSender:config?.invoiceSender||config?.sender||'',senderByKind:config?.senderByKind||{},signature:config?.signature||'',signatureHtml:config?.signatureHtml||'',signatureProfiles:config?.signatureProfiles||[],signatureBySender:config?.signatureBySender||{},signatureSettingsVersion:config?.signatureSettingsVersion||'',replyTo:config?.replyTo||'',testTo:config?.testTo||'',allowCustomers:config?.allowCustomers===true});
+export function createMailEngine({read,write,exclusive,fetchImpl,digest,verifySupplierTrial,verifySupplierDocument}){
+ const publicConfig=config=>({supplierTrialMail:true,supplierTrialStateGuard:typeof verifySupplierTrial==='function',supplierFulfilmentStateGuard:typeof verifySupplierDocument==='function',configured:!!config?.apiKey,sender:config?.sender||'',senderName:config?.senderName||'',senders:config?.sender?[config.sender,...(config.aliases||[])]:[],invoiceSender:config?.invoiceSender||config?.sender||'',senderByKind:config?.senderByKind||{},signature:config?.signature||'',signatureHtml:config?.signatureHtml||'',signatureProfiles:config?.signatureProfiles||[],signatureBySender:config?.signatureBySender||{},signatureSettingsVersion:config?.signatureSettingsVersion||'',replyTo:config?.replyTo||'',testTo:config?.testTo||'',allowCustomers:config?.allowCustomers===true});
  return {
   async status(company){return publicConfig(await read(company,'config'));},
   async configure(company,input){return exclusive(company,async()=>{
@@ -28,23 +29,33 @@ export function createMailEngine({read,write,exclusive,fetchImpl,digest}){
    const signatureSettingsVersion=crypto.randomUUID();
    const config={signatureProfiles,signatureBySender,signatureSettingsVersion,senderByKind,signatureHtml,sender:input.sender,senderName:input.senderName.trim(),aliases:[...new Set(aliases)].filter(value=>value!==input.sender),invoiceSender,signature,replyTo:input.replyTo||input.sender,testTo:input.testTo,allowCustomers:input.allowCustomers===true,apiKey};await write(company,'config',config);return publicConfig(config);
   });},
+  async trialRecipient(company,input){return exclusive(company,async()=>{
+   if(company!=='maatwerkkunststof'||input.confirmed!==true)fail('Bevestig eerst het eigen proefmailadres.','testTo');
+   const config=await read(company,'config');if(!config?.apiKey)fail('Stel eerst een geverifieerde afzender en de mailverbinding in.');
+   const testTo=supplierTrialRecipient(input.testTo);
+   if(input.expectedTestTo!==config.testTo){if(testTo===config.testTo)return publicConfig(config);fail('Het proefadres is intussen gewijzigd. Haal de huidige instelling opnieuw op.','testTo');}
+   const updated={...config,testTo};await write(company,'config',updated);return publicConfig(updated);
+  });},
   async journal(company){return {messages:Object.values(await read(company,'journal')||{}).map(({fingerprint,...entry})=>entry).sort((a,b)=>b.createdAt.localeCompare(a.createdAt)).slice(0,50)};},
   async send(company,input){return exclusive(company,async()=>{
-   if(input.companyId!==company||input.confirmed!==true||!id(input.requestId)||!['test','document','message'].includes(input.kind))fail('Controleer en bevestig deze e-mail eerst in het CRM.');
+   if(input.companyId!==company||input.confirmed!==true||!id(input.requestId)||!['test','document','message',supplierTrialKind].includes(input.kind))fail('Controleer en bevestig deze e-mail eerst in het CRM.');
    const config=await read(company,'config');if(!config?.apiKey)fail('Stel SMTP2GO eerst in bij Instellingen & back-up.');
+   const trial=input.kind===supplierTrialKind;
+   if(trial)assertSupplierTrialEnvelope(company,input,config);
+   if(input.supplierFulfilmentMail&&(company!=='maatwerkkunststof'||input.kind!=='document'||typeof verifySupplierDocument!=='function'))fail('De gewone leveranciersmail vereist de bijgewerkte centrale order-/bijlagecontrole.');
    let payload,documentId='',orderId='';
    const testSender=input.testSender||config.sender;if(input.kind==='test'&&![config.sender,...(config.aliases||[])].includes(testSender))fail('Kies een ingestelde afzender voor de testmail.');
    const from=input.kind==='test'?testSender:input.expectedSender;
    const selectedSignature=signatureForSender(config,from,input.signatureChoice||'');
    if(input.kind==='test')payload={sender:config.senderName+' <'+from+'>',to:[config.testTo],subject:'CRM-testmail · '+companyFor(company).name,text_body:'Dit is een test van de SMTP2GO-koppeling voor '+companyFor(company).name+'. Er zijn geen klantgegevens of facturen meegestuurd.'};
    else{
-    if(!config.allowCustomers)fail('Klantverzending staat uit. Verstuur eerst een testmail en schakel daarna klantverzending in bij de e-mailinstellingen.');
+    if(!trial&&!config.allowCustomers)fail('Klantverzending staat uit. Verstuur eerst een testmail en schakel daarna klantverzending in bij de e-mailinstellingen.');
     if(![config.sender,...(config.aliases||[])].includes(input.expectedSender)||input.expectedSenderName!==config.senderName||input.expectedReplyTo!==config.replyTo)fail('De afzenderinstellingen zijn gewijzigd. Open het e-mailvoorbeeld opnieuw.');
-    if(!address(input.to)||!line(input.subject,200)||typeof input.text!=='string'||!input.text.trim()||input.text.length>30000||input.text.includes('\0')||!(id(input.orderId)||input.kind==='message'&&id(input.customerId))||input.customerId&&!id(input.customerId)||input.kind==='document'&&!id(input.orderId)||input.kind==='document'&&!id(input.documentId)||input.kind==='message'&&(input.pdf||input.documentId))fail('Controleer ontvanger, onderwerp, bericht en PDF-bijlage.');
+    if(!address(input.to)||!line(input.subject,200)||typeof input.text!=='string'||!input.text.trim()||input.text.length>30000||input.text.includes('\0')||!(id(input.orderId)||input.kind==='message'&&id(input.customerId))||input.customerId&&!id(input.customerId)||(input.kind==='document'||trial)&&!id(input.orderId)||(input.kind==='document'||trial)&&!id(input.documentId)||input.kind==='message'&&(input.pdf||input.documentId))fail('Controleer ontvanger, onderwerp, bericht en PDF-bijlage.');
     checkMailText(input.subject,input.text);
     if(input.replyMessageId&&!validMessageId(input.replyMessageId))fail('Deze mail bevat geen bruikbare verwijzing voor een antwoord. Open een nieuw bericht.');
     orderId=input.orderId||'';payload={sender:config.senderName+' <'+input.expectedSender+'>',to:[input.to],subject:input.subject.trim(),text_body:input.text};
-    if(input.kind==='document'){
+    if(input.kind==='document'||trial){
     const pdf=input.pdf;if(!pdf||!line(pdf.filename,180)||!pdf.filename.toLowerCase().endsWith('.pdf')||/[\\/]/.test(pdf.filename)||typeof pdf.fileblob!=='string'||pdf.fileblob.length>2800000)fail('Kies één PDF-bijlage van maximaal 2 MB.');
     let bytes;try{bytes=atob(pdf.fileblob);}catch{fail('De PDF-bijlage is ongeldig of te groot.');}if(btoa(bytes)!==pdf.fileblob||bytes.length>2000000||bytes.slice(0,5)!=='%PDF-')fail('De PDF-bijlage is ongeldig of te groot.');
     documentId=input.documentId;payload.attachments=[{filename:pdf.filename,mimetype:'application/pdf',fileblob:pdf.fileblob}];}
@@ -53,16 +64,20 @@ export function createMailEngine({read,write,exclusive,fetchImpl,digest}){
    if((input.expectedSignatureHtml||'')!==(selectedSignature.signatureHtml||'')&&input.kind!=='test')fail('De HTML-handtekening is gewijzigd. Open het e-mailvoorbeeld opnieuw.');
    if(input.kind!=='test'&&input.expectedSignatureId!==undefined&&input.expectedSignatureId!==selectedSignature.id)fail('De gekozen handtekening of adreskoppeling is gewijzigd. Open het voorbeeld opnieuw.');
    {const message=renderSenderSignature(payload.text_body,config,from,input.signatureChoice||'');payload.text_body=message.text;if(message.html)payload.html_body=message.html;if(message.inlines?.length)payload.inlines=message.inlines;
-    const extra=input.kind==='test'?[]:validateMailAttachments(input.attachments);if(extra.length)payload.attachments=[...(payload.attachments||[]),...extra];
+    const extra=input.kind==='test'?[]:validateMailAttachments(input.attachments);if(trial&&(extra.length!==1||extra[0].mimetype!=='application/pdf'||atob(extra[0].fileblob).slice(0,5)!=='%PDF-'))fail('De proefmail moet precies twee geldige PDF-bijlagen bevatten.');if(extra.length)payload.attachments=[...(payload.attachments||[]),...extra];
    }
    payload.fastaccept=false;payload.custom_headers=[{header:'Reply-To',value:config.replyTo},{header:'X-CRM-Request',value:company+'-'+input.requestId},{header:'Message-ID',value:'<crm-'+company+'-'+input.requestId+'@'+from.split('@')[1]+'>'}];
    if(input.kind!=='test'&&input.replyMessageId)payload.custom_headers.push({header:'In-Reply-To',value:input.replyMessageId},{header:'References',value:replyReferences(input.references,input.replyMessageId)});
    const fingerprint=await digest(JSON.stringify(payload)),journal=await read(company,'journal')||{},previous=journal[input.requestId];
-   if(previous){if(previous.fingerprint!==fingerprint)fail('Dit verzendverzoek bestaat al met andere inhoud. Open een nieuw concept.');if(previous.status==='accepted'){const {fingerprint:_,...safe}=previous;return {...safe,reused:true};}fail(previous.status==='rejected'?'SMTP2GO heeft dit verzoek geweigerd. Controleer de activiteit en instellingen voordat je een nieuw concept maakt.':'Dit verzoek heeft geen zeker resultaat. Controleer Reports → Activity in SMTP2GO voordat je opnieuw verstuurt.');}
-   if(input.kind==='document'&&Object.values(journal).some(entry=>entry.status==='accepted'&&entry.orderId===orderId&&entry.documentId===documentId&&entry.to.toLowerCase()===input.to.toLowerCase())&&input.acknowledgeResend!==true)fail('Deze PDF is al aangeboden aan deze ontvanger. Bevestig bewust opnieuw versturen in het voorbeeld.');
-   if(input.kind==='document'&&Object.values(journal).some(entry=>['pending','uncertain'].includes(entry.status)&&entry.orderId===orderId&&entry.documentId===documentId&&entry.to.toLowerCase()===input.to.toLowerCase()))fail('Een eerdere verzending van deze PDF is nog onzeker. Controleer SMTP2GO Activity voordat je opnieuw verstuurt.');
+   if(previous){if((previous.kind===supplierTrialKind)!==trial)fail('Dit verzendverzoek hoort bij een andere mailsoort. Open een nieuw concept.');if(previous.fingerprint!==fingerprint)fail('Dit verzendverzoek bestaat al met andere inhoud. Open een nieuw concept.');if(previous.status==='accepted'){const {fingerprint:_,...safe}=previous;return {...safe,reused:true};}fail(previous.notDispatched?'Dit verzoek is vóór verzending gestopt. Open een actueel proefconcept; dit verzoek wordt niet opnieuw verstuurd.':previous.status==='rejected'?'SMTP2GO heeft dit verzoek geweigerd. Controleer de activiteit en instellingen voordat je een nieuw concept maakt.':'Dit verzoek heeft geen zeker resultaat. Controleer Reports → Activity in SMTP2GO voordat je opnieuw verstuurt.');}
+   if((input.kind==='document'||trial)&&Object.values(journal).some(entry=>((entry.kind===supplierTrialKind)===trial)&&entry.status==='accepted'&&entry.orderId===orderId&&entry.documentId===documentId&&entry.to.toLowerCase()===input.to.toLowerCase())&&input.acknowledgeResend!==true)fail('Deze PDF is al aangeboden aan deze ontvanger. Bevestig bewust opnieuw versturen in het voorbeeld.');
+   if((input.kind==='document'||trial)&&Object.values(journal).some(entry=>((entry.kind===supplierTrialKind)===trial)&&['pending','uncertain'].includes(entry.status)&&entry.orderId===orderId&&entry.documentId===documentId&&entry.to.toLowerCase()===input.to.toLowerCase()))fail('Een eerdere verzending van deze PDF is nog onzeker. Controleer SMTP2GO Activity voordat je opnieuw verstuurt.');
+   const recheckTrial=trial&&verifySupplierTrial?await verifySupplierTrial(company,input):input.kind==='document'&&verifySupplierDocument?await verifySupplierDocument(company,input):null;
    const entry={requestId:input.requestId,kind:input.kind,from,signatureId:selectedSignature.id,to:payload.to[0],subject:payload.subject,orderId,customerId:input.customerId||'',documentId,messageId:payload.custom_headers.find(h=>h.header==='Message-ID').value,replyMessageId:input.replyMessageId||'',createdAt:new Date().toISOString(),status:'pending',fingerprint};journal[input.requestId]=entry;await write(company,'journal',journal);
+   let dispatched=false;
    try{
+    if(recheckTrial)await recheckTrial();
+    dispatched=true;
     const response=await fetchImpl('https://api.smtp2go.com/v3/email/send',{method:'POST',headers:{'Content-Type':'application/json','X-Smtp2go-Api-Key':config.apiKey},body:JSON.stringify(payload),redirect:'manual',signal:AbortSignal.timeout(30000)});
     const raw=await response.text();if(raw.length>64000)throw Error('Uncertain response');let result;try{result=JSON.parse(raw);}catch{throw Error('Uncertain response');}
     if(response.ok&&result.data?.succeeded===1&&result.data?.failed===0&&typeof result.data.email_id==='string'&&result.data.email_id.length<=160){entry.status='accepted';entry.providerId=result.data.email_id;entry.acceptedAt=new Date().toISOString();}
@@ -70,7 +85,7 @@ export function createMailEngine({read,write,exclusive,fetchImpl,digest}){
     else throw Error('Uncertain response');
     await write(company,'journal',journal);if(entry.status==='rejected')fail('SMTP2GO heeft de mail geweigerd. Controleer de API-rechten, afzenderverificatie, limiet en Reports → Activity.');
     const {fingerprint:_,...safe}=entry;return {...safe,reused:false};
-   }catch(error){if(entry.status==='pending'){entry.status='uncertain';await write(company,'journal',journal);}throw Object.assign(Error(entry.status==='rejected'?'SMTP2GO heeft de mail geweigerd. Controleer de API-rechten, afzenderverificatie, limiet en Reports → Activity.':'Het verzendresultaat is onzeker. Controleer SMTP2GO Reports → Activity; dit verzoek wordt niet automatisch opnieuw verstuurd.'),{mailStatus:entry.status==='rejected'?'rejected':'uncertain'});}
+   }catch(error){if(!dispatched){entry.status='rejected';entry.notDispatched=true;await write(company,'journal',journal);throw Object.assign(Error('De mail is vóór verzending gestopt. '+error.message),{mailStatus:'rejected'});}if(entry.status==='pending'){entry.status='uncertain';await write(company,'journal',journal);}throw Object.assign(Error(entry.status==='rejected'?'SMTP2GO heeft de mail geweigerd. Controleer de API-rechten, afzenderverificatie, limiet en Reports → Activity.':'Het verzendresultaat is onzeker. Controleer SMTP2GO Reports → Activity; dit verzoek wordt niet automatisch opnieuw verstuurd.'),{mailStatus:entry.status==='rejected'?'rejected':'uncertain'});}
   });}
  };
 }

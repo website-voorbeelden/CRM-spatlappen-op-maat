@@ -1,4 +1,5 @@
 import {loading} from "../loading.js";
+import {packingDisplayNumber} from '../../shared/packing-display-number.js?v=packing-pb-reference-20261102';
 import {customerProductDetails,publicProductSpecifications} from '../../shared/product-specifications.js?v=product-thickness-20261021';
 export const documentTypes={
  confirmation:{title:'Orderbevestiging',prefix:'OB',numberLabel:'OB-nummer',filename:'Orderbevestiging',category:'confirmation'},
@@ -38,6 +39,7 @@ export async function renderConfirmation(payload){
  const response=await fetch('/__local/documents/render',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
  const result=await response.json().catch(()=>({error:'De documentomzetter is niet bereikbaar. Probeer opnieuw.'}));
  if(!response.ok||result.error)throw Error(result.error||'Het document kon niet worden gemaakt.');
+ if(payload.kind==='packing'&&payload.fields?.supplier_order_reference&&result.packingDisplayNumber!==packingDisplayNumber(payload.number,payload.fields.supplier_order_reference))throw Error('De documentservice ondersteunt PB- met hun bestelnummer op de pakbonkop nog niet. Werk eerst de documentservice bij; er is geen pakbon opgeslagen.');
  return {templateProtocol:result.templateProtocol,pdf:generatedBlob(result.pdf,'application/pdf'),docx:result.docx&&!(payload.formats?.length===1&&payload.formats[0]==='pdf')?generatedBlob(result.docx,'application/vnd.openxmlformats-officedocument.wordprocessingml.document'):null,pages:result.pages,previews:result.previews||[],downloads:result.downloads||{}};
  });
 }

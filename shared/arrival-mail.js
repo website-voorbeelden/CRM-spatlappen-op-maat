@@ -1,5 +1,5 @@
 import {customerOrderBalance} from './purchase-customer-balances.js?v=feedback29-batch1-followup';
-import {funnelPayment} from './sales-funnel.js?v=feedback29-batch3-followup';
+import {funnelPayment} from './sales-funnel.js?v=packs-workflow-20261102';
 import {documentReplyContext} from './document-mail-context.js?v=crm-code-review-20261027';
 export function arrivalMail(state,id,company,{euro}){
  if(company.id!=='spatlappen')throw Error('Deze aankomstmail hoort bij Spatlappen.');

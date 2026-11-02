@@ -1,5 +1,5 @@
 import {duplicateOrders,canonicalOrderId} from '../../shared/duplicate-records.js?v=duplicate-review-20261028';
-import {orderMergeIssues,orderMergePlan,applyOrderMerge} from '../../shared/order-merge.js?v=feedback-followup-20261028';
+import {orderMergeIssues,orderMergePlan,applyOrderMerge} from '../../shared/order-merge.js?v=packs-workflow-20261102';
 export function createOrderMerge(context){
  const name=o=>'#'+(o.sourceNumber||o.number)+' · '+(o.items||[]).map(i=>i.quantity+'× '+i.description).join(', ');
  const labels={width:'Breedte (mm)',height:'Hoogte (mm)',source:'Adreskeuze',recipient:'Ontvanger',country:'Land',address:'Adres',instructions:'Instructies',shippingKnown:'Verzendprijs bekend',shippingCharge:'Verzendprijs',leadTimeMinWeeks:'Minimaal aantal weken',leadTimeMaxWeeks:'Maximaal aantal weken',leadTimeBasis:'Start vanaf',leadTimeStartDate:'Vaste startdatum',leadTimeDepositPercent:'Aanbetaling (%)',expectedDateFrom:'Levering vanaf',expectedDateTo:'Levering t/m'};

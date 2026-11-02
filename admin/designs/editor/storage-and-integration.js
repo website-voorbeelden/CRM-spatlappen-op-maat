@@ -99,7 +99,7 @@ function setLocalDesignName(name){$('localDesignName').value=name;const variantN
 
 function compactDesignState(){return {f:state.flap,h:state.holes,l:state.logos,t:state.texts,u:state.ui};}
 
-async function productModule(){return productDesignModule??=await import('../../product-designs.js?v=feedback29-batch4-followup');}
+async function productModule(){return productDesignModule??=await import('../../product-designs.js?v=invoice-intake-review-20261031');}
 
 function normalizeIntegrationContext(value={}){
   const result={};

@@ -1,6 +1,12 @@
 import {formProblem} from '../admin/form-guidance.js?v=crm-code-review-20261027';
+import {invoiceIntakeReferencesDocument} from './supplier-invoice-intake.js?v=supplier-batches35-20261101';
+import {expenseReferencesDocument} from './business-expenses.js?v=invoice-intake-review-20261031';
 export function documentRemovalInfo(state,id){
  const document=state.documents.find(d=>d.id===id);if(!document)throw Error('Dit document is al verwijderd.');
+ if(invoiceIntakeReferencesDocument(state,id))throw Error('Dit bestand hoort bij een ingelezen leveranciersfactuur of revisie. Bewaar het als financieel bronbewijs.');
+ if(document.packsLabelSource||document.packsLabelBundle)throw Error('Dit bestand is bewijs van een echte PACKS-boeking. Bewaar de originele pakketlabels en bundel; verwijderen annuleert geen zending.');
+ if(expenseReferencesDocument(state,id))throw Error('Dit bestand hoort bij bedrijfskosten of hun wijzigingshistorie. Bewaar het als bronbewijs.');
+ if(state.orders.some(o=>o.supplierFulfilment?.labelDocumentId===id))throw Error('Dit is het gekozen PACKS-label voor een leveranciersbestelling. Kies eerst een ander label bij Bestelling openen; het eerdere bestand blijft dan los beschikbaar.');
  const vatRecords=[...(state.vatLedger?.entries||[]).filter(e=>e.status!=='void'),...(state.vatLedger?.preparations||[]).flatMap(p=>p.entries||[])];if(vatRecords.some(e=>e.documentIds?.includes(id)||e.sourceKey==='file:'+id))throw Error('Dit bestand hoort bij een btw-boeking of bewaarde voorbereiding. Bewaar het bronbewijs; verwijder het niet uit de administratie.');
  if(state.orders.some(o=>o.items.some(i=>(i.designVariants||[]).some(v=>[v,...(v.revisions||[])].some(r=>r.documentId===id||r.previewId===id)))))throw Error('Dit bestand hoort bij een bewaarde ontwerpvariant. Beheer het ontwerp bij het product; eerdere versies blijven behouden.');
  if(document.internalDesign)throw Error('Dit is een intern ontwerpbestand. Beheer het ontwerp vanuit de productregel.');

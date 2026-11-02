@@ -5,9 +5,9 @@ import {loading} from './loading.js';
 const escape=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 export async function emailRequest(endpoint,input){
  const work=async()=>{
- const response=await fetch('/__local/assistant/mail-'+endpoint,{method:input===undefined?'GET':'POST',headers:input===undefined?{}:{'Content-Type':'application/json'},body:input===undefined?undefined:JSON.stringify(input),cache:'no-store',signal:AbortSignal.timeout(endpoint==='send'?40000:endpoint==='configure'?15000:6000)});
+ const response=await fetch('/__local/assistant/mail-'+endpoint,{method:input===undefined?'GET':'POST',headers:input===undefined?{}:{'Content-Type':'application/json'},body:input===undefined?undefined:JSON.stringify(input),cache:'no-store',signal:AbortSignal.timeout(endpoint==='send'?40000:['configure','trial-recipient'].includes(endpoint)?15000:6000)});
  const result=await response.json().catch(()=>({error:'Geen zeker antwoord ontvangen. Controleer SMTP2GO Reports → Activity voordat je opnieuw verstuurt.'}));if(!response.ok)throw Object.assign(Error(result.error||'E-maildienst niet bereikbaar.'),{mailStatus:result.mailStatus,field:result.field});return result;
- };return endpoint==='status'?work():loading.run(endpoint==='send'?'E-mail aanbieden…':endpoint==='configure'?'E-mailinstellingen opslaan…':'Verzendlog ophalen…',work);
+ };return endpoint==='status'?work():loading.run(endpoint==='send'?'E-mail aanbieden…':endpoint==='configure'?'E-mailinstellingen opslaan…':endpoint==='trial-recipient'?'Proefadres bewaren…':'Verzendlog ophalen…',work);
 }
 export const emailAvailable=runtime=>runtime.mode==='local'||runtime.mailReady===true;
 export function emailSettingsMarkup(runtime,company){

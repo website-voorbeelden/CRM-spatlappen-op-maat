@@ -96,6 +96,7 @@ export async function startAssistantServer({key,directory,port=3030,connection:p
    if(url.pathname==='/mail-status'&&req.method==='GET')return json(await mail.status(companyId));
    if(url.pathname==='/mail-journal'&&req.method==='GET')return json(await mail.journal(companyId));
    if(url.pathname==='/mail-configure'&&req.method==='POST')return json(await mail.configure(companyId,await body(req)));
+   if(url.pathname==='/mail-trial-recipient'&&req.method==='POST')return json(await mail.trialRecipient(companyId,await body(req)));
    if(url.pathname==='/mail-send'&&req.method==='POST')return json(await mail.send(companyId,await body(req)));
    return json({error:'Onbekende e-mailroute.'},404);
   }catch(e){return json({error:e.message||'E-mail verwerken lukt niet.',...(['rejected','uncertain'].includes(e.mailStatus)?{mailStatus:e.mailStatus}:{}),...(['senderName','sender','replyTo','testTo','apiKey','aliases','invoiceSender','signature'].includes(e.field)?{field:e.field}:{})},400);}}

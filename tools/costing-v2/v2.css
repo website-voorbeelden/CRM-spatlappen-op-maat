@@ -68,3 +68,5 @@ dialog{border:1px solid #c8d8cc;border-radius:14px;max-width:min(520px,90vw);pad
 .v2-ai-dialog [data-review]{padding:12px 20px;margin-top:14px;background:#294d93;border:1px solid #294d93;border-radius:8px;color:white;font:600 14px system-ui;cursor:pointer}
 .v2-ai-dialog [data-review]:disabled{cursor:default}
 @media(max-width:520px){.v2-ai-section-heading{align-items:stretch;flex-direction:column;gap:10px}.v2-ai-dialog .v2-ai-copy{width:100%}.v2-ai-dialog .v2-help-lead{margin-bottom:16px}.v2-ai-answer-label{font-size:17px}.v2-ai-dialog [data-review]{width:100%}}
+
+.v2-feedback-picked{outline:3px solid #2563eb!important;outline-offset:3px}.v2-feedback-pick-hint{position:fixed;z-index:10000;top:8px;left:16px;right:16px;padding:16px;background:#173b6c;color:white;border-radius:8px}.v2-feedback-pick-hint button{min-height:44px;background:#fff;color:#173b6c;border:1px solid #b8cbea}.v2-feedback-pick-hint p{margin:0 0 8px}.v2-feedback-pick-hint button:focus-visible{outline:3px solid #9cbdff;outline-offset:3px}

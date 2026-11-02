@@ -2,10 +2,10 @@ import {requestProductBlocks,cleanRequestProducts} from './request-products.js';
 import {customerEmailMatches} from './inquiry-customer.js';
 import {companyFor} from './companies.js';
 import {emailAddresses,conversationSignature} from './mail-inbox.js?v=crm-code-review-20261027';
-import {isFormInquiryCandidate,parseFormInquiry,inquiryText,inquiryRequirements,cleanInquirySpecs,specLabels,createInquiry} from './inquiries.js?v=feedback-followup-20261028';
+import {isFormInquiryCandidate,parseFormInquiry,inquiryText,inquiryRequirements,cleanInquirySpecs,specLabels,createInquiry} from './inquiries.js?v=packs-workflow-20261102';
 import {splitQuotedMail} from './mail-display.js';
 import {inquiryQuantity,inquiryColor} from './inquiry-quantity.js?v=inquiry-form-20261021';
-import {markProvenance} from './provenance.js?v=provenance-colors-20261027';
+import {markProvenance} from './provenance.js?v=invoice-link-review-20261101';
 
 // Explicit labels and units only. No network, learned customer data or price inference.
 const numeric=new Set(['quantity','width','height','diameter','holeDiameter','thickness']);

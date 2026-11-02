@@ -1,3 +1,89 @@
+> Nieuw2november maat-packs-identity-20261102 review/local: echte beperkte token/Identity-test expliciet door gebruiker toegestaan, via lokale HTTP-route beide200. Geen algemene testronde of boekingsproef. Gebruikerscontrole knop/JSON/foutweergave open; bronlog via CLI. Zie PACKS-IDENTITY-TEST-20261102.md.
+
+> Nieuw2november taak maat-packs-worker-v3-20261102 doing/local: nieuw CRM-bronwerk lokaal, preview-schema/marker en Pages-bindings daadwerkelijk in Cloudflare ingericht. Geen volledige livelevering: CRM/Workersecret-/Origin-/documentservice/account-/register-/eigen proef open. Oude taken/gebruikersstatus behouden; noteer echte cloudinrichting naast lokale codestatus. Zie PACKS-WORKER-V3-CRM-AANSLUITING-20261102.md.
+
+> Vervolg1november Kunststofbaas: vijf vaste maat-supplier-nov1-batch1..5-tags behouden. 1 en4 review/local; 2,3,5 doing/local wegens operationele inrichting/vrijgave/afzender/eigen proef. Bronwerk aanwezig is geen gebruikersafhandeling. Notities via scripts/build-task.mjs, geen opgeslagen gebruikersstatus/meldingen herschreven. Zie KUNSTSTOFBAAS-VIJF-BATCHES-20261101.md.
+
+> Kunststofbaas nieuwe ronde1november: maat-supplier-nov1-batch1 review/local, eigen controle open; batches2–5 open/local met oudere gedeeltelijke basis expliciet. Geen oude feedback afhandelen of gegevensstatus overschrijven. Zie KUNSTSTOFBAAS-VIJF-BATCHES-20261101.md. Geen tests/publicatie.
+
+> Eigen PACKSpakket1november: maat-packs-service-package-20261101 review/local. Bronreview v9 plus private CRM-testdienst/installatiebron, geen tweede register. Eigen controle/inrichting/automaticdatum/echte proef open, geen tests/deploy.
+
+> Factuurvereenvoudiging1november bij maat-supplier-workflow-ui-20261101 review/local: geen betaalinvoer/controle-vinkjes, feedback direct zichtbaar, behoud oude betalingen en financiële validatie. Eigen controle open, geen tests/publicatie.
+
+> Korte workflow1november: maat-supplier-workflow-ui-20261101 review/local, echte UIvolgorde/direct adres/splitsing/nummer/factuur/compacte logistiek brongebouwd. Gebruikerscontrole en hoofd-PACKS-rest blijven open; geen tests/publicatie. Zie KUNSTSTOFBAAS-KORTE-WORKFLOW-20261101.md.
+
+> PACKS-workerreview1november: maat-packs-worker-v8-review-20261101 review/local, review geleverd maar10bronbevindingen/aansluiting/inrichting open. Geen tests/reparatie/publicatie; zie PACKS-WORKER-V8-REVIEW-20261101.md.
+
+> Opstartherstel1november: crm-supplier-startup-20261101 review/local; te vroege company-getter uit leveranciersinvoerbewaking verwijderd. Beide serverlisteners aanwezig, geen herstart/test/browsercontrole. Eigen opstartcontrole open. maat-supplier-workflow-20261101 open/local legt nieuwe volgorde vast, geen implementatieclaim; zie KUNSTSTOFBAAS-WORKFLOW-20261101.md.
+
+> Logistiek1november: maat-logistics-reference-20261101 review/local. Volledig leveranciersnummer op kopie/zichtbare labelreferentie, directe bestaande pakbon/label/mailacties, echte factuurbronnen gelezen voor maanddatum/CNC/tabel. Centrale PACKS-inrichting en eigen controle open, hoofdtaak niet afgerond. Geen tests/publicatie; zie KUNSTSTOFBAAS-LOGISTIEK-20261101.md.
+
+> PDF-slepen1november: maat-invoice-drop-20261101 review/local. Eigen sleepvak in bestaande factuurinvoer; algemeen documentuploadpad niet aangeroepen. Gebruikerscontrole open, geen tests/publicatie. Automatisch inloggen uitgesteld; zie KUNSTSTOFBAAS-PDF-SLEPEN-20261101.md.
+
+> Directe invoer1november: maat-supplier-inline-20261101 review/local. Bestelnummer als veld, inline factuurinvoer met bewuste kostenacceptatie en korte PACKS-tekst. CAS/invoer-/navigatiebescherming, eigen controle open; geen tests/publicatie. Zie KUNSTSTOFBAAS-DIRECTE-INVOER-20261101.md.
+
+> Besteltekst1november: maat-supplier-text-20261101 review/local. Eigen tekst per order en bewerkbare standaard, hercontrole/invoerbehoud en aparte gegevenswaarschuwingen. Eigen controle open; geen tests/publicatie. Zie KUNSTSTOFBAAS-BESTELTEKST-20261101.md.
+
+> Factuurlink1november: maat-invoice-link-20261101 review/local, URL/PDF-kostenvoorstel en afzonderlijke importfeedback. Echte zes links gaven toegangsweigering; herkenning niet op die facturen afgestemd. Eigen controle/voorbeeld-PDF/serverherstart open, geen tests/publicatie of financiële mutatie. Zie KUNSTSTOFBAAS-FACTUURLINK-20261101.md.
+
+> PACKS1november: maat-packs-operation-20261101 en maat-packs31-batch3 review/local voor aangesloten bron. Hoofdtaak doing/local; batches2/4 en echte account-/server-/proef-/eigen controle open. Geen tests/provideractie/publicatie. Zie PACKS-BOEKEN-EN-LOGS-20261101.md.
+
+> Nieuw1november: maat-kunststofbaas-tab-20261101 review/local, eigen tab/kort nummerformulier/documentvergelijking. Hoofdtaak Kunststofbaas/PACKS blijft gedeeltelijk/lokaal; volledige automatische inhoudscontrole niet gebouwd, eigen beoordeling open. Geen tests/build/publicatie of echte data-/provideractie. Zie KUNSTSTOFBAAS-ORDERTAB-20261101.md.
+
+> Nieuwe ronde batch5,31oktober: crm-finance31-batch5 review/local via CLI-bronnotitie. Analytics → Kosten & geld, VOF-privéregistraties/historie en gescheiden bron-/kas-/btw-/controle-export. Alle vijf nieuwe batches brongebouwd voor eigen controle, oude gedeeltelijke feedback/PACKS behouden. Geen tests/build/publicatie of zakelijke registratie. Zie FINANCIEEL-BATCH5-20261031.md.
+
+> Batch4 nieuwe ronde31oktober: crm-finance31-batch4 review/local via CLI-bronnotitie. Kunststofbaas-factuurcontrole met exacte regelkosten/orderkeuze en bewijs/btw/revisies; eigen controle open, batch5 nog niet gebouwd. Geen feedbackafhandeling/tests/build/publicatie of echte factuur-/bankmutatie. Zie KUNSTSTOFBAAS-FACTUURINVOER-BATCH4-20261031.md.
+
+> Nieuwe ronde batch3,31oktober: crm-finance31-batch3 review/local via CLI-bronnotitie. Bedrijfskosten, betaling/btw/bewijs en dezelfde dossierkostenbron; gebruikerscontrole beide bedrijven open, batches4–5 open. Geen feedback afgehandeld, tests/build/publicatie of zakelijke datamutatie. Zie BEDRIJFSKOSTEN-BATCH3-20261031.md.
+
+Nieuw31oktober: [batch2 inkoop, invoer-btw en transport](INKOOP-BATCH2-20261031.md), lokaal brongebouwd voor eigen controle. Apart kostenformulier, expliciete transportbasis, kostprijs/btw/uitgaand geld apart; geen tests of gegevensmutatie. Gebruiker kiest Alles lokaal houden: geen GitHub-/livepublicatie. Batches3–5 open.
+
+Nieuw31oktober: [batch1 feedbackinventarisatie en kritieke bediening](FEEDBACK-AUDIT-BATCH1-20261031.md) — 94 vaste meldingen privé vastgelegd, drie lokale reparaties in sorteren/feedbackopenen/formuliervervolg. 81 brongebouwd voor eigen controle, 13 gedeeltelijk; geen afhandeling/test/publicatie. [Nieuwe vijf batches](VIJF-BATCHES-KOSTEN-EN-HERSTEL-20261031.md), batches2–5 niet gestart.
+
+> Orderbereikbaarheid31oktober: crm-orders-resilience-20261031 review/local. Ontbrekende betaalcontext expliciet, cel/rij/paginaopvang en eenvoudige lijst/Nieuwe klantorder. Mainbron mist oorspronkelijke fix nog; twee afgebakende ongepubliceerde kandidaten. Gebruikerscontrole open, geen tests. Zie [bron en keuzes](ORDERS-BEREIKBAARHEID-20261031.md).
+
+> PACKS-batch4vervolg31oktober: readonly eindcontrole/rapportvergelijking en finale eigen controle van beide bijlagen lokaal brongebouwd. doing/local; eigen beoordeling, operationele restbouw/online proefomgeving/publicatie blijven open. Geen tests of echte acties. Zie [eindcontrole](PACKS-BATCH4-EIGEN-CONTROLE-20261031.md).
+
+> PACKS-batch3vervolg31oktober: contractmapping/client/interne eenmaal-boeking en GetLabels-bron gedeeltelijk gebouwd, doing/local. Niet via HTTP/UI aangesloten; projector/meer-colli-bundel/inrichting/PK/eigen controle open. Geen tests/provideractie/publicatie. Zie [uitvoeringsbron](PACKS-BATCH3-UITVOERBRON-20261031.md).
+
+> PACKS-batch2vervolg31oktober: eigen cloudconcept en oorspronkelijke twee PDF-bytes/revisie controleren, finale bijlagebevestiging en gescheiden proefherhaling; configuratiebron voor eigen proefproject. doing/local; geen tests/inrichting/publicatie, gebruikerscontrole open. Zie [proefcontrole](PACKS-BATCH2-PROEFCONTROLE-20261031.md).
+
+> PACKS-batch1vervolg31oktober: gerichte veldfocus vanuit ontbrekende controlepunten en bevestigingen per gewijzigde gegevensgroep. review/local; gebruikerscontrole open, geen tests/publicatie. Zie [controlebediening](PACKS-BATCH1-CONTROLE-20261031.md).
+
+> Testkeuze31oktober: Philippe weigert de twee voorgestelde offline tests en controleert zelf. Niets uitgevoerd; nieuwe proefcode/isolatie blijven ongeverifieerd, eigen controle en hosting/API-werk open.
+
+> PACKS31oktober: maat-packs31-batch1 review/local, batch2 doing/local, batch3/4 open/local. Generieke orderkeuze/proefmail en proefbeleid lokaal brongebouwd; online Pages/D1/R2/login/config/URL nog niet aangemaakt, echte provideruitvoering en eigen verificatie open. Historische29tests gelden oudere bron. Zie [vier vervolgbatches](PACKS-VIER-VERVOLGBATCHES-20261031.md).
+
+> PACKS-bronreview30oktober: pakbonrevisie/labelactualiteit/opslagfeedback/vervolgactie/registerguard lokaal aangescherpt. Doing/local; vier nieuwe regressiegevallen niet uitgevoerd. AI-order aanpassen als importeren afzonderlijk open geregistreerd. Zie [bronreview](PACKS-BRONREVIEW-20261030.md).
+
+> PACKS-antwoorden30oktober: dagelijkse ronde/morgenvoorstel lokaal verwerkt, gereedheid apart, retourvoorstel nog afspreken. Hoofdtaak doing/local, drie nieuwe regressiegevallen niet uitgevoerd; historische29tests gelden niet als testbewijs voor deze aanvulling. Zie [dagelijkse ronde](PACKS-DAGELIJKSE-RONDE-20261030.md).
+
+> PACKS-batch4,30oktober: ingebruiknameplan met concrete G4-stappen/eigenaren klaar; werkelijke provideruitvoering, contract, ketenverificatie en livegang open. Hoofdtaak doing/local.29tests zijn historisch batch3, geen nieuwe ronde/publicatie. Zie [ingebruikname](PACKS-BATCH4-INGEBRUIKNAME.md).
+
+> PACKS-batch3,30oktober: expliciet toegestane fictieve lokale tests; na ship→shipping-correctie29/29geslaagd. Geen browser/provider/Tikkie-proef of publicatie. Hoofdtaak doing/local, volledige providerverificatie/contract open. Zie [verificatie](PACKS-BATCH3-LOKALE-VERIFICATIE.md).
+
+> Online-orderlijst30oktober: gepubliceerde main mist state in orderListMarkup-aanroep; lokale correctie bestaat al. Twee-bestanden-herstelkandidaat geïsoleerd klaargezet, publicatievraag open; feedback30-batch1 review/local via CLI-bronnotitie. Geen tests/livewijziging. Zie [herstelnotitie](ORDERS-ONLINE-HERSTEL-20261030.md).
+
+> PACKS-batch2,30oktober: lokale pakket-/adres-/datumvoorbereiding en controleoverzicht, optionele state/back-upvalidatie, labelactualiteit en beveiligde server/registerbasis brongebouwd. Bestaande taak doing/local; providerclient/boekuitvoering/labelherstel/contract en gebruikerscontrole open. CLI-bronnotitie, geen tests/publicatie. Zie [batch2](PACKS-BATCH2-LOKAAL.md).
+
+> PACKS-batch1,30oktober: contractontwerp/veldmapping/foutmatrix lokaal uitgewerkt; externe PK-bevestigingen en gebruikersbeoordeling open. Bestaande maat-kunststofbaas-fulfilment-20261029 doing/local via CLI-bronnotitie; geen providerimplementatie/tests/publicatie. Zie [PACKS-ontwerp](PACKS-KOPPELING.md).
+
+> Kunststofbaas30oktober: aanvullende CLI-bronnotitie voor eigen ordernummer in kopieerbare bestelbeschrijving/nieuwe leveranciersmail. Taak doing/local; PACKS/publicatie/gebruikerscontrole open, geen tests of externe acties.
+
+> Batch4vervolg30oktober: feedback30-batch4 doing/local. Analytische STEP-lijn/cirkel/cilinderbron en documentterugkeer op artikel-ID uitgewerkt; benaderde CAD en eigen herimport/gebruikercontrole open. CLI-bronnotitie/vier privébouwtags, geen tests/converter/CADproef/publicatie. Zie FEEDBACK30-BATCH4-VERVOLG.md.
+
+> Batch3vervolg30oktober: feedback30-batch3 blijft review/local. Klantzoeker/voorraadklant-productbewaking/filterfocus/verzendprijs/nulprocenten verder uitgewerkt. CLI-bronnotitie en zeven privébouwtags; gebruikerscontrole open, geen tests/publicatie. Zie FEEDBACK30-BATCH3-VERVOLG.md.
+
+> Batch2vervolg30oktober: feedback30-batch2 doing/local. Dagreeksen/ontvangstcohort en Maatwebsite-meetbron lokaal uitgewerkt; eigen database/bindings/activering/publicatie en gebruikerscontrole open. CLI-bronnotitie en twee privébouwtags, geen tests/activering/publicatie. Zie FEEDBACK30-BATCH2-VERVOLG.md.
+
+> Batch1vervolg30oktober: feedback30-batch1 blijft review/local; gerichte bronaanvulling retries/disabledplek/V2/starter. Aanvullende CLI-bronnotitie, drie privébouwtags, gebruikerscontrole open. Geen tests/startproef/publicatie. Zie FEEDBACK30-BATCH1-VERVOLG.md.
+
+> Feedback30oktober: vier nieuwe batches; 1/3review/local,2/4doing/local. Bronnotities via scripts/build-task.mjs, eigen controle en Maatmeetaansluiting/volledige STEP open. Bestaande feedback-/gebruikersstatus en historie behouden. Zie VIER-FEEDBACKBATCHES-20261030.md.
+
+> Referentievervolg29oktober: Maat/Kunststofbaas eigen bestelnummer gekoppeld aan klantreferentie op pakbon, gewone pakbonmaker bewaart hetzelfde orderveld samen met PDF/Word. Oude handmatige referentie alleen bewust overnemen; gebruikerscontrole/PACKS/publicatie open, taak doing/local.
+
+> Kunststofbaas29oktober: maat-kunststofbaas-fulfilment-20261029 doing/local, uitsluitend Maat. Bestellen/nummer/labelupload/pakbon/leveranciersmail; PACKS-automatisering en gebruikerscontrole open. Zie KUNSTSTOFBAAS-BESTELLEN.md.
+
 > Publicatie29oktober: nieuwe bron en alle batchvervolgen staan nu op GitHub main en live bij beide CRM’s. Alleen migratie0006/lege wachtrij toegevoegd; niets opgeruimd. Gebruikerscontrole en gedeeltelijke scope blijven open. Zie docs/RELEASE-20261029.md (projectroot). De eerdere lokale vermeldingen hieronder beschrijven de toenmalige bronrondes.
 
 > Feedback29oktober: feedback29-batch1 t/m feedback29-batch4 review/local; feedback29-batch5 doing/local wegens bredere SVG-/historische cloudrestscope. Per73volledige Melding-IDs aparte privébouwstatus, gebruikersafhandeling behouden; geen tests/build/browsercontrole/publicatie. Zie VIJF-FEEDBACKBATCHES-20261029.md.

@@ -1,8 +1,8 @@
 import {customerExtraFilterLabels,extraFilterSummary} from '../workspace/list-filters.js?v=ui-batch3-followup-20261027';
 import {websiteDossierSlot} from '../analytics/dossier.js?v=inquiry-headers-20261023';
-import {searchCustomers} from "../workspace/dossier-search.js?v=feedback-followup-20261028";
+import {searchCustomers} from "../workspace/dossier-search.js?v=packs-workflow-20261102";
 import {customerSortOptions} from "../workspace/dossier-preferences.js?v=ui-batch3-followup-20261027";
-import {customerWorkspace} from '../../shared/customer-workspace.js?v=feedback-followup-20261028';
+import {customerWorkspace} from '../../shared/customer-workspace.js?v=packs-workflow-20261102';
 import {keyFactsMarkup} from '../workspace/key-facts.js?v=feedback-five-20261029';
 
 // Presentation only. Forms, transactions and routing remain with the app coordinator.

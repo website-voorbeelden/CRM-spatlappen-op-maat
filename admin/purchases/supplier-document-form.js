@@ -1,8 +1,8 @@
-import {importCostFields,readImportCostFields} from './import-cost-fields.js?v=feedback29-batch1-followup';
+import {importCostFields,readImportCostFields} from './import-cost-fields.js?v=finance-period-review-20261031';
 import {supplierInvoiceBasis} from '../../shared/supplier-invoices.js?v=feedback28-batch2-20261028';
-import {supplierDocumentAiMarkup,installSupplierDocumentAi} from './document-ai.js?v=feedback29-batch1-followup';
-import {provenanceFor,markProvenance} from '../../shared/provenance.js?v=provenance-colors-20261027';
-import {vatDate} from '../../shared/vat-ledger.js?v=feedback-five-20261029';
+import {supplierDocumentAiMarkup,installSupplierDocumentAi} from './document-ai.js?v=invoice-link-review-20261101';
+import {provenanceFor,markProvenance} from '../../shared/provenance.js?v=invoice-link-review-20261101';
+import {vatDate} from '../../shared/vat-ledger.js?v=packs-worker-v3-20261102';
 
 export function createSupplierDocumentForm(context,{purchase,lineFields,updateTotal,persist}){
  function open(purchaseId,invoiceId){
@@ -54,7 +54,7 @@ export function createSupplierDocumentForm(context,{purchase,lineFields,updateTo
   // total is displayed in EUR, while the stored invoice uses cents. Bind the
   // display value; formRecordProvenance re-signs the final stored value.
   context.markFormSources(form,invoice);
-  for(const key of ['freight','extraCosts','importVat','importVatRecoverable','importVatIncludedInSupplierPayments','importVatEvidence','freightIncludedInProductCosts']){
+  for(const key of ['freight','extraCosts','importVat','importVatRecoverable','importVatIncludedInSupplierPayments','importVatEvidence','importVatDate','importVatPaidDate','freightIncludedInProductCosts']){
    const input=form.elements.namedItem(key),source=provenanceFor(p,key);if(!input||!source)continue;
    const value=['freight','extraCosts','importVat'].includes(key)?p[key]/100:input.type==='checkbox'?p[key]:String(p[key]);
    context.markFormSources(input.closest('label'),markProvenance({[key]:value},[key],source.source,{mode:source.mode,at:source.at}));

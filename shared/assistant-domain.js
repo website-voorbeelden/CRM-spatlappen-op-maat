@@ -1,7 +1,7 @@
 import {nextOrderNumber} from './duplicate-records.js?v=duplicate-review-20261028';
-import {markProvenance} from './provenance.js?v=provenance-colors-20261027';
+import {markProvenance} from './provenance.js?v=invoice-link-review-20261101';
 import {companyFor,orderStagesFor,displayOrderStage} from './companies.js';
-import {validateBusinessState} from './state-validation.js?v=feedback29-batch1-followup';
+import {validateBusinessState} from './state-validation.js?v=packs-workflow-20261102';
 import {ensureCustomerNumbers} from '../admin/customer-numbers.js';
 import {normalizeAssistantPageContext} from './assistant-page-context.js?v=payments-overview-20261027';
 export const customerFields=['company','contact','email','invoiceEmail','phone','vatNumber','country','billingAddress','shippingAddress','notes'];

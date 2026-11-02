@@ -1,11 +1,11 @@
-> Gepubliceerd op 29 oktober naar beide bestaande CRM-productieprojecten; bron ec05da1. Publicatieregistratie en grenzen: docs/RELEASE-20261029.md. Gebruikerscontrole blijft open.
+# Maatwerkkunststof CRM — 2 november 2026
 
-# Gedeelde CRM-feedback en invoer-btw — 29 oktober 2026
+Gedeelde bronupdate sinds29oktober met orderbereikbaarheid, invoerbehoud, kosten-/factuurcontrole, VOF-geldregistraties en Kunststofbaasbestelworkflow. Nummer direct bij stap1, PDF/kosten vóór logistiek, actuele nummer-/stuk-/maatvergelijking en gerichte invoerhulp. Nieuwe pakbon toont PB- gevolgd door het Kunststofbaas-bestelnummer; bestaande documenten behouden.
 
-Vijf feedbackbatches en de vervolgverbeteringen voor beide CRM-bedrijven. Invoer-btw apart van marge en uitgaande geldbasis, inbegrepen transport eenmaal verdeeld; zendingbetalingen en artikelkosten; productgerichte orderwerkplek en feedbackvoortgang; aanbetalingsvoorstel met standaard 50%, bruikbare betaalbasis en factuurrevisies met ontvangstkeuze en directe bedragen; editorzoom, maat-/aantalsynchronisatie, fontvoorbeelden/import/meetcache, kopiebewaring en SVG-kleursegmenten.
+Deze publicatieronde richt uitsluitend de bestaande Maatwerkkunststof Pagesproductie en gedeelde documentservice bij. Spatlappen Pages wordt niet opnieuw gepubliceerd. Oude gegevens/bestanden/instellingen en geheimen behouden; alleen de PACKS-productiedienstidentiteit als nieuwe schema/marker toegevoegd. Geen import/restore/opruiming, geen lokale proefgegevens meegestuurd.
 
-Optionele veilige variantopruiming en aparte bevestigde fysieke cloudverwijdering. Migratie 0006 voegt uitsluitend een lege wachtrijtabel/index toe; bestaande records en bestanden worden niet aangepast. Opruimen staat niet automatisch aan. Historische onbekende cloudbestanden en complexe SVG-effecten blijven begrensd. Eigen route-/telefoonaccountinrichting en gebruikerscontrole zijn afzonderlijke stappen.
+Dezelfde bestaande private PACKS Worker is aangesloten op dezelfde Maatproductieopslag met onafhankelijke productiemarker en beveiligde interne context. Online Identity/dienstenknoppen, pakketvoorbereiding en label-/trackingbron aanwezig. Dit is nog GEEN vrijgegeven of bewezen werkende boekingsketen: bevestigd dienstprofiel/maatformule/zijgrenzen/registervrijgave en eigen eerste zending blijven open. Geen tweede boeker of productiegegevens in preview, geen inventie van maatlimieten, geen automatische proefboeking.
 
-Geen klantgegevens, privéfeedback, back-ups, credentials of lokale runtimeconfiguratie in deze bronupload. Vorige ontwerpen, factuurversies, gegevens en expliciete instellingen behouden. Geen tests/checks/syntaxchecks of browser-/functionele QA uitgevoerd. Alleen bronvergelijking en noodzakelijke verpakking/servercompile bij publicatie. Bron aanwezig is geen gebruikersakkoord of garantie van foutloze werking.
+Outlook alleenlezen en gewone/proefmail blijven afzonderlijke inrichting; geen mailbox gekoppeld of mail verstuurd. BouwmarktXL is voorgestelde logistieke afzender, geen TJWorx-mailbox vereist. Geen klantgegevens, privéfeedback, back-ups, credentials of lokale runtime in GitHubbron.
 
-Details: docs/VIJF-FEEDBACKBATCHES-20261029.md en docs/FEEDBACK29-RESTPUNTEN.md. Publicatiestatus wordt afzonderlijk vastgelegd.
+Alleen noodzakelijke publicatieverpakking/Functionscompile. Geen tests/checkrondes/browser-/DOM-/functionele QA of echte PACKS-boeking/label/mail door bouwer. Gebruikerscontrole en onvoltooid werk blijven open; deploymentstatus is geen foutloosheidsbewijs.

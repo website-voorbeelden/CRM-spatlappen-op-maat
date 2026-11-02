@@ -1,9 +1,14 @@
 import {validNotificationJob} from '../cloudflare/notifications.js';
+import {packsTrialOnly,packsTrialPathAllowed,packsTrialBindingsReady} from '../cloudflare/packs-trial-policy.js';
 import {companyFromEnv} from '../shared/companies.js';
 import {authenticated,authReady,localBypass,localHost} from '../cloudflare/auth.js';
 export async function onRequest(context) {
   const url = new URL(context.request.url);
   const company=companyFromEnv(context.env);
+  if(packsTrialOnly(context.env)){
+    if(!packsTrialPathAllowed(url.pathname))return Response.json({error:'Deze actie staat uit in de PACKS-proefomgeving. Alleen opslag, documenten en de bevestigde proefmail zijn beschikbaar.'},{status:403,headers:{'Cache-Control':'no-store'}});
+    if((url.pathname.startsWith('/api/')||url.pathname.startsWith('/__local/')||url.pathname==='/auth'||url.pathname.startsWith('/auth/'))&&!await packsTrialBindingsReady(context.env))return Response.json({error:'De aparte proefdatabase en proefbestandsopslag zijn nog niet geregistreerd. Er wordt niets uitgevoerd.'},{status:503,headers:{'Cache-Control':'no-store'}});
+  }
   const publicInfo=company.id==='spatlappen'&&['/','/index.html','/privacy','/privacy.html','/terms','/terms.html','/robots.txt'].includes(url.pathname);
   if(publicInfo&&['GET','HEAD'].includes(context.request.method)){
     const response=await context.next(),headers=new Headers(response.headers);

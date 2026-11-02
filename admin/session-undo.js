@@ -36,6 +36,9 @@ export function createSessionUndo(database, {onChange = () => {}, getRoute = () 
     if (boundary) return clear('Na het terugzetten van een back-up begint een nieuwe geschiedenis.');
     const oldState = before === undefined ? undefined : JSON.parse(before), newState = JSON.parse(after);
     if (!oldState) return clear();
+    if (json(oldState.ownerTransfers)!==json(newState.ownerTransfers)) return clear('Privéoverboeking bijgewerkt; corrigeer de registratie met een reden om de financiële historie te behouden.');
+    if (json(oldState.supplierInvoiceImports)!==json(newState.supplierInvoiceImports)) return clear('Leveranciersfactuur bijgewerkt; corrigeer de bronfactuur met een reden om bewijs en betaalhistorie te bewaren.');
+    if (json(oldState.businessExpenses)!==json(newState.businessExpenses)) return clear('Bedrijfskosten bijgewerkt; pas deze aan bij Bedrijfskosten met een reden, zodat betalingen en bronhistorie behouden blijven.');
     if (json(oldState.vatLedger)!==json(newState.vatLedger)) return clear('Btw-register bijgewerkt; corrigeer via de btw-werkplek zodat de historie behouden blijft.');
     if (externalAddition(oldState, newState)) return clear('Tikkie bijgewerkt; betaalverzoeken en ontvangsten blijven behouden.');
     observe(oldState);

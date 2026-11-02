@@ -1,5 +1,5 @@
-import {createVatEntryUI} from '../analytics/vat-entry.js?v=feedback28-batch2-20261028';
-import {vatSources,vatEntryIssues} from '../../shared/vat-ledger.js?v=feedback-five-20261029';
+import {createVatEntryUI} from '../analytics/vat-entry.js?v=packs-worker-v3-20261102';
+import {vatSources,vatEntryIssues} from '../../shared/vat-ledger.js?v=packs-worker-v3-20261102';
 
 // Tax evidence and quarterly classification remain in the existing ledger.
 export function createPurchaseVat(context){

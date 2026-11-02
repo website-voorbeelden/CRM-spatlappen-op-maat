@@ -11,6 +11,7 @@ from functools import partial
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import urlsplit, unquote, quote, parse_qs
+from supplier_document_local import fetch_supplier_document, SupplierDocumentError
 from tikkie_local import create_request, saved_requests, check_payments, journal, LOCK as TIKKIE_LOCK, TikkieError
 
 ROOT = Path(__file__).resolve().parent
@@ -43,6 +44,93 @@ def cache_download(body, name, content_type):
 
 
 class Handler(SimpleHTTPRequestHandler):
+    def packs_identity(self, products=False):
+        # Explicit local read-only exception. Shipment/label routes below stay
+        # blocked. The child owns only account reads, never a book client.
+        status = 200
+        try:
+            if COMPANY != 'maatwerkkunststof' or self.headers.get('Origin') not in LOCAL_ORIGINS:
+                raise PermissionError()
+            if self.headers.get('Content-Type', '').split(';')[0].strip().lower() != 'application/json':
+                raise ValueError()
+            length = int(self.headers.get('Content-Length', '0'))
+            if not 0 < length <= 1000:
+                raise ValueError()
+            payload = json.loads(self.rfile.read(length))
+            if not isinstance(payload, dict) or set(payload) != {'confirmed'} or payload['confirmed'] is not True:
+                raise ValueError()
+            helper = 'packs-products-cli.mjs' if products else 'packs-identity-cli.mjs'
+            process = subprocess.run(['node', str(ROOT / 'assistant' / helper)],
+                                     input=json.dumps(payload).encode(), stdout=subprocess.PIPE,
+                                     stderr=subprocess.DEVNULL, cwd=ROOT, timeout=75)
+            if len(process.stdout) > (2000000 if products else 600000):
+                raise ValueError()
+            response = json.loads(process.stdout)
+            if not isinstance(response, dict) or not isinstance(response.get('ok'), bool):
+                raise ValueError()
+        except PermissionError:
+            status, response = 403, {'ok': False, 'attempted': False, 'response': None,
+                'error': {'code': 'local_access', 'message': 'Gebruik de lokale Maatwerkkunststof-werkplek.'}}
+        except (ValueError, OSError, subprocess.TimeoutExpired):
+            status, response = 503, {'ok': False, 'attempted': False, 'response': None,
+                'error': {'code': 'local_service', 'message': 'De lokale accounttest kon niet worden afgerond. Er is niets geboekt.'}}
+        body = json.dumps(response).encode()
+        self.send_response(status)
+        self.send_header('Content-Type', 'application/json; charset=utf-8')
+        self.send_header('Cache-Control', 'no-store')
+        self.send_header('X-Content-Type-Options', 'nosniff')
+        self.send_header('Content-Length', str(len(body)))
+        self.end_headers()
+        self.wfile.write(body)
+
+    def packs_preparation_only(self):
+        # Local forms use shared browser rules. No credentials or provider proxy.
+        status = 423 if COMPANY == 'maatwerkkunststof' else 403
+        body = json.dumps({'error': 'PACKS is alleen als voorbereiding in het Maatwerkkunststof-CRM beschikbaar; boeken en labels ophalen zijn niet geactiveerd.', 'canBook': False, 'mode': 'preparation-only'}).encode()
+        self.send_response(status)
+        self.send_header('Content-Type', 'application/json; charset=utf-8')
+        self.send_header('Cache-Control', 'no-store')
+        self.send_header('Content-Length', str(len(body)))
+        self.end_headers()
+        self.wfile.write(body)
+
+    def supplier_document(self):
+        # POST body contains the private access URL; never put it in access logs.
+        trace = secrets.token_hex(16)
+        try:
+            if COMPANY != 'maatwerkkunststof' or self.headers.get('Origin') not in LOCAL_ORIGINS:
+                raise SupplierDocumentError('Deze documentinvoer is alleen voor de lokale Maatwerkkunststof-werkplek.', 'company', 403)
+            if self.headers.get('Content-Type', '').split(';')[0].strip().lower() != 'application/json':
+                raise SupplierDocumentError('JSON-documentverzoek verwacht.', 'request_invalid', 415)
+            length = int(self.headers.get('Content-Length', '0'))
+            if not 0 < length <= 7000:
+                raise SupplierDocumentError('De documentlink is leeg of te lang.', 'link_invalid', 413)
+            try:
+                payload = json.loads(self.rfile.read(length))
+            except ValueError:
+                raise SupplierDocumentError('Ongeldig documentverzoek.', 'request_invalid') from None
+            body, kind, order_reference = fetch_supplier_document(payload)
+            name = 'Kunststofbaas_' + ('factuur' if kind == 'invoice' else 'pakbon') + '_' + order_reference + '.pdf'
+            self.send_response(200)
+            self.send_header('Content-Type', 'application/pdf')
+            self.send_header('Content-Disposition', 'attachment; filename="' + name + '"')
+            self.send_header('X-CRM-Supplier-Kind', kind)
+            self.send_header('X-CRM-Supplier-Order', order_reference)
+        except (SupplierDocumentError, ValueError) as error:
+            self.send_response(getattr(error, 'status', 400))
+            body = json.dumps({'error': str(error) if isinstance(error, SupplierDocumentError) else 'Ongeldig documentverzoek.', 'code': getattr(error, 'code', 'request_invalid'), 'traceId': trace}).encode()
+            self.send_header('Content-Type', 'application/json; charset=utf-8')
+        except Exception:
+            self.send_response(502)
+            body = json.dumps({'error': 'Document ophalen niet gelukt. Je invoer blijft staan; download de PDF bij Kunststofbaas en kies die hier.', 'code': 'download_failed', 'traceId': trace}).encode()
+            self.send_header('Content-Type', 'application/json; charset=utf-8')
+        self.send_header('X-CRM-Trace-ID', trace)
+        self.send_header('Content-Length', str(len(body)))
+        self.send_header('Cache-Control', 'no-store')
+        self.send_header('X-Content-Type-Options', 'nosniff')
+        self.end_headers()
+        self.wfile.write(body)
+
     def end_headers(self):
         # During local development every reload must receive the current CRM code.
         path = urlsplit(self.path).path
@@ -87,7 +175,7 @@ class Handler(SimpleHTTPRequestHandler):
             self.wfile.write(data)
 
     def proxy_assistant(self):
-        allowed = {'route-status': 'GET', 'route-configure': 'POST', 'route-compute': 'POST', 'feedback-list': 'GET', 'feedback-create': 'POST', 'feedback-import': 'POST', 'feedback-status': 'POST', 'status': 'GET', 'models': 'GET', 'login': 'POST', 'cancel': 'POST', 'select': 'POST', 'logout': 'POST', 'chat': 'POST', 'stop': 'POST', 'gmail-actions-capabilities': 'GET', 'gmail-actions-list': 'GET', 'gmail-actions-propose': 'POST', 'gmail-actions-review': 'POST', 'gmail-actions-confirm': 'POST', 'gmail-actions-cancel': 'POST', 'gmail-status': 'GET', 'gmail-configure': 'POST', 'gmail-login': 'POST', 'gmail-disconnect': 'POST', 'gmail-labels': 'POST', 'gmail-phase-auto-status': 'GET', 'gmail-phase-auto-configure': 'POST', 'gmail-phase-auto-sync': 'POST', 'gmail-phase-review': 'POST', 'gmail-phase-apply': 'POST', 'gmail-list': 'POST', 'gmail-message': 'POST', 'gmail-thread': 'POST', 'gmail-attachment': 'POST', 'mail-status': 'GET', 'mail-journal': 'GET', 'mail-configure': 'POST', 'mail-send': 'POST', 'speech-status': 'GET', 'speech-diagnostics': 'GET', 'speech-report': 'POST', 'transcribe': 'POST'}
+        allowed = {'route-status': 'GET', 'route-configure': 'POST', 'route-compute': 'POST', 'feedback-list': 'GET', 'feedback-create': 'POST', 'feedback-import': 'POST', 'feedback-status': 'POST', 'status': 'GET', 'models': 'GET', 'login': 'POST', 'cancel': 'POST', 'select': 'POST', 'logout': 'POST', 'chat': 'POST', 'stop': 'POST', 'gmail-actions-capabilities': 'GET', 'gmail-actions-list': 'GET', 'gmail-actions-propose': 'POST', 'gmail-actions-review': 'POST', 'gmail-actions-confirm': 'POST', 'gmail-actions-cancel': 'POST', 'gmail-status': 'GET', 'gmail-configure': 'POST', 'gmail-login': 'POST', 'gmail-disconnect': 'POST', 'gmail-labels': 'POST', 'gmail-phase-auto-status': 'GET', 'gmail-phase-auto-configure': 'POST', 'gmail-phase-auto-sync': 'POST', 'gmail-phase-review': 'POST', 'gmail-phase-apply': 'POST', 'gmail-list': 'POST', 'gmail-message': 'POST', 'gmail-thread': 'POST', 'gmail-attachment': 'POST', 'mail-status': 'GET', 'mail-journal': 'GET', 'mail-configure': 'POST', 'mail-trial-recipient': 'POST', 'mail-send': 'POST', 'speech-status': 'GET', 'speech-diagnostics': 'GET', 'speech-report': 'POST', 'transcribe': 'POST'}
         endpoint = urlsplit(self.path).path.removeprefix('/__local/assistant/')
         if allowed.get(endpoint) != self.command:
             self.send_error(404)
@@ -136,6 +224,15 @@ class Handler(SimpleHTTPRequestHandler):
             self.send_error(403)
             return
         path = urlsplit(self.path).path
+        if path in ('/__local/packs/identity', '/__local/packs/products'):
+            self.packs_identity(products=path.endswith('/products'))
+            return
+        if path == '/__local/supplier-document':
+            self.supplier_document()
+            return
+        if path.startswith('/__local/packs/'):
+            self.packs_preparation_only()
+            return
         if path.startswith('/__local/assistant/'):
             self.proxy_assistant()
             return
@@ -203,6 +300,9 @@ class Handler(SimpleHTTPRequestHandler):
             self.send_error(403)
             return
         path = unquote(urlsplit(self.path).path)
+        if path.startswith('/__local/packs/'):
+            self.packs_preparation_only()
+            return
         if path.startswith('/__local/assistant/'):
             self.proxy_assistant()
             return

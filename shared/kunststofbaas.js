@@ -1,0 +1,2 @@
+// User-supplied supplier details. A proposal, never proof of carrier agreement.
+export const kunststofbaas={key:'kunststofbaas',name:'Kunststofbaas',email:'info@kunststofbaas.nl',orderUrl:'https://kunststofbaas.nl/',pickupAddress:{name:'Kunststofbaas.nl',nameTo:'',street:'Moeskampweg',number:'6',numberExt:'',zip:'5222 AW',place:"'s-Hertogenbosch",country:'NL',phone:'0852031835',mail:'info@kunststofbaas.nl'}};

@@ -1,4 +1,4 @@
-import {fulfilmentMethods} from '../../shared/inbound-readiness.js?v=feedback-followup-20261028';
+import {fulfilmentMethods} from '../../shared/inbound-readiness.js?v=packs-workflow-20261102';
 import {purchaseCustomerBalances} from '../../shared/purchase-customer-balances.js?v=feedback29-batch1-followup';
 import {keyFactsMarkup} from '../workspace/key-facts.js?v=feedback-five-20261029';
 

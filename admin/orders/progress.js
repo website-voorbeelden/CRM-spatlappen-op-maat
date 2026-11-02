@@ -1,4 +1,4 @@
-import {orderProgress} from '../../shared/order-progress.js?v=feedback-followup-20261028';
+import {orderProgress} from '../../shared/order-progress.js?v=packs-workflow-20261102';
 export function orderProgressMarkup(context,o,tab){
  const {phase,expanded,progress:p}=progressParts(context,o,tab);
  return `<div class="order-progress-compact"><div class="order-current-phase"><span>Fase</span><strong>${phase}</strong>${p.execution.started?`<span class="order-execution-short">Uitvoering: ${context.esc(p.execution.label)}</span>`:''}</div><details class="order-progress-details"><summary>Fases & voortgang</summary>${expanded}</details></div>`;
