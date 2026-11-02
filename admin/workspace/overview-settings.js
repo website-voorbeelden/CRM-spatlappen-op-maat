@@ -1,7 +1,7 @@
 import {createHomeWorkspace} from './home.js?v=business-expenses-20261031';
 import {sectionTabsMarkup,syncSectionTabs} from './section-tabs.js?v=calm-workspaces-20261027';
 import {keyFactsMarkup} from './key-facts.js?v=feedback-five-20261029';
-import {supplierMailMarkup,installSupplierMail} from '../orders/supplier-mail.js?v=outlook-connect-20261102';
+import {supplierMailMarkup,installSupplierMail} from '../orders/supplier-mail.js?v=outlook-pdf-size-20261102';
 // Same current application state and existing forms; no settings/draft store.
 export function createOverviewSettings(context){
  const home=createHomeWorkspace(context);

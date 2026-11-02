@@ -1,6 +1,6 @@
 import {authReady} from './auth.js';
 import {createOutlookConnection} from './outlook-connection.js?v=outlook-connect-20261102';
-import {syncSupplierMailbox} from './supplier-mail-store.js?v=outlook-connect-20261102';
+import {syncSupplierMailbox} from './supplier-mail-store.js?v=outlook-pdf-size-20261102';
 
 // Reuse only the existing Maat maintenance credential. This route can stage
 // supplier sources, but has no order/cost/payment or Microsoft-write dependency.

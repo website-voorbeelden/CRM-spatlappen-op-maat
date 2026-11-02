@@ -3453,5 +3453,44 @@ export const sourceUpdates = [
     "delivery": "local",
     "note": "Microsoft365 User-mailbox en appgegevens ontvangen. Bestaande codeflow/PKCE/read-only bron hergebruikt, gedeelde wachtrij ook bij Instellingen → Verzenden. Gerichte veilige OAuth/Graph-fouten, strikt beperkte tokenscopes, aparte bron-only jobroute en onafhankelijke vijftienminutentaak in bestaande Maatonderhoudswerker voorbereid. Nooit automatische order/kosten/betaling of Microsoft-write.",
     "evidence": "Bronvergelijking en officiële Microsoft/Cloudflare-documentatie, geen tests/checks/browser-QA/provideropvraag/login/mail. Installatie/geheimen/publicatie worden afzonderlijk vastgelegd; eigen Microsoft-aanmelding en eerste voorstelcontrole open. Geen credentials of app-ID’s in openbare bron."
+  },
+  {
+    "id": "maat-outlook-live-20261102",
+    "taskId": "maat-supplier-nov1-batch3",
+    "companies": [
+      "maatwerkkunststof"
+    ],
+    "at": "2026-11-02T03:49:19.602464+00:00",
+    "author": "Codex",
+    "status": "doing",
+    "delivery": "live",
+    "note": "Outlook OAuth-serverconfig/secret en afgescheiden productieopslagmarker echt geïnstalleerd. Bron3494988 op GitHub/MaatPagesproduction, eigen Microsoft-aanmelding vanuit Instellingen → Verzenden of leverancierorder mogelijk. Bestaande onderhoudswerker heeft afzonderlijke kwartiersource-sync, originele betaalcall/cron/secret behouden. Zonder consent geen mailboxuitlezing. Voorstellen blijven apart; geen automatische order/kosten/betaling/PACKS.",
+    "evidence": "Cloudflare deploy success/e3777ac4, schedulerdeployment7778718f/verse41dab782 en bestaande secretnaam/cron/bindings teruggelezen. Alleen noodzakelijke publicatieverpakking/compile; geen tests/checks/browser-QA/Microsoftlogin/Graph-proef/mail/label. Gebruiker om eigen aanmelding gevraagd, uitkomst/voorstelcontrole nog open. Deze afrondnotitie lokaal; niet opnieuw als runtime uitgebracht."
+  },
+  {
+    "id": "maat-outlook-user-connected-20261102",
+    "taskId": "maat-supplier-nov1-batch3",
+    "companies": [
+      "maatwerkkunststof"
+    ],
+    "at": "2026-11-02T03:50:29.261127+00:00",
+    "author": "Codex",
+    "status": "review",
+    "delivery": "live",
+    "note": "Philippe bevestigt na onlinepublicatie zelf: Gelukt, Outlook gekoppeld. Microsoft-aanmelding/callback dus door gebruiker bevestigd. Leeskoppeling/bronwachtrij/kwartierschema staan online; alleen bronvoorstellen, geen automatische order/kosten/betalingen of uitgaande mail.",
+    "evidence": "Eigen eerste bron-/PDF-/nummermatch-/acceptatiecontrole nog open, geen afgeronde-feedback- of volledige end-to-endclaim. Geen extra provideropvraag/test/browser-QA door bouwer na de gebruikersbevestiging. Lokale append-only afrondnotitie, live functionele bron3494988 behouden."
+  },
+  {
+    "id": "maat-outlook-pdf-size-fix-20261102",
+    "taskId": "maat-supplier-nov1-batch3",
+    "companies": [
+      "maatwerkkunststof"
+    ],
+    "at": "2026-11-02T04:01:31.420297+00:00",
+    "author": "Codex",
+    "status": "doing",
+    "delivery": "local",
+    "note": "Gebruiker meldt4PDF-bewaarfouten. Echte oorspronkelijke bijlage vergeleken: Graphmetadata308737bytes versus rawPDF308403bytes met header/eindmarker; oude gelijkheidscheck was onjuist. Metadata providerSize nu apart, werkelijke bytes/hash blijven bewaakt. Gerichte stapfout en directe PDF-opnieuw-ophalenknop. Geen match: nog geen leverancierreferenties in onlineorderbron; geen automatische overname of zwakkere matching.",
+    "evidence": "Brononderzoek met eigen mailboxconnector/één oorspronkelijke PDF en read-only aantallen in CRM. Geen tests/checks/browserQA of gewijzigde CRM/providerretry door bouwer. Eigen nieuwe werking/publicatie apart. Zie docs/OUTLOOK-PDF-HERSTEL-20261102.md. Bestaande gegevens/berichten/bestanden/andere wijzigingen behouden."
   }
 ];

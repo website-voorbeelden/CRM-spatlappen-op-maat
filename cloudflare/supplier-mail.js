@@ -1,8 +1,8 @@
 import {authenticated,sessionFingerprint} from './auth.js';
 import {integrationError as fail} from './integration-store.js';
-import {outlookBytes} from './outlook-http.js?v=outlook-connect-20261102';
+import {outlookBytes} from './outlook-http.js?v=outlook-pdf-size-20261102';
 import {createOutlookConnection,outlookEnvironment} from './outlook-connection.js?v=outlook-connect-20261102';
-import {createSupplierMailStore} from './supplier-mail-store.js?v=supplier-batches35-20261101';
+import {createSupplierMailStore} from './supplier-mail-store.js?v=outlook-pdf-size-20261102';
 import {validSupplierMailJob,runSupplierMailJob} from './supplier-mail-job.js?v=outlook-connect-20261102';
 const json=(body,status=200)=>Response.json(body,{status,headers:{'Cache-Control':'no-store','X-Content-Type-Options':'nosniff','Referrer-Policy':'no-referrer'}});
 const escape=value=>String(value).replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));

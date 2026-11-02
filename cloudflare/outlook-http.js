@@ -3,6 +3,10 @@ export async function outlookBytes(response,maximum){
  if(Number(response.headers.get('Content-Length'))>maximum){await response.body?.cancel();throw integrationError('Het mailbestand is te groot voor deze invoer.',413);}
  const reader=response.body?.getReader();if(!reader)return new Uint8Array();let size=0;const chunks=[];
  try{for(;;){const {done,value}=await reader.read();if(done)break;size+=value.byteLength;if(size>maximum){await reader.cancel();throw integrationError('Het mailbestand is te groot voor deze invoer.',413);}chunks.push(value);}}finally{reader.releaseLock();}
+ // Content-Length describes the HTTP representation, unlike attachment.size.
+ // Fetch may decode Content-Encoding, so only compare an identity response.
+ const declared=response.headers.get('Content-Length'),encoding=response.headers.get('Content-Encoding');
+ if(declared!==null&&/^\d+$/.test(declared)&&(!encoding||encoding.toLowerCase()==='identity')&&Number(declared)!==size)throw integrationError('De Microsoft-download is niet volledig ontvangen. Haal de bron opnieuw op.',502);
  const result=new Uint8Array(size);let offset=0;for(const chunk of chunks){result.set(chunk,offset);offset+=chunk.length;}return result;
 }
 export function outlookGraphUrl(value){

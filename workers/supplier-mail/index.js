@@ -1,4 +1,4 @@
-import {syncSupplierMailbox} from '../../cloudflare/supplier-mail-store.js?v=supplier-batches35-20261101';
+import {syncSupplierMailbox} from '../../cloudflare/supplier-mail-store.js?v=outlook-pdf-size-20261102';
 // No public mail-ingestion endpoint. Cron is separately configured and disabled
 // in the example. Only private source staging; never order/cost/mail mutations.
 export default {

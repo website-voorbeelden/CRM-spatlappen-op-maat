@@ -1,5 +1,5 @@
 import {createOutlookConnection,outlookEnvironment} from './outlook-connection.js?v=outlook-connect-20261102';
-import {outlookGraph,outlookGraphUrl} from './outlook-http.js?v=outlook-connect-20261102';
+import {outlookGraph,outlookGraphUrl} from './outlook-http.js?v=outlook-pdf-size-20261102';
 import {integrationError as fail,sha256,hex} from './integration-store.js';
 import {supplierMailSender,supplierMailFacts,supplierMailDay} from '../shared/supplier-mail-intake.js?v=supplier-batches35-20261101';
 const hash=value=>typeof value==='string'&&/^[a-f0-9]{64}$/.test(value);
@@ -79,12 +79,17 @@ export function createSupplierMailStore(env){
    if(pdfs.length>4)throw fail('Meer dan vier PDF-bijlagen: download en controleer deze mail handmatig.',409);
    if(!record.mime)try{const bytes=await outlookGraph(token,path+'/$value',25000000,{binary:true});if(bytes.length<10)throw fail('Leeg mailorigineel.',409);const sha=await byteHash(bytes),objectKey='supplier-mail/maatwerkkunststof/'+key+'/original-'+sha+'.eml';await env.CRM_FILES.put(objectKey,bytes,{httpMetadata:{contentType:'message/rfc822'}});record.mime={name:'Leveranciersmail_'+key.slice(0,12)+'.eml',objectKey,size:bytes.length,sha256:sha};}catch{record.issues.push('Originele mail kon niet volledig worden bewaard; controleer het bericht in Outlook.');}
    for(const pdf of pdfs){
+    let step='bijlagegegevens';
     try{
      if(!graphId(pdf.id)||!Number.isSafeInteger(pdf.size)||pdf.size<5||pdf.size>15000000||pdf.name.length>240)throw fail('De PDF-omvang of naam valt buiten de invoergrens.',413);
-     const storedId=await sha256(pdf.id),known=record.files.find(f=>f.id===storedId);if(known){if(known.size!==pdf.size||known.name!==pdf.name)throw fail('Een eerder bewaarde bijlage is veranderd.',409);continue;}
-     const bytes=await outlookGraph(token,path+'/attachments/'+encodeURIComponent(pdf.id)+'/$value',15000000,{binary:true});if(bytes.length!==pdf.size||new TextDecoder().decode(bytes.slice(0,5))!=='%PDF-')throw fail('De bijlage is geen volledige PDF.',409);
-     const sha=await byteHash(bytes),id=await sha256(pdf.id),objectKey='supplier-mail/maatwerkkunststof/'+key+'/'+id+'-'+sha+'.pdf';await env.CRM_FILES.put(objectKey,bytes,{httpMetadata:{contentType:'application/pdf'},customMetadata:{sha256:sha}});record.files.push({id,name:pdf.name,size:bytes.length,sha256:sha,objectKey});
-    }catch{record.issues.push('Een factuur-PDF kon niet worden bewaard. Download die bijlage zelf uit Outlook.');}
+     const storedId=await sha256(pdf.id),known=record.files.find(f=>f.id===storedId);if(known){if((known.providerSize??known.size)!==pdf.size||known.name!==pdf.name)throw fail('Een eerder bewaarde bijlage is veranderd.',409);continue;}
+     step='download';const bytes=await outlookGraph(token,path+'/attachments/'+encodeURIComponent(pdf.id)+'/$value',15000000,{binary:true});
+     // Graph's attachment size can include bytes absent from the raw PDF. Keep
+     // that provider fact separate; download/hash guards use actual bytes.
+     step='PDF-header';if(bytes.length<12||new TextDecoder().decode(bytes.slice(0,5))!=='%PDF-')throw fail('De bijlage heeft geen bruikbare PDF-header.',409);
+     step='PDF-einde';if(!new TextDecoder().decode(bytes.slice(-4096)).includes('%%EOF'))throw fail('Het PDF-einde ontbreekt. Haal de bijlage opnieuw op of importeer het origineel zelf.',409);
+     const sha=await byteHash(bytes),id=await sha256(pdf.id),objectKey='supplier-mail/maatwerkkunststof/'+key+'/'+id+'-'+sha+'.pdf';step='bestandsopslag';await env.CRM_FILES.put(objectKey,bytes,{httpMetadata:{contentType:'application/pdf'},customMetadata:{sha256:sha}});record.files.push({id,name:pdf.name,size:bytes.length,providerSize:pdf.size,sha256:sha,objectKey});
+    }catch(error){const provider=Number.isInteger(error.providerStatus)?' · Microsoft HTTP '+error.providerStatus:'';record.issues.push('Een factuur-PDF kon niet worden bewaard ('+step+provider+'). Kies PDF opnieuw ophalen; eerdere bronnen blijven behouden.');}
    }
   }catch{record.issues.push('Bericht niet volledig verwerkt. Download en importeer het origineel zelf; er zijn geen kosten aangemaakt.');}
   await store.write(sourceName(key),record,previous?.version||'');return record;

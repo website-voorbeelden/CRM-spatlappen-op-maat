@@ -1,5 +1,5 @@
 import {integrationStore,integrationError as fail,random,sha256} from './integration-store.js';
-import {outlookFetch,outlookGraph,outlookBase64Url} from './outlook-http.js?v=outlook-connect-20261102';
+import {outlookFetch,outlookGraph,outlookBase64Url} from './outlook-http.js?v=outlook-pdf-size-20261102';
 const scope='offline_access https://graph.microsoft.com/User.Read https://graph.microsoft.com/Mail.Read';
 const guid=value=>typeof value==='string'&&/^[a-f0-9]{8}(?:-[a-f0-9]{4}){3}-[a-f0-9]{12}$/i.test(value);
 const mailbox='info@bouwmarktxl.nl';

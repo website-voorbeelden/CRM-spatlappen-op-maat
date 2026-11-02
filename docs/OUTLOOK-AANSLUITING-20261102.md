@@ -22,6 +22,10 @@ Zonder Microsoft-aanmelding geen Graph-aanvraag of mailboxuitlezing. Na aanmelde
 
 ## Status
 
-Bron zorgvuldig vergeleken, geen tests/checks/browser-QA of echte Microsoft-aanmelding/Graph-mailopvraag door de bouwer. Inrichting/publicatie en Microsoft-consent zijn afzonderlijke feiten; actuele deployments staan privé in work/outlook-connect-20261102. Gebruiker moet aanmelden en zelf de eerste voorstellen controleren. Uitgaande leveranciersmail is een afzonderlijke bestaande SMTP2GO-route, geen onderdeel van deze OAuth-toestemming.
+Serverinstellingen en nieuwe mailopslagmarker werkelijk geïnstalleerd, bron3494988 naar GitHub en Maat Pagesproduction gepubliceerd; bestaand kwartierschema heeft een onafhankelijke mailtaak. Cloudflarecontrolplane meldt deploy success. Geen tests/checks/browser-QA of echte Microsoft-aanmelding/Graph-mailopvraag door de bouwer. Inrichting/publicatie en Microsoft-consent zijn afzonderlijke feiten; actuele deployments staan privé in work/outlook-connect-20261102. Gebruiker moet aanmelden en zelf de eerste voorstellen controleren. Uitgaande leveranciersmail is een afzonderlijke bestaande SMTP2GO-route, geen onderdeel van deze OAuth-toestemming.
 
 Bronnen: [Microsoft codeflow/PKCE](https://learn.microsoft.com/en-us/entra/identity-platform/v2-oauth2-auth-code-flow), [Graph berichtenlijst/filters](https://learn.microsoft.com/en-us/graph/api/user-list-messages?view=graph-rest-1.0), [Microsoft scopes](https://learn.microsoft.com/en-us/entra/identity-platform/scopes-oidc). Alleen primaire documentatie geraadpleegd.
+
+## Gebruikersbevestiging
+
+Na publicatie bevestigt Philippe zelf: Outlook gekoppeld. Microsoft-aanmelding/callback daarmee door gebruiker bevestigd. De eigen eerste bron-/ordermatch-/PDF-/acceptatiecontrole blijft open; geen Graph-proef of testronde door bouwer.
